@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2016 - 2018, EPFL / Blue Brain Project
+# Copyright (c) 2018 - 2019, EPFL / Blue Brain Project
 #               Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
-
 
 # System imports
 import random, copy
@@ -71,7 +70,7 @@ class DisconnectedSegmentsBuilder:
 
         NOTE: Each entry in the the poly-lines list has the following format:
             * poly_lines_data[0]: a list of all the samples (points and their radii)
-            * poly_lines_data[0]: the material index
+            * poly_lines_data[1]: the material index
 
         :return:
             A list of all the poly-lines that correspond to the sections in the entire morphology.
@@ -99,7 +98,7 @@ class DisconnectedSegmentsBuilder:
         vmv.logger.header('Building skeleton: DisconnectedSegmentsBuilder')
 
         # Clear the scene
-        vmv.logger.detail('Clearing scene')
+        vmv.logger.info('Clearing scene')
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
@@ -110,21 +109,19 @@ class DisconnectedSegmentsBuilder:
             radius=1.0, vertices=self.options.morphology.bevel_object_sides, name='bevel')
 
         # Construct sections poly-lines
-        vmv.logger.detail('Constructing poly-lines')
+        vmv.logger.info('Constructing poly-lines')
         poly_lines_data = self.get_segments_poly_lines_data()
 
         # Pre-process the radii
-        vmv.logger.detail('Adjusting radii')
+        vmv.logger.info('Adjusting radii')
         vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
 
         # Construct the final object and add it to the morphology
-        vmv.logger.detail('Drawing object')
+        vmv.logger.info('Drawing object')
         self.morphology_objects.append(
             vmv.geometry.create_poly_lines_object_from_poly_lines_data(
                 poly_lines_data, color=self.options.morphology.color,
                 material=self.options.morphology.material, name=self.morphology.name,
                 bevel_object=bevel_object))
-
-        # Hide the bevel object
 
 

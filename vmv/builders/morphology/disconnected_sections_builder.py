@@ -104,7 +104,7 @@ class DisconnectedSectionsBuilder:
         vmv.logger.header('Building skeleton: DisconnectedSectionsBuilder')
 
         # Clear the scene
-        vmv.logger.detail('Clearing scene')
+        vmv.logger.info('Clearing scene')
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
@@ -115,25 +115,21 @@ class DisconnectedSectionsBuilder:
             radius=1.0, vertices=self.options.morphology.bevel_object_sides, name='bevel')
 
         # Construct sections poly-lines
-        vmv.logger.detail('Constructing poly-lines')
+        vmv.logger.info('Constructing poly-lines')
         poly_lines_data = self.get_sections_poly_lines_data()
 
         # Pre-process the radii
-        vmv.logger.detail('Adjusting radii')
+        vmv.logger.info('Adjusting radii')
         vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
 
+        # Adaptively resampling the reconstructed sections
+        if self.options.morphology.adaptive_resampling:
+            vmv.logger.info('Re-sampling poly-lines')
+            vmv.skeleton.resample_poly_lines_adaptively(poly_lines=poly_lines_data)
+
         # Construct the final object and add it to the morphology
-        vmv.logger.detail('Drawing object')
+        vmv.logger.info('Drawing object')
         self.morphology_objects.append(vmv.geometry.create_poly_lines_object_from_poly_lines_data(
             poly_lines_data, color=self.options.morphology.color,
             material=self.options.morphology.material, name=self.morphology.name,
             bevel_object=bevel_object))
-
-        # Center the object
-        if not self.options.morphology.global_coordinates:
-            vmv.logger.detail('Centering at the origin')
-            for morphology_object in self.morphology_objects:
-                morphology_object.location -= self.morphology.get_center()
-
-        # Hide the bevel object
-

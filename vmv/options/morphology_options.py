@@ -69,6 +69,9 @@ class MorphologyOptions:
         # Global coordinates
         self.global_coordinates = False
 
+        # Adaptive resampling of the sections to reduce the number of samples
+        self.adaptive_resampling = False
+
         # Number of sides of the bevel object used to scale the sections
         # This parameter controls the quality of the reconstructed morphology
         self.bevel_object_sides = vmv.consts.Bevel.BEVEL_OBJECT_SIDES

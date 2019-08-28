@@ -166,3 +166,19 @@ def update_poly_lines_radii(poly_lines,
     else:
         pass
 
+
+def resample_poly_line_adaptively(poly_line):
+
+
+
+    pass
+
+def resample_poly_lines_adaptively(poly_lines):
+    """
+
+    :param poly_lines:
+    :return:
+    """
+
+    for poly_line in poly_lines:
+        resample_poly_line_adaptively(poly_line=poly_line)

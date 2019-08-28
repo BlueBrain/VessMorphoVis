@@ -332,12 +332,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Adaptive resampling
         adaptive_resampling_row = self.layout.row()
         adaptive_resampling_row.prop(context.scene, 'AdaptiveResampling')
-
-
-
-
-
-
+        vmv.interface.ui.ui_options.morphology.adaptive_resampling = \
+            context.scene.AdaptiveResampling
 
         # Morphology reconstruction techniques option
         # skeleton_style_row = self.layout.row()
