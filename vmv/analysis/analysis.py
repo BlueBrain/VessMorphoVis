@@ -84,6 +84,63 @@ def compute_section_length(section):
 
 
 ####################################################################################################
+# @is_short_sections
+####################################################################################################
+def is_short_section(section):
+    """Analyze the short sections, which have their length shorter than the sum of their
+    initial and final diameters.
+
+    :param section:
+        A given section to get analyzed.
+    """
+
+    # Only applies if the section has more than two samples
+    if len(section.samples) > 1:
+
+        # Compute the sum of the diameters of the first and last samples
+        diameters_sum = (section.samples[0].radius + section.samples[-1].radius) * 2
+
+        # Compute section length
+        section_length = compute_section_length(section=section)
+
+        # If the sum is smaller than the section length, then report it as an issue
+        if section_length < diameters_sum:
+            return True
+
+        # Not a short section
+        return False
+
+    # Default
+    return False
+
+
+####################################################################################################
+# @compute_number_of_short_sections
+####################################################################################################
+def compute_number_of_short_sections(sections_list):
+    """Computes the number of short sections in the morphology
+
+    :param sections_list:
+        A list of all the sections that compose the morphology.
+    :return:
+        The number of short sections in the morphology.
+    """
+
+    # Number of short sections in the morphology
+    number_short_sections = 0
+
+    # Do it section by section
+    for section in sections_list:
+
+        # Check
+        if is_short_section(section):
+            number_short_sections += 1
+
+    # Return the total number of short sections
+    return number_short_sections
+
+
+####################################################################################################
 # @compute_total_morphology_length
 ####################################################################################################
 def compute_total_morphology_length(sections_list):

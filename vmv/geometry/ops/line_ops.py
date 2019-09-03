@@ -200,7 +200,6 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
     return line_object
 
 
-
 ####################################################################################################
 # @create_poly_lines_object_base
 ####################################################################################################
@@ -285,7 +284,7 @@ def create_poly_lines_object_materials(poly_lines_object,
 ####################################################################################################
 def append_poly_line_to_poly_lines_object(poly_lines_object,
                                           poly_line_data,
-                                          poly_line_type='POLY'):
+                                          poly_line_type='NURBS'):
     """Creates a poly-line object and appends to the aggregate poly-lines-object that is created
     before.
 
@@ -368,7 +367,7 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
 
     # Create the base object
     poly_lines_object = create_poly_lines_object_base(
-        name=name, bevel_object=bevel_object,caps=caps, texture_size=texture_size)
+        name=name, bevel_object=bevel_object, caps=caps, texture_size=texture_size)
 
     # Create the materials and assign them to the poly-lines object
     create_poly_lines_object_materials(
@@ -383,6 +382,10 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     # Create the aggregate object to be linked to the scene later
     aggregate_poly_lines_object = bpy.data.objects.new(str(name), poly_lines_object)
 
+    if poly_line_type == 'NURBS':
+        aggregate_poly_lines_object.data.splines[0].order_u = 6
+        aggregate_poly_lines_object.data.splines[0].use_endpoint_u = True
+
     # Link this object to the scene
     bpy.context.scene.collection.objects.link(aggregate_poly_lines_object)
 
@@ -391,6 +394,7 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
 
     # Return a reference to the created poly-lines object
     return aggregate_poly_lines_object
+
 
 def draw_poly_line(poly_line_data,
                    format='SOLID',

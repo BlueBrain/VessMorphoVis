@@ -142,11 +142,11 @@ class H5Reader:
         # Detect the root sections and update the list
         for section in self.sections_list:
             if section.is_root():
-                print('root')
                 self.roots.append(section)
 
-       # for section in self.sections_list:
-       #     vmv.skeleton.resample_section_adaptively(section)
+        # Re-sample
+        # for section in self.sections_list:
+        #     vmv.skeleton.resample_section_adaptively(section)
 
     ################################################################################################
     # @read_data_from_file

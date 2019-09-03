@@ -287,6 +287,15 @@ class VMVAnalysisPanel(bpy.types.Panel):
         # Average section length
         results_area.prop(scene, 'AverageSectionLength')
 
+        # Minimum segment length
+        results_area.prop(scene, 'MinimumSegmentLength')
+
+        # Maximum segment length
+        results_area.prop(scene, 'MaximumSegmentLength')
+
+        # Average segment length
+        results_area.prop(scene, 'AverageSegmentLength')
+
         # Number of loops
         results_area.prop(scene, 'NumberLoops')
 
@@ -406,7 +415,11 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberSectionsWithTwoSamples = number_section_with_two_samples
 
-        print('Radii')
+        # Number of short sections
+        number_short_sections = vmv.analysis.compute_number_of_short_sections(
+            vmv.interface.ui.ui_morphology.sections_list)
+        context.scene.NumberShortSections = number_short_sections
+
         # Samples radius stats.
         minimum_sample_radius, maximum_sample_radius, average_sample_radius = \
             vmv.analysis.analyze_samples_radii( vmv.interface.ui.ui_morphology.points_list)
@@ -414,22 +427,43 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         context.scene.MaximumSampleRadius = maximum_sample_radius
         context.scene.AverageSampleRadius = average_sample_radius
 
-        print('Segments Length')
         # Segments length stats.
         minimum_segment_length, maximum_segment_length, average_segment_length = \
-            vmv.analysis.analyze_segments_length( vmv.interface.ui.ui_morphology.sections_list)
-        print('Sections Length')
+            vmv.analysis.analyze_segments_length(vmv.interface.ui.ui_morphology.sections_list)
+        context.scene.MinimumSegmentLength = minimum_segment_length
+        context.scene.MaximumSegmentLength = maximum_segment_length
+        context.scene.AverageSegmentLength = average_segment_length
+
         # Section length stats.
         minimum_section_length, maximum_section_length, average_section_length = \
-            vmv.analysis.analyze_sections_length( vmv.interface.ui.ui_morphology.sections_list)
+            vmv.analysis.analyze_sections_length(vmv.interface.ui.ui_morphology.sections_list)
+        context.scene.MinimumSectionLength = minimum_section_length
+        context.scene.MaximumSectionLength = maximum_section_length
+        context.scene.AverageSectionLength = average_section_length
+
         print('Loops')
-        number_loops = vmv.analysis.compute_number_of_loops( vmv.interface.ui.ui_morphology.sections_list)
+        number_loops = vmv.analysis.compute_number_of_loops(
+            vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberLoops = number_loops
 
         print('Components')
         number_components = vmv.analysis.compute_number_of_components(
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberComponents = number_components
+
+        # Bounding box data
+        context.scene.BBoxCenterX = vmv.interface.ui.ui_morphology.bounding_box.center[0]
+        context.scene.BBoxCenterY = vmv.interface.ui.ui_morphology.bounding_box.center[1]
+        context.scene.BBoxCenterZ = vmv.interface.ui.ui_morphology.bounding_box.center[2]
+        context.scene.BoundsX = vmv.interface.ui.ui_morphology.bounding_box.bounds[0]
+        context.scene.BoundsY = vmv.interface.ui.ui_morphology.bounding_box.bounds[1]
+        context.scene.BoundsZ = vmv.interface.ui.ui_morphology.bounding_box.bounds[2]
+        context.scene.BBoxPMinX = vmv.interface.ui.ui_morphology.bounding_box.p_min[0]
+        context.scene.BBoxPMinY = vmv.interface.ui.ui_morphology.bounding_box.p_min[1]
+        context.scene.BBoxPMinZ = vmv.interface.ui.ui_morphology.bounding_box.p_min[2]
+        context.scene.BBoxPMaxX = vmv.interface.ui.ui_morphology.bounding_box.p_max[0]
+        context.scene.BBoxPMaxY = vmv.interface.ui.ui_morphology.bounding_box.p_max[1]
+        context.scene.BBoxPMaxZ = vmv.interface.ui.ui_morphology.bounding_box.p_max[2]
 
         return {'FINISHED'}
 

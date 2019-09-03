@@ -251,12 +251,12 @@ class VMVLoadMorphology(bpy.types.Operator):
 
         # Just draw the skeleton as a sign of complete morphology loading
         try:
-            '''
+
             import vmv.builders
             builder = vmv.builders.CenterLineSkeletonBuilder(
                  morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
             builder.build_skeleton()
-            '''
+
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True
 

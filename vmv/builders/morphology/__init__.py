@@ -23,3 +23,4 @@ from .disconnected_sections_builder import *
 from .disconnected_segments_builder import *
 from .simplified_skeleton_builder import *
 from .connected_skeleton_builder import *
+from .proxy_skeleton_builder import *
