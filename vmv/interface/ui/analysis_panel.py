@@ -15,6 +15,9 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import time
+
 # Blender imports
 import bpy
 
@@ -209,6 +212,11 @@ class VMVAnalysisPanel(bpy.types.Panel):
         description="Morphology depth",
         min=-1e10, max=1e10, subtype='FACTOR')
 
+    # Analysis time
+    bpy.types.Scene.MorphologyAnalysisTime = bpy.props.FloatProperty(
+        name="Analysis Time (Sec)",
+        default=0, min=0, max=1000000)
+
     ################################################################################################
     # @draw
     ################################################################################################
@@ -339,6 +347,15 @@ class VMVAnalysisPanel(bpy.types.Panel):
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
         if vmv.interface.ui_morphology_loaded:
             self.layout.enabled = True
+
+            # Stats
+            analysis_stats_row = layout.row()
+            analysis_stats_row.label(text='Stats:', icon='RECOVER_LAST')
+
+            loading_time_row = layout.row()
+            loading_time_row.prop(scene, 'MorphologyAnalysisTime')
+            loading_time_row.enabled = False
+
         else:
             self.layout.enabled = False
 
@@ -368,6 +385,7 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         """
 
         vmv.logger.header('Analyzing morphology')
+        analysis_stated = time.time()
 
         # Morphology total length
         vmv.logger.info('Total length')
@@ -449,6 +467,10 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         context.scene.BBoxPMaxX = vmv.interface.ui.ui_morphology.bounding_box.p_max[0]
         context.scene.BBoxPMaxY = vmv.interface.ui.ui_morphology.bounding_box.p_max[1]
         context.scene.BBoxPMaxZ = vmv.interface.ui.ui_morphology.bounding_box.p_max[2]
+
+        # Update the analysis stats.
+        analysis_done = time.time()
+        context.scene.MorphologyAnalysisTime = analysis_done - analysis_stated
 
         # Done
         return {'FINISHED'}

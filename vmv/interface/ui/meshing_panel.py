@@ -466,7 +466,7 @@ class VMVRenderMesh360(bpy.types.Operator):
         # Create a specific directory for this mesh
         self.output_directory = '%s/%s_mesh_360' % (
             vmv.interface.ui_options.io.sequences_directory,
-            vmv.interface.ui_options.morphology.label)
+            vmv.interface.ui.ui_morphology.name)
         vmv.file.ops.clean_and_create_directory(self.output_directory)
 
         # Use the event timer to update the UI during the soma building

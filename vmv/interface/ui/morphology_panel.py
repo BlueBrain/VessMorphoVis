@@ -24,11 +24,13 @@ from mathutils import Vector
 
 # Internal imports
 import vmv
+import vmv.bbox
 import vmv.enums
 import vmv.file
 import vmv.builders
 import vmv.skeleton
 import vmv.utilities
+import vmv.rendering
 
 
 ####################################################################################################
@@ -93,14 +95,14 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # Rendering resolution
     bpy.types.Scene.MorphologyRenderingResolution = bpy.props.EnumProperty(
-        items=[(vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION,
+        items=[(vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION,
                 'Fixed',
                 'Renders an image of the mesh at a specific resolution given by the user'),
-               (vmv.enums.Meshing.Rendering.Resolution.TO_SCALE,
+               (vmv.enums.Skeletonization.Rendering.Resolution.TO_SCALE,
                 'To Scale',
                 'Renders an image of the mesh at factor of the exact scale')],
         name='Type',
-        default=vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION)
+        default=vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION)
 
     # Rendering views
     bpy.types.Scene.MorphologyRenderingViews = bpy.props.EnumProperty(
@@ -114,31 +116,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 'Top View',
                 'Renders the top view of the mesh')],
         name='View', default=vmv.enums.Camera.View.FRONT)
-
-    # Exported mesh file formats
-    bpy.types.Scene.ExportedMorphologyFormat = bpy.props.EnumProperty(
-        items=[(vmv.enums.Meshing.ExportFormat.PLY,
-                'Stanford (.ply)',
-                'Export the mesh to a .ply file'),
-               (vmv.enums.Meshing.ExportFormat.OBJ,
-                'Wavefront(.obj)',
-                'Export the mesh to a .obj file'),
-               (vmv.enums.Meshing.ExportFormat.STL,
-                'Stereolithography CAD (.stl)',
-                'Export the mesh to an .stl file'),
-               (vmv.enums.Meshing.ExportFormat.OFF,
-                'Object File Format (.off)',
-                'Export the mesh to an .off file'),
-               (vmv.enums.Meshing.ExportFormat.BLEND,
-                'Blender File (.blend)',
-                'Export the mesh as a .blend file')],
-        name='Format', default=vmv.enums.Meshing.ExportFormat.PLY)
-
-    # Skeleton style
-    #bpy.types.Scene.SkeletonStyle = bpy.props.EnumProperty(
-    #    items=vmv.enums.Skeletonization.Style.,
-    #    name="Skeleton Style",
-    #    default=vmv.enums.Skeletonization.Style.ORIGINAL)
 
     # Branching, is it based on angles or radii
     bpy.types.Scene.MorphologyBranching = bpy.props.EnumProperty(
@@ -217,9 +194,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         name="Scale",
         description="A scale factor for scaling the radii of the tubes between (0.01 and 5.0)",
         default=1.0, min=0.01, max=5.0)
-
-
-
 
     # Material
     bpy.types.Scene.MorphologyMaterial = bpy.props.EnumProperty(
@@ -319,21 +293,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         tube_quality_row.prop(context.scene, 'TubeQuality')
         vmv.interface.ui.ui_options.morphology.bevel_object_sides = context.scene.TubeQuality
 
-        # Center morphology
-        center_morphology_row = self.layout.row()
-        center_morphology_row.prop(context.scene, 'CenterMorphology')
-        vmv.interface.ui.ui_options.morphology.global_coordinates = \
-            not context.scene.CenterMorphology
-
-        # Progressive reconstruction
-        progressive_reconstruction_row = self.layout.row()
-        progressive_reconstruction_row.prop(context.scene, 'ProgressiveReconstruction')
-
-        # Adaptive resampling
-        adaptive_resampling_row = self.layout.row()
-        adaptive_resampling_row.prop(context.scene, 'AdaptiveResampling')
-        vmv.interface.ui.ui_options.morphology.adaptive_resampling = \
-            context.scene.AdaptiveResampling
 
         # Morphology reconstruction techniques option
         # skeleton_style_row = self.layout.row()
@@ -431,11 +390,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_reconstruction_row = self.layout.row()
         morphology_reconstruction_row.operator('reconstruct.morphology', icon='MESH_DATA')
 
-        # Reconstruction progress bar
-        reconstruction_progress_row = self.layout.row()
-        reconstruction_progress_row.prop(context.scene, 'ReconstructionProgress')
-        reconstruction_progress_row.enabled = False
-
     ################################################################################################
     # @draw_morphology_rendering_options
     ################################################################################################
@@ -460,23 +414,25 @@ class VMVMorphologyPanel(bpy.types.Panel):
         rendering_resolution_row.prop(context.scene, 'MorphologyRenderingResolution', expand=True)
 
         # Add the frame resolution option
-        if context.scene.MeshRenderingResolution == \
-                vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
+        if context.scene.MorphologyRenderingResolution == \
+                vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Frame resolution option (only for the close up mode)
             frame_resolution_row = self.layout.row()
             frame_resolution_row.label(text='Frame Resolution:')
             frame_resolution_row.prop(context.scene, 'MorphologyFrameResolution')
-            vmv.interface.ui.ui_options.morphology.resolution_basis = context.scene.MorphologyFrameResolution
+            vmv.interface.ui.ui_options.morphology.resolution_basis = \
+                context.scene.MorphologyRenderingResolution
 
-        # Otherwise, add the scalimport vmv.builderse factor option
+        # Otherwise, add the scale factor option
         else:
 
             # Scale factor option
             scale_factor_row = self.layout.row()
             scale_factor_row.label(text='Resolution Scale:')
             scale_factor_row.prop(context.scene, 'MorphologyFrameScaleFactor')
-            vmv.interface.ui.ui_options.morphology.resolution_scale_factor = context.scene.MorphologyFrameScaleFactor
+            vmv.interface.ui.ui_options.morphology.resolution_scale_factor = \
+                context.scene.MorphologyFrameScaleFactor
 
         # Rendering view column
         view_row = self.layout.column()
@@ -506,9 +462,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         :param context:
             Context.
         """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
 
         # Saving meshes parameters
         save_mesh_row = self.layout.row()
@@ -562,67 +515,8 @@ class VMVReconstructMorphology(bpy.types.Operator):
     bl_label = "Reconstruct Morphology"
     bl_options = {'REGISTER'}
 
-    # Timer parameters
-    event_timer = None
-    #timer_limits = bpy.props.IntProperty(default=0)
-
     # The builder that will be used to build the morphology
     morphology_builder = None
-
-    # The number of the components that needs to be built to say that the morphology is
-    # reconstructed
-    total_components = 0
-
-    # The reconstructed components so far during the iteration
-    i_component = 0
-
-    ################################################################################################
-    # @modal
-    ################################################################################################
-    def modal(self,
-              context,
-              event):
-        """Threading and non-blocking handling.
-
-        :param context:
-            Panel context.
-        :param event:
-            A given event for the panel.
-        """
-
-        # Cancelling event, if using right click or exceeding the time limit of the simulation
-        if event.type in {'RIGHTMOUSE', 'ESC'} or self.i_component > self.total_components - 1:
-
-            # Reset the timer limits
-            self.i_component = 0
-
-            # Refresh the panel context
-            self.cancel(context)
-
-            # Done
-            return {'FINISHED'}
-
-        # Update the progress shell
-        vmv.utilities.show_progress('Progress', self.i_component, self.total_components)
-
-        # Reconstruct the component i (mainly the section)
-        #self.morphology_builder.build_component(
-        #    vmv.interface.ui.ui_morphology.sections_list[self.i_component])
-
-        self.morphology_builder.build_component(self.i_component)
-
-        # Next component
-        self.i_component += 1
-
-        # Update the progress bar
-        progress = int(100.0 * self.i_component / float(self.total_components))
-        context.scene.ReconstructionProgress = progress
-
-        # View all the objects in the scene
-        # vmv.scene.ops.view_all_scene()
-
-        # Next frame
-        return {'PASS_THROUGH'}
 
     ################################################################################################
     # @execute
@@ -659,7 +553,6 @@ class VMVReconstructMorphology(bpy.types.Operator):
             self.morphology_builder = vmv.builders.DisconnectedSectionsBuilder(
                 morphology=vmv.interface.ui.ui_morphology,
                 options=vmv.interface.ui.ui_options)
-            self.total_components = len(vmv.interface.ui.ui_morphology.sections_list)
 
         # Connected sections builder
         elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
@@ -670,56 +563,17 @@ class VMVReconstructMorphology(bpy.types.Operator):
         # Connected sections builder
         elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
                 vmv.enums.Skeletonization.Method.CONNECTED_SKELETON:
-            #self.morphology_builder = vmv.builders.CenterLineSkeletonBuilder(
-            #    morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
             self.morphology_builder = vmv.builders.ConnectedSkeletonBuilder(
                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
         else:
             return {'FINISHED'}
 
-        # Progressive reconstruction
-        if context.scene.ProgressiveReconstruction:
+        # Build the morphology skeleton directly
+        # NOTE: each builder must have this function @build_skeleton() implemented in it
+        self.morphology_builder.build_skeleton()
 
-            # Returns the total number of components to be drawn for the RUNNING_MODAL option
-            self.total_components = self.morphology_builder.get_number_components()
-
-        # Direct reconstruction
-        else:
-
-            # Build the morphology skeleton directly
-            # NOTE: each builder must have this function @build_skeleton() implemented in it
-            self.morphology_builder.build_skeleton()
-
-            # Done, return {'FINISHED'}
-            return {'FINISHED'}
-
-        # Use the event timer to update the UI
-        wm = context.window_manager
-        self.event_timer = wm.event_timer_add(time_step=0.1, window=context.window)
-        wm.modal_handler_add(self)
-
-        # Done
-        return {'RUNNING_MODAL'}
-
-    ################################################################################################
-    # @cancel
-    ################################################################################################
-    def cancel(self, context):
-        """Cancel the panel processing and return to the interaction mode.
-
-        :param context:
-            Panel context.
-        """
-
-        # Multi-threading
-        wm = context.window_manager
-        wm.event_timer_remove(self.event_timer)
-
-        # Show the progress, Done
-        vmv.utilities.show_progress('Progress', 100.0, 100.0, done=True)
-
-        # Report the process termination in the UI
-        self.report({'INFO'}, 'Building Morphology Done')
+        # Done, return {'FINISHED'}
+        return {'FINISHED'}
 
 
 ####################################################################################################
@@ -802,7 +656,7 @@ class VMVRenderMorphology360(bpy.types.Operator):
 
     # Timer parameters
     event_timer = None
-    # timer_limits = bpy.props.IntProperty(default=0)
+    timer_limits = 0
 
     # 360 bounding box
     bounding_box_360 = None
@@ -817,15 +671,18 @@ class VMVRenderMorphology360(bpy.types.Operator):
         """
         Threading and non-blocking handling.
 
-        :param context: Panel context.
-        :param event: A given event for the panel.
+        :param context:
+            Panel context.
+        :param event:
+            A given event for the panel.
         """
 
         # Get a reference to the scene
         scene = context.scene
-        """
+
         # Cancelling event, if using right click or exceeding the time limit of the simulation
         if event.type in {'RIGHTMOUSE', 'ESC'} or self.timer_limits > 360:
+
             # Reset the timer limits
             self.timer_limits = 0
 
@@ -843,62 +700,39 @@ class VMVRenderMorphology360(bpy.types.Operator):
                 self.output_directory, '{0:05d}'.format(self.timer_limits))
 
             # Render at a specific resolution
-            if context.scene.MeshRenderingResolution == \
-<<<<<<< HEAD
-                    vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
+            if context.scene.MorphologyRenderingResolution == \
+                    vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION:
 
                 # Render the image
-                vmv.rendering.NeuronMeshRenderer.render_at_angle(
-                    mesh_objects=vmv.interface.ui_reconstructed_mesh,
+                vmv.rendering.render_at_angle(
+                    scene_objects=vmv.get_list_of_curves_in_scene(),
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Camera.View.FRONT_360,
-=======
-                    vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
-
-                # Render the image
-                vmv.rendering.NeuronMeshRenderer.render_at_angle(
-                    mesh_objects=vmv.interface.ui_reconstructed_mesh,
-                    angle=self.timer_limits,
-                    bounding_box=self.bounding_box_360,
-                    camera_view=vmv.enums.Camera.View.FRONT_360,
->>>>>>> Adding sketched.
-                    image_resolution=context.scene.MeshFrameResolution,
+                    image_resolution=context.scene.MorphologyFrameResolution,
                     image_name=image_name)
 
             # Render at a specific scale factor
             else:
 
                 # Render the image
-<<<<<<< HEAD
-                vmv.rendering.NeuronMeshRenderer.render_at_angle_to_scale(
-                    mesh_objects=vmv.interface.ui_reconstructed_mesh,
+                vmv.rendering.render_at_angle_to_scale(
+                    scene_objects=vmv.get_list_of_curves_in_scene(),
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Camera.View.FRONT_360,
-=======
-                vmv.rendering.NeuronMeshRenderer.render_at_angle_to_scale(
-                    mesh_objects=vmv.interface.ui_reconstructed_mesh,
-                    angle=self.timer_limits,
-                    bounding_box=self.bounding_box_360,
-                    camera_view=vmv.enums.Camera.View.FRONT_360,
->>>>>>> Adding sketched.
-                    image_scale_factor=context.scene.MeshFrameScaleFactor,
+                    image_scale_factor=context.scene.MorphologyFrameResolution,
                     image_name=image_name)
 
             # Update the progress shell
-<<<<<<< HEAD
             vmv.utilities.show_progress('Rendering', self.timer_limits, 360)
-=======
-            vmv.utilities.show_progress('Rendering', self.timer_limits, 360)
->>>>>>> Adding sketched.
 
             # Update the progress bar
-            context.scene.NeuronMeshRenderingProgress = int(100 * self.timer_limits / 360.0)
+            context.scene.MorphologyRenderingProgress = int(100 * self.timer_limits / 360.0)
 
             # Upgrade the timer limits
             self.timer_limits += 1
-        """
+
         # Next frame
         return {'PASS_THROUGH'}
 
@@ -911,9 +745,8 @@ class VMVRenderMorphology360(bpy.types.Operator):
         :param context:
             Panel context.
         """
-        """
+
         # Ensure that there is a valid directory where the images will be written to
-<<<<<<< HEAD
         if vmv.interface.ui_options.io.output_directory is None:
             self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
             return {'FINISHED'}
@@ -926,62 +759,13 @@ class VMVRenderMorphology360(bpy.types.Operator):
         if not vmv.file.ops.path_exists(vmv.interface.ui_options.io.sequences_directory):
             vmv.file.ops.clean_and_create_directory(
                 vmv.interface.ui_options.io.sequences_directory)
-=======
-        if vmv.interface.ui_options.io.output_directory is None:
-            self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
-            return {'FINISHED'}
-
-        if not vmv.file.ops.path_exists(context.scene.OutputDirectory):
-            self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
-            return {'FINISHED'}
-
-        # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.ui_options.io.sequences_directory):
-            vmv.file.ops.clean_and_create_directory(
-                vmv.interface.ui_options.io.sequences_directory)
->>>>>>> Adding sketched.
 
         # A reference to the bounding box that will be used for the rendering
-        rendering_bbox = None
-
-        # Compute the bounding box for a close up view
-<<<<<<< HEAD
-        if context.scene.MeshRenderingView == vmv.enums.Meshing.Rendering.View.CLOSE_UP_VIEW:
-
-            # Compute the bounding box for a close up view
-            rendering_bbox = vmv.bbox.compute_unified_extent_bounding_box(
-                extent=context.scene.MeshCloseUpSize)
-
-        # Compute the bounding box for a mid shot view
-        elif context.scene.MeshRenderingView == vmv.enums.Meshing.Rendering.View.MID_SHOT_VIEW:
-
-            # Compute the bounding box for the available meshes only
-            rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_meshes()
-=======
-        if context.scene.MeshRenderingView == vmv.enums.Meshing.Rendering.View.CLOSE_UP_VIEW:
-
-            # Compute the bounding box for a close up view
-            rendering_bbox = vmv.bbox.compute_unified_extent_bounding_box(
-                extent=context.scene.MeshCloseUpSize)
-
-        # Compute the bounding box for a mid shot view
-        elif context.scene.MeshRenderingView == vmv.enums.Meshing.Rendering.View.MID_SHOT_VIEW:
-
-            # Compute the bounding box for the available meshes only
-            rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_meshes()
->>>>>>> Adding sketched.
-
-        # Compute the bounding box for the wide shot view that correspond to the whole morphology
-        else:
-
-            # Compute the full morphology bounding box
-<<<<<<< HEAD
-            rendering_bbox = vmv.skeleton.compute_full_morphology_bounding_box(
-                morphology=vmv.interface.ui_morphology)
+        rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_curves()
 
         # Compute a 360 bounding box to fit the arbors
         self.bounding_box_360 = vmv.bbox.compute_360_bounding_box(
-            rendering_bbox, vmv.interface.ui_morphology.soma.centroid)
+            rendering_bbox, rendering_bbox.center)
 
         # Stretch the bounding box by few microns
         self.bounding_box_360.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
@@ -991,29 +775,12 @@ class VMVRenderMorphology360(bpy.types.Operator):
             vmv.interface.ui_options.io.sequences_directory,
             vmv.interface.ui_options.morphology.label)
         vmv.file.ops.clean_and_create_directory(self.output_directory)
-=======
-            rendering_bbox = vmv.skeleton.compute_full_morphology_bounding_box(
-                morphology=vmv.interface.ui_morphology)
-
-        # Compute a 360 bounding box to fit the arbors
-        self.bounding_box_360 = vmv.bbox.compute_360_bounding_box(
-            rendering_bbox, vmv.interface.ui_morphology.soma.centroid)
-
-        # Stretch the bounding box by few microns
-        self.bounding_box_360.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
-
-        # Create a specific directory for this mesh
-        self.output_directory = '%s/%s_mesh_360' % (
-            vmv.interface.ui_options.io.sequences_directory,
-            vmv.interface.ui_options.morphology.label)
-        vmv.file.ops.clean_and_create_directory(self.output_directory)
->>>>>>> Adding sketched.
 
         # Use the event timer to update the UI during the soma building
         wm = context.window_manager
         self.event_timer = wm.event_timer_add(time_step=0.01, window=context.window)
         wm.modal_handler_add(self)
-        """
+
         # Done
         return {'RUNNING_MODAL'}
 
