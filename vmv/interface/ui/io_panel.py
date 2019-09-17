@@ -234,6 +234,7 @@ class VMVLoadMorphology(bpy.types.Operator):
 
         # Clear the scene from any existing data
         import vmv
+        vmv.logger.header('Loading morphology')
         vmv.scene.clear_scene()
 
         # Extend the clipping planes to be able to visualize larger data sets
@@ -247,7 +248,7 @@ class VMVLoadMorphology(bpy.types.Operator):
         vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
             center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin)
         loading_done = time.time()
-        print('Morphology loaded in %f seconds' % (loading_done - loading_start))
+        vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))
 
         # Just draw the skeleton as a sign of complete morphology loading
         try:
@@ -273,6 +274,9 @@ class VMVLoadMorphology(bpy.types.Operator):
             area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
             space = next(space for space in area.spaces if space.type == 'VIEW_3D')
             space.shading.type = 'MATERIAL'
+
+            drawing_done = time.time()
+            vmv.logger.info('Morphology drawn in [%f] seconds' % (drawing_done - loading_done))
 
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True

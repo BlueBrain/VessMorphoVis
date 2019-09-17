@@ -159,6 +159,10 @@ class H5Reader:
 
             # Import the h5py module
             import h5py
+            import vmv.utilities
+
+            # Ignore the console warning
+            vmv.utilities.disable_std_output()
 
             # Read the h5 file using the python module into a data array
             data = h5py.File(self.morphology_file, 'r')
@@ -171,6 +175,9 @@ class H5Reader:
 
             # A list of all the sections (called structures) in the data set
             self.connectivity_list = data['connectivity'].value
+
+            # Reset the std output
+            vmv.utilities.enable_std_output()
 
             # Compute the bounding box of the morphology
             self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(self.points_list)
