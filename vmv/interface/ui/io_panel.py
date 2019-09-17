@@ -264,11 +264,15 @@ class VMVLoadMorphology(bpy.types.Operator):
             builder.build_skeleton()
 
             # Switch to the top view
-            #bpy.ops.view3d.viewnumpad(type='TOP')
             bpy.ops.view3d.view_axis(type='TOP')
 
             # View all the objects in the scene
             bpy.ops.view3d.view_all()
+
+            # Switch to viewport shading
+            area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
+            space = next(space for space in area.spaces if space.type == 'VIEW_3D')
+            space.shading.type = 'MATERIAL'
 
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True
