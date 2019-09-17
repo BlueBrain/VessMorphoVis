@@ -564,7 +564,7 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
     # Timer parameters
     event_timer = None
-    timer_limits = bpy.props.IntProperty(default=0)
+    #timer_limits = bpy.props.IntProperty(default=0)
 
     # The builder that will be used to build the morphology
     morphology_builder = None
@@ -802,7 +802,7 @@ class VMVRenderMorphology360(bpy.types.Operator):
 
     # Timer parameters
     event_timer = None
-    timer_limits = bpy.props.IntProperty(default=0)
+    # timer_limits = bpy.props.IntProperty(default=0)
 
     # 360 bounding box
     bounding_box_360 = None

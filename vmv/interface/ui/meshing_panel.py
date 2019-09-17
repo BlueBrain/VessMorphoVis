@@ -351,7 +351,7 @@ class VMVRenderMesh360(bpy.types.Operator):
 
     # Timer parameters
     event_timer = None
-    timer_limits = bpy.props.IntProperty(default=0)
+    timer_limits = 0
 
     # 360 bounding box
     bounding_box_360 = None
@@ -375,6 +375,7 @@ class VMVRenderMesh360(bpy.types.Operator):
 
         # Cancelling event, if using right click or exceeding the time limit of the simulation
         if event.type in {'RIGHTMOUSE', 'ESC'} or self.timer_limits > 360:
+
             # Reset the timer limits
             self.timer_limits = 0
 

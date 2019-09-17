@@ -23,20 +23,36 @@ __maintainer__  = "Marwan Abdellah"
 __email__       = "marwan.abdellah@epfl.ch"
 __status__      = "Production"
 
-
+####################################################################################################
+# Add-on information
+####################################################################################################
 bl_info = {
+    # The name of your add-on. This is shown in the add-on tab in Blender's user preferences
     "name": "VessMorphoVis",
-    "author": "Marwan Abdellah",
-    "version": (1, 2, 0),
+    # The main author(s) of this add-on
+    "author": "Marwan Abdellah, Blue Brain Project at EPFL",
+    # A tuple, containing the add-on version
+    "version": (0, 1, 0),
+    # The earliest Blender version this add-on will work with. If you're not sure what versions of
+    # Blender this add-on is compatible with, use the version of Blender you're developing
+    # the add-on with.
     "blender": (2, 80, 0),
-    "location": "Properties > Material",
-    "description": "Allows managing UI translations directly from Blender "
-        "(update main .po files, update scripts' translations, etc.)",
-    "warning": "Still in development, not all features are fully implemented yet!",
-    "wiki_url": "http://wiki.blender.org/index.php/Dev:Doc/How_to/Translate_Blender",
-    "support": 'OFFICIAL',
-    "category": "System"}
-
+    # Description
+    "description": "Vasculature morphology reconstruction, analysis, meshing and visualization.",
+    # Optional: specifies the wiki URL for an add-on.
+    # This will appear in this add-on listing as "Documentation".
+    'wiki_url': 'https://github.com/BlueBrain/NeuroMorphoVis',
+    # This support can be either 'OFFICIAL', 'COMMUNITY', or 'TESTING'. 'OFFICIAL' should only be
+    # used if this add-on is included with Blender.
+    # (If you're not sure, don't use 'OFFICIAL'.) 'COMMUNITY' and 'TESTING' are both fine to use.
+    # Note that 'TESTING' add-ons aren't shown by default in Blender's add-on list.
+    "support": 'COMMUNITY',
+    # Add-on category; shown on the left side of Blender's add-on list to make filtering simpler.
+    # This must be one of the categories as listed in Blender's add-on tab; if it's not, it will
+    # create a new category for your add-on (which may be good or bad.)
+    # Don't create new categories to make your add-on stand out.
+    "category": "System"
+}
 
 # System imports
 import sys
@@ -104,7 +120,3 @@ if __name__ == "__main__":
 
     # Register the add-on
     register()
-
-
-
-

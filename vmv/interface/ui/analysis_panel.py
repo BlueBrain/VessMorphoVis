@@ -17,13 +17,10 @@
 
 # Blender imports
 import bpy
-from bpy.props import EnumProperty
-from bpy.props import StringProperty
-from bpy.props import BoolProperty
-
 
 # Internal imports
 import vmv
+import vmv.analysis
 
 
 ####################################################################################################
@@ -370,57 +367,42 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
             {'FINISHED'}
         """
 
-        import vmv.geometry
-        #points = morphology_reader.points_list
-
-        #for section in morphology_reader.sections_list:
-        #    print(section.index)
-        #    for sample in section.samples:
-        #        print(sample.point)
-
-        #for point in points:
-        #    vmv.geometry.create_uv_sphere(location=(point[0], point[1], point[2]), radius=0.5 * point[3])
-
-        #for section in morphology_reader.sections_list:
-        #    vmv.geometry.draw_poly_line_x(section.samples)
-
-
-        #import vmv.skeleton
-        #root = morphology_reader.root
-        #vmv.skeleton.draw_connected_sections(root)
-
-        import vmv.analysis
+        vmv.logger.header('Analyzing morphology')
 
         # Morphology total length
-        print('Length')
+        vmv.logger.info('Total length')
         morphology_total_length = vmv.analysis.compute_total_morphology_length( vmv.interface.ui.ui_morphology.sections_list)
         context.scene.MorphologyTotalLength = morphology_total_length
 
-        print('Number Samples')
         # Total number of samples
+        vmv.logger.info('Samples')
         total_number_samples = vmv.analysis.compute_total_number_samples( vmv.interface.ui.ui_morphology.points_list)
         context.scene.NumberSamples = total_number_samples
 
         # Total number of segments
+        vmv.logger.info('Segments')
         context.scene.NumberSegments = total_number_samples - 1
 
-        print('Number Sections')
         # Total number of sections
+        vmv.logger.info('Sections')
         total_number_sections = vmv.analysis.compute_total_number_sections(
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberSections = total_number_sections
 
-        print('Two Samples')
+        # Sections with two samples
+        vmv.logger.info('Sections with two samples')
         number_section_with_two_samples = vmv.analysis.compute_number_of_sections_with_two_samples(
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberSectionsWithTwoSamples = number_section_with_two_samples
 
         # Number of short sections
+        vmv.logger.info('Short sections')
         number_short_sections = vmv.analysis.compute_number_of_short_sections(
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberShortSections = number_short_sections
 
         # Samples radius stats.
+        vmv.logger.info('Radii')
         minimum_sample_radius, maximum_sample_radius, average_sample_radius = \
             vmv.analysis.analyze_samples_radii( vmv.interface.ui.ui_morphology.points_list)
         context.scene.MinimumSampleRadius = minimum_sample_radius
@@ -428,6 +410,7 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         context.scene.AverageSampleRadius = average_sample_radius
 
         # Segments length stats.
+        vmv.logger.info('Segments lengths')
         minimum_segment_length, maximum_segment_length, average_segment_length = \
             vmv.analysis.analyze_segments_length(vmv.interface.ui.ui_morphology.sections_list)
         context.scene.MinimumSegmentLength = minimum_segment_length
@@ -435,23 +418,25 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         context.scene.AverageSegmentLength = average_segment_length
 
         # Section length stats.
+        vmv.logger.info('Sections lengths')
         minimum_section_length, maximum_section_length, average_section_length = \
             vmv.analysis.analyze_sections_length(vmv.interface.ui.ui_morphology.sections_list)
         context.scene.MinimumSectionLength = minimum_section_length
         context.scene.MaximumSectionLength = maximum_section_length
         context.scene.AverageSectionLength = average_section_length
 
-        print('Loops')
+        vmv.logger.info('Loops')
         number_loops = vmv.analysis.compute_number_of_loops(
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberLoops = number_loops
 
-        print('Components')
+        vmv.logger.info('Components')
         number_components = vmv.analysis.compute_number_of_components(
             vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberComponents = number_components
 
         # Bounding box data
+        vmv.logger.info('Bounding box')
         context.scene.BBoxCenterX = vmv.interface.ui.ui_morphology.bounding_box.center[0]
         context.scene.BBoxCenterY = vmv.interface.ui.ui_morphology.bounding_box.center[1]
         context.scene.BBoxCenterZ = vmv.interface.ui.ui_morphology.bounding_box.center[2]
@@ -465,6 +450,7 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         context.scene.BBoxPMaxY = vmv.interface.ui.ui_morphology.bounding_box.p_max[1]
         context.scene.BBoxPMaxZ = vmv.interface.ui.ui_morphology.bounding_box.p_max[2]
 
+        # Done
         return {'FINISHED'}
 
 

@@ -253,9 +253,22 @@ class VMVLoadMorphology(bpy.types.Operator):
         try:
 
             import vmv.builders
-            builder = vmv.builders.CenterLineSkeletonBuilder(
+            import vmv.enums
+            # Initially, set the radius to FIXED to represent a center line
+            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Skeletonization.Radii.FIXED
+            vmv.interface.ui.ui_options.morphology.sections_fixed_radii_value = 1.0
+
+            # Construct a builder object
+            builder = vmv.builders.DisconnectedSectionsBuilder(
                  morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
             builder.build_skeleton()
+
+            # Switch to the top view
+            #bpy.ops.view3d.viewnumpad(type='TOP')
+            bpy.ops.view3d.view_axis(type='TOP')
+
+            # View all the objects in the scene
+            bpy.ops.view3d.view_all()
 
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True
