@@ -95,27 +95,27 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # Rendering resolution
     bpy.types.Scene.MorphologyRenderingResolution = bpy.props.EnumProperty(
-        items=[(vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION,
+        items=[(vmv.enums.Rendering.Resolution.FIXED_RESOLUTION,
                 'Fixed',
                 'Renders an image of the mesh at a specific resolution given by the user'),
-               (vmv.enums.Skeletonization.Rendering.Resolution.TO_SCALE,
+               (vmv.enums.Rendering.Resolution.TO_SCALE,
                 'To Scale',
                 'Renders an image of the mesh at factor of the exact scale')],
         name='Type',
-        default=vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION)
+        default=vmv.enums.Rendering.Resolution.FIXED_RESOLUTION)
 
     # Rendering views
     bpy.types.Scene.MorphologyRenderingViews = bpy.props.EnumProperty(
-        items=[(vmv.enums.Camera.View.FRONT,
+        items=[(vmv.enums.Rendering.View.FRONT,
                 'Front View',
                 'Render the front view of the mesh'),
-               (vmv.enums.Camera.View.SIDE,
+               (vmv.enums.Rendering.View.SIDE,
                 'Side View',
                 'Renders the side view of the mesh'),
-               (vmv.enums.Camera.View.TOP,
+               (vmv.enums.Rendering.View.TOP,
                 'Top View',
                 'Renders the top view of the mesh')],
-        name='View', default=vmv.enums.Camera.View.FRONT)
+        name='View', default=vmv.enums.Rendering.View.FRONT)
 
     # Branching, is it based on angles or radii
     bpy.types.Scene.MorphologyBranching = bpy.props.EnumProperty(
@@ -415,7 +415,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Add the frame resolution option
         if context.scene.MorphologyRenderingResolution == \
-                vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION:
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Frame resolution option (only for the close up mode)
             frame_resolution_row = self.layout.row()
@@ -701,14 +701,14 @@ class VMVRenderMorphology360(bpy.types.Operator):
 
             # Render at a specific resolution
             if context.scene.MorphologyRenderingResolution == \
-                    vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION:
+                    vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
                 # Render the image
                 vmv.rendering.render_at_angle(
                     scene_objects=vmv.get_list_of_curves_in_scene(),
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
-                    camera_view=vmv.enums.Camera.View.FRONT_360,
+                    camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_resolution=context.scene.MorphologyFrameResolution,
                     image_name=image_name)
 
@@ -720,7 +720,7 @@ class VMVRenderMorphology360(bpy.types.Operator):
                     scene_objects=vmv.get_list_of_curves_in_scene(),
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
-                    camera_view=vmv.enums.Camera.View.FRONT_360,
+                    camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_scale_factor=context.scene.MorphologyFrameResolution,
                     image_name=image_name)
 

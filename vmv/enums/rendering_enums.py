@@ -20,7 +20,7 @@
 # @Rendering
 ####################################################################################################
 class Rendering:
-    """Rendering options
+    """Rendering enumerators
     """
 
     ################################################################################################
@@ -33,17 +33,8 @@ class Rendering:
     # @View
     ################################################################################################
     class View:
-        """Rendering view options
+        """Camera view enumerator
         """
-
-        # Front view
-        FRONT_VIEW = 'RENDERING_FRONT_VIEW'
-
-        # Side view
-        SIDE_VIEW = 'RENDERING_SIDE_VIEW'
-
-        # Top view
-        TOP_VIEW = 'RENDERING_TOP_VIEW'
 
         ############################################################################################
         # @__init__
@@ -51,27 +42,80 @@ class Rendering:
         def __init__(self):
             pass
 
+        # Front view
+        FRONT = 'FRONT'
+
+        # Side view
+        SIDE = 'SIDE'
+
+        # Top view
+        TOP = 'TOP'
+
+        # 360
+        FRONT_360 = 'FRONT_360_VIEW'
+
         ############################################################################################
         # @get_enum
         ############################################################################################
         @staticmethod
         def get_enum(argument):
 
-            # Front view
+            # Front
             if argument == 'front':
-                return Rendering.View.FRONT_VIEW
+                return Rendering.View.FRONT
 
-            # Side view
+            # Side
             elif argument == 'side':
-                return Rendering.View.SIDE_VIEW
+                return Rendering.View.SIDE
 
-            # Top view
+            # Top
             elif argument == 'top':
-                return Rendering.View.TOP_VIEW
+                return Rendering.View.TOP
 
-            # By default use the front view
+            # 360 from front view
+            elif argument == '360':
+                return Rendering.View.FRONT_360
+
+            # By default, use the front view
             else:
-                return Rendering.View.FRONT_VIEW
+                return Rendering.View.FRONT
+
+    ################################################################################################
+    # @Projection
+    ################################################################################################
+    class Projection:
+        """Camera projection enumerator
+        """
+
+        ############################################################################################
+        # @__init__
+        ############################################################################################
+        def __init__(self):
+            pass
+
+        # Orthographic
+        ORTHOGRAPHIC = 'ORTHOGRAPHIC_VIEW'
+
+        # Perspective
+        PERSPECTIVE = 'PERSPECTIVE_VIEW'
+
+        ############################################################################################
+        # @get_enum
+        ############################################################################################
+        @staticmethod
+        def get_enum(argument):
+
+            # Orthographic
+            if argument == 'orthographic':
+                return Rendering.Projection.ORTHOGRAPHIC
+
+            # Perspective
+            elif argument == 'perspective':
+                return Rendering.Projection.PERSPECTIVE
+
+            # By default, use orthographic
+            else:
+                return Rendering.Projection.ORTHOGRAPHIC
 
     ################################################################################################
     # @Resolution
@@ -109,41 +153,4 @@ class Rendering:
             # By default render at the specified resolution
             else:
                 return Rendering.Resolution.FIXED_RESOLUTION
-
-    ################################################################################################
-    # @Projection
-    ################################################################################################
-    class Projection:
-        """Rendering projection options
-        """
-
-        # Orthographic
-        ORTHOGRAPHIC = 'RENDER_ORTHOGRAPHIC'
-
-        # Perspective
-        PERSPECTIVE = 'RENDER_PERSPECTIVE'
-
-        ############################################################################################
-        # @__init__
-        ############################################################################################
-        def __init__(self):
-            pass
-
-        ############################################################################################
-        # @get_enum
-        ############################################################################################
-        @staticmethod
-        def get_enum(argument):
-
-            # To scale
-            if argument == 'orthographic':
-                return Rendering.Projection.ORTHOGRAPHIC
-
-            # Fixed resolution
-            elif argument == 'perspective':
-                return Rendering.Projection.PERSPECTIVE
-
-            # By default render orthographic images
-            else:
-                return Rendering.Projection.ORTHOGRAPHIC
 

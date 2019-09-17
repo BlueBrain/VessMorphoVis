@@ -224,7 +224,7 @@ class Camera:
     ################################################################################################
     def update_camera_resolution(self,
                                  resolution=512,
-                                 camera_view=vmv.enums.Camera.View.FRONT,
+                                 camera_view=vmv.enums.Rendering.View.FRONT,
                                  bounds=None):
         """Update the resolution of the camera film based on the rendering view.
 
@@ -249,7 +249,7 @@ class Camera:
         y_bounds = 0.0
 
         # Front view
-        if camera_view == vmv.enums.Camera.View.FRONT:
+        if camera_view == vmv.enums.Rendering.View.FRONT:
 
             # 'FRONT' : bounds[0] & bounds[1]
             orthographic_scale = bounds[0]
@@ -260,7 +260,7 @@ class Camera:
             y_bounds = bounds[1]
 
         # Side view
-        elif camera_view == vmv.enums.Camera.View.SIDE:
+        elif camera_view == vmv.enums.Rendering.View.SIDE:
 
             # 'SIDE' : bounds[1] & bounds[2]
             orthographic_scale = bounds[1]
@@ -271,7 +271,7 @@ class Camera:
             y_bounds = bounds[1]
 
         # Top view
-        elif camera_view == vmv.enums.Camera.View.TOP:
+        elif camera_view == vmv.enums.Rendering.View.TOP:
 
             # 'TOP' : bounds[2] & bounds[0]
             orthographic_scale = bounds[2]
@@ -282,7 +282,7 @@ class Camera:
             y_bounds = bounds[2]
 
         # 360 front view
-        elif camera_view == vmv.enums.Camera.View.FRONT_360:
+        elif camera_view == vmv.enums.Rendering.View.FRONT_360:
 
             # 360
             x_bounds = bounds[0]
@@ -321,7 +321,7 @@ class Camera:
     ################################################################################################
     def update_camera_resolution_to_scale(self,
                                           scale_factor=1.0,
-                                          camera_view=vmv.enums.Camera.View.FRONT,
+                                          camera_view=vmv.enums.Rendering.View.FRONT,
                                           bounds=None):
         """Update the resolution of the camera film based on the rendering view for certain scale.
 
@@ -342,7 +342,7 @@ class Camera:
         x_bounds = 0.0
         y_bounds = 0.0
 
-        if camera_view == vmv.enums.Camera.View.FRONT:
+        if camera_view == vmv.enums.Rendering.View.FRONT:
 
             # 'FRONT' : bounds[0] & bounds[1]
             orthographic_scale = bounds[0]
@@ -352,7 +352,7 @@ class Camera:
             x_bounds = bounds[0]
             y_bounds = bounds[1]
 
-        elif camera_view == vmv.enums.Camera.View.SIDE:
+        elif camera_view == vmv.enums.Rendering.View.SIDE:
 
             # 'SIDE' : bounds[1] & bounds[2]
             orthographic_scale = bounds[1]
@@ -362,7 +362,7 @@ class Camera:
             x_bounds = bounds[2]
             y_bounds = bounds[1]
 
-        elif camera_view == vmv.enums.Camera.View.TOP:
+        elif camera_view == vmv.enums.Rendering.View.TOP:
 
             # 'TOP' : bounds[2] & bounds[0]
             orthographic_scale = bounds[2]
@@ -372,7 +372,7 @@ class Camera:
             x_bounds = bounds[0]
             y_bounds = bounds[2]
 
-        elif camera_view == vmv.enums.Camera.View.FRONT_360:
+        elif camera_view == vmv.enums.Rendering.View.FRONT_360:
 
             # 360
             x_bounds = bounds[0]
@@ -413,23 +413,23 @@ class Camera:
     ################################################################################################
     def setup_camera_for_scene(self,
                                bounding_box,
-                               camera_view=vmv.enums.Camera.View.FRONT,
-                               camera_projection=vmv.enums.Camera.Projection.ORTHOGRAPHIC):
+                               camera_view=vmv.enums.Rendering.View.FRONT,
+                               camera_projection=vmv.enums.Rendering.Projection.ORTHOGRAPHIC):
 
         # Get the scene bounding box to adjust the camera accordingly, if the bounds are not set
         if bounding_box is None:
             bounding_box = vmv.bbox.compute_scene_bounding_box()
 
         # Compute the location of the camera based on the bounding box
-        if camera_projection == vmv.enums.Camera.Projection.PERSPECTIVE:
+        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
             camera_locations = self.get_camera_positions_for_perspective_projection(
                 bounding_box=bounding_box)
         else:
             camera_locations = self.get_camera_positions(bounding_box=bounding_box)
 
         # Front view (or for 360)
-        if camera_view == vmv.enums.Camera.View.FRONT or \
-           camera_view == vmv.enums.Camera.View.FRONT_360:
+        if camera_view == vmv.enums.Rendering.View.FRONT or \
+           camera_view == vmv.enums.Rendering.View.FRONT_360:
 
             # Add a camera along the z-axis
             self.camera = self.create_base_camera(location=camera_locations[2])
@@ -438,7 +438,7 @@ class Camera:
             self.rotate_camera_for_front_view()
 
         # Side view
-        elif camera_view == vmv.enums.Camera.View.SIDE:
+        elif camera_view == vmv.enums.Rendering.View.SIDE:
 
             # Add a camera along the x-axis
             self.camera = self.create_base_camera(location=camera_locations[0])
@@ -447,7 +447,7 @@ class Camera:
             self.rotate_camera_for_side_view()
 
         # Top view
-        elif camera_view == vmv.enums.Camera.View.TOP:
+        elif camera_view == vmv.enums.Rendering.View.TOP:
 
             # Add a camera along the y-axis
             self.camera = self.create_base_camera(location=camera_locations[1])
@@ -469,8 +469,8 @@ class Camera:
     ################################################################################################
     def render_scene(self,
                      bounding_box,
-                     camera_view=vmv.enums.Camera.View.FRONT,
-                     camera_projection=vmv.enums.Camera.Projection.ORTHOGRAPHIC,
+                     camera_view=vmv.enums.Rendering.View.FRONT,
+                     camera_projection=vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
                      image_resolution=512,
                      image_name='IMAGE',
                      keep_camera_in_scene=True):
@@ -502,7 +502,7 @@ class Camera:
             resolution=image_resolution, camera_view=camera_view, bounds=bounding_box.bounds)
 
         # Update the bounding box
-        if camera_projection == vmv.enums.Camera.Projection.PERSPECTIVE:
+        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
             self.camera.data.type = 'PERSP'
             # bpy.context.object.data.angle = math.radians(45.0)
 
@@ -541,7 +541,7 @@ class Camera:
     ################################################################################################
     def render_scene_to_scale(self,
                               bounding_box=None,
-                              camera_view=vmv.enums.Camera.View.FRONT,
+                              camera_view=vmv.enums.Rendering.View.FRONT,
                               scale_factor=1.0,
                               image_name='IMAGE',
                               keep_camera_in_scene=False):

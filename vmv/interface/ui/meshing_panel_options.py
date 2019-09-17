@@ -56,39 +56,39 @@ bpy.types.Scene.MetaBallResolution = bpy.props.FloatProperty(
 
 # Rendering resolution
 bpy.types.Scene.MeshRenderingResolution = bpy.props.EnumProperty(
-    items=[(vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION,
+    items=[(vmv.enums.Rendering.Resolution.FIXED_RESOLUTION,
             'Fixed',
             'Renders an image of the mesh at a specific resolution given by the user'),
-           (vmv.enums.Meshing.Rendering.Resolution.TO_SCALE,
+           (vmv.enums.Rendering.Resolution.TO_SCALE,
             'To Scale',
             'Renders an image of the mesh at factor of the exact scale')],
     name='Type',
-    default=vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION)
+    default=vmv.enums.Rendering.Resolution.FIXED_RESOLUTION)
 
 # Rendering views
 bpy.types.Scene.MeshRenderingView = bpy.props.EnumProperty(
-    items=[(vmv.enums.Camera.View.FRONT,
+    items=[(vmv.enums.Rendering.View.FRONT,
             'Front View',
             'Render the front view of the mesh'),
-           (vmv.enums.Camera.View.SIDE,
+           (vmv.enums.Rendering.View.SIDE,
             'Side View',
             'Renders the side view of the mesh'),
-           (vmv.enums.Camera.View.TOP,
+           (vmv.enums.Rendering.View.TOP,
             'Top View',
             'Renders the top view of the mesh')],
-    name='View', default=vmv.enums.Camera.View.TOP)
+    name='View', default=vmv.enums.Rendering.View.TOP)
 
 # Projection
 bpy.types.Scene.MeshCameraProjection = bpy.props.EnumProperty(
-    items=[(vmv.enums.Camera.Projection.ORTHOGRAPHIC,
+    items=[(vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
             'Orthographic',
             'Render an orthographic projection of the mesh. '
             'This type of rendering is accurate and crucial for scientific images'),
-           (vmv.enums.Camera.Projection.PERSPECTIVE,
+           (vmv.enums.Rendering.Projection.PERSPECTIVE,
             'Perspective',
             'Renders a perspective projection of the mesh.'
             'This type of rendering is more for artistic style')],
-    name='Projection', default=vmv.enums.Camera.Projection.ORTHOGRAPHIC)
+    name='Projection', default=vmv.enums.Rendering.Projection.ORTHOGRAPHIC)
 
 # Exported mesh file formats
 bpy.types.Scene.ExportedMeshFormat = bpy.props.EnumProperty(

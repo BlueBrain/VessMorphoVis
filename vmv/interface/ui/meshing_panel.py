@@ -152,7 +152,7 @@ class VMVMeshingPanel(bpy.types.Panel):
 
         # Add the frame resolution option
         if context.scene.MeshRenderingResolution == \
-                vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Frame resolution option (only for the close up mode)
             frame_resolution_row = layout.row()
@@ -394,14 +394,14 @@ class VMVRenderMesh360(bpy.types.Operator):
 
             # Render at a specific resolution
             if context.scene.MeshRenderingResolution == \
-                    vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
+                    vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
                 # Render the image
                 vmv.rendering.render_at_angle(
                     scene_objects=vmv.get_list_of_meshes_in_scene(),
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
-                    camera_view=vmv.enums.Camera.View.FRONT_360,
+                    camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_resolution=context.scene.MeshFrameResolution,
                     image_name=image_name)
 
@@ -413,7 +413,7 @@ class VMVRenderMesh360(bpy.types.Operator):
                     scene_objects=vmv.get_list_of_meshes_in_scene(),
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
-                    camera_view=vmv.enums.Camera.View.FRONT_360,
+                    camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_scale_factor=context.scene.MeshFrameScaleFactor,
                     image_name=image_name)
 

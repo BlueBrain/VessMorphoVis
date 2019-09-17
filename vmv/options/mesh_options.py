@@ -85,13 +85,13 @@ class MeshOptions:
 
         # MESH RENDERING ###########################################################################
         # Camera view
-        self.camera_view = vmv.enums.Camera.View.FRONT
+        self.camera_view = vmv.enums.Rendering.View.FRONT
 
         # Camera projection
-        self.camera_projection = vmv.enums.Camera.Projection.ORTHOGRAPHIC
+        self.camera_projection = vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
         # Image resolution is based on scale or to a fixed resolution
-        self.resolution_basis = vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION
+        self.resolution_basis = vmv.enums.Rendering.Resolution.FIXED_RESOLUTION
 
         # Render a static frame of the mesh
         self.render = False

@@ -193,15 +193,15 @@ class VessMorphoVisOptions:
             self.morphology.unify_sections_radii = False
 
         # Camera view [FRONT, SIDE or TOP]
-        self.morphology.camera_view = vmv.enums.Camera.View.get_enum(arguments.camera_view)
+        self.morphology.camera_view = vmv.enums.Rendering.View.get_enum(arguments.camera_view)
 
         # Rendering view
-        self.morphology.rendering_view = vmv.enums.Skeletonization.Rendering.View.get_enum(
+        self.morphology.rendering_view = vmv.enums.Rendering.View.get_enum(
             arguments.rendering_view)
 
         # Resolution basis
-        self.morphology.resolution_basis = vmv.enums.Skeletonization.Rendering.Resolution.TO_SCALE if \
-            arguments.render_to_scale else vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION
+        self.morphology.resolution_basis = vmv.enums.Rendering.Resolution.TO_SCALE if \
+            arguments.render_to_scale else vmv.enums.Rendering.Resolution.FIXED_RESOLUTION
 
         # Render a close up view of the morphology
         self.morphology.render = arguments.render_neuron_morphology
@@ -276,15 +276,15 @@ class VessMorphoVisOptions:
         self.mesh.render_360 = arguments.render_neuron_mesh_360
 
         # Camera view [FRONT, SIDE or TOP]
-        self.mesh.camera_view = vmv.enums.Camera.View.get_enum(arguments.camera_view)
+        self.mesh.camera_view = vmv.enums.Rendering.View.get_enum(arguments.camera_view)
 
         # Rendering view
-        self.mesh.rendering_view = vmv.enums.Meshing.Rendering.View.get_enum(
+        self.mesh.rendering_view = vmv.enums.Rendering.View.get_enum(
             arguments.rendering_view)
 
         # Resolution basis
-        self.mesh.resolution_basis = vmv.enums.Meshing.Rendering.Resolution.TO_SCALE if \
-            arguments.render_to_scale else vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION
+        self.mesh.resolution_basis = vmv.enums.Rendering.Resolution.TO_SCALE if \
+            arguments.render_to_scale else vmv.enums.Rendering.Resolution.FIXED_RESOLUTION
 
         # Resolution scale factor
         self.mesh.resolution_scale_factor = arguments.resolution_scale_factor

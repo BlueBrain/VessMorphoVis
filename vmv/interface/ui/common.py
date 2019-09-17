@@ -108,7 +108,7 @@ def render_morphology_image(panel_object,
 
     # Compute the bounding box for a close up view
     if context_scene.MorphologyRenderingView == \
-            vmv.enums.Skeletonization.Rendering.View.CLOSE_UP_VIEW:
+            vmv.enums.Rendering.View.CLOSE_UP_VIEW:
 
         # Compute the bounding box for a close up view
         bounding_box = vmv.bbox.compute_unified_extent_bounding_box(
@@ -116,7 +116,7 @@ def render_morphology_image(panel_object,
 
     # Compute the bounding box for a mid shot view
     elif context_scene.MorphologyRenderingView == \
-            vmv.enums.Skeletonization.Rendering.View.MID_SHOT_VIEW:
+            vmv.enums.Rendering.View.MID_SHOT_VIEW:
 
         # Compute the bounding box for the available meshes only
         bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
@@ -129,18 +129,18 @@ def render_morphology_image(panel_object,
             morphology=vmv.interface.ui_morphology)
 
     # Get the view prefix
-    if view == vmv.enums.Camera.View.FRONT:
+    if view == vmv.enums.Rendering.View.FRONT:
         view_prefix = 'FRONT'
-    elif view == vmv.enums.Camera.View.SIDE:
+    elif view == vmv.enums.Rendering.View.SIDE:
         view_prefix = 'SIDE'
-    elif view == vmv.enums.Camera.View.TOP:
+    elif view == vmv.enums.Rendering.View.TOP:
         view_prefix = 'TOP'
     else:
         view_prefix = ''
 
     # Render at a specific resolution
     if context_scene.RenderingType == \
-            vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION:
+            vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
         # Render the image
         vmv.rendering.render(
@@ -198,18 +198,18 @@ def render_mesh_image(panel_object,
     panel_object.report({'INFO'}, 'Rendering ... Wait')
 
     # Get the view prefix
-    if rendering_view == vmv.enums.Camera.View.FRONT:
+    if rendering_view == vmv.enums.Rendering.View.FRONT:
         view_prefix = 'FRONT'
-    elif rendering_view == vmv.enums.Camera.View.SIDE:
+    elif rendering_view == vmv.enums.Rendering.View.SIDE:
         view_prefix = 'SIDE'
-    elif rendering_view == vmv.enums.Camera.View.TOP:
+    elif rendering_view == vmv.enums.Rendering.View.TOP:
         view_prefix = 'TOP'
     else:
         view_prefix = 'FRONT'
 
     # Render at a specific resolution
     if context_scene.MeshRenderingResolution == \
-            vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
+            vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
         # Render the image
         vmv.rendering.render(

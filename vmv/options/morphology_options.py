@@ -84,10 +84,10 @@ class MorphologyOptions:
 
         # SKELETON RENDERING #######################################################################
         # Camera view
-        self.camera_view = vmv.enums.Camera.View.FRONT
+        self.camera_view = vmv.enums.Rendering.View.FRONT
 
         # Image resolution is based on scale or to a fixed resolution
-        self.resolution_basis = vmv.enums.Skeletonization.Rendering.Resolution.FIXED_RESOLUTION
+        self.resolution_basis = vmv.enums.Rendering.Resolution.FIXED_RESOLUTION
 
         # Render a static frame of the skeleton
         self.render = False

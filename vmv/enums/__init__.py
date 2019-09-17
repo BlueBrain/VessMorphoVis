@@ -15,7 +15,7 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .camera_enums import *
+from .rendering_enums import *
 from .meshing_enums import *
 from .shading_enums import *
 from .skeletonization_enums import *
