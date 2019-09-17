@@ -36,19 +36,9 @@ class VMVIOPanel(bpy.types.Panel):
     ################################################################################################
     # Panel parameters
     ################################################################################################
-    bl_space_type = 'VIEW_3D'
-    #bl_region_type = 'TOOLS'
-    #bl_label = 'Input / Output'
-    #bl_category = 'VMV'
-
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-
+    bl_category = 'VessMorphoVis'
     bl_label = 'Input / Output'
     bl_idname = "OBJECT_PT_IO"
-    # bl_category = 'VessMorphoVis'
-
-    bl_category = 'VessMorphoVis'
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
 
@@ -75,7 +65,7 @@ class VMVIOPanel(bpy.types.Panel):
 
     # Use default paths for the artifacts
     bpy.types.Scene.DefaultArtifactsRelativePath = bpy.props.BoolProperty(
-        name="Use Default Output Paths",
+        name="Use Default Output Hierarchy",
         description="Use the default sub-paths for the artifacts",
         default=True)
 
@@ -114,6 +104,16 @@ class VMVIOPanel(bpy.types.Panel):
         name="Center At Origin",
         description="Center the loaded morphology at the origin",
         default=True)
+
+    # Loading time
+    bpy.types.Scene.MorphologyLoadingTime = bpy.props.FloatProperty(
+        name="Loading Morphology (Sec)",
+        default=0, min=0, max=1000000)
+
+    # Drawing time
+    bpy.types.Scene.MorphologyDrawingTime = bpy.props.FloatProperty(
+        name="Drawing Morphology (Sec)",
+        default=0, min=0, max=1000000)
 
     ################################################################################################
     # @draw
@@ -207,6 +207,21 @@ class VMVIOPanel(bpy.types.Panel):
         if scene.DefaultArtifactsRelativePath:
             output_paths_column.enabled = False
 
+        # If the morphology is loaded only, print the performance stats.
+        if vmv.interface.ui_morphology_loaded:
+
+            # Stats
+            morphology_stats_row = layout.row()
+            morphology_stats_row.label(text='Stats:', icon='SCRIPT')
+
+            loading_time_row = layout.row()
+            loading_time_row.prop(scene, 'MorphologyLoadingTime')
+            loading_time_row.enabled = False
+
+            drawing_time_row = layout.row()
+            drawing_time_row.prop(scene, 'MorphologyDrawingTime')
+            drawing_time_row.enabled = False
+
 
 ####################################################################################################
 # @VMVLoadMorphology
@@ -248,6 +263,9 @@ class VMVLoadMorphology(bpy.types.Operator):
         vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
             center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin)
         loading_done = time.time()
+
+        # Update the interface
+        context.scene.MorphologyLoadingTime = loading_done - loading_start
         vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))
 
         # Just draw the skeleton as a sign of complete morphology loading
@@ -255,7 +273,9 @@ class VMVLoadMorphology(bpy.types.Operator):
 
             import vmv.builders
             import vmv.enums
-            # Initially, set the radius to FIXED to represent a center line
+            import vmv.utilities
+
+            # Initially, set the radius to FIXED to represent a center line with radius of value 1.0
             vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Skeletonization.Radii.FIXED
             vmv.interface.ui.ui_options.morphology.sections_fixed_radii_value = 1.0
 
@@ -264,18 +284,15 @@ class VMVLoadMorphology(bpy.types.Operator):
                  morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
             builder.build_skeleton()
 
-            # Switch to the top view
-            bpy.ops.view3d.view_axis(type='TOP')
+            # Switch to full view along some axis
+            vmv.utilities.view_all_from_projection()
 
-            # View all the objects in the scene
-            bpy.ops.view3d.view_all()
-
-            # Switch to viewport shading
-            area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
-            space = next(space for space in area.spaces if space.type == 'VIEW_3D')
-            space.shading.type = 'MATERIAL'
+            # Update the viewport shading
+            vmv.utilities.update_view_port_shading_to_material()
 
             drawing_done = time.time()
+            # Update the interface
+            context.scene.MorphologyDrawingTime = drawing_done - loading_done
             vmv.logger.info('Morphology drawn in [%f] seconds' % (drawing_done - loading_done))
 
             # The morphology is loaded

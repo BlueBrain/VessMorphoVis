@@ -17,6 +17,7 @@
 
 from .parser import *
 from .std_output import *
+from .interface import *
 from .time_line import *
 from .timer import *
 from .version import *

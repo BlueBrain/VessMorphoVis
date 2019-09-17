@@ -161,7 +161,7 @@ class H5Reader:
             import h5py
             import vmv.utilities
 
-            # Ignore the console warning
+            # Ignore the console warning and output
             vmv.utilities.disable_std_output()
 
             # Read the h5 file using the python module into a data array

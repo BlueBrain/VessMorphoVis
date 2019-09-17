@@ -18,7 +18,7 @@
 __author__      = "Marwan Abdellah"
 __copyright__   = "Copyright (c) 2019, Blue Brain Project / EPFL"
 __credits__     = ["Juan Hernando"]
-__version__     = "1.0.0"
+__version__     = "0.1.0"
 __maintainer__  = "Marwan Abdellah"
 __email__       = "marwan.abdellah@epfl.ch"
 __status__      = "Production"
@@ -83,6 +83,10 @@ else:
     import vmv.interface.ui.analysis_panel
     import vmv.interface.ui.morphology_panel
     import vmv.interface.ui.meshing_panel
+
+    vmv.logger.header('Loading VessMorphoVis')
+    vmv.logger.info('Version [%s]' % str(__version__))
+    vmv.logger.info('Copyrights (C) Marwan Abdellah, Blue Brain Project (BBP) - (EPFL)')
 
 
 ####################################################################################################
