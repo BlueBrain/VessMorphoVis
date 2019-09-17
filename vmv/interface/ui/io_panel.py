@@ -24,6 +24,9 @@ import bpy
 
 # Internal imports
 import vmv
+import vmv.builders
+import vmv.enums
+import vmv.utilities
 import vmv.scene
 
 
@@ -108,11 +111,13 @@ class VMVIOPanel(bpy.types.Panel):
     # Loading time
     bpy.types.Scene.MorphologyLoadingTime = bpy.props.FloatProperty(
         name="Loading Morphology (Sec)",
+        description="The time it takes to load the vasculature morphology from file",
         default=0, min=0, max=1000000)
 
     # Drawing time
     bpy.types.Scene.MorphologyDrawingTime = bpy.props.FloatProperty(
         name="Drawing Morphology (Sec)",
+        description="The time it takes to draw the loaded vasculature morphology",
         default=0, min=0, max=1000000)
 
     ################################################################################################
@@ -142,6 +147,13 @@ class VMVIOPanel(bpy.types.Panel):
         morphology_file_row = layout.row()
         morphology_file_row.prop(scene, 'MorphologyFile')
         vmv.interface.ui_options.io.morphology_file_path = scene.MorphologyFile
+
+        # Get the morphology file path, name and label from the given morphology file
+        vmv.interface.ui_options.morphology.morphology_file_path = scene.MorphologyFile
+        vmv.interface.ui_options.morphology.morphology_file_name = \
+            vmv.file.get_file_name_from_path(scene.MorphologyFile)
+        vmv.interface.ui_options.morphology.label = \
+            vmv.file.get_file_name_from_path(scene.MorphologyFile)
 
         # Center the morphology at the origin
         morphology_centering_check_box = layout.row()
@@ -264,16 +276,14 @@ class VMVLoadMorphology(bpy.types.Operator):
             center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin)
         loading_done = time.time()
 
+
+
         # Update the interface
         context.scene.MorphologyLoadingTime = loading_done - loading_start
         vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))
 
         # Just draw the skeleton as a sign of complete morphology loading
         try:
-
-            import vmv.builders
-            import vmv.enums
-            import vmv.utilities
 
             # Initially, set the radius to FIXED to represent a center line with radius of value 1.0
             vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Skeletonization.Radii.FIXED
