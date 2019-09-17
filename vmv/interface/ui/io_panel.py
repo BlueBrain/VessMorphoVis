@@ -153,7 +153,7 @@ class VMVIOPanel(bpy.types.Panel):
 
         # Output options
         output_data_options_row = layout.row()
-        output_data_options_row.label(text='Output Options:', icon='SCRIPT')
+        output_data_options_row.label(text='Output Options:', icon='NEWFOLDER')
         show_hide_elements.append(output_data_options_row)
 
         # Output directory
@@ -212,7 +212,7 @@ class VMVIOPanel(bpy.types.Panel):
 
             # Stats
             morphology_stats_row = layout.row()
-            morphology_stats_row.label(text='Stats:', icon='SCRIPT')
+            morphology_stats_row.label(text='Stats:', icon='RECOVER_LAST')
 
             loading_time_row = layout.row()
             loading_time_row.prop(scene, 'MorphologyLoadingTime')
