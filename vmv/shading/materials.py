@@ -522,7 +522,7 @@ def create_material(name,
         return create_glossy_bumpy_material(name='%s_color' % name, color=color)
 
     # Voroni
-    elif material_type == vmv.enums.Shading.VORONI:
+    elif material_type == vmv.enums.Shading.VORONOI:
         return create_voroni_cells_material(name='%s_color' % name, color=color)
 
     # Flat

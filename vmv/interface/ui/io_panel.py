@@ -110,7 +110,7 @@ class VMVIOPanel(bpy.types.Panel):
 
     # Center the loaded morphology at the origin
     bpy.types.Scene.ResampleMorphology = bpy.props.BoolProperty(
-        name="ResampleMorphology",
+        name="Resample Morphology",
         description="Resample the morphology skeleton remove unwanted samples",
         default=False)
 

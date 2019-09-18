@@ -124,7 +124,7 @@ class MetaBuilder:
             name='mesh_material', color=self.options.mesh.color)
 
         # Create an illumination specific for the given material
-        # vmv.shading.create_material_specific_illumination(self.options.morphology.material)
+        vmv.shading.create_material_specific_illumination(self.options.morphology.material)
 
     ################################################################################################
     # @create_meta_segment
@@ -375,8 +375,6 @@ class MetaBuilder:
         """Reconstructs the neuronal mesh using meta objects.
         """
         vmv.logger.header('Mesh reconstruction with MetaBalls')
-        # Verify and repair the morphology
-        # self.verify_and_repair_morphology()
 
         # Initialize the meta object
         start = time.time()

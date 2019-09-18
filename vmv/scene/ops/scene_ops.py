@@ -847,3 +847,26 @@ def extend_clipping_planes(clip_start=0.01,
 
     # Ending clipping plane
     bpy.context.space_data.clip_end = clip_end
+
+
+####################################################################################################
+# @clear_lights
+####################################################################################################
+def clear_lights():
+    """Clear the lights.
+    """
+
+    # Iterate over all the objects in the scene, and remove the 'Cube', 'Lamp' and 'Camera' if exist
+    for scene_object in bpy.context.scene.objects:
+
+        # Object selection
+        if 'Lamp' in scene_object.name:
+            scene_object.select = True
+
+            # Delete the object
+            bpy.ops.object.delete()
+
+    # Select all the light, unlink them and clear their data
+    for scene_lamp in bpy.data.lamps:
+        scene_lamp.user_clear()
+        bpy.data.lamps.remove(scene_lamp)
