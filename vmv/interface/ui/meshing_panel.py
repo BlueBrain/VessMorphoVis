@@ -298,11 +298,19 @@ class VMVReconstructMesh(bpy.types.Operator):
         start_reconstruction = time.time()
 
         # Meta builder
-        builder = vmv.builders.MetaBuilder(morphology=vmv.interface.ui.ui_morphology,
-                                           options=vmv.interface.ui.ui_options)
-
-        builder = vmv.builders.SkinningBuilder(morphology=vmv.interface.ui.ui_morphology,
+        if context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
+            builder = vmv.builders.MetaBuilder(morphology=vmv.interface.ui.ui_morphology,
                                                options=vmv.interface.ui.ui_options)
+
+        # Skinning
+        elif context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.SKINNING:
+            builder = vmv.builders.SkinningBuilder(morphology=vmv.interface.ui.ui_morphology,
+                                                   options=vmv.interface.ui.ui_options)
+
+        # Using the piece-wise
+        else:
+            builder = vmv.builders.PiecewiseWatertightBuilder(
+                morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
 
         # Build the vasculature mesh
         builder.build()

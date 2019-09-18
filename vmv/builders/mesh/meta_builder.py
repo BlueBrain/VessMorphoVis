@@ -222,15 +222,47 @@ class MetaBuilder:
         if len(samples) < 2:
             return
 
-        # Proceed segment by segment
-        for i in range(len(samples) - 1):
+        print(self.options.morphology.radii)
+        # Fixed radii
+        if self.options.morphology.radii == vmv.enums.Skeletonization.Radii.FIXED:
 
-            # Create the meta segment
-            self.create_meta_segment(
-                p1=samples[i].point - self.morphology.bounding_box.center,
-                p2=samples[i + 1].point - self.morphology.bounding_box.center,
-                r1=samples[i].radius * self.magic_scale_factor,
-                r2=samples[i + 1].radius * self.magic_scale_factor)
+            # Proceed segment by segment
+            for i in range(len(samples) - 1):
+
+                # Create the meta segment
+                self.create_meta_segment(
+                    p1=samples[i].point - self.morphology.bounding_box.center,
+                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    r1=self.options.morphology.sections_fixed_radii_value * self.magic_scale_factor,
+                    r2=self.options.morphology.sections_fixed_radii_value * self.magic_scale_factor)
+
+        # Scaled radii
+        elif self.options.morphology.radii == vmv.enums.Skeletonization.Radii.SCALED:
+
+            # Get the scale value
+            scale = self.options.morphology.sections_radii_scale
+
+            # Proceed segment by segment
+            for i in range(len(samples) - 1):
+                # Create the meta segment
+                self.create_meta_segment(
+                    p1=samples[i].point - self.morphology.bounding_box.center,
+                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    r1=samples[i].radius * self.magic_scale_factor * scale,
+                    r2=samples[i + 1].radius * self.magic_scale_factor * scale)
+
+        # Default radii as specified in the morphology file
+        else:
+
+            # Proceed segment by segment
+            for i in range(len(samples) - 1):
+
+                # Create the meta segment
+                self.create_meta_segment(
+                    p1=samples[i].point - self.morphology.bounding_box.center,
+                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    r1=samples[i].radius * self.magic_scale_factor,
+                    r2=samples[i + 1].radius * self.magic_scale_factor)
 
     ################################################################################################
     # @initialize_meta_object

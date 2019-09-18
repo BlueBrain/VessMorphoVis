@@ -318,6 +318,10 @@ class VMVLoadMorphology(bpy.types.Operator):
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True
 
+            # Set back the radii of the morphology to that as specified in the loaded file
+            vmv.interface.ui.ui_options.morphology.radii = \
+                vmv.enums.Skeletonization.Radii.AS_SPECIFIED
+
         # Unable to load the morphology
         except ValueError:
             vmv.logger.log('ERROR: Unable to load the morphology file')
