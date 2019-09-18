@@ -111,20 +111,20 @@ class CenterLineSkeletonBuilder:
             morphology_bmesh_object, self.morphology.name)
 
         # Apply the skin modifier
-        #morphology_mesh_object.modifiers.new(name="Skin", type='SKIN')
-        #vmv.scene.set_active_object(morphology_mesh_object)
+        morphology_mesh_object.modifiers.new(name="Skin", type='SKIN')
+        vmv.scene.set_active_object(morphology_mesh_object)
 
 
 
-        #for i in range(len(morphology_bmesh_object.verts[:])):
-        #    morphology_bmesh_object.verts.ensure_lookup_table()
-        #    radius = morphology_bmesh_object.verts[i][radius_identifier]
-        #    vertex = morphology_mesh_object.data.skin_vertices[0].data[i]
-        #    vertex.radius = radius, radius
+        for i in range(len(morphology_bmesh_object.verts[:])):
+            morphology_bmesh_object.verts.ensure_lookup_table()
+            radius = morphology_bmesh_object.verts[i][radius_identifier]
+            vertex = morphology_mesh_object.data.skin_vertices[0].data[i]
+            vertex.radius = radius, radius
 
 
 
-        #bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Skin")
+        bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Skin")
 
 
 
@@ -135,7 +135,7 @@ class CenterLineSkeletonBuilder:
     ################################################################################################
     # @build
     ################################################################################################
-    def build_skeleton(self):
+    def build(self):
         """Draws the morphology skeleton using fast reconstruction and drawing methods.
         """
 

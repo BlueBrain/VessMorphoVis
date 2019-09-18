@@ -301,6 +301,9 @@ class VMVReconstructMesh(bpy.types.Operator):
         builder = vmv.builders.MetaBuilder(morphology=vmv.interface.ui.ui_morphology,
                                            options=vmv.interface.ui.ui_options)
 
+        builder = vmv.builders.SkinningBuilder(morphology=vmv.interface.ui.ui_morphology,
+                                               options=vmv.interface.ui.ui_options)
+
         # Build the vasculature mesh
         builder.build()
 

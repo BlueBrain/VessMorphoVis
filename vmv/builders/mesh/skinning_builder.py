@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2018 - 2019, EPFL / Blue Brain Project
+# Copyright (c) 2016 - 2018, EPFL / Blue Brain Project
 #               Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -15,33 +15,27 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import random, os, copy
-import time
-
 # Blender imports
 import bpy
 
-# Internal modules
+# Internal imports
 import vmv
-import vmv.builders
 import vmv.bmeshi
 import vmv.consts
-import vmv.enums
 import vmv.geometry
 import vmv.mesh
-import vmv.shading
-import vmv.skeleton
 import vmv.scene
-import vmv.utilities
+import vmv.skeleton
+import vmv.builders
 
 
 ####################################################################################################
-# @ExtrusionBuilder
+# @CenterLineSkeletonBuilder
 ####################################################################################################
 class SkinningBuilder:
-    """Mesh builder that creates accurate and nice meshes using skinning. The reconstructed meshes
-    are not guaranteed to be watertight, but they look very nice if you need to use transparency."""
+    """A simple skeleton builder that draws the skeleton as a list of connected center-lines to show
+    the structure of the morphology.
+    """
 
     ################################################################################################
     # @__init__
@@ -49,394 +43,188 @@ class SkinningBuilder:
     def __init__(self,
                  morphology,
                  options):
-        """Constructor
+        """Constructor.
 
         :param morphology:
-            A given morphology skeleton to create the mesh for.
-        :param options:
-            Loaded options from NeuroMorphoVis.
+            A given morphology.
         """
 
         # Morphology
-        self.morphology = copy.deepcopy(morphology)
+        self.morphology = morphology
 
-        # Loaded options from NeuroMorphoVis
+        # All the options of the project
         self.options = options
 
-        # A list of the colors/materials of the soma
-        self.soma_materials = None
+        # A reference to the reconstructed mesh
+        self.reconstructed_mesh = None
 
-        # A list of the colors/materials of the axon
-        self.axon_materials = None
-
-        # A list of the colors/materials of the basal dendrites
-        self.basal_dendrites_materials = None
-
-        # A list of the colors/materials of the apical dendrite
-        self.apical_dendrites_materials = None
-
-        # A list of the colors/materials of the spines
-        self.spines_materials = None
-
-        # A reference to the reconstructed soma mesh
-        self.soma_mesh = None
-
-        # A reference to the reconstructed spines mesh
-        self.spines_mesh = None
-
-        # Statistics
-        self.profiling_statistics = 'SkinningBuilder Profiles: \n'
-
-        # Stats. about the morphology
-        self.morphology_statistics = 'Morphology: \n'
-
-        # Stats. about the mesh
-        self.mesh_statistics = 'SkinningBuilder Mesh: \n'
-
-        # Total extrusion time
-        self.extrusion_time = 0
-
-        # Total subdivision time
-        self.subdivision_time = 0
-
-        # Total time to apply the skin modifier
-        self.skin_modifier_time = 0
-
-        # Total time to update the radii
-        self.update_radii_time = 0
-
-        # Conversion from bmesh to mesh time
-        self.mesh_conversion_time = 0
-
-        # Smooth shade the surface
-        self.smooth_shading_time = 0
-
-        # Modifier creation time
-        self.creating_modifier_time = 0
-
-        # Reindexing time
-        self.reindexing_time = 0
+        # A list of all the materials that will be assigned to the reconstructed mesh
+        self.materials = list()
 
     ################################################################################################
-    # @update_section_samples_radii
+    # @create_materials
     ################################################################################################
-    @staticmethod
-    def update_section_samples_radii(arbor_mesh,
-                                     section):
-        """Update the radii of the samples along a given section.
+    def create_materials(self,
+                         name,
+                         color):
+        """Creates just two materials of the mesh on the input parameters of the user.
 
-        :param arbor_mesh:
-            The mesh of the arbor.
-        :param section:
-            A given section to update the radii of its samples.
-        """
-
-        # Make sure to include the first sample of the root section
-        if section.is_root():
-            starting_index = 0
-        else:
-            starting_index = 1
-
-        # Sample by sample along the section
-        for i in range(starting_index, len(section.samples)):
-
-            # Get the sample radius
-            radius = section.samples[i].radius
-
-            # Get a reference to the vertex
-            vertex = arbor_mesh.data.skin_vertices[0].data[section.samples[i].arbor_idx]
-
-            # Update the radius of the vertex
-            vertex.radius = radius, radius
-
-    ################################################################################################
-    # @update_arbor_samples_radii
-    ################################################################################################
-    def update_arbor_samples_radii(self,
-                                   arbor_mesh,
-                                   root,
-                                   max_branching_order):
-        """Updates the radii of the samples of the entire arbor to match reality from the
-        temporary ones that were given before.
-
-        :param arbor_mesh:
-            The mesh of the arbor that will be updated.
-        :param root:
-            The root section of the arbor.
-        :param max_branching_order:
-            The maximum branching order set by the user to terminate the recursive call.
-        """
-
-        # Do not proceed if the branching order limit is hit
-        if root.branching_order > max_branching_order:
-            return
-
-        # Set the radius of a given section
-        self.update_section_samples_radii(arbor_mesh, root)
-
-        # Update the radii of the samples of the children recursively
-        for child in root.children:
-            self.update_arbor_samples_radii(arbor_mesh, child, max_branching_order)
-
-    ################################################################################################
-    # @extrude_section
-    ################################################################################################
-    @staticmethod
-    def extrude_section(arbor_bmesh_object,
-                        section):
-        """Extrudes the section along its samples starting from the first one to the last one.
-
-        Note that the mesh to be extruded is already selected and there is no need to pass it.
-
-        :param arbor_bmesh_object:
-            The bmesh object of the given arbor.
-        :param section:
-            A given section to extrude a mesh around it.
-        """
-
-        # Extrude segment by segment
-        for i in range(len(section.samples) - 1):
-
-            vmv.bmeshi.ops.extrude_vertex_towards_point(
-                arbor_bmesh_object, section.samples[i].arbor_idx, section.samples[i + 1].point)
-
-    ################################################################################################
-    # @create_root_point_mesh
-    ################################################################################################
-    def extrude_arbor(self,
-                      arbor_bmesh_object,
-                      root,
-                      max_branching_order):
-        """Extrude the given arbor section by section recursively.
-
-        :param arbor_bmesh_object:
-            The bmesh object of the arbor.
-        :param root:
-            The root of a given section.
-        :param max_branching_order:
-            The maximum branching order set by the user to terminate the recursive call.
-        """
-
-        # Do not proceed if the branching order limit is hit
-        if root.branching_order > max_branching_order:
-            return
-
-        # Extrude the section
-        self.extrude_section(arbor_bmesh_object, root)
-
-        # Extrude the children sections recursively
-        for child in root.children:
-            self.extrude_arbor(arbor_bmesh_object, child, max_branching_order)
-
-    def update_global_indices(self):
-
-
-
-        # root
-
-        pass
-
-    ################################################################################################
-    # @create_arbor_mesh
-    ################################################################################################
-    def create_arbor_mesh(self,
-                          arbor,
-                          max_branching_order,
-                          arbor_name,
-                          arbor_material,
-                          connected_to_soma=False):
-        """Creates a mesh of the given arbor recursively.
-
-        :param arbor:
-            A given arbor.
-        :param max_branching_order:
-            The maximum branching order of the arbor.
-        :param arbor_name:
-            The name of the arbor.
-        :param arbor_material:
-            The material or the arbor.
-        :param connected_to_soma:
-            If the arbor is connected to soma or not, by default False.
+        :param name:
+            The name of the material/color.
+        :param color:
+            The code of the given colors.
         :return:
-            A reference to the created mesh object.
+            A list of two elements (different or same colors) where we can apply later to the drawn
+            sections or segments.
         """
 
-        # Initially, this index is set to TWO and incremented later, sample zero is reserved to
-        # the auxiliary sample that is added at the soma, and the first sample to the point that
-        # is added right before the arbor starts
-        reindexing_time = time.time()
-        samples_global_arbor_index = [2]
-        vmv.builders.update_samples_indices_per_arbor(
-            arbor, samples_global_arbor_index, max_branching_order)
-        self.reindexing_time += time.time() - reindexing_time
+        # A list of the created materials
+        materials_list = []
 
-        # Create the initial vertex of the arbor skeleton at the origin
-        arbor_bmesh_object = vmv.bmeshi.create_vertex()
+        for i in range(2):
 
-        # Add an auxiliary sample just before the arbor starts
-        auxiliary_point = arbor.samples[0].point - 0.01 * arbor.samples[0].point.normalized()
+            # Create the material
+            material = vmv.shading.create_material(
+                name='%s_color_%d' % (name, i), color=color,
+                material_type=self.options.mesh.material)
 
-        # Extrude to the auxiliary sample
-        vmv.bmeshi.ops.extrude_vertex_towards_point(arbor_bmesh_object, 0, auxiliary_point)
+            # Append the material to the materials list
+            materials_list.append(material)
 
-        # Extrude towards the first sample
-        vmv.bmeshi.ops.extrude_vertex_towards_point(
-            arbor_bmesh_object, 1, arbor.samples[0].point)
+        # Return the list
+        return materials_list
 
-        # Extrude arbor mesh using the skinning method using a temporary radius with a bmesh
-        extrusion_time = time.time()
-        self.extrude_arbor(arbor_bmesh_object, arbor, max_branching_order)
-        self.extrusion_time += time.time() - extrusion_time
+    ################################################################################################
+    # @create_skeleton_materials
+    ################################################################################################
+    def create_skeleton_materials(self):
+        """Create the materials of the skeleton.
+        """
 
-        # Convert the bmesh to a mesh object
-        mesh_conversion_time = time.time()
-        arbor_mesh = vmv.bmeshi.convert_bmesh_to_mesh(arbor_bmesh_object, arbor_name)
-        self.mesh_conversion_time += time.time() - mesh_conversion_time
+        for material in bpy.data.materials:
+            if 'mesh_material' in material.name:
+                material.user_clear()
+                bpy.data.materials.remove(material)
 
-        # Apply a skin modifier create the membrane of the skeleton
-        creating_modifier_time = time.time()
-        arbor_mesh.modifiers.new(name="Skin", type='SKIN')
-        self.creating_modifier_time += time.time() - creating_modifier_time
+        # Create the
+        self.materials = self.create_materials(
+            name='mesh_material', color=self.options.mesh.color)
 
-        # Activate the arbor mesh
-        vmv.scene.set_active_object(arbor_mesh)
+        # Create an illumination specific for the given material
+        # vmv.shading.create_material_specific_illumination(self.options.morphology.material)
 
-        # Get a reference to the vertex
-        vertex = arbor_mesh.data.skin_vertices[0].data[0]
+    ################################################################################################
+    # @assign_material_to_mesh
+    ################################################################################################
+    def assign_material_to_mesh(self):
 
-        # Update the radius of the vertex
-        vertex.radius = arbor.samples[0].radius, arbor.samples[0].radius
+        # Deselect all objects
+        vmv.scene.ops.deselect_all()
 
-        # Get a reference to the vertex
-        vertex = arbor_mesh.data.skin_vertices[0].data[1]
+        # Activate the mesh object
+        bpy.context.view_layer.objects.active = self.reconstructed_mesh
 
-        # Update the radius of the vertex
-        vertex.radius = arbor.samples[0].radius, arbor.samples[0].radius
+        # Adjusting the texture space, before assigning the material
+        bpy.context.object.data.use_auto_texspace = False
+        bpy.context.object.data.texspace_size[0] = 5
+        bpy.context.object.data.texspace_size[1] = 5
+        bpy.context.object.data.texspace_size[2] = 5
 
-        # Update the radii of the arbor using the fast method before applying the skinning modifier
-        update_radii_time = time.time()
-        self.update_arbor_samples_radii(
-            arbor_mesh=arbor_mesh, root=arbor, max_branching_order=max_branching_order)
-        self.update_radii_time += time.time() - update_radii_time
+        # Assign the material to the selected mesh
+        vmv.shading.set_material_to_object(self.reconstructed_mesh, self.materials[0])
 
-        # Apply the modifier
-        skin_modifier_time = time.time()
+        # Activate the mesh object
+        self.reconstructed_mesh.select_set(True)
+        bpy.context.view_layer.objects.active = self.reconstructed_mesh
+
+    ################################################################################################
+    # @build_skeleton_as_connected_set_of_lines
+    ################################################################################################
+    def build_skeleton_as_connected_set_of_lines(self,
+                                                 remove_duplicate_samples=True):
+        """This method draws the skeleton almost instantaneously.
+
+        :param remove_duplicate_samples:
+            If this flag is set to True, it remove the duplicate points in the morphology.
+        """
+
+        # Construct a bmesh object that will be used to build the morphology
+        morphology_bmesh_object = vmv.bmeshi.create_bmesh_object()
+
+        radius_identifier = morphology_bmesh_object.verts.layers.float.new('radius')
+
+        # For every section in the, add a new poly-line to the bmesh object
+        index = 0
+        for section in self.morphology.sections_list:
+
+            # For every two-connected samples in the morphology, add a line segment to the bmesh
+            for i in range(len(section.samples) - 1):
+
+                # Sample points
+                p0 = section.samples[i].point
+                p1 = section.samples[i + 1].point
+
+                # Construct the line segment and add it to the bmesh
+                vmv.bmeshi.add_line_segment_to_bmesh(morphology_bmesh_object, p0, p1)
+
+                morphology_bmesh_object.verts.ensure_lookup_table()
+                morphology_bmesh_object.verts[index][radius_identifier] = section.samples[i].radius
+                index += 1
+
+                morphology_bmesh_object.verts.ensure_lookup_table()
+                morphology_bmesh_object.verts[index][radius_identifier] = section.samples[i + 1].radius
+                index += 1
+
+        import bmesh
+
+        bmesh.ops.remove_doubles(
+            morphology_bmesh_object, verts=morphology_bmesh_object.verts[:], dist=0.001)
+
+        # Convert the bmesh object into a mesh object that can be linked to the scene
+        morphology_mesh_object = vmv.bmeshi.convert_bmesh_to_mesh(
+            morphology_bmesh_object, self.morphology.name)
+
+
+        # Apply the skin modifier
+        morphology_mesh_object.modifiers.new(name="Skin", type='SKIN')
+        vmv.scene.set_active_object(morphology_mesh_object)
+
+        for i in range(len(morphology_bmesh_object.verts[:])):
+            morphology_bmesh_object.verts.ensure_lookup_table()
+            radius = morphology_bmesh_object.verts[i][radius_identifier]
+            vertex = morphology_mesh_object.data.skin_vertices[0].data[i]
+            vertex.radius = radius, radius
         bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Skin")
-        self.skin_modifier_time += time.time() - skin_modifier_time
 
-        # Assign the material to the reconstructed arbor mesh
-        vmv.shading.set_material_to_object(arbor_mesh, arbor_material)
 
-        # Remove the first face, before the smoothing operation if connected to the soma
-        if connected_to_soma:
 
-            # Remove the first face
-            vmv.mesh.ops.remove_first_face_of_quad_mesh_object(arbor_mesh)
 
-            # Smooth the mesh object
-            subdivision_time = time.time()
-            vmv.mesh.smooth_object(mesh_object=arbor_mesh, level=2)
-            self.subdivision_time += time.time() - subdivision_time
-
-            # Close the removed face
-            vmv.mesh.ops.close_open_faces(mesh_object=arbor_mesh)
-
-        # Otherwise, apply directly the smoothing operation
-        else:
-
-            # Smooth the mesh object
-            subdivision_time = time.time()
-            vmv.mesh.smooth_object(mesh_object=arbor_mesh, level=2)
-            self.subdivision_time += time.time() - subdivision_time
-
-        # Further smoothing, only with shading
-        smooth_shading_time = time.time()
-        vmv.mesh.shade_smooth_object(arbor_mesh)
-        self.smooth_shading_time += time.time() - smooth_shading_time
-
-        # Update the UV mapping
-        vmv.shading.adjust_material_uv(arbor_mesh)
-
-        # Return a reference to the arbor mesh
-        return arbor_mesh
+        # Since we only have a single object, just append it to the morphology objects
+        self.reconstructed_mesh = morphology_mesh_object
 
     ################################################################################################
-    # @build_arbors
+    # @build
     ################################################################################################
-    def build_arbors(self,
-                     connected_to_soma=False):
-        """Builds the arbors of the neuron as tubes and AT THE END converts them into meshes.
-        If you convert them during the building, the scene is getting crowded and the process is
-        getting exponentially slower.
-
-        :param connected_to_soma:
-            If the arbor is connected to soma or not, by default False.
+    def build(self):
+        """Draws the morphology skeleton using fast reconstruction and drawing methods.
         """
 
-        # Header
-        vmv.logger.header('Building Arbors')
+        # Clear the scene
+        vmv.scene.ops.clear_scene()
 
-        # Draw the apical dendrite, if exists
-        if not self.options.morphology.ignore_apical_dendrite:
-            vmv.logger.info('Apical dendrite')
+        # Build the skeleton as a set of connected lines (or center-lines)
+        self.build_skeleton_as_connected_set_of_lines()
 
-            # Create the apical dendrite mesh
-            if self.morphology.apical_dendrite is not None:
+        # Finalize the meta object and construct a solid object
+        # We can here create the materials at the end to avoid any issues
+        vmv.logger.info('Assigning material')
+        self.create_skeleton_materials()
 
-                arbor_mesh = self.create_arbor_mesh(
-                    arbor=self.morphology.apical_dendrite,
-                    max_branching_order=self.options.morphology.apical_dendrite_branch_order,
-                    arbor_name=vmv.consts.Arbors.APICAL_DENDRITES_PREFIX,
-                    arbor_material=self.apical_dendrites_materials[0],
-                    connected_to_soma=connected_to_soma)
+        # Assign the material to the mesh
+        self.assign_material_to_mesh()
 
-                # Add a reference to the mesh object
-                self.morphology.apical_dendrite.mesh = arbor_mesh
+        # Mission done
+        vmv.logger.header('Done!')
 
-        # Draw the basal dendrites
-        if not self.options.morphology.ignore_basal_dendrites:
 
-            # Are dendrites there
-            if self.morphology.dendrites is not None:
 
-                # Do it dendrite by dendrite
-                for i, basal_dendrite in enumerate(self.morphology.dendrites):
-
-                    # Create the basal dendrite meshes
-                    vmv.logger.info('Dendrite [%d]' % i)
-                    arbor_mesh = self.create_arbor_mesh(
-                        arbor=basal_dendrite,
-                        max_branching_order=self.options.morphology.basal_dendrites_branch_order,
-                        arbor_name='%s_%d' % (vmv.consts.Arbors.BASAL_DENDRITES_PREFIX, i),
-                        arbor_material=self.basal_dendrites_materials[0],
-                        connected_to_soma=connected_to_soma)
-
-                    # Add a reference to the mesh object
-                    self.morphology.dendrites[i].mesh = arbor_mesh
-
-        # Draw the axon as a set connected sections
-        if not self.options.morphology.ignore_axon:
-
-            # Ensure tha existence of basal dendrites
-            if self.morphology.axon is not None:
-                vmv.logger.info('Axon')
-
-                # Create the axon mesh
-                arbor_mesh = self.create_arbor_mesh(
-                    arbor=self.morphology.axon,
-                    max_branching_order=self.options.morphology.axon_branch_order,
-                    arbor_name=vmv.consts.Arbors.AXON_PREFIX,
-                    arbor_material=self.axon_materials[0],
-                    connected_to_soma=connected_to_soma)
-
-                # Add a reference to the mesh object
-                self.morphology.axon.mesh = arbor_mesh
-
-    ################################################################################################
-    # @reconstruct_mesh
-    ################################################################################################
-    def reconstruct_mesh(self):
-        """Reconstructs the neuronal mesh using the skinning modifiers in Blender.
-        """
-
-        self.build_arbors()

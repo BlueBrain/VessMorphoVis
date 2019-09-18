@@ -20,6 +20,21 @@ from vmv.analysis import items
 
 
 ####################################################################################################
+# @compute_number_of_samples_in_section
+####################################################################################################
+def compute_number_of_samples_in_section(section):
+    """Returns the current number of samples in a given section.
+
+    :param section:
+        A given section to compute its number of samples.
+    :return:
+        The current number of samples in a given section.
+    """
+
+    # Returns the number of samples in the sections
+    return len(section.samples)
+
+####################################################################################################
 # @compute_segments_lengths
 ####################################################################################################
 def compute_segments_lengths(section):
@@ -177,12 +192,39 @@ def compute_total_number_samples(points_list):
     :param points_list:
         A list of all the points (or samples) as read from the file.
     :return:
-        The total number of samples in the morphology
+        The total number of samples in the morphology.
     """
 
     # Simply return the length of the list
     return len(points_list)
 
+
+####################################################################################################
+# @compute_total_number_samples_from_sections_list
+####################################################################################################
+def compute_total_number_samples_from_sections_list(sections_list):
+    """Computes the total number of samples along the skeleton.
+
+    :param sections_list:
+        A list of all the sections that are processed after loading the morphology.
+    :return:
+        The total number of samples in the morphology from the sections.
+    """
+
+    # Morphology total number of samples
+    morphology_total_number_of_samples = 0
+
+    # Do it section by section
+    for section in sections_list:
+
+        # Compute section length
+        number_of_samples_in_section = compute_number_of_samples_in_section(section=section)
+
+        # Append the result to the total
+        morphology_total_number_of_samples += number_of_samples_in_section
+
+    # Return the total length
+    return morphology_total_number_of_samples
 
 ####################################################################################################
 # @compute_number_of_sections_with_two_samples

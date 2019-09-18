@@ -144,10 +144,6 @@ class H5Reader:
             if section.is_root():
                 self.roots.append(section)
 
-        # Re-sample
-        # for section in self.sections_list:
-        #     vmv.skeleton.resample_section_adaptively(section)
-
     ################################################################################################
     # @read_data_from_file
     ################################################################################################
@@ -205,11 +201,15 @@ class H5Reader:
     # @load_morphology_file
     ################################################################################################
     def load_morphology_file(self,
-                             center_at_origin=False):
+                             center_at_origin=False,
+                             resample_morphology=False):
         """Reads the file and constructs a root node that we can use to traverse the tree
 
         :param center_at_origin:
             Centers the morphology at the origin.
+        :param resample_morphology:
+            Re-samples the morphology skeleton to reduce the number of samples along the section and
+            remove the redundant samples.
         """
 
         # Read the morphology skeleton from the file
@@ -225,22 +225,32 @@ class H5Reader:
         # Build the graph from the parsed data
         self.build_graph_from_parsed_data()
 
+        # Resample the morphology skeleton if required
+        if resample_morphology:
+            for section in self.sections_list:
+                vmv.skeleton.resample_section_adaptively(section)
+
     ################################################################################################
     # @construct_morphology_object
     ################################################################################################
     def construct_morphology_object(self,
-                                    center_at_origin=False):
+                                    center_at_origin=False,
+                                    resample_morphology=False):
         """Reconstructs the morphology object after loading it from file and centers it at
         the origin if required.
 
         :param center_at_origin:
             A flag that indicates that the morphology will be centered at the origin.
+        :param resample_morphology:
+            Re-samples the morphology skeleton to reduce the number of samples along the section and
+            remove the redundant samples.
         :return:
             A reference to the morphology object.
         """
 
         # Load the morphology file
-        self.load_morphology_file(center_at_origin=center_at_origin)
+        self.load_morphology_file(center_at_origin=center_at_origin,
+                                  resample_morphology=resample_morphology)
 
         # Get the morphology name from the file
         morphology_name = vmv.file.ops.get_file_name_from_path(self.morphology_file)

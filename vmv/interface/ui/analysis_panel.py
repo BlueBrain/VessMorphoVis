@@ -389,12 +389,14 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
 
         # Morphology total length
         vmv.logger.info('Total length')
-        morphology_total_length = vmv.analysis.compute_total_morphology_length( vmv.interface.ui.ui_morphology.sections_list)
+        morphology_total_length = vmv.analysis.compute_total_morphology_length(
+            vmv.interface.ui.ui_morphology.sections_list)
         context.scene.MorphologyTotalLength = morphology_total_length
 
         # Total number of samples
         vmv.logger.info('Samples')
-        total_number_samples = vmv.analysis.compute_total_number_samples( vmv.interface.ui.ui_morphology.points_list)
+        total_number_samples = vmv.analysis.compute_total_number_samples_from_sections_list(
+            vmv.interface.ui.ui_morphology.sections_list)
         context.scene.NumberSamples = total_number_samples
 
         # Total number of segments

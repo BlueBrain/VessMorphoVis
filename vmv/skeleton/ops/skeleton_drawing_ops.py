@@ -687,38 +687,39 @@ def draw_connected_sections(section, name='sample',
 # @resample_section_adaptively
 ####################################################################################################
 def resample_section_adaptively(section):
-    """Resample the sections adaptively based on the radii of each sample and the distance between
+    """Re-samples the sections adaptively based on the radii of each sample and the distance between
     each two consecutive samples.
 
     :param section:
         A given section to resample.
     """
 
-    # If the section has no samples, report this as an error and ignore this filter
+    # If the section has no samples, ignore this filter and return
     if len(section.samples) == 0:
         return
 
-    # If the section has ONLY one sample, report this as an error and ignore this filter
+    # If the section has ONLY ONE sample, ignore this filter and return
     elif len(section.samples) == 1:
         return
 
-    # If the section has ONLY two sample, report this as a warning
+    # If the section has ONLY TWO sample, ignore this filter and return
     elif len(section.samples) == 2:
 
         # Compute section length
         section_length = (section.samples[1].point - section.samples[0].point).length
 
-        # Compute the combined diameters of the samples
-        diameters = (section.samples[1].radius + section.samples[0].radius) * 2
+        # Compute the combined radii of the samples
+        radii = (section.samples[1].radius + section.samples[0].radius)
 
-        if section_length < diameters:
+        if section_length < radii:
             print('\t\t* BAD SECTION')
 
     # If the section has ONLY three sample, continue
     elif len(section.samples) == 3:
         return
 
-    # The section has more than three samples, can be re-sampled, but never remove the last sample
+    # The section has more than three samples, then it can be re-sampled, but never remove
+    # the first or the last samples
     else:
 
         i = 0

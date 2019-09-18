@@ -17,3 +17,4 @@
 
 from .meta_builder import *
 from .piecewise_watertight_builder import *
+from .skinning_builder import *

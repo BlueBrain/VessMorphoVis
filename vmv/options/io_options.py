@@ -55,3 +55,6 @@ class IOOptions:
 
         # Center the loaded morphology from the file at the origin upon loading it
         self.center_morphology_at_origin = False
+
+        # Re-sampling the input morphology
+        self.resample_morphology = False
