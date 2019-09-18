@@ -15,6 +15,8 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import time
 
 # Blender imports
 import bpy
@@ -126,6 +128,17 @@ class VMVMeshingPanel(bpy.types.Panel):
         # Mesh reconstruction options
         mesh_reconstruction_row = layout.row()
         mesh_reconstruction_row.operator('reconstruct.mesh', icon='MESH_DATA')
+
+        # If the morphology is loaded only, print the performance stats.
+        if vmv.interface.ui_morphology_loaded:
+
+            # Stats
+            meshing_stats_row = layout.row()
+            meshing_stats_row.label(text='Stats:', icon='RECOVER_LAST')
+
+            reconstruction_time_row = layout.row()
+            reconstruction_time_row.prop(context.scene, 'MeshReconstructionTime')
+            reconstruction_time_row.enabled = False
 
     ################################################################################################
     # @draw_mesh_rendering_options
@@ -281,12 +294,19 @@ class VMVReconstructMesh(bpy.types.Operator):
         # Clear the scene
         vmv.scene.clear_scene()
 
+        # Starting timer
+        start_reconstruction = time.time()
+
         # Meta builder
         builder = vmv.builders.MetaBuilder(morphology=vmv.interface.ui.ui_morphology,
                                            options=vmv.interface.ui.ui_options)
 
         # Build the vasculature mesh
         builder.build()
+
+        # Reconstruction done
+        reconstruction_done = time.time()
+        context.scene.MeshReconstructionTime = reconstruction_done - start_reconstruction
 
         # Done
         return {'FINISHED'}

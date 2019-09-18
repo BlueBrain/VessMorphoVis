@@ -16,7 +16,7 @@
 ####################################################################################################
 
 # System import
-import copy
+import time
 
 # Blender imports
 import bpy
@@ -219,6 +219,12 @@ class VMVMorphologyPanel(bpy.types.Panel):
         subtype='COLOR', default=vmv.consts.Color.GRAY, min=0.0, max=1.0,
         description="The color of the reconstructed morphology")
 
+    # Reconstruction time
+    bpy.types.Scene.MorphologyReconstructionTime = bpy.props.FloatProperty(
+        name="Reconstruction Time (Sec)",
+        description="The time it takes to reconstruct the vasculature morphology",
+        default=0, min=0, max=1000000)
+
     ################################################################################################
     # @draw_mesh_reconstruction_options
     ################################################################################################
@@ -390,6 +396,17 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_reconstruction_row = self.layout.row()
         morphology_reconstruction_row.operator('reconstruct.morphology', icon='MESH_DATA')
 
+        # If the morphology is loaded only, print the performance stats.
+        if vmv.interface.ui_morphology_loaded:
+
+            # Stats
+            morphology_stats_row = layout.row()
+            morphology_stats_row.label(text='Stats:', icon='RECOVER_LAST')
+
+            loading_time_row = layout.row()
+            loading_time_row.prop(context.scene, 'MorphologyReconstructionTime')
+            loading_time_row.enabled = False
+
     ################################################################################################
     # @draw_morphology_rendering_options
     ################################################################################################
@@ -535,6 +552,9 @@ class VMVReconstructMorphology(bpy.types.Operator):
         # Clear the scene
         vmv.scene.ops.clear_scene()
 
+        # Starting the reconstruction timer
+        start_reconstruction = time.time()
+
         # Make sure that the morphology isn loaded and valid in memory
         if not vmv.interface.ui_morphology_loaded:
             print('ERROR: Morphology is not loaded')
@@ -571,6 +591,10 @@ class VMVReconstructMorphology(bpy.types.Operator):
         # Build the morphology skeleton directly
         # NOTE: each builder must have this function @build_skeleton() implemented in it
         self.morphology_builder.build_skeleton()
+
+        # Reconstruction timer
+        reconstruction_done = time.time()
+        context.scene.MorphologyReconstructionTime = reconstruction_done - start_reconstruction
 
         # Done, return {'FINISHED'}
         return {'FINISHED'}

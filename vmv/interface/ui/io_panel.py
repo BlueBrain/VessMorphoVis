@@ -276,8 +276,6 @@ class VMVLoadMorphology(bpy.types.Operator):
             center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin)
         loading_done = time.time()
 
-
-
         # Update the interface
         context.scene.MorphologyLoadingTime = loading_done - loading_start
         vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))

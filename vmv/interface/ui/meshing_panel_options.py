@@ -136,3 +136,9 @@ bpy.types.Scene.MeshFrameResolution = bpy.props.IntProperty(
 bpy.types.Scene.MeshFrameScaleFactor = bpy.props.FloatProperty(
     name="Scale", default=1.0, min=1.0, max=100.0,
     description="The scale factor for rendering a mesh to scale")
+
+# Reconstruction time
+bpy.types.Scene.MeshReconstructionTime = bpy.props.FloatProperty(
+    name="Reconstruction Time (Sec)",
+    description="The time it takes to reconstruct the vasculature mesh",
+    default=0, min=0, max=1000000)
