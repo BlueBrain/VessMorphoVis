@@ -80,6 +80,12 @@ class VMVMeshingPanel(bpy.types.Panel):
         meta_resolution_row.prop(context.scene, 'MetaBallResolution', icon='OUTLINER_OB_EMPTY')
         vmv.ui_options.mesh.meta_resolution = context.scene.MetaBallResolution
 
+        # Disable the resolution box if the auto resolution is set on
+        if context.scene.MetaBallAutoResolution:
+            meta_resolution_row.enabled = False
+        else:
+            meta_resolution_row.enabled = True
+
     ################################################################################################
     # @draw_mesh_color_options
     ################################################################################################
@@ -314,6 +320,9 @@ class VMVReconstructMesh(bpy.types.Operator):
 
         # Build the vasculature mesh
         builder.build()
+
+        # Update the interface with some parameters
+        context.scene.MetaBallResolution = vmv.interface.ui_options.mesh.meta_resolution
 
         # Reconstruction done
         reconstruction_done = time.time()

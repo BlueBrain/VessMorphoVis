@@ -222,7 +222,6 @@ class MetaBuilder:
         if len(samples) < 2:
             return
 
-        print(self.options.morphology.radii)
         # Fixed radii
         if self.options.morphology.radii == vmv.enums.Skeletonization.Radii.FIXED:
 
@@ -304,7 +303,7 @@ class MetaBuilder:
         scene.collection.objects.link(self.meta_mesh)
 
         # Update the resolution of the meta skeleton
-        self.meta_skeleton.resolution = 2.0
+        self.meta_skeleton.resolution = 2.5
 
     ################################################################################################
     # @finalize_meta_object
@@ -317,10 +316,13 @@ class MetaBuilder:
         # vmv.logger.header('Meshing the Meta Object')
 
         if self.options.mesh.meta_auto_resolution:
-            self.meta_skeleton.resolution = self.smallest_radius * 2
+            self.meta_skeleton.resolution = self.smallest_radius * 0.5
         else:
             self.meta_skeleton.resolution = self.options.mesh.meta_resolution
+
+        # Update the interface
         vmv.logger.info('MetaBall resolution: [ %f ]' % self.meta_skeleton.resolution)
+        self.options.mesh.meta_resolution = self.meta_skeleton.resolution
 
         # Deselect all objects
         vmv.scene.ops.deselect_all()
