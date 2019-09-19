@@ -86,6 +86,9 @@ class MorphologyOptions:
         # Camera view
         self.camera_view = vmv.enums.Rendering.View.FRONT
 
+        # Camera projection
+        self.camera_projection = vmv.enums.Rendering.Projection.ORTHOGRAPHIC
+
         # Image resolution is based on scale or to a fixed resolution
         self.resolution_basis = vmv.enums.Rendering.Resolution.FIXED_RESOLUTION
 

@@ -31,6 +31,7 @@ import vmv.builders
 import vmv.skeleton
 import vmv.utilities
 import vmv.rendering
+import vmv.shading
 
 
 ####################################################################################################
@@ -116,6 +117,18 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 'Top View',
                 'Renders the top view of the mesh')],
         name='View', default=vmv.enums.Rendering.View.FRONT)
+
+    # Projection
+    bpy.types.Scene.MorphologyCameraProjection = bpy.props.EnumProperty(
+        items=[(vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
+                'Orthographic',
+                'Render an orthographic projection of the reconstructed morphology. '
+                'This type of rendering is accurate and crucial for scientific images'),
+               (vmv.enums.Rendering.Projection.PERSPECTIVE,
+                'Perspective',
+                'Renders a perspective projection of the reconstructed morphology.'
+                'This type of rendering is more for artistic style')],
+        name='Projection', default=vmv.enums.Rendering.Projection.ORTHOGRAPHIC)
 
     # Branching, is it based on angles or radii
     bpy.types.Scene.MorphologyBranching = bpy.props.EnumProperty(
@@ -321,7 +334,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         #sections_radii_row = self.layout.row()
         #sections_radii_row.prop(context.scene, 'SectionsRadii', icon='SURFACE_NCURVE')
 
-
     ################################################################################################
     # @draw_morphology_color_options
     ################################################################################################
@@ -454,6 +466,23 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Rendering view column
         view_row = self.layout.column()
         view_row.prop(context.scene, 'MorphologyRenderingViews', icon='AXIS_FRONT')
+        vmv.ui_options.morphology.camera_view = context.scene.MorphologyRenderingViews
+
+        # Rendering projection column only for a fixed resolution
+        if context.scene.MorphologyRenderingResolution == \
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+
+            # Add the projection option
+            projection_row = self.layout.column()
+            projection_row.prop(context.scene, 'MorphologyCameraProjection', icon='AXIS_FRONT')
+            vmv.ui_options.morphology.camera_projection = context.scene.MorphologyCameraProjection
+        else:
+
+            # Set it by default to ORTHOGRAPHIC
+            vmv.ui_options.morphology.camera_projection = \
+                vmv.enums.Rendering.Projection.ORTHOGRAPHIC
+
+        # Rendering button
         view_row.operator('render_morphology.image', icon='MESH_DATA')
 
         vmv.ui_options.morphology.camera_view = context.scene.MorphologyRenderingViews
@@ -645,13 +674,14 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_curves()
 
         # Image name
-        image_name = 'MORPHOLOGY_FRONT_MID_SHOT_%s' % vmv.interface.ui_options.morphology.label
+        image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.ui_options.morphology.label,
+                                           vmv.ui_options.morphology.camera_view)
 
         # Stretch the bounding box by few microns
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
         # Adding the illumination
-        import vmv.shading
+
         vmv.shading.create_material_specific_illumination(
             vmv.interface.ui_options.morphology.material)
 
@@ -663,6 +693,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
             vmv.rendering.render(
                 bounding_box=rendering_bbox,
                 camera_view=vmv.ui_options.morphology.camera_view,
+                camera_projection=vmv.ui_options.morphology.camera_projection,
                 image_resolution=context.scene.MorphologyFrameResolution,
                 image_name=image_name,
                 image_directory=vmv.interface.ui_options.io.images_directory)

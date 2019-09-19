@@ -72,7 +72,6 @@ def render(bounding_box,
 ################################################################################################
 def render_to_scale(bounding_box,
                     camera_view=vmv.enums.Rendering.View.FRONT,
-                    camera_projection=vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
                     image_scale_factor=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
                     image_name='image',
                     image_directory=None,
@@ -83,8 +82,6 @@ def render_to_scale(bounding_box,
         The bounding box of the view requested to be rendered.
     :param camera_view:
         The view of the camera, by default FRONT.
-    :param camera_projection:
-        The projection of the camera, by default ORTHOGRAPHIC.
     :param image_scale_factor:
         The factor used to scale the resolution of the image the image, by default 1.
     :param image_name:

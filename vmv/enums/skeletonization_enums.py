@@ -154,6 +154,9 @@ class Skeletonization:
         # Disconnect the segments and draw each of them as an independent object
         DISCONNECTED_SEGMENTS = 'SKELETONIZATION_DISCONNECTED_SEGMENTS'
 
+        # Drawing samples only as spheres
+        SAMPLES = 'SKELETONIZATION_SAMPLES'
+
         ############################################################################################
         # @__init__
         ############################################################################################
@@ -185,6 +188,10 @@ class Skeletonization:
             # Connected sections
             elif argument == 'connected-skeleton':
                 return Skeletonization.Method.CONNECTED_SKELETON
+
+            # Samples
+            elif argument == 'samples':
+                return Skeletonization.Method.SAMPLES
 
             # Default
             else:
