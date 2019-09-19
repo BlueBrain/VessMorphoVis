@@ -501,7 +501,6 @@ class Camera:
         # Update the bounding box
         if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
             self.camera.data.type = 'PERSP'
-            # bpy.context.object.data.angle = math.radians(45.0)
 
             # Deselect all the object in the scene
             vmv.scene.ops.deselect_all()
@@ -513,13 +512,14 @@ class Camera:
             bpy.ops.view3d.camera_to_view_selected()
 
             # Set the lens to 25 mm, AND RESET LATER
-            bpy.context.object.data.lens = 25
+            bpy.context.object.data.angle = math.radians(45.0)
+            bpy.context.object.data.lens = 40
 
         else:
             self.camera.data.type = 'ORTHO'
 
-            # Set the film transparency
-            bpy.context.scene.render.film_transparent = True
+        # Set the film transparency
+        bpy.context.scene.render.film_transparent = True
 
         # Deselect all the object in the scene
         vmv.scene.ops.deselect_all()

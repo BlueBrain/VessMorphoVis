@@ -483,9 +483,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
         # Rendering button
-        view_row.operator('render_morphology.image', icon='MESH_DATA')
-
-        vmv.ui_options.morphology.camera_view = context.scene.MorphologyRenderingViews
+        rendering_button_row = self.layout.column()
+        rendering_button_row.operator('render_morphology.image', icon='MESH_DATA')
 
         # Render animation row
         render_animation_row = self.layout.row()

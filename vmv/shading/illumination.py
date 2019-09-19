@@ -35,6 +35,9 @@ def create_lambert_ward_illumination():
 
     """
 
+    # Clear all the lights
+    vmv.scene.ops.clear_lights()
+
     # Deselect all
     vmv.scene.ops.deselect_all()
 
@@ -55,12 +58,14 @@ def create_lambert_ward_illumination():
         lamp_reference.rotation_euler = angle
         lamp_reference.data.energy = 0.5
 
-
-
 ####################################################################################################
 # @create_shadow_illumination
 ####################################################################################################
 def create_shadow_illumination():
+
+    # Clear all the lights
+    vmv.scene.ops.clear_lights()
+
 
     # If no light sources in the scene, then create two sources one towards the top and the
     # other one towards the bottom
