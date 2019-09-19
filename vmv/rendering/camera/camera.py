@@ -310,8 +310,8 @@ class Camera:
         self.camera.data.ortho_scale = orthographic_scale
 
         # Set the image resolution
-        bpy.context.scene.render.resolution_x = int(resolution * x_bounds / orthographic_scale) * 2
-        bpy.context.scene.render.resolution_y = int(resolution * y_bounds / orthographic_scale) * 2
+        bpy.context.scene.render.resolution_x = int(resolution * x_bounds / orthographic_scale)
+        bpy.context.scene.render.resolution_y = int(resolution * y_bounds / orthographic_scale)
 
         # Set the background to be transparent
         bpy.context.scene.cycles.film_transparent = True
@@ -399,11 +399,8 @@ class Camera:
         self.camera.data.ortho_scale = orthographic_scale
 
         # Set the image resolution
-        bpy.context.scene.render.resolution_x = int(scale_factor * x_bounds) * 2
-        bpy.context.scene.render.resolution_y = int(scale_factor * y_bounds) * 2
-
-        # Use Cycles renderer
-        bpy.context.scene.render.engine = 'CYCLES'
+        bpy.context.scene.render.resolution_x = int(scale_factor * x_bounds)
+        bpy.context.scene.render.resolution_y = int(scale_factor * y_bounds)
 
         # Set the background to be transparent
         bpy.context.scene.cycles.film_transparent = True

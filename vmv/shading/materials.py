@@ -21,6 +21,7 @@ import os
 
 # Blender imports
 import bpy
+import mathutils
 
 # Internal imports
 import vmv
@@ -132,8 +133,6 @@ def create_super_electron_light_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
-
-
 
     # Return a reference to the material
     return material_reference
@@ -343,19 +342,13 @@ def create_electron_dark_material(name,
 # @create_default_material
 ####################################################################################################
 def create_lambert_ward_material(name,
-                                 color=vmv.consts.Color.WHITE,
-                                 specular=(1, 1, 1, 1.0),
-                                 alpha=0.0):
+                                 color=vmv.consts.Color.WHITE):
     """Creates a a texture material.
 
     :param name:
         Material name.
     :param color:
         Diffuse component.
-    :param specular:
-        Specular component.
-    :param alpha:
-        Transparency value, default opaque alpha = 0.
     :return:
         A reference to the material.
     """
@@ -363,38 +356,20 @@ def create_lambert_ward_material(name,
     # Get active scene
     current_scene = bpy.context.scene
 
+    # Set the current rendering engine to WORKBENCH
+    if not current_scene.render.engine == 'BLENDER_WORKBENCH':
+        current_scene.render.engine = 'BLENDER_WORKBENCH'
+
     # Create a new material (color) and assign it to the line
-    import mathutils
     color = mathutils.Vector((color[0], color[1], color[2], 1.0))
 
     # Create a new material (color) and assign it to the line
     line_material = bpy.data.materials.new('color.%s' % name)
     line_material.diffuse_color = color
-    return line_material
 
-    # Set the current rendering engine to Blender
-    #if not current_scene.render.engine == 'BLENDER_RENDER':
-    #    current_scene.render.engine = 'BLENDER_RENDER'
-
-    # Create a new material
-    #material_reference = bpy.data.materials.new(name)
-
-    # Set the diffuse parameters
-
-    #material_reference.diffuse_color = mathutils.Vector((color[0], color[1], color[2], 1.0))
-    #material_reference.diffuse_shader = 'LAMBERT'
-    #material_reference.diffuse_intensity = 1.0
-
-    # Set the specular parameters
-    #material_reference.specular_color = specular
-    #material_reference.specular_shader = 'WARDISO'
-    #material_reference.specular_intensity = 1
-
-    # Transparency
-    #material_reference.alpha = alpha
-
-    # Set the ambient parameters
-    #material_reference.ambient = 1.0
+    # Zero-metallic and roughness
+    line_material.roughness = 0
+    line_material.metallic = 0
 
     # Return a reference to the material
     return line_material
@@ -591,7 +566,7 @@ def create_material(name,
     elif material_type == vmv.enums.Shading.GLOSSY_BUMPY:
         return create_glossy_bumpy_material(name='%s_color' % name, color=color)
 
-    # Voroni
+    # Voronoi
     elif material_type == vmv.enums.Shading.VORONOI:
         return create_voroni_cells_material(name='%s_color' % name, color=color)
 

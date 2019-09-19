@@ -52,19 +52,24 @@ class VMVIOPanel(bpy.types.Panel):
     bpy.types.Scene.MorphologyFile = bpy.props.StringProperty(
         name="Morphology File",
         description="Select a specific vasculature morphology to load",
-        default='Select File', maxlen=2048,  subtype='FILE_PATH')
+        default='/data/morphologies/vasculature/samples_vasculature/test4.h5',
+        maxlen=2048, subtype='FILE_PATH')
+        #default='Select File', maxlen=2048,  subtype='FILE_PATH')
 
     # Morphology directory
     bpy.types.Scene.MorphologyDirectory = bpy.props.StringProperty(
         name="Morphology Directory",
         description="Select a directory to mesh all the morphologies in it",
-        default="Select Directory", maxlen=2048, subtype='DIR_PATH')
+        default="/home/abdellah/Desktop/vasculature-tests", maxlen=2048, subtype='DIR_PATH')
+        #default="Select Directory", maxlen=2048, subtype='DIR_PATH')
 
     # Output directory
     bpy.types.Scene.OutputDirectory = bpy.props.StringProperty(
         name="Output Directory",
         description="Select a directory where the results will be generated",
-        default="Select Directory", maxlen=5000, subtype='DIR_PATH')
+        default="/home/abdellah/Desktop/vasculature-tests", maxlen=2048, subtype='DIR_PATH')
+
+        #default="Select Directory", maxlen=5000, subtype='DIR_PATH')
 
     # Use default paths for the artifacts
     bpy.types.Scene.DefaultArtifactsRelativePath = bpy.props.BoolProperty(
@@ -308,7 +313,7 @@ class VMVLoadMorphology(bpy.types.Operator):
             vmv.utilities.view_all_from_projection()
 
             # Update the viewport shading
-            vmv.utilities.update_view_port_shading_to_material()
+            vmv.utilities.update_view_port_shading_to_solid()
 
             drawing_done = time.time()
             # Update the interface

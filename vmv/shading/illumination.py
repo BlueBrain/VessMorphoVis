@@ -55,7 +55,6 @@ def create_lambert_ward_illumination():
         lamp_reference.rotation_euler = angle
         lamp_reference.data.energy = 0.5
 
-    bpy.context.scene.render.engine = 'BLENDER_WORKBENCH'
 
 
 ####################################################################################################

@@ -44,7 +44,6 @@ def add_background_plane(bounding_box):
 
     bpy.ops.object.mode_set(mode='EDIT')
 
-
     bpy.ops.mesh.extrude_region_move(
         MESH_OT_extrude_region={"use_normal_flip": False, "mirror": False},
         TRANSFORM_OT_translate={"value": (-3.84998, 1.53531, 8.31745), "orient_type": 'GLOBAL',

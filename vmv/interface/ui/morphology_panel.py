@@ -641,8 +641,6 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         # Report the process starting in the UI
         self.report({'INFO'}, 'Morphology Rendering ... Wait')
 
-        import vmv.bbox
-
         # Compute the bounding box for the available meshes only
         rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_curves()
 
@@ -652,14 +650,33 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         # Stretch the bounding box by few microns
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
-        # Render the morphology
-        import vmv.rendering
-        vmv.rendering.render(
-            bounding_box=rendering_bbox,
-            camera_view=vmv.ui_options.morphology.camera_view,
-            image_resolution=context.scene.MorphologyFrameResolution,
-            image_name=image_name,
-            image_directory=vmv.interface.ui_options.io.images_directory)
+        # Adding the illumination
+        import vmv.shading
+        vmv.shading.create_material_specific_illumination(
+            vmv.interface.ui_options.morphology.material)
+
+        # Render at a specific resolution
+        if context.scene.MorphologyRenderingResolution == \
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+
+            # Render the morphology
+            vmv.rendering.render(
+                bounding_box=rendering_bbox,
+                camera_view=vmv.ui_options.morphology.camera_view,
+                image_resolution=context.scene.MorphologyFrameResolution,
+                image_name=image_name,
+                image_directory=vmv.interface.ui_options.io.images_directory)
+
+        # Render at a specific scale factor
+        else:
+
+            # Render the morphology
+            vmv.rendering.render_to_scale(
+                bounding_box=rendering_bbox,
+                camera_view=vmv.ui_options.morphology.camera_view,
+                image_scale_factor=context.scene.MorphologyFrameScaleFactor,
+                image_name=image_name,
+                image_directory=vmv.interface.ui_options.io.images_directory)
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')
