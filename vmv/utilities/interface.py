@@ -26,6 +26,44 @@ import vmv
 import vmv.consts
 import vmv.utilities
 
+import vmv.mesh
+import vmv.geometry
+import vmv.scene
+
+def add_background_plane(bounding_box):
+
+    plane_mesh = vmv.mesh.create_plane()
+
+    vmv.scene.set_active_object(plane_mesh)
+
+    # Deselect all the vertices in the edit mode
+    vmv.mesh.deselect_all_vertices(plane_mesh)
+
+    # select the vertices
+    vmv.mesh.select_vertices(plane_mesh, [0, 1])
+
+    bpy.ops.object.mode_set(mode='EDIT')
+
+
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={"use_normal_flip": False, "mirror": False},
+        TRANSFORM_OT_translate={"value": (-3.84998, 1.53531, 8.31745), "orient_type": 'GLOBAL',
+                                "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+                                "orient_matrix_type": 'GLOBAL',
+                                "constraint_axis": (False, False, False), "mirror": False,
+                                "use_proportional_edit": False,
+                                "proportional_edit_falloff": 'SMOOTH', "proportional_size": 1,
+                                "use_proportional_connected": False,
+                                "use_proportional_projected": False, "snap": False,
+                                "snap_target": 'CLOSEST', "snap_point": (0, 0, 0),
+                                "snap_align": False, "snap_normal": (0, 0, 0),
+                                "gpencil_strokes": False, "cursor_transform": False,
+                                "texture_space": False, "remove_on_cancel": False,
+                                "release_confirm": False, "use_accurate": False})
+
+    # Switch back to the object mode
+    bpy.ops.object.mode_set(mode='OBJECT')
+
 
 ####################################################################################################
 # @view_all_from_projection

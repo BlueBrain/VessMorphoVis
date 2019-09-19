@@ -659,8 +659,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
             camera_view=vmv.ui_options.morphology.camera_view,
             image_resolution=context.scene.MorphologyFrameResolution,
             image_name=image_name,
-            image_directory=vmv.interface.ui_options.io.images_directory,
-            keep_camera_in_scene=context.scene.KeepSomaCameras)
+            image_directory=vmv.interface.ui_options.io.images_directory)
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')

@@ -133,6 +133,8 @@ def create_super_electron_light_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
 
+
+
     # Return a reference to the material
     return material_reference
 
@@ -471,6 +473,74 @@ def create_glossy_bumpy_material(name,
 
 
 ####################################################################################################
+# @create_ceramic_material
+####################################################################################################
+def create_ceramic_material(name,
+                            color=vmv.consts.Color.WHITE):
+    """Creates a glossy bumpy shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='ceramic')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    material_reference.node_tree.nodes["Group"].inputs[0].default_value[0] = color[0]
+    material_reference.node_tree.nodes["Group"].inputs[0].default_value[1] = color[1]
+    material_reference.node_tree.nodes["Group"].inputs[0].default_value[2] = color[2]
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_skin_material
+####################################################################################################
+def create_skin_material(name,
+                         color=vmv.consts.Color.WHITE):
+    """Creates a glossy bumpy shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='skin')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    material_reference.node_tree.nodes["Group"].inputs[0].default_value[0] = color[0]
+    material_reference.node_tree.nodes["Group"].inputs[0].default_value[1] = color[1]
+    material_reference.node_tree.nodes["Group"].inputs[0].default_value[2] = color[2]
+
+    material_reference.node_tree.nodes["Group.001"].inputs[0].default_value[0] = color[0]
+    material_reference.node_tree.nodes["Group.001"].inputs[0].default_value[1] = color[1]
+    material_reference.node_tree.nodes["Group.001"].inputs[0].default_value[2] = color[2]
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
 # @create_material
 ####################################################################################################
 def create_material(name,
@@ -528,6 +598,14 @@ def create_material(name,
     # Flat
     elif material_type == vmv.enums.Shading.FLAT:
         return create_flat_material(name='%s_color' % name, color=color)
+
+    # Ceramic
+    elif material_type == vmv.enums.Shading.CERAMIC:
+        return create_ceramic_material(name='%s_color' % name, color=color)
+
+    # Skin
+    elif material_type == vmv.enums.Shading.SKIN:
+        return create_skin_material(name='%s_color' % name, color=color)
 
     # Default
     else:

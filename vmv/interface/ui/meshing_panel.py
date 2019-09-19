@@ -327,6 +327,8 @@ class VMVReconstructMesh(bpy.types.Operator):
         reconstruction_done = time.time()
         context.scene.MeshReconstructionTime = reconstruction_done - start_reconstruction
 
+        vmv.utilities.add_background_plane(vmv.interface.ui.ui_morphology.bounding_box)
+
         # Done
         return {'FINISHED'}
 

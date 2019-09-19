@@ -80,6 +80,12 @@ class Shading:
     # Voronoi
     VORONOI = 'VORONOI_SHADER'
 
+    # Ceramic
+    CERAMIC = 'CERAMIC_SHADER'
+
+    # Skin
+    SKIN = 'SKIN_SHADER'
+
     ################################################################################################
     # get_enum
     ################################################################################################
@@ -122,6 +128,10 @@ class Shading:
             return Shading.WAVE
         elif shader_type == 'voroni':
             return Shading.VORONOI
+        elif shader_type == 'ceramic':
+            return Shading.CERAMIC
+        elif shader_type == 'skin':
+            return Shading.SKIN
         else :
             return Shading.LAMBERT_WARD
 
@@ -167,5 +177,13 @@ class Shading:
 
         (VORONOI,
          'Voronoi',
-         "Use Voronoi Shader")
+         "Use Voronoi Shader"),
+
+        (CERAMIC,
+         'Ceramic',
+         "Use Ceramic Shader"),
+
+        (SKIN,
+         'Skin',
+         "Use Skin Shader")
     ]

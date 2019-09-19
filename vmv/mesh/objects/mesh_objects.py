@@ -45,7 +45,7 @@ def create_plane(radius=1,
     vmv.scene.ops.deselect_all()
 
     # Add new plane mesh object
-    bpy.ops.mesh.primitive_plane_add(radius=radius, location=location)
+    bpy.ops.mesh.primitive_plane_add()
 
     # Get a reference to it, from the current active objects
     plane_mesh = bpy.context.active_object
