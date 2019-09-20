@@ -16,7 +16,7 @@
 ####################################################################################################
 
 # System imports
-import sys
+import copy
 
 # Blender imports
 import bpy
@@ -25,88 +25,109 @@ import bpy
 import vmv
 import vmv.consts
 import vmv.utilities
-
 import vmv.mesh
 import vmv.geometry
 import vmv.scene
 
 
 def add_background_plane_for_front_camera(bounding_box):
+    """
 
-    # Get the points from the bounding box
-    point_1 = bounding_box.p_min
-    point_2 = bounding_box.p_max
+    :param bounding_box:
+    :return:
+    """
 
-    # Adjust the two points along the same plane
-    point_2[1] = point_1[1]
-    point_2[2] = point_1[2]
+    # Front face
+    front_face_v1 = copy.deepcopy(bounding_box.p_max)
+    front_face_v2 = copy.deepcopy(front_face_v1)
+    front_face_v2[1] = bounding_box.p_min[1]
+    front_face_v3 = copy.deepcopy(front_face_v2)
+    front_face_v3[0] = bounding_box.p_min[0]
+    front_face_v4 = copy.deepcopy(front_face_v3)
+    front_face_v4[1] = bounding_box.p_max[1]
 
-    # Reflect the Z-axis to be near to the camera
-    point_1[2] *= -1
-    point_2[2] *= -1
+    # Back face
+    back_face_v1 = copy.deepcopy(front_face_v1)
+    back_face_v1[2] = bounding_box.p_min[2]
+    back_face_v2 = copy.deepcopy(front_face_v2)
+    back_face_v2[2] = bounding_box.p_min[2]
+    back_face_v3 = copy.deepcopy(front_face_v3)
+    back_face_v3[2] = bounding_box.p_min[2]
+    back_face_v4 = copy.deepcopy(front_face_v4)
+    back_face_v4[2] = bounding_box.p_min[2]
+
+    # Center points
+    front_bottom_center = (front_face_v2 + front_face_v3) * 0.5
+    back_bottom_center = (back_face_v2 + back_face_v3) * 0.5
+    back_top_center = (back_face_v1 + back_face_v4) * 0.5
+
+    FRONT_FACE_DELTA = 1000
+    BACK_FACE_DELTA = 1000
+    BOTTOM_FACE_DELTA = bounding_box.bounds[1] * 0.1
+
+    # Point 1
+    point_1 = copy.deepcopy(front_face_v2)
+    point_1[1] -= BOTTOM_FACE_DELTA
+    point_1[2] += FRONT_FACE_DELTA
+
+    point_2 = copy.deepcopy(front_face_v3)
+    point_2[1] -= BOTTOM_FACE_DELTA
+    point_2[2] += FRONT_FACE_DELTA
+
+    front_bottom_center = (point_1 + point_2) * 0.5
+
+
+    point_3 = copy.deepcopy(back_face_v2)
+    point_3[1] -= BOTTOM_FACE_DELTA
+    point_3[2] -= BACK_FACE_DELTA
+
+    point_4 = copy.deepcopy(back_face_v3)
+    point_4[1] -= BOTTOM_FACE_DELTA
+    point_4[2] -= BACK_FACE_DELTA
+
+    back_bottom_center = (point_3 + point_4) * 0.5
 
     # Create a plane mesh, starting with a vertex
-    plane_mesh = vmv.mesh.create_vertex(location=point_1)
+    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='plane_mesh')
 
-    # Extrude the plane mesh (that is so far a vertex) to @point_2
-    vmv.mesh.extrude_point_to_point_on_mesh(plane_mesh, 0, point_1, point_2)
+    # Extrude the plane mesh (that is so far a vertex) to @v3
+    vmv.mesh.extrude_selected_vertices_on_mesh(plane_mesh, [0], point_1, point_2)
 
     # Select all the vertices and extrude towards p_max z
+    vmv.mesh.extrude_selected_vertices_on_mesh(
+        plane_mesh, [0, 1], front_bottom_center, back_bottom_center)
 
-    center_1 = (point_1 + point_2) * 0.5
-    center_2 = bounding_box.p_min
+    point_5 = copy.deepcopy(back_face_v1)
+    point_5[1] += 1000
+    point_5[2] -= BACK_FACE_DELTA
 
-    print(center_1)
-    print(center_2)
+    point_6 = copy.deepcopy(back_face_v4)
+    point_6[1] += 1000
+    point_6[2] -= BACK_FACE_DELTA
 
-    vmv.mesh.extrude_all_vertices_on_mesh(plane_mesh, center_1, center_2)
+    back_top_center = (point_5 + point_6) * 0.5
 
-    return
+    # Select all the vertices and extrude towards p_max z
+    vmv.mesh.extrude_selected_vertices_on_mesh(plane_mesh, [2, 3], back_bottom_center,
+                                               back_top_center)
 
-    # Add plane 1, located at the origin at the XY plane
-    plane_1_mesh = vmv.mesh.create_plane(name='plane_1')
+    # Select this plane
+    vmv.scene.set_active_object(plane_mesh)
 
-    # Add plane 2, located at the origin at the XY plane
-    plane_2_mesh = vmv.mesh.create_plane(name='plane_2')
+    # Set the pivot to the origin
+    bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
 
-    # Scale plane 1
-    plane_1_mesh.scale[0] = bounding_box.bounds[0]
-    plane_1_mesh.scale[1] = bounding_box.bounds[1]
-
-    # Scale plane 2
-    plane_2_mesh.scale[0] = bounding_box.bounds[0]
-    plane_2_mesh.scale[1] = bounding_box.bounds[2]
-
-    # Rotate plane 2 around the X-axis
-    plane_2_mesh.rotation_euler[0] = 1.5708
-
-    # Translate plane 1
-    plane_1_mesh.location[2] = bounding_box.p_min[2]
-
-    # Translate plane 2
-    plane_2_mesh.location[1] = bounding_box.p_min[1]
-
-    return
-
-    # Join the two plane
-    plane_mesh = vmv.mesh.ops.join_mesh_objects(mesh_list=[plane_1_mesh, plane_2_mesh],
-                                                name='plane_mesh')
-
-    plane_mesh.scale[0] *= 2
-    plane_mesh.scale[1] *= 2
-    plane_mesh.scale[2] *= 2
-
-    # Remove the doubles to have a continuous surface
-    vmv.mesh.remove_double_points(mesh_object=plane_mesh, threshold=0.1)
+    # Subdivide the faces to make a smooth and easy transition
+    vmv.mesh.subdivide_faces(mesh_object=plane_mesh, faces_indices=[], cuts=5, all_faces=True)
 
     # Smooth the plane
     vmv.mesh.smooth_object(mesh_object=plane_mesh, level=5)
 
-    # Smooth the surface for the shading
-    vmv.mesh.shade_smooth_object(mesh_object=plane_mesh)
-
     # Scale the final plane mesh to fill the view
     plane_mesh.scale[0] = 1000
+
+    # Smooth the surface for the shading
+    vmv.mesh.shade_smooth_object(mesh_object=plane_mesh)
 
     # Return a reference to the final plane
     return plane_mesh

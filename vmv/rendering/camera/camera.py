@@ -512,8 +512,8 @@ class Camera:
             bpy.ops.view3d.camera_to_view_selected()
 
             # Set the lens to 25 mm, AND RESET LATER
-            bpy.context.object.data.angle = math.radians(45.0)
-            bpy.context.object.data.lens = 40
+            # bpy.context.object.data.angle = math.radians(45.0)
+            bpy.context.object.data.lens = 50
 
         else:
             self.camera.data.type = 'ORTHO'
