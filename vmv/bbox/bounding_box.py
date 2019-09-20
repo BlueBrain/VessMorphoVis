@@ -69,7 +69,6 @@ class BoundingBox:
         self.p_min -= Vector((delta, delta, delta))
         self.p_max += Vector((delta, delta, delta))
         self.bounds = self.p_max - self.p_min
-        self.center = self.p_min + (self.bounds / 2.0)
 
     ################################################################################################
     # @print_details

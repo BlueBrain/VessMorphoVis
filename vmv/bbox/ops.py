@@ -247,6 +247,8 @@ def compute_scene_bounding_box():
     objects = []
     for scene_object in bpy.data.objects:
         if scene_object.type in ['MESH', 'CURVE']:
+            if 'plane_mesh' in scene_object.name:
+                continue
             objects.append(scene_object)
 
     # Returns the bounding box of a group of objects

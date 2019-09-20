@@ -58,6 +58,31 @@ def create_plane(radius=1,
 
 
 ####################################################################################################
+# @create_vertex
+####################################################################################################
+def create_vertex(location=(0, 0, 0),
+                  name='vertex'):
+    """
+
+    :param location:
+    :param name:
+    :return:
+    """
+
+    # Initially create a plane
+    vertex_mesh = create_plane(name=name)
+
+    # Translate to the right location
+    vertex_mesh.location = location
+
+    # Merge
+    vmv.mesh.merge_at_center(vertex_mesh)
+
+    # Return the vertex mesh
+    return vertex_mesh
+
+
+####################################################################################################
 # @create_ico_sphere
 ####################################################################################################
 def create_ico_sphere(radius=1,

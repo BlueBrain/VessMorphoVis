@@ -30,6 +30,90 @@ import vmv.mesh
 import vmv.geometry
 import vmv.scene
 
+
+def add_background_plane_for_front_camera(bounding_box):
+
+    # Get the points from the bounding box
+    point_1 = bounding_box.p_min
+    point_2 = bounding_box.p_max
+
+    # Adjust the two points along the same plane
+    point_2[1] = point_1[1]
+    point_2[2] = point_1[2]
+
+    # Reflect the Z-axis to be near to the camera
+    point_1[2] *= -1
+    point_2[2] *= -1
+
+    # Create a plane mesh, starting with a vertex
+    plane_mesh = vmv.mesh.create_vertex(location=point_1)
+
+    # Extrude the plane mesh (that is so far a vertex) to @point_2
+    vmv.mesh.extrude_point_to_point_on_mesh(plane_mesh, 0, point_1, point_2)
+
+    # Select all the vertices and extrude towards p_max z
+
+    center_1 = (point_1 + point_2) * 0.5
+    center_2 = bounding_box.p_min
+
+    print(center_1)
+    print(center_2)
+
+    vmv.mesh.extrude_all_vertices_on_mesh(plane_mesh, center_1, center_2)
+
+    return
+
+    # Add plane 1, located at the origin at the XY plane
+    plane_1_mesh = vmv.mesh.create_plane(name='plane_1')
+
+    # Add plane 2, located at the origin at the XY plane
+    plane_2_mesh = vmv.mesh.create_plane(name='plane_2')
+
+    # Scale plane 1
+    plane_1_mesh.scale[0] = bounding_box.bounds[0]
+    plane_1_mesh.scale[1] = bounding_box.bounds[1]
+
+    # Scale plane 2
+    plane_2_mesh.scale[0] = bounding_box.bounds[0]
+    plane_2_mesh.scale[1] = bounding_box.bounds[2]
+
+    # Rotate plane 2 around the X-axis
+    plane_2_mesh.rotation_euler[0] = 1.5708
+
+    # Translate plane 1
+    plane_1_mesh.location[2] = bounding_box.p_min[2]
+
+    # Translate plane 2
+    plane_2_mesh.location[1] = bounding_box.p_min[1]
+
+    return
+
+    # Join the two plane
+    plane_mesh = vmv.mesh.ops.join_mesh_objects(mesh_list=[plane_1_mesh, plane_2_mesh],
+                                                name='plane_mesh')
+
+    plane_mesh.scale[0] *= 2
+    plane_mesh.scale[1] *= 2
+    plane_mesh.scale[2] *= 2
+
+    # Remove the doubles to have a continuous surface
+    vmv.mesh.remove_double_points(mesh_object=plane_mesh, threshold=0.1)
+
+    # Smooth the plane
+    vmv.mesh.smooth_object(mesh_object=plane_mesh, level=5)
+
+    # Smooth the surface for the shading
+    vmv.mesh.shade_smooth_object(mesh_object=plane_mesh)
+
+    # Scale the final plane mesh to fill the view
+    plane_mesh.scale[0] = 1000
+
+    # Return a reference to the final plane
+    return plane_mesh
+
+
+
+
 def add_background_plane(bounding_box):
 
     plane_mesh = vmv.mesh.create_plane()

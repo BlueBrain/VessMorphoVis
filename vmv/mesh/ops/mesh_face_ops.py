@@ -166,6 +166,82 @@ def map_face_to_circle(mesh_object,
                 nearest_vertex = vertex
         vertices[vertex_index].co = nearest_vertex.co
 
+####################################################################################################
+# @extrude_point_to_point_on_mesh
+####################################################################################################
+def extrude_point_to_point_on_mesh(mesh_object,
+                                   vertex_index,
+                                   initial_point,
+                                   target_point):
+    """Extrude a face in a mesh object specified by its face index to a given point.
+
+    NOTE: This operation returns the index of the final extruded face.
+
+    :param mesh_object:
+        A given mesh object.
+    :param vertex_index:
+        The index of the vertex that will get extruded.
+    :param target_point:
+        A destination point where the face will be extruded to.
+    :return:
+        The index of the final extruded point.
+    """
+
+    # Set the selected object to be only the active one
+    vmv.scene.ops.set_active_object(mesh_object)
+
+    # Deselect all of its vertices
+    vmv.mesh.ops.deselect_all_vertices(mesh_object)
+
+    # Compute the extrusion delta
+    extrusion_delta = target_point - initial_point
+
+    # Select all the vertices of the face being extruded
+    vmv.mesh.ops.select_vertex(mesh_object, vertex_index)
+
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={"mirror": False},
+        TRANSFORM_OT_translate={"value": extrusion_delta})
+    bpy.ops.object.editmode_toggle()
+
+
+####################################################################################################
+# @extrude_all_vertices_on_mesh
+####################################################################################################
+def extrude_all_vertices_on_mesh(mesh_object,
+                                 initial_point,
+                                 target_point):
+    """Extrude a face in a mesh object specified by its face index to a given point.
+
+    NOTE: This operation returns the index of the final extruded face.
+
+    :param mesh_object:
+        A given mesh object.
+    :param vertex_index:
+        The index of the vertex that will get extruded.
+    :param target_point:
+        A destination point where the face will be extruded to.
+    :return:
+        The index of the final extruded point.
+    """
+
+    # Set the selected object to be only the active one
+    vmv.scene.ops.set_active_object(mesh_object)
+
+    # Deselect all of its vertices
+    vmv.mesh.ops.select_all_vertices(mesh_object)
+
+    # Compute the extrusion delta
+    extrusion_delta = target_point - initial_point
+    print(extrusion_delta)
+
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={"mirror": False},
+        TRANSFORM_OT_translate={"value": extrusion_delta})
+    bpy.ops.object.editmode_toggle()
+
 
 ####################################################################################################
 # @extrude_face_to_face

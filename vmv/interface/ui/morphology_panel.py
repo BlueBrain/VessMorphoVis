@@ -670,19 +670,23 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         self.report({'INFO'}, 'Morphology Rendering ... Wait')
 
         # Compute the bounding box for the available meshes only
-        rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_curves()
+        bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
 
         # Image name
         image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.ui_options.morphology.label,
                                            vmv.ui_options.morphology.camera_view)
 
         # Stretch the bounding box by few microns
+        import copy
+        rendering_bbox = copy.deepcopy(bounding_box)
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
         # Adding the illumination
 
         vmv.shading.create_material_specific_illumination(
             vmv.interface.ui_options.morphology.material)
+
+        vmv.utilities.add_background_plane_for_front_camera(bounding_box)
 
         # Render at a specific resolution
         if context.scene.MorphologyRenderingResolution == \

@@ -26,6 +26,35 @@ import vmv.utilities
 
 
 ####################################################################################################
+# @merge_at_center
+####################################################################################################
+def merge_at_center(mesh_object):
+    """
+
+    :param mesh_object:
+    :return:
+    """
+
+    # Deselect all the objects in the scene
+    vmv.scene.ops.deselect_all()
+
+    # Select only the object of interest and set it the only active object
+    vmv.scene.ops.set_active_object(mesh_object)
+
+    # Switch to edit mode to be able to select the vertices
+    bpy.ops.object.mode_set(mode='EDIT')
+
+    # Apply a vertex deselection action to the selected object
+    bpy.ops.mesh.select_mode(type="VERT")
+    bpy.ops.mesh.select_all(action='SELECT')
+
+    # Merge at the center
+    bpy.ops.mesh.merge(type='CENTER')
+
+    # Switch back to the object mode
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+####################################################################################################
 # @convert_to_bmesh_object
 ####################################################################################################
 def convert_to_bmesh_object(mesh_object):
@@ -70,10 +99,10 @@ def smooth_object(mesh_object,
     bpy.ops.object.modifier_add(type='SUBSURF')
 
     # Set the smoothing level
-    bpy.context.object.modifiers["Subsurf"].levels = level
+    bpy.context.object.modifiers["Subdivision"].levels = level
 
     # Apply the smoothing modifier
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Subsurf")
+    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Subdivision")
 
 
 ####################################################################################################
@@ -201,11 +230,13 @@ def decimate_mesh_object(mesh_object,
 ####################################################################################################
 # @remove_double_points
 ####################################################################################################
-def remove_double_points(mesh_object):
+def remove_double_points(mesh_object, threshold=0.001):
     """Removes the duplicate points for a given mesh object.
 
     :param mesh_object:
         A given mesh object to remove its doubles.
+    :param threshold:
+        Threshold value.
     """
 
     # Activate the mesh object
@@ -213,7 +244,7 @@ def remove_double_points(mesh_object):
 
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.mesh.remove_doubles()
+    bpy.ops.mesh.remove_doubles(threshold=threshold)
     bpy.ops.mesh.normals_make_consistent(inside=False)
     bpy.ops.object.editmode_toggle()
 
@@ -592,7 +623,7 @@ def join_mesh_objects(mesh_list,
         if mesh_object.type == 'MESH':
             
             # Select the mesh object
-            mesh_object.select = True
+            mesh_object.select_set(True)
 
     # Set the 0th mesh to be active
     bpy.context.view_layer.objects.active = mesh_list[0]

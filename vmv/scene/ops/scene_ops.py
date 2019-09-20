@@ -219,6 +219,8 @@ def select_all_meshes_in_scene():
     # Select only the objects of type meshes
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'MESH':
+            if 'plane_mesh' in scene_object.name:
+                continue
             scene_object.select_set(True)
 
 
