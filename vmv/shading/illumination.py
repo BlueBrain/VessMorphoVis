@@ -173,11 +173,11 @@ def create_material_specific_illumination(material_type):
 
     # Shadow
     elif material_type == vmv.enums.Shading.SHADOW:
-        return create_shadow_illumination()
+        return create_lambert_ward_illumination()
 
     # Glossy bumpy
     elif material_type == vmv.enums.Shading.GLOSSY_BUMPY:
-        return create_glossy_bumpy_illumination()
+        return create_lambert_ward_illumination()
 
     # Voronoi
     elif material_type == vmv.enums.Shading.VORONOI:
