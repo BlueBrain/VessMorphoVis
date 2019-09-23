@@ -15,5 +15,4 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .rendering_ops import *
 from .rendering_plane_ops import *

@@ -327,8 +327,6 @@ class VMVReconstructMesh(bpy.types.Operator):
         reconstruction_done = time.time()
         context.scene.MeshReconstructionTime = reconstruction_done - start_reconstruction
 
-        vmv.utilities.add_background_plane(vmv.interface.ui.ui_morphology.bounding_box)
-
         # Done
         return {'FINISHED'}
 
@@ -522,8 +520,7 @@ class VMVRenderMesh360(bpy.types.Operator):
     # @cancel
     ################################################################################################
     def cancel(self, context):
-        """
-        Cancel the panel processing and return to the interaction mode.
+        """Cancel the panel processing and return to the interaction mode.
 
         :param context: Panel context.
         """

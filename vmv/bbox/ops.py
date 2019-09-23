@@ -170,6 +170,11 @@ def get_objects_bounding_box(objects):
     objects_bboxes_list = list()
 
     for scene_object in objects:
+
+        # Ignore any background plane that is added for making nice renderings
+        if 'background_plane' in scene_object.name:
+            continue
+
         bbox = confirm_object_bounding_box(scene_object)
         objects_bboxes_list.append(bbox)
 
@@ -221,7 +226,10 @@ def compute_scene_bounding_box_for_meshes():
     objects = []
     for scene_object in bpy.data.objects:
         if scene_object.type in ['MESH']:
-            if 'spine' in scene_object.name: continue
+
+            # Ignore any background plane that is added for making nice renderings
+            if 'background_plane' in scene_object.name:
+                continue
             objects.append(scene_object)
 
     # Returns the bounding box of a group of objects
@@ -247,7 +255,9 @@ def compute_scene_bounding_box():
     objects = []
     for scene_object in bpy.data.objects:
         if scene_object.type in ['MESH', 'CURVE']:
-            if 'plane_mesh' in scene_object.name:
+
+            # Ignore any background plane that is added for making nice renderings
+            if 'background_plane' in scene_object.name:
                 continue
             objects.append(scene_object)
 

@@ -717,6 +717,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')
 
+        # TODO: Remove the rendering planes, if any
         return {'FINISHED'}
 
 

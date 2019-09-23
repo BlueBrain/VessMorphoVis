@@ -207,13 +207,19 @@ def render_mesh_image(panel_object,
     else:
         view_prefix = 'FRONT'
 
+    bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
+
+    # If background plane is required
+    background_plane = vmv.rendering.add_background_plane(
+        bounding_box=bounding_box, camera_view=vmv.ui_options.mesh.camera_view)
+
     # Render at a specific resolution
     if context_scene.MeshRenderingResolution == \
             vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
         # Render the image
         vmv.rendering.render(
-            bounding_box=vmv.bbox.compute_scene_bounding_box_for_meshes(),
+            bounding_box=bounding_box,
             camera_view=rendering_view,
             camera_projection=camera_projection,
             image_resolution=context_scene.MeshFrameResolution,
@@ -225,9 +231,8 @@ def render_mesh_image(panel_object,
 
         # Render the image
         vmv.rendering.render_to_scale(
-            bounding_box=vmv.bbox.compute_scene_bounding_box_for_meshes(),
+            bounding_box=bounding_box,
             camera_view=rendering_view,
-            camera_projection=camera_projection,
             image_scale_factor=context_scene.MeshFrameScaleFactor,
             image_name='MESH_%s_%s' % (view_prefix, vmv.interface.ui_options.morphology.label),
             image_directory=vmv.interface.ui_options.io.images_directory)

@@ -314,12 +314,12 @@ def add_background_plane_for_side_camera(bounding_box):
 
     # Point 5
     point_5 = copy.deepcopy(back_face_v1)
-    point_5[1] += 1000
+    point_5[1] += vmv.consts.RenderingPlanes.TOP_FACE_DELTA
     point_5[0] -= vmv.consts.RenderingPlanes.BACK_FACE_DELTA
 
     # Point 6
     point_6 = copy.deepcopy(back_face_v4)
-    point_6[1] += 1000
+    point_6[1] += vmv.consts.RenderingPlanes.TOP_FACE_DELTA
     point_6[0] -= vmv.consts.RenderingPlanes.BACK_FACE_DELTA
 
     # Center
