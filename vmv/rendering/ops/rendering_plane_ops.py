@@ -89,7 +89,7 @@ def add_background_plane_for_front_camera(bounding_box):
     back_bottom_center = (point_3 + point_4) * 0.5
 
     # Create a plane mesh, starting with a vertex
-    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='plane_mesh')
+    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='background_plane_front')
 
     # Extrude the plane mesh (that is so far a vertex) to @v3
     vmv.mesh.extrude_selected_vertices_on_mesh(plane_mesh, [0], point_1, point_2)
@@ -196,7 +196,7 @@ def add_background_plane_for_top_camera(bounding_box):
     back_bottom_center = (point_3 + point_4) * 0.5
 
     # Create a plane mesh, starting with a vertex
-    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='plane_mesh')
+    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='background_plane_top')
 
     # Extrude the plane mesh (that is so far a vertex) to @v3
     vmv.mesh.extrude_selected_vertices_on_mesh(plane_mesh, [0], point_1, point_2)
@@ -303,7 +303,7 @@ def add_background_plane_for_side_camera(bounding_box):
     back_bottom_center = (point_3 + point_4) * 0.5
 
     # Create a plane mesh, starting with a vertex
-    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='plane_mesh')
+    plane_mesh = vmv.mesh.create_vertex(location=point_1, name='background_plane_side')
 
     # Extrude the plane mesh (that is so far a vertex) to @v3
     vmv.mesh.extrude_selected_vertices_on_mesh(plane_mesh, [0], point_1, point_2)
@@ -349,5 +349,39 @@ def add_background_plane_for_side_camera(bounding_box):
 
     # Return a reference to the final plane
     return plane_mesh
+
+
+####################################################################################################
+# add_background_plane
+####################################################################################################
+def add_background_plane(bounding_box,
+                         camera_view):
+    """Add a stylish plane that would reveal the shadow of the object and make the rendering
+    stand out.
+
+    :param bounding_box:
+        Morphology or mesh bounding box.
+    :param camera_view:
+        The view of the camera used for the rendering.
+    :return:
+        A reference to the created plane.
+    """
+
+    # Front
+    if camera_view == vmv.enums.Rendering.View.FRONT:
+        return add_background_plane_for_front_camera(bounding_box)
+
+    # Side
+    elif camera_view == vmv.enums.Rendering.View.SIDE:
+        return add_background_plane_for_side_camera(bounding_box)
+
+    # Top
+    elif camera_view == vmv.enums.Rendering.View.TOP:
+        return add_background_plane_for_top_camera(bounding_box)
+
+    # Ignore, but return None to handle any errors
+    else:
+        return None
+
 
 
