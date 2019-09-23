@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2016 - 2018, EPFL / Blue Brain Project
 #               Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -15,11 +15,31 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .bevel_consts import *
-from .color_consts import *
-from .image_consts import *
-from .math_consts import *
-from .meshing_consts import *
-from .messages_consts import *
-from .rendering_planes import *
 
+####################################################################################################
+# Meshing
+####################################################################################################
+class RenderingPlanes:
+    """Rendering planes constants
+    """
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+        pass
+
+    # Front face delta in blender units
+    FRONT_FACE_DELTA = 1000
+
+    # Back face delta in blender units
+    BACK_FACE_DELTA = 1000
+
+    # Top face delta in blender units
+    TOP_FACE_DELTA = 1000
+
+    # Bottom face delta in %
+    BOTTOM_FACE_DELTA = 0.1
+
+    # Horizon scale
+    HORIZON_SCALE = 100

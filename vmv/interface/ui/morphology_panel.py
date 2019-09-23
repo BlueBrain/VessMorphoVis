@@ -686,7 +686,22 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         vmv.shading.create_material_specific_illumination(
             vmv.interface.ui_options.morphology.material)
 
-        vmv.utilities.add_background_plane_for_front_camera(bounding_box)
+        # If background plane is required
+        # Front
+        if vmv.ui_options.morphology.camera_view == vmv.enums.Rendering.View.FRONT:
+            vmv.utilities.add_background_plane_for_front_camera(bounding_box)
+
+        # Side
+        elif vmv.ui_options.morphology.camera_view == vmv.enums.Rendering.View.SIDE:
+            vmv.utilities.add_background_plane_for_side_camera(bounding_box)
+
+        # Top
+        elif vmv.ui_options.morphology.camera_view == vmv.enums.Rendering.View.TOP:
+            vmv.utilities.add_background_plane_for_top_camera(bounding_box)
+
+        # Ignore
+        else:
+            pass
 
         # Render at a specific resolution
         if context.scene.MorphologyRenderingResolution == \
