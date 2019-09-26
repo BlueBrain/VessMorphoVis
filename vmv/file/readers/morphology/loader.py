@@ -55,6 +55,38 @@ def read_h5_morphology(h5_file):
 
 
 ####################################################################################################
+# @read_mat_morphology
+####################################################################################################
+def read_mat_morphology(mat_file):
+    """Verifies if the given path is valid or not and then loads a .mat morphology file according
+    to the common standard specified by the BBP team.
+
+    If the path is not valid, this function returns None.
+
+    :param mat_file:
+        Path to the .mat morphology file.
+    :return:
+        A morphology object or None if the path is not valid.
+    """
+
+    # If the path is valid
+    if os.path.isfile(mat_file):
+
+        # Load the .h5 morphology
+        reader = vmv.file.readers.MATReader(mat_file=mat_file)
+        morphology_object = reader.construct_morphology_object()
+
+        # Return a reference to this morphology object
+        return morphology_object
+
+    # Issue an error
+    vmv.logger.log('ERROR: The morphology path [%s] is invalid' % mat_file)
+
+    # Otherwise, return None
+    return None
+
+
+####################################################################################################
 # @read_morphology_from_file
 ####################################################################################################
 def read_morphology_from_file(options):
@@ -79,6 +111,19 @@ def read_morphology_from_file(options):
         # Load the .h5 file
         try:
             morphology_object = read_h5_morphology(morphology_file_path)
+
+        # Cannot read the file for some reason
+        except ValueError:
+            vmv.logger.log('ERROR: The morphology file [%s] could NOT be read' %
+                           morphology_file_path)
+            return False, None
+
+    # If it is a .mat file, use the Matlab loader
+    elif '.mat' in morphology_extension:
+
+        # Load the .mat file
+        try:
+            morphology_object = read_mat_morphology(morphology_file_path)
 
         # Cannot read the file for some reason
         except ValueError:

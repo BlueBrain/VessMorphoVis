@@ -282,7 +282,7 @@ def analyze_samples_radii(samples_list):
     # Compile a list of all the radii
     radii_list = list()
     for sample in samples_list:
-        radii_list.append(sample[3])
+        radii_list.append(1.0 * sample[3])
 
     # Compute the minimum
     minimum_sample_radius = min(radii_list)
