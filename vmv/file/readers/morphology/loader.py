@@ -87,6 +87,36 @@ def read_mat_morphology(mat_file):
 
 
 ####################################################################################################
+# @create_morphology_reader
+####################################################################################################
+def create_morphology_reader(morphology_file_path):
+    """Creates a morphology reader based on the extension.
+
+    :param morphology_file_path:
+        Morphology file path.
+    :return:
+        A reader object. 
+    """
+
+    # Get the extension from the file path
+    morphology_prefix, morphology_extension = os.path.splitext(morphology_file_path)
+
+    # If it is a .h5 file, use the h5 loader
+    if '.h5' in morphology_extension:
+        return vmv.file.readers.H5Reader(h5_file=morphology_file_path)
+
+    # If it is a .mat file, use the Matlab loader
+    elif '.mat' in morphology_extension:
+        return vmv.file.readers.MATReader(mat_file=morphology_file_path)
+
+    else:
+        # Issue an error, wrong extension
+        vmv.logger.log('ERROR: The morphology extension [%s] is NOT SUPPORTED' %
+                       morphology_extension)
+        return None
+
+
+####################################################################################################
 # @read_morphology_from_file
 ####################################################################################################
 def read_morphology_from_file(options):

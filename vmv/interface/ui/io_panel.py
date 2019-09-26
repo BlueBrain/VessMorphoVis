@@ -284,7 +284,8 @@ class VMVLoadMorphology(bpy.types.Operator):
         vmv.scene.extend_clipping_planes()
 
         # Create a morphology reader object
-        morphology_reader = vmv.file.MATReader(vmv.interface.ui_options.io.morphology_file_path)
+        morphology_reader = vmv.file.create_morphology_reader(
+            vmv.interface.ui_options.io.morphology_file_path)
 
         # Construct a morphology object to be used later by the entire application
         loading_start = time.time()
