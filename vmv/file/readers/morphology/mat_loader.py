@@ -173,9 +173,12 @@ class MATReader:
             # The radii array as given in the .mat format
             radii_array = structure_array['Vertices'][0][0]['AllRadii'][0][0]
 
-            # TODO: Verify that the array of the radii has the same length of the vertices array
+            # Verify that the array of the radii has the same length of the vertices array
             radii_array_length = len(radii_array)
             vertices_array_length = len(vertices_array)
+
+            if not radii_array_length == vertices_array_length:
+                vmv.logger.log('ERROR: The data set has inconsistent arrays')
 
             # Construct the points list
             for i in range(vertices_array_length):
