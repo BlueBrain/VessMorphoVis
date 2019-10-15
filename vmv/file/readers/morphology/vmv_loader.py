@@ -29,9 +29,9 @@ import vmv.skeleton
 ####################################################################################################
 # @H5Reader
 ####################################################################################################
-class MATReader:
-    """Matlab files morphology reader for the vasculature.
-    NOTE: This solution is implemented to provide a direct interface for Pablo Blender.
+class VMVReader:
+    """A customized reader to be able to parse .VMV files that are created from converting the
+    reconstructions created by Pablo Blinder.
     """
 
     ################################################################################################
@@ -151,12 +151,101 @@ class MATReader:
 
         try:
 
-            # Import the h5py module
-            import scipy.io
-            import vmv.utilities
+            # Open the morphology file
+            file_handler = open(self.morphology_file, 'r')
 
-            # Ignore the console warning and output
-            # vmv.utilities.disable_std_output()
+            # Initialize the data size
+            number_vertices = 0
+            number_strands = 0
+            number_attributes_per_vertex = 0
+
+            # Get the data sizes from the file
+            for line in file_handler:
+
+                # Ignore empty lines
+                if not line.strip():
+                    continue
+
+                # Replace multiple spaces with a single space
+                line = ' '.join(line.split())
+
+                # Replace the '\n' with empty
+                line = line.replace('\n', '')
+
+                # Read the number of strands
+                if '#N_STRANDS' in line:
+
+                    # Split the line
+                    line = line.split(' ')
+
+                    # Read it
+                    number_strands = int(line[1])
+
+                # Read the number of vertices
+                if '#N_VERT' in line:
+
+                    # Split the line
+                    line = line.split(' ')
+
+                    # Read it
+                    number_vertices = int(line[1])
+
+                # Read the number of attributes per vertex
+                if '#N_ATTRIBUTES_PER_VERT' in line:
+
+                    # Split the line
+                    line = line.split(' ')
+
+                    # Read it
+                    number_attributes_per_vertex = int(line[1])
+
+                # If all the sizes are read, simply break and close the file
+                if number_vertices > 0 and number_strands > 0 and number_attributes_per_vertex > 0:
+                    break
+
+            # Close the file
+            file_handler.close()
+
+            # Open the morphology file, again to read the strands and the vertices
+            file_handler = open(self.morphology_file, 'r')
+
+            # A flag that indicates that we are reading vertices
+            vertex_reading_mode = False
+
+            # Get the data sizes from the file
+            for line in file_handler:
+
+                # Ignore empty lines
+                if not line.strip():
+                    continue
+
+                # Replace multiple spaces with a single space
+                line = ' '.join(line.split())
+
+                # Replace the '\n' with empty
+                line = line.replace('\n', '')
+
+                # Get the vertices label, and switch the flag
+                if '#START_VERT_LIST' in line:
+                    vertex_reading_mode = True
+
+                if '#END_VERT_LIST' in line:
+                    vertex_reading_mode = False
+
+                # If the vertex reading mode is active, then this is a vertex
+                if vertex_reading_mode:
+                    pass
+
+
+
+
+
+
+            exit(0)
+
+
+
+
 
             # Read the .mat file using the python module into a data array
             data = scipy.io.loadmat(self.morphology_file)

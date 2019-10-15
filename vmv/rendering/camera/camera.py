@@ -491,6 +491,12 @@ class Camera:
         if bounding_box is None:
             bounding_box = vmv.bbox.compute_scene_bounding_box()
 
+        # For perspective rendering add the background plane
+        background_plane = None
+        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
+            background_plane = vmv.rendering.add_background_plane(
+                bounding_box=bounding_box, camera_view=vmv.ui_options.morphology.camera_view)
+
         # Setup the camera
         self.setup_camera_for_scene(bounding_box, camera_view, camera_projection)
 
@@ -500,6 +506,8 @@ class Camera:
 
         # Update the bounding box
         if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
+
+            # Update the projection
             self.camera.data.type = 'PERSP'
 
             # Deselect all the object in the scene
@@ -516,6 +524,8 @@ class Camera:
             bpy.context.object.data.lens = 50
 
         else:
+
+            # Update the projection
             self.camera.data.type = 'ORTHO'
 
         # Set the film transparency
@@ -529,9 +539,11 @@ class Camera:
 
         # Keep the camera in the scene or delete it after the rendering
         if not keep_camera_in_scene:
-
-            # Delete the camera
             vmv.scene.ops.delete_object_in_scene(self.camera)
+
+        # Delete the background plane
+        if background_plane is not None:
+            vmv.scene.delete_object_in_scene(background_plane)
 
     ################################################################################################
     # @render_scene_bounding_box

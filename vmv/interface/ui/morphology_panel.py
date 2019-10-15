@@ -682,13 +682,8 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
         # Adding the illumination
-
         vmv.shading.create_material_specific_illumination(
             vmv.interface.ui_options.morphology.material)
-
-        # If background plane is required
-        background_plane = vmv.rendering.add_background_plane(
-            bounding_box=bounding_box, camera_view=vmv.ui_options.morphology.camera_view)
 
         # Render at a specific resolution
         if context.scene.MorphologyRenderingResolution == \
@@ -717,7 +712,6 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')
 
-        # TODO: Remove the rendering planes, if any
         return {'FINISHED'}
 
 

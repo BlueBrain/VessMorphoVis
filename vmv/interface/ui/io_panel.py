@@ -52,7 +52,8 @@ class VMVIOPanel(bpy.types.Panel):
     bpy.types.Scene.MorphologyFile = bpy.props.StringProperty(
         name="Morphology File",
         description="Select a specific vasculature morphology to load",
-        default='/data/morphologies/vasculature/samples_vasculature/test4.h5',
+        #default='/bbp/bbp-blender-packages/blender-2.80-50ccbe6bb233-linux-glibc217-x86_64/2.80/scripts/addons/vessmorphovis/data/vmv-morphologies/sample.vmv',
+        default='/data/morphologies/vasculature/samples_vasculature/test3.h5',
         maxlen=2048, subtype='FILE_PATH')
         #default='Select File', maxlen=2048,  subtype='FILE_PATH')
 
