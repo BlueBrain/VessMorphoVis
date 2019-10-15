@@ -145,12 +145,12 @@ class VMVMorphologyPanel(bpy.types.Panel):
     bpy.types.Scene.MorphologyMaterial = bpy.props.EnumProperty(
         items=vmv.enums.Shading.MATERIAL_ITEMS,
         name="Material",
-        default=vmv.enums.Shading.LAMBERT_WARD)
+        default=vmv.enums.Shading.GLOSSY_WORKBENCH)
 
     # Mesh color
     bpy.types.Scene.MorphologyColor = bpy.props.FloatVectorProperty(
         name="Morphology Color", subtype='COLOR',
-        default=vmv.consts.Color.GRAY, min=0.0, max=1.0,
+        default=vmv.consts.Color.DEFAULT_BLOOD_COLOR, min=0.0, max=1.0,
         description="The color of the reconstructed morphology")
 
     # 360 rendering progress bar
@@ -212,7 +212,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
     bpy.types.Scene.MorphologyMaterial = bpy.props.EnumProperty(
         items=vmv.enums.Shading.MATERIAL_ITEMS,
         name="Material",
-        default=vmv.enums.Shading.LAMBERT_WARD)
+        default=vmv.enums.Shading.GLOSSY_WORKBENCH)
 
     # Color each component
     bpy.types.Scene.ColorComponents = bpy.props.BoolProperty(
@@ -229,7 +229,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
     # A homogeneous color for all the objects of the morphology
     bpy.types.Scene.MorphologyColor = bpy.props.FloatVectorProperty(
         name="Surface Color",
-        subtype='COLOR', default=vmv.consts.Color.GRAY, min=0.0, max=1.0,
+        subtype='COLOR', default=vmv.consts.Color.DEFAULT_BLOOD_COLOR, min=0.0, max=1.0,
         description="The color of the reconstructed morphology")
 
     # Reconstruction time
@@ -472,13 +472,24 @@ class VMVMorphologyPanel(bpy.types.Panel):
         if context.scene.MorphologyRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
-            # Add the projection option
-            projection_row = self.layout.column()
-            projection_row.prop(context.scene, 'MorphologyCameraProjection', icon='AXIS_FRONT')
-            vmv.ui_options.morphology.camera_projection = context.scene.MorphologyCameraProjection
-        else:
+            # Due to a bug in the workbench renderer in Blender, we will allow the
+            # perspective projection for all the materials that use cycles and have high number of
+            # samples per pixel, mainly the artistic rendering.
+            if vmv.ui_options.morphology.material in vmv.enums.Shading.ARTISTIC_MATERIALS:
+
+                # Add the projection option
+                projection_row = self.layout.column()
+                projection_row.prop(context.scene, 'MorphologyCameraProjection', icon='AXIS_FRONT')
+                vmv.ui_options.morphology.camera_projection = \
+                    context.scene.MorphologyCameraProjection
 
             # Set it by default to ORTHOGRAPHIC
+            else:
+                vmv.ui_options.morphology.camera_projection = \
+                    vmv.enums.Rendering.Projection.ORTHOGRAPHIC
+
+        # Set it by default to ORTHOGRAPHIC
+        else:
             vmv.ui_options.morphology.camera_projection = \
                 vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 

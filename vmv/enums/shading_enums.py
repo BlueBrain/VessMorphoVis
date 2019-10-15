@@ -29,14 +29,24 @@ class Shading:
     def __init__(self):
         pass
 
-    # Flat or 'shade-less' shader
-    FLAT = 'FLAT_SHADER'
+    # Glossy shader, for workbench renderer
+    GLOSSY_WORKBENCH = 'GLOSSY_SHADER'
 
-    # Blender default lambert shader
-    LAMBERT_WARD = 'LAMBERT_WARD_SHADER'
+    # Matte shader, for workbench renderer
+    MATTE_WORKBENCH = 'MATTE_SHADER'
 
-    # Toon shader
+    # Flat or 'shade-less' shader, for cycles renderer
+    FLAT_CYCLES = 'FLAT_SHADER'
+
+    # Electron microscopy shader, for cycles renderer
+    ELECTRON_CYCLES = 'ELECTRON_SHADER'
+
+    # Toon shader, for cycles
     TOON = 'TOON_SHADER'
+
+
+
+
 
     # Glossy shader
     GLOSSY = 'GLOSSY_SHADER'
@@ -44,8 +54,7 @@ class Shading:
     # Glossy bympy shader
     GLOSSY_BUMPY = 'GLOSSY_BUMPY_SHADER'
 
-    # Electron (light) shader
-    ELECTRON_LIGHT = 'ELECTRON_LIGHT_SHADER'
+
 
     # Electron (dark) shader
     ELECTRON_DARK = 'ELECTRON_DARK_SHADER'
@@ -98,10 +107,14 @@ class Shading:
         :return:
             The shader enumerator.
         """
-        if shader_type == 'flat':
-            return Shading.FLAT
+        if shader_type == 'glossy':
+            return Shading.GLOSSY_WORKBENCH
+        if shader_type == 'matte':
+            return Shading.MATTE_WORKBENCH
+        elif shader_type == 'flat':
+            return Shading.FLAT_CYCLES
         elif shader_type == 'electron-light':
-            return Shading.ELECTRON_LIGHT
+            return Shading.ELECTRON_CYCLES
         elif shader_type == 'electron-dark':
             return Shading.ELECTRON_DARK
         elif shader_type == 'super-electron-light':
@@ -114,8 +127,6 @@ class Shading:
             return Shading.GLOSSY
         elif shader_type == 'glossy-bumpy':
             return Shading.GLOSSY_BUMPY
-        elif shader_type == 'lambert':
-            return Shading.LAMBERT_WARD
         elif shader_type == 'plastic':
             return Shading.PLASTIC
         elif shader_type == 'cracks':
@@ -132,32 +143,31 @@ class Shading:
             return Shading.CERAMIC
         elif shader_type == 'skin':
             return Shading.SKIN
-        else :
-            return Shading.LAMBERT_WARD
+        else:
+            return Shading.GLOSSY_WORKBENCH
 
     ################################################################################################
-    # A list of all the available materials in NeuroMorphoVis
+    # A list of all the available materials
     ################################################################################################
     MATERIAL_ITEMS = [
-        (LAMBERT_WARD,
-         'Lambert Ward',
-         "Lambert Ward Shader"),
+        (GLOSSY_WORKBENCH,
+         'Glossy',
+         "Apply a glossy and specular shader to the surface of the reconstructed data"),
 
-        (SUPER_ELECTRON_LIGHT,
-         'Super Electron Light',
-         "Highly Detailed Light Electron Shader"),
+        (MATTE_WORKBENCH,
+         'Matte',
+         "Apply a matte shader to the surface of the reconstructed data"),
 
-        (SUPER_ELECTRON_DARK,
-         'Super Electron Dark',
-         "Highly Detailed Dark Electron Shader"),
+        (FLAT_CYCLES,
+         'Flat',
+         "Apply a flat shader to the surface of the reconstructed data, where it looks like "
+         "an emitting surface. Note the the depth information cannot be revealed"),
 
-        (ELECTRON_LIGHT,
-         'Electron Light',
-         "Light Electron Shader"),
+        (ELECTRON_CYCLES,
+         'Electron Microscope',
+         "Apply an EM shader to the surface of the data, as appears under the electron microscope"),
 
-        (ELECTRON_DARK,
-         'Electron Dark',
-         "Use Dark Electron Shader"),
+
 
         (GLOSSY,
          'Glossy',
@@ -171,9 +181,7 @@ class Shading:
          'Shadow',
          "Use Shadows Shader"),
 
-        (FLAT,
-         'Flat',
-         "Use Flat Shader"),
+
 
         (VORONOI,
          'Voronoi',
@@ -186,4 +194,16 @@ class Shading:
         (SKIN,
          'Skin',
          "Use Skin Shader")
+    ]
+
+    ################################################################################################
+    # A list of the artistic materials that can be used to render high quality images
+    ################################################################################################
+    ARTISTIC_MATERIALS = [
+
+        # Glossy
+        GLOSSY_BUMPY,
+
+        # Skin
+        SKIN
     ]

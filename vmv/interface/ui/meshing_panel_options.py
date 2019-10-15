@@ -113,12 +113,12 @@ bpy.types.Scene.ExportedMeshFormat = bpy.props.EnumProperty(
 bpy.types.Scene.MeshMaterial = bpy.props.EnumProperty(
     items=vmv.enums.Shading.MATERIAL_ITEMS,
     name="Material",
-    default=vmv.enums.Shading.LAMBERT_WARD)
+    default=vmv.enums.Shading.GLOSSY_WORKBENCH)
 
 # Mesh color
 bpy.types.Scene.MeshColor = bpy.props.FloatVectorProperty(
     name="Mesh Color", subtype='COLOR',
-    default=vmv.consts.Color.GRAY, min=0.0, max=1.0,
+    default=vmv.consts.Color.DEFAULT_BLOOD_COLOR, min=0.0, max=1.0,
     description="The color of the reconstructed mesh surface")
 
 # 360 rendering progress bar

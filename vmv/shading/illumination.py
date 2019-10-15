@@ -168,7 +168,7 @@ def create_material_specific_illumination(material_type):
     """
 
     # Lambert Ward
-    if material_type == vmv.enums.Shading.LAMBERT_WARD:
+    if material_type == vmv.enums.Shading.GLOSSY_WORKBENCH:
         return create_lambert_ward_illumination()
 
     # Shadow

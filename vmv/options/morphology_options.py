@@ -80,7 +80,7 @@ class MorphologyOptions:
         self.reconstruction_method = vmv.enums.Skeletonization.Method.CONNECTED_SECTIONS
 
         # Morphology material
-        self.material = vmv.enums.Shading.LAMBERT_WARD
+        self.material = vmv.enums.Shading.GLOSSY_WORKBENCH
 
         # SKELETON RENDERING #######################################################################
         # Camera view

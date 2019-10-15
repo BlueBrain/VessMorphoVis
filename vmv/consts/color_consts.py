@@ -53,3 +53,5 @@ class Color:
     # Black
     BLACK = Vector((0.0, 0.0, 0.0))
 
+    # Default color for blood
+    DEFAULT_BLOOD_COLOR = Vector((172, 4, 4))
