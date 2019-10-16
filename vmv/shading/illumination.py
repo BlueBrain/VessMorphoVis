@@ -58,6 +58,52 @@ def create_lambert_ward_illumination():
         lamp_reference.rotation_euler = angle
         lamp_reference.data.energy = 0.5
 
+
+####################################################################################################
+# @create_artistic_glossy_illumination
+####################################################################################################
+def create_artistic_glossy_illumination():
+    """Creates illumination for the artistic glossy shader for Cycles rendering.
+
+    :return:
+    """
+
+    # Clear all the lights
+    vmv.scene.ops.clear_lights()
+
+    # If no light sources in the scene, then create two sources one towards the top and the
+    # other one towards the bottom
+    if not vmv.scene.ops.is_object_in_scene_by_name('LampUp'):
+        vmv.scene.ops.deselect_all()
+
+        bpy.ops.object.light_add(type='SUN', radius=1, location=(0, 0, 0))
+        lamp_reference = bpy.context.object
+        lamp_reference.name = 'LampUp'
+        lamp_reference.data.name = "LampUp"
+        lamp_reference.location[0] = 0
+        lamp_reference.location[1] = 0
+        lamp_reference.location[2] = 0
+        lamp_reference.rotation_euler[0] = 1.5708
+        lamp_reference.data.color[0] = 0.75
+        lamp_reference.data.color[1] = 1.0
+        lamp_reference.data.color[2] = 1.0
+        lamp_reference.data.energy = 5
+
+        vmv.scene.ops.deselect_all()
+        bpy.ops.object.light_add(type='SUN', radius=1, location=(0, 0, 0))
+        lamp_reference = bpy.context.object
+        lamp_reference.name = 'LampDown'
+        lamp_reference.data.name = "LampDown"
+        lamp_reference.location[0] = 0
+        lamp_reference.location[1] = 0
+        lamp_reference.location[2] = 0
+        lamp_reference.rotation_euler[0] = -1.5708
+        lamp_reference.data.color[0] = 1.0
+        lamp_reference.data.color[1] = 1.0
+        lamp_reference.data.color[2] = 0.75
+        lamp_reference.data.energy = 5
+
+
 ####################################################################################################
 # @create_shadow_illumination
 ####################################################################################################
@@ -65,7 +111,6 @@ def create_shadow_illumination():
 
     # Clear all the lights
     vmv.scene.ops.clear_lights()
-
 
     # If no light sources in the scene, then create two sources one towards the top and the
     # other one towards the bottom
@@ -171,13 +216,17 @@ def create_material_specific_illumination(material_type):
     if material_type == vmv.enums.Shading.GLOSSY_WORKBENCH:
         return create_lambert_ward_illumination()
 
+    # Lambert Ward
+    elif material_type == vmv.enums.Shading.ARTISTIC_GLOSSY_CYCLES:
+        return create_artistic_glossy_illumination()
+
     # Shadow
     elif material_type == vmv.enums.Shading.SHADOW:
         return create_lambert_ward_illumination()
 
     # Glossy bumpy
-    elif material_type == vmv.enums.Shading.GLOSSY_BUMPY:
-        return create_lambert_ward_illumination()
+    elif material_type == vmv.enums.Shading.ARTISTIC_BUMPY_CYCLES:
+        return create_artistic_glossy_illumination()
 
     # Voronoi
     elif material_type == vmv.enums.Shading.VORONOI:

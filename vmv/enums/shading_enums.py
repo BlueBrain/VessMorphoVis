@@ -41,6 +41,14 @@ class Shading:
     # Electron microscopy shader, for cycles renderer
     ELECTRON_CYCLES = 'ELECTRON_SHADER'
 
+    # Artistic glossy shader, for cycles renderer
+    ARTISTIC_GLOSSY_CYCLES = 'ARTISTIC_GLOSSY_SHADER'
+
+    # Glossy bympy shader
+    ARTISTIC_BUMPY_CYCLES = 'ARTISTIC_BUMPY_SHADER'
+
+
+
     # Toon shader, for cycles
     TOON = 'TOON_SHADER'
 
@@ -51,8 +59,7 @@ class Shading:
     # Glossy shader
     GLOSSY = 'GLOSSY_SHADER'
 
-    # Glossy bympy shader
-    GLOSSY_BUMPY = 'GLOSSY_BUMPY_SHADER'
+
 
 
 
@@ -113,8 +120,14 @@ class Shading:
             return Shading.MATTE_WORKBENCH
         elif shader_type == 'flat':
             return Shading.FLAT_CYCLES
-        elif shader_type == 'electron-light':
+        elif shader_type == 'electron':
             return Shading.ELECTRON_CYCLES
+        elif shader_type == 'artistic-electron':
+            return Shading.ARTISTIC_GLOSSY_CYCLES
+        elif shader_type == 'artistic-bumpy':
+            return Shading.ARTISTIC_BUMPY_CYCLES
+
+
         elif shader_type == 'electron-dark':
             return Shading.ELECTRON_DARK
         elif shader_type == 'super-electron-light':
@@ -125,8 +138,7 @@ class Shading:
             return Shading.SHADOW
         elif shader_type == 'glossy':
             return Shading.GLOSSY
-        elif shader_type == 'glossy-bumpy':
-            return Shading.GLOSSY_BUMPY
+
         elif shader_type == 'plastic':
             return Shading.PLASTIC
         elif shader_type == 'cracks':
@@ -167,43 +179,24 @@ class Shading:
          'Electron Microscope',
          "Apply an EM shader to the surface of the data, as appears under the electron microscope"),
 
+        (ARTISTIC_GLOSSY_CYCLES,
+         'Artistic Glossy',
+         "Apply an artistic glossy shader to the surface of the data and render with high quality "
+         "Cycles renderer. "
+         "Note that the rendering time will be quite high when you use this material"),
 
-
-        (GLOSSY,
-         'Glossy',
-         "Use Glossy Shader"),
-
-        (GLOSSY_BUMPY,
-         'Glossy Bumpy',
-         "Use Glossy Bumpy Shader"),
-
-        (SHADOW,
-         'Shadow',
-         "Use Shadows Shader"),
-
-
-
-        (VORONOI,
-         'Voronoi',
-         "Use Voronoi Shader"),
-
-        (CERAMIC,
-         'Ceramic',
-         "Use Ceramic Shader"),
-
-        (SKIN,
-         'Skin',
-         "Use Skin Shader")
+        (ARTISTIC_BUMPY_CYCLES,
+         'Artistic Bumpy',
+         "Apply an artistic bumpy shader to the surface of the data and render with high quality "
+         "Cycles renderer. "
+         "Note that the rendering time will be quite high when you use this material"),
     ]
 
     ################################################################################################
     # A list of the artistic materials that can be used to render high quality images
     ################################################################################################
     ARTISTIC_MATERIALS = [
-
-        # Glossy
-        GLOSSY_BUMPY,
-
-        # Skin
+        ARTISTIC_GLOSSY_CYCLES,
+        ARTISTIC_BUMPY_CYCLES,
         SKIN
     ]

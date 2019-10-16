@@ -145,6 +145,80 @@ def create_flat_material(name,
 
 
 ####################################################################################################
+# @create_electron_light_material
+####################################################################################################
+def create_electron_light_material(name,
+                                   color=vmv.consts.Color.WHITE):
+    """Creates a light electron shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    if not current_scene.render.engine == 'CYCLES':
+        current_scene.render.engine = 'CYCLES'
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='electron-light-material')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    # Update the color gradient
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_artistic_glossy_material
+####################################################################################################
+def create_artistic_glossy_material(name,
+                                    color=vmv.consts.Color.DEFAULT_BLOOD_COLOR):
+    """Creates a an artistic glossy shader for Cycles rendering.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    if not current_scene.render.engine == 'CYCLES':
+        current_scene.render.engine = 'CYCLES'
+
+    # Use de-noising
+    current_scene.view_layers['View Layer'].cycles.use_denoising = True
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='artistic-glossy')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    # Return a reference to the material
+    return material_reference
+
+####################################################################################################
 # @create_super_electron_light_material
 ####################################################################################################
 def create_super_electron_light_material(name,
@@ -352,44 +426,6 @@ def create_voroni_cells_material(name,
     return material_reference
 
 
-####################################################################################################
-# @create_electron_light_material
-####################################################################################################
-def create_electron_light_material(name,
-                                   color=vmv.consts.Color.WHITE):
-    """Creates a light electron shader.
-
-    :param name:
-        Material name
-    :param color:
-        Material color.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='electron-light-material')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    # Update the color gradient
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
-
-    # Return a reference to the material
-    return material_reference
 
 
 ####################################################################################################
@@ -647,45 +683,13 @@ def create_material(name,
     elif material_type == vmv.enums.Shading.ELECTRON_CYCLES:
         return create_electron_light_material(name='%s_color' % name, color=color)
 
-    # Super electron light
-    elif material_type == vmv.enums.Shading.SUPER_ELECTRON_LIGHT:
-        return create_super_electron_light_material(name='%s_color' % name, color=color)
-
-    # Super electron dark
-    elif material_type == vmv.enums.Shading.SUPER_ELECTRON_DARK:
-        return create_super_electron_dark_material(name='%s_color' % name, color=color)
-
-
-
-    # Electron dark
-    elif material_type == vmv.enums.Shading.ELECTRON_DARK:
-        return create_electron_dark_material(name='%s_color' % name, color=color)
-
-    # Shadow
-    elif material_type == vmv.enums.Shading.SHADOW:
-        return create_shadow_material(name='%s_color' % name, color=color)
-
-    # Glossy
-    elif material_type == vmv.enums.Shading.GLOSSY:
-        return create_glossy_material(name='%s_color' % name, color=color)
+    # Artistic glossy shader
+    elif material_type == vmv.enums.Shading.ARTISTIC_GLOSSY_CYCLES:
+        return create_artistic_glossy_material(name='%s_color' % name, color=color)
 
     # Glossy bumpy
-    elif material_type == vmv.enums.Shading.GLOSSY_BUMPY:
+    elif material_type == vmv.enums.Shading.ARTISTIC_BUMPY_CYCLES:
         return create_glossy_bumpy_material(name='%s_color' % name, color=color)
-
-    # Voronoi
-    elif material_type == vmv.enums.Shading.VORONOI:
-        return create_voroni_cells_material(name='%s_color' % name, color=color)
-
-
-
-    # Ceramic
-    elif material_type == vmv.enums.Shading.CERAMIC:
-        return create_ceramic_material(name='%s_color' % name, color=color)
-
-    # Skin
-    elif material_type == vmv.enums.Shading.SKIN:
-        return create_skin_material(name='%s_color' % name, color=color)
 
     # Default
     else:
