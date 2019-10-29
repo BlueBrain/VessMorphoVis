@@ -159,6 +159,9 @@ class VMVReader:
             number_strands = 0
             number_attributes_per_vertex = 0
 
+            # Parse the file into a list where it would make it easier to search
+            data = list()
+
             # Get the data sizes from the file
             for line in file_handler:
 
@@ -172,168 +175,135 @@ class VMVReader:
                 # Replace the '\n' with empty
                 line = line.replace('\n', '')
 
-                # Read the number of strands
-                if '#N_STRANDS' in line:
-
-                    # Split the line
-                    line = line.split(' ')
-
-                    # Read it
-                    number_strands = int(line[1])
-
-                # Read the number of vertices
-                if '#N_VERT' in line:
-
-                    # Split the line
-                    line = line.split(' ')
-
-                    # Read it
-                    number_vertices = int(line[1])
-
-                # Read the number of attributes per vertex
-                if '#N_ATTRIBUTES_PER_VERT' in line:
-
-                    # Split the line
-                    line = line.split(' ')
-
-                    # Read it
-                    number_attributes_per_vertex = int(line[1])
-
-                # If all the sizes are read, simply break and close the file
-                if number_vertices > 0 and number_strands > 0 and number_attributes_per_vertex > 0:
-                    break
+                # Add the filtered line to the data list
+                data.append(line)
 
             # Close the file
             file_handler.close()
 
-            # Open the morphology file, again to read the strands and the vertices
-            file_handler = open(self.morphology_file, 'r')
+            # Make sure that the data has all the mandatory fields
+            if '$PARAM_BEGIN' in data and '$PARAM_END' in data and \
+               '$VERT_LIST_BEGIN' in data and '$VERT_LIST_END' in data and \
+               '$STRANDS_LIST_BEGIN' in data and '$STRANDS_LIST_END' in data:
+                vmv.logger.log('Data set is valid')
+            else:
+                vmv.logger.log('Data set is NOT valid')
 
-            # A flag that indicates that we are reading vertices
-            vertex_reading_mode = False
-
-            # Get the data sizes from the file
-            for line in file_handler:
-
-                # Ignore empty lines
-                if not line.strip():
-                    continue
-
-                # Replace multiple spaces with a single space
-                line = ' '.join(line.split())
-
-                # Replace the '\n' with empty
-                line = line.replace('\n', '')
-
-                # Get the vertices label, and switch the flag
-                if '#START_VERT_LIST' in line:
-                    vertex_reading_mode = True
-
-                if '#END_VERT_LIST' in line:
-                    vertex_reading_mode = False
-
-                # If the vertex reading mode is active, then this is a vertex
-                if vertex_reading_mode:
-                    pass
-
-
-
-
-
-
-            exit(0)
-
-
-
-
-
-            # Read the .mat file using the python module into a data array
-            data = scipy.io.loadmat(self.morphology_file)
-
-            # Get the data set name automatically, assuming that the keys of the dictionary are
-            # fixed
-            data_set_name = ''
-            for i in data.keys():
-                if '__globals__' in i:
-                    continue
-                elif '__version__' in i:
-                    continue
-                elif '__header__' in i:
-                    continue
-                else:
-                    data_set_name = str(i)
+            # Get the number of vertices
+            for item in data:
+                if 'NUM_VERTS' in item:
+                    item = item.split(' ')
+                    number_vertices = int(item[1])
                     break
 
-            # Structure array
-            structure_array = data[data_set_name]['db'][0][0]['vectorizedStructure'][0][0]
+            # Get the number of strands
+            for item in data:
+                if 'NUM_STRANDS' in item:
+                    item = item.split(' ')
+                    number_strands = int(item[1])
+                    break
 
-            # The strands array as given in the .mat format
-            strands_array = structure_array['Strands'][0][0][0]
+            # Get the number of attributes per vertex
+            for item in data:
+                if 'NUM_ATTRIB_PER_VERT' in item:
+                    item = item.split(' ')
+                    number_attributes_per_vertex = int(item[1])
+                    break
 
-            # The vertices' coordinates array as given in the .mat format
-            vertices_array = structure_array['Vertices'][0][0]['AllVerts'][0][0]
+            # Log
+            vmv.logger.log('Data contains [%d] vertices, [%d] strands and [%d] attributes' %
+                           (number_vertices, number_strands, number_attributes_per_vertex))
 
-            # The radii array as given in the .mat format
-            radii_array = structure_array['Vertices'][0][0]['AllRadii'][0][0]
+            # If all the sizes are read, simply break and close the file
+            if number_vertices == 0 or number_strands == 0 or number_attributes_per_vertex == 0:
+                vmv.logger.log('Invalid data set')
 
-            # Verify that the array of the radii has the same length of the vertices array
-            radii_array_length = len(radii_array)
-            vertices_array_length = len(vertices_array)
+            # Read the vertices by getting the index of the $VERT_LIST_BEGIN tag
+            starting_vertex_index = 0
+            for item in data:
+                if '$VERT_LIST_BEGIN' in item:
 
-            if not radii_array_length == vertices_array_length:
-                vmv.logger.log('ERROR: The data set has inconsistent arrays')
+                    # Further increment to jump directly to the actual starting index and break
+                    starting_vertex_index += 1
+                    break
 
-            # Construct the points list
-            for i in range(vertices_array_length):
-                x = vertices_array[i][0]
-                y = vertices_array[i][1]
-                z = vertices_array[i][2]
-                radius = radii_array[i][0]
+                # Increment the vertex index
+                starting_vertex_index += 1
+
+            # End vertex index
+            end_vertex_index = starting_vertex_index + number_vertices
+
+            # Parse the vertices
+            for i in range(starting_vertex_index, end_vertex_index):
+
+                # Split the entry
+                vertex_entry = data[i].split(' ')
+
+                index = int(vertex_entry[0])
+                x = float(vertex_entry[1])
+                y = float(vertex_entry[2])
+                z = float(vertex_entry[3])
+                radius = float(vertex_entry[4])
 
                 # Add this point to the points list with the position and radius
-                self.points_list.append([x, y, z, radius])
-
-            # Construct the structures list
-            '''
-                [0] StartVertexIndex
-                [1] EndVertexIndex
-                [2] InteriorVertices
-                [3] StartToEndIndices
-                [4] StartVertexNeighborStrands
-                [5] EndVertexNeighborStrands
-                [6] Active
-                [7] YXZLimits
-                [8] MedianRadius
-                [9] MedianLabel
-                [10] strandConductance
-                [11] strandCurrent
-                [12] MedianVoltage
-                [13] StartVoltage
-                [14] EndVoltage
-                [15] VoltageDrop
-            '''
-            # This is a reflection to the StartToEndIndices array in the .mat file
-            for i in range(len(strands_array)):
-
-                # Get the .mat array
-                strand_array = strands_array[i][3][0]
-
-                # Convert the array directly to a list and append the list to the structures list
-                self.structures_list.append(strand_array.tolist())
-
-            # TODO: A list of all the sections (called structures) in the data set
-            # self.connectivity_list = data['connectivity'].value
-
-            # Reset the std output
-            # vmv.utilities.enable_std_output()
+                self.points_list.append([x, y, z, radius, index])
 
             # Compute the bounding box of the morphology
-            self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(self.points_list)
+            self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(
+                self.points_list)
+
+            # Read the strands by getting the index of the STRANDS_LIST_BEGIN tag
+            starting_strand_index = 0
+            for item in data:
+                if '$STRANDS_LIST_BEGIN' in item:
+
+                    # Further increment to jump directly to the actual starting index and break
+                    starting_strand_index += 1
+                    break
+
+                # Increment the vertex index
+                starting_strand_index += 1
+
+            # End strand index
+            end_strand_index = starting_strand_index + number_strands
+
+            for i in range(starting_strand_index, end_strand_index):
+
+                # Split the entry
+                strand_entry = data[i].split(' ')
+
+                # Get the index
+                strand_index = int(strand_entry[0])
+
+                # Remove the item at the first index that accounts for the strand index to end up
+                # with the list of points along the strand
+                strand_entry.remove(strand_entry[0])
+
+                # Construct the samples list along the strand
+                samples_list = list()
+                for i_point in strand_entry:
+
+                    # Get the point
+                    point = self.points_list[int(i_point) - 1]
+
+                    # Construct a sample
+                    sample = vmv.skeleton.Sample(point=Vector((point[0], point[1], point[2])),
+                                                 radius=point[3],
+                                                 index=point[4])
+
+                    # Add the sample to the samples list
+                    samples_list.append(sample)
+
+                # Construct the section, the section index will be the same order
+                section = vmv.skeleton.Section(index=strand_index, samples=samples_list)
+
+                # Add the section to the sections list
+                self.sections_list.append(section)
 
         # Raise an exception if we cannot import the h5py module
         except ImportError:
 
-            print('ERROR: Cannot *import scipy.io* to read the file [%s]' % self.morphology_file)
+            print('ERROR: Cannot read the file [%s]' % self.morphology_file)
             exit(0)
 
     ################################################################################################
