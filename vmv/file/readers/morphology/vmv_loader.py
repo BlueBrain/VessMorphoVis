@@ -70,6 +70,8 @@ class VMVReader:
         """Builds the graph from the parsed data.
         """
 
+        self.sections_list = set(self.sections_list)
+
         # Build the graph from the connectivity list
         for i_section in range(len(self.sections_list)):
 
@@ -304,7 +306,7 @@ class VMVReader:
         self.read_data_from_file(center_at_origin=center_at_origin)
 
         # Build the graph from the parsed data
-        # self.build_graph_from_parsed_data()
+        self.build_graph_from_parsed_data()
 
         # Resample the morphology skeleton if required
         if resample_morphology:
