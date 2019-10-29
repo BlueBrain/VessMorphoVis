@@ -111,7 +111,7 @@ def create_morphology_reader(morphology_file_path):
 
     # If it is a .vmv file, use the VMVReader
     elif '.vmv' in morphology_extension:
-        return vmv.file.readers.VMVReader(mat_file=morphology_file_path)
+        return vmv.file.readers.VMVReader(vmv_file=morphology_file_path)
 
     else:
         # Issue an error, wrong extension

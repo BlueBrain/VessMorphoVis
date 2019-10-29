@@ -38,24 +38,18 @@ class VMVReader:
     # @__init__
     ################################################################################################
     def __init__(self,
-                 mat_file):
+                 vmv_file):
         """Constructor
 
-        :param mat_file:
-            A given .mat morphology file.
+        :param vmv_file:
+            A given .vmv morphology file.
         """
 
-        # Set the path to the given h5 file
-        self.morphology_file = mat_file
+        # Set the path to the given vmv text file
+        self.morphology_file = vmv_file
 
         # A list of all the points (or samples) in the morphology file
         self.points_list = list()
-
-        # A list of all the structures in the morphology file
-        self.structures_list = list()
-
-        # A list of the connectivity data in the morphology file
-        self.connectivity_list = list()
 
         # A list of all the sections that were extracted from the loaded data
         self.sections_list = list()
@@ -70,46 +64,6 @@ class VMVReader:
         self.roots = list()
 
     ################################################################################################
-    # @parse_structures_list
-    ################################################################################################
-    def parse_structures_list(self):
-        """Parses the structures list from the data loaded from the morphology file.
-        """
-        # Parse the structures list
-        for i in range(len(self.structures_list)):
-
-            # The structures contain the vertices of the points in each strand (section)
-            strand_vertices = self.structures_list[i]
-
-            # A list of samples in the section
-            samples_list = list()
-
-            # Add the samples along the section
-            for j in range(len(strand_vertices)):
-
-                # Get the point index
-                point_index = strand_vertices[j]
-
-                # Get the point from the points list
-                # Note that we have to reduce it by 1 to account for the difference in indices
-                # between Matlab and Python
-                point = self.points_list[point_index - 1]
-
-                # Construct a sample
-                sample = vmv.skeleton.Sample(point=Vector((point[0], point[1], point[2])),
-                                             radius=point[3],
-                                             index=j)
-
-                # Add the sample to the samples list
-                samples_list.append(sample)
-
-            # Construct the section, the section index will be the same order
-            section = vmv.skeleton.Section(index=i, samples=samples_list)
-
-            # Add the section to the sections list
-            self.sections_list.append(section)
-
-    ################################################################################################
     # @build_graph_from_parsed_data
     ################################################################################################
     def build_graph_from_parsed_data(self):
@@ -117,25 +71,33 @@ class VMVReader:
         """
 
         # Build the graph from the connectivity list
-        for connection in self.connectivity_list:
+        for i_section in range(len(self.sections_list)):
 
-            # The index of the parent section
-            parent_section_index = connection[0]
+            # The index of the first sample on the section
+            i_first_sample_index = self.sections_list[i_section].samples[0].index
 
-            # The index of the child section
-            child_section_index = connection[1]
+            # The index of the last sample on the section
+            i_last_sample_index = self.sections_list[i_section].samples[-1].index
 
-            # Parent section
-            parent_section = self.sections_list[parent_section_index]
+            for j_section in range(len(self.sections_list)):
 
-            # Child section
-            child_section = self.sections_list[child_section_index]
+                # Parenting of the same section is not valid, indeed
+                if i_section == j_section:
+                    continue
 
-            # Connect the child to the parent
-            parent_section.children.append(child_section)
+                # The index of the first sample on the section
+                j_first_sample_index = self.sections_list[j_section].samples[0].index
 
-            # Connect the parent to the child
-            child_section.parents.append(parent_section)
+                # The index of the last sample on the section
+                j_last_sample_index = self.sections_list[j_section].samples[-1].index
+
+                # J is parent to I
+                if i_first_sample_index == j_last_sample_index:
+                    self.sections_list[i_section].parents.append(self.sections_list[j_section])
+
+                # J is a child of I
+                if i_last_sample_index == j_first_sample_index:
+                    self.sections_list[i_section].children.append(self.sections_list[j_section])
 
         # Detect the root sections and update the list
         for section in self.sections_list:
@@ -145,7 +107,7 @@ class VMVReader:
     ################################################################################################
     # @read_data_from_file
     ################################################################################################
-    def read_data_from_file(self):
+    def read_data_from_file(self, center_at_origin=False):
         """Loads the data from the given file in the constructor.
         """
 
@@ -252,6 +214,10 @@ class VMVReader:
             self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(
                 self.points_list)
 
+            # Center the morphology at the origin if required by the user
+            if center_at_origin:
+                self.center_morphology_at_origin()
+
             # Read the strands by getting the index of the STRANDS_LIST_BEGIN tag
             starting_strand_index = 0
             for item in data:
@@ -335,17 +301,10 @@ class VMVReader:
         """
 
         # Read the morphology skeleton from the file
-        self.read_data_from_file()
-
-        # Center the morphology at the origin if required by the user
-        if center_at_origin:
-            self.center_morphology_at_origin()
-
-        # Parse the structures list
-        self.parse_structures_list()
+        self.read_data_from_file(center_at_origin=False)
 
         # Build the graph from the parsed data
-        # self.build_graph_from_parsed_data()
+        self.build_graph_from_parsed_data()
 
         # Resample the morphology skeleton if required
         if resample_morphology:
@@ -380,8 +339,8 @@ class VMVReader:
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
             morphology_name=morphology_name, morphology_file_path=self.morphology_file,
-            points_list=self.points_list, structures_list=self.structures_list,
-            connectivity_list=self.connectivity_list, sections_list=self.sections_list,
+            points_list=self.points_list, structures_list=None,
+            connectivity_list=None, sections_list=self.sections_list,
             roots=self.roots)
 
         # Return the object
