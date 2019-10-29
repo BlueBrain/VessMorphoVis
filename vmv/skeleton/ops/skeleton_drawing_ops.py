@@ -712,7 +712,7 @@ def resample_section_adaptively(section):
         radii = (section.samples[1].radius + section.samples[0].radius)
 
         if section_length < radii:
-            print('\t\t* BAD SECTION')
+            vmv.logger.detail('\t\t* BAD SECTION')
 
     # If the section has ONLY three sample, continue
     elif len(section.samples) == 3:

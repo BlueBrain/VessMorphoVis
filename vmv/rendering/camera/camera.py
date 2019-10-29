@@ -105,7 +105,7 @@ class Camera:
         """Rotate the camera in the direction of the typical side view.
         """
 
-        # Adjust the orientation
+        # Adjust the orientationMeshRenderingResolution
         self.camera.rotation_euler[0] = 0
         self.camera.rotation_euler[1] = 1.5708
         self.camera.rotation_euler[2] = 0
@@ -146,15 +146,8 @@ class Camera:
         # Activate the camera for rendering
         self.set_active()
 
-        # Switch the rendering engine to cycles to be able to create the material
-        # if not bpy.context.scene.render.engine == 'CYCLES':
-        #    bpy.context.scene.render.engine = 'CYCLES'
-
         # Set the image file name
         bpy.data.scenes['Scene'].render.filepath = '%s.png' % image_name
-
-        # TODO: Update the number of samples based on the scene conditions
-        # bpy.context.scene.cycles.samples = 2
 
         # Render the image and ignore Blender verbosity
         bpy.ops.render.render(write_still=True)

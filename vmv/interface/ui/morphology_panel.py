@@ -17,6 +17,7 @@
 
 # System import
 import time
+import copy
 
 # Blender imports
 import bpy
@@ -688,7 +689,6 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
                                            vmv.ui_options.morphology.camera_view)
 
         # Stretch the bounding box by few microns
-        import copy
         rendering_bbox = copy.deepcopy(bounding_box)
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 

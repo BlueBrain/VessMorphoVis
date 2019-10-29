@@ -162,11 +162,6 @@ def update_poly_lines_radii(poly_lines,
         for poly_line in poly_lines:
             update_poly_line_radii(poly_line=poly_line, options=options)
 
-    # No action required
-    else:
-        pass
-
-
 def resample_poly_line_adaptively(poly_line):
 
 

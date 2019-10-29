@@ -147,9 +147,9 @@ class VMVReader:
             if '$PARAM_BEGIN' in data and '$PARAM_END' in data and \
                '$VERT_LIST_BEGIN' in data and '$VERT_LIST_END' in data and \
                '$STRANDS_LIST_BEGIN' in data and '$STRANDS_LIST_END' in data:
-                vmv.logger.log('Data set is valid')
+                vmv.logger.info('Data set is valid')
             else:
-                vmv.logger.log('Data set is NOT valid')
+                vmv.logger.info('Data set is NOT valid')
 
             # Get the number of vertices
             for item in data:
@@ -173,12 +173,12 @@ class VMVReader:
                     break
 
             # Log
-            vmv.logger.log('Data contains [%d] vertices, [%d] strands and [%d] attributes' %
+            vmv.logger.info('Data contains [%d] vertices, [%d] strands and [%d] attributes' %
                            (number_vertices, number_strands, number_attributes_per_vertex))
 
             # If all the sizes are read, simply break and close the file
             if number_vertices == 0 or number_strands == 0 or number_attributes_per_vertex == 0:
-                vmv.logger.log('Invalid data set')
+                vmv.logger.info('Invalid data set')
 
             # Read the vertices by getting the index of the $VERT_LIST_BEGIN tag
             starting_vertex_index = 0
@@ -304,7 +304,7 @@ class VMVReader:
         self.read_data_from_file(center_at_origin=center_at_origin)
 
         # Build the graph from the parsed data
-        self.build_graph_from_parsed_data()
+        # self.build_graph_from_parsed_data()
 
         # Resample the morphology skeleton if required
         if resample_morphology:

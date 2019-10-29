@@ -17,6 +17,7 @@
 
 # System imports
 import time
+import copy
 
 # Blender imports
 import bpy
@@ -366,13 +367,53 @@ class VMVRenderMeshImage(bpy.types.Operator):
 
         # Create the sequences directory if it does not exist
         if not vmv.file.ops.path_exists(vmv.interface.ui_options.io.images_directory):
-            vmv.file.ops.clean_and_create_directory(
-                vmv.interface.ui_options.io.images_directory)
+            vmv.file.ops.clean_and_create_directory(vmv.interface.ui_options.io.images_directory)
 
-        # Render the image
-        vmv.interface.ui.render_mesh_image(self, context.scene,
-                                           context.scene.MeshRenderingView,
-                                           context.scene.MeshCameraProjection)
+        # Report the process starting in the UI
+        self.report({'INFO'}, 'Mesh Rendering ... Wait')
+
+        # Compute the bounding box for the available meshes only
+        bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
+
+        # Image name
+        image_name = 'MESH_%s_%s' % (vmv.interface.ui_options.morphology.label,
+                                     vmv.ui_options.mesh.camera_view)
+
+        # Stretch the bounding box by few microns
+        rendering_bbox = copy.deepcopy(bounding_box)
+        rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
+
+        # Adding the illumination
+        vmv.shading.create_material_specific_illumination(
+            vmv.interface.ui_options.mesh.material)
+
+        # Render at a specific resolution
+        if context.scene.MeshRenderingResolution == \
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+
+            pass
+            # Render the morphology
+            vmv.rendering.render(
+                bounding_box=rendering_bbox,
+                camera_view=vmv.ui_options.mesh.camera_view,
+                camera_projection=vmv.ui_options.mesh.camera_projection,
+                image_resolution=context.scene.MeshFrameResolution,
+                image_name=image_name,
+                image_directory=vmv.interface.ui_options.io.images_directory)
+
+        # Render at a specific scale factor
+        else:
+
+            # Render the morphology
+            vmv.rendering.render_to_scale(
+                bounding_box=rendering_bbox,
+                camera_view=vmv.ui_options.mesh.camera_view,
+                image_scale_factor=context.scene.MeshFrameScaleFactor,
+                image_name=image_name,
+                image_directory=vmv.interface.ui_options.io.images_directory)
+
+        # Report the process termination in the UI
+        self.report({'INFO'}, 'Rendering Morphology Done')
 
         # Done
         return {'FINISHED'}

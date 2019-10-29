@@ -34,6 +34,7 @@ def compute_number_of_samples_in_section(section):
     # Returns the number of samples in the sections
     return len(section.samples)
 
+
 ####################################################################################################
 # @compute_segments_lengths
 ####################################################################################################
@@ -63,7 +64,7 @@ def compute_segments_lengths(section):
         segments_lengths.append(segment_length)
 
     # Return the array
-    return  segments_lengths
+    return segments_lengths
 
 
 ####################################################################################################
@@ -226,6 +227,7 @@ def compute_total_number_samples_from_sections_list(sections_list):
     # Return the total length
     return morphology_total_number_of_samples
 
+
 ####################################################################################################
 # @compute_number_of_sections_with_two_samples
 ####################################################################################################
@@ -268,6 +270,37 @@ def compute_total_number_sections(sections_list):
 
 
 ####################################################################################################
+# @analyze_samples_with_zero_radii
+####################################################################################################
+def analyze_samples_with_zero_radii(samples_list, epsilon=1e-3):
+    """Count the number of samples that have zero-radii.
+
+    :param samples_list:
+        A list of all the sample of the morphology.
+    :param epsilon:
+        Very small value that is close to zero, it is user defined and by default any sample that
+        has a radius less than this value is an error.
+    :return:
+        The total number of samples with zero-radii.
+    """
+
+    # Initially zero
+    zero_radii_samples = 0
+
+    # Iterate over all the samples and detect
+    for sample in samples_list:
+
+        # If smaller than epsilon
+        if sample[3] < epsilon:
+
+            # Increment
+            zero_radii_samples += 1
+
+    # Return the final value
+    return zero_radii_samples
+
+
+####################################################################################################
 # @analyze_samples_radii
 ####################################################################################################
 def analyze_samples_radii(samples_list):
@@ -282,7 +315,7 @@ def analyze_samples_radii(samples_list):
     # Compile a list of all the radii
     radii_list = list()
     for sample in samples_list:
-        radii_list.append(1.0 * sample[3])
+        radii_list.append(sample[3])
 
     # Compute the minimum
     minimum_sample_radius = min(radii_list)
