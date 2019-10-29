@@ -301,7 +301,7 @@ class VMVReader:
         """
 
         # Read the morphology skeleton from the file
-        self.read_data_from_file(center_at_origin=False)
+        self.read_data_from_file(center_at_origin=center_at_origin)
 
         # Build the graph from the parsed data
         self.build_graph_from_parsed_data()
