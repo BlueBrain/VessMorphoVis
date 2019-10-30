@@ -300,6 +300,19 @@ def analyze_samples_with_zero_radii(samples_list, epsilon=1e-3):
     return zero_radii_samples
 
 
+def correct_samples_with_zero_radii(sections_list, epsilon=1e-3):
+
+    for section in sections_list:
+
+        mean_radius = 0
+        for sample in section.samples:
+            mean_radius += sample.radius
+        mean_radius = mean_radius / len(section.samples)
+
+        for sample in section.samples:
+            if sample.radius < epsilon:
+                sample.radius = mean_radius
+
 ####################################################################################################
 # @analyze_samples_radii
 ####################################################################################################

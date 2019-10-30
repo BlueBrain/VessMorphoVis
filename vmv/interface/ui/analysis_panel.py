@@ -433,6 +433,9 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         context.scene.NumberZeroRadiusSamples = vmv.analysis.analyze_samples_with_zero_radii(
             vmv.interface.ui.ui_morphology.points_list)
 
+        vmv.logger.info('Repair Zero-radii')
+        vmv.analysis.correct_samples_with_zero_radii(vmv.interface.ui.ui_morphology.sections_list)
+
         # Segments length stats.
         vmv.logger.info('Segments lengths')
         minimum_segment_length, maximum_segment_length, average_segment_length = \
