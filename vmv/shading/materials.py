@@ -729,7 +729,7 @@ def adjust_material_uv(mesh_object,
         The texture space size of the material, by default set to 1.
     """
     # Select the mesh
-    mesh_object.select = True
+    mesh_object.select_set(True)
 
     # Set the 'auto_texspace' to False
     bpy.context.object.data.use_auto_texspace = False

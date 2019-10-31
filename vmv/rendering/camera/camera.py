@@ -514,7 +514,7 @@ class Camera:
 
             # Set the lens to 25 mm, AND RESET LATER
             # bpy.context.object.data.angle = math.radians(45.0)
-            bpy.context.object.data.lens = 50
+            bpy.context.object.data.lens = 45
 
         else:
 

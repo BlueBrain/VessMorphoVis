@@ -41,6 +41,18 @@ bpy.types.Scene.MeshingTechnique = bpy.props.EnumProperty(
             'take few hours to make a mesh based on the resolution and setting'), ],
     name='Method', default=vmv.enums.Meshing.Technique.META_BALLS)
 
+# Mesh tessellation flag
+bpy.types.Scene.TessellateMesh = bpy.props.BoolProperty(
+    name='Tessellation',
+    description='Tessellate the reconstructed mesh to reduce the geometry complexity',
+    default=False)
+
+# Mesh tessellation level
+bpy.types.Scene.MeshTessellationLevel = bpy.props.FloatProperty(
+    name='Factor',
+    description='Mesh tessellation level (between 0.1 and 1.0)',
+    default=1.0, min=0.05, max=1.0)
+
 # Auto-detected meta balls resolution
 bpy.types.Scene.MetaBallAutoResolution = bpy.props.BoolProperty(
     name="Auto Detected",

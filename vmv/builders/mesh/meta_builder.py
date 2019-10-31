@@ -31,6 +31,7 @@ import vmv.mesh
 import vmv.skeleton
 import vmv.utilities
 import vmv.scene
+import vmv.shading
 
 
 ####################################################################################################
@@ -341,6 +342,9 @@ class MetaBuilder:
         # Re-select it again to be able to perform post-processing operations in it
         self.meta_mesh.select_set(True)
 
+        # Tessellate Mesh
+        self.tessellate_mesh()
+
         # Set the mesh to be the active object
         bpy.context.view_layer.objects.active = self.meta_mesh
 
@@ -367,6 +371,22 @@ class MetaBuilder:
         # Activate the mesh object
         self.meta_mesh.select_set(True)
         bpy.context.view_layer.objects.active = self.meta_mesh
+
+    ################################################################################################
+    # @tessellate_mesh
+    ################################################################################################
+    def tessellate_mesh(self):
+
+        # Ensure that the tessellation level is within range
+        if 0.01 < self.options.mesh.tessellation_level < 1.0:
+
+            # Decimate each mesh object
+            vmv.mesh.ops.decimate_mesh_object(
+                mesh_object=self.meta_mesh,
+                decimation_ratio=self.options.mesh.tessellation_level)
+
+            # Adjust the texture mapping
+            vmv.shading.adjust_material_uv(mesh_object=self.meta_mesh)
 
     ################################################################################################
     # @build
