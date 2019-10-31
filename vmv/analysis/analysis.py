@@ -300,16 +300,32 @@ def analyze_samples_with_zero_radii(samples_list, epsilon=1e-3):
     return zero_radii_samples
 
 
+####################################################################################################
+# @correct_samples_with_zero_radii
+####################################################################################################
 def correct_samples_with_zero_radii(sections_list, epsilon=1e-3):
+    """Updating the radii of the samples whose radii are set to zero due to reconstruction artifact.
+    NOTE: This operation is performed on a per-section level.
 
+    :param sections_list:
+        A list of all the sections in the morphology.
+    :param epsilon:
+        Smallest value.
+    """
+
+    # Per section
     for section in sections_list:
 
+        # Get the mean radius
         mean_radius = 0
         for sample in section.samples:
             mean_radius += sample.radius
         mean_radius = mean_radius / len(section.samples)
 
+        # Check if the sample radius is below the threshold or not
         for sample in section.samples:
+
+            # If yes, update it
             if sample.radius < epsilon:
                 sample.radius = mean_radius
 

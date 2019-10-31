@@ -63,6 +63,12 @@ class VMVReader:
         # single object.
         self.roots = list()
 
+        # The number of samples when the morphology was loaded
+        self.number_samples_original = 0
+
+        # The total number of samples along the morphology after resampling
+        self.number_samples_after_resampling = 0
+
     ################################################################################################
     # @build_graph_from_parsed_data
     ################################################################################################
@@ -267,6 +273,9 @@ class VMVReader:
 
                 # Add the section to the sections list
                 self.sections_list.append(section)
+
+            # Update the number of samples
+            self.number_samples_original = number_vertices
 
         # Raise an exception if we cannot import the h5py module
         except ImportError:

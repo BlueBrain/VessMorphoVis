@@ -322,7 +322,7 @@ class MetaBuilder:
             self.meta_skeleton.resolution = self.options.mesh.meta_resolution
 
         # Update the interface
-        vmv.logger.info('MetaBall resolution: [ %f ]' % self.meta_skeleton.resolution)
+        vmv.logger.info('MetaBall resolution: [%f]' % self.meta_skeleton.resolution)
         self.options.mesh.meta_resolution = self.meta_skeleton.resolution
 
         # Deselect all objects
