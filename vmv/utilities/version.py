@@ -15,6 +15,10 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import sys
+import os
+
 # Blender imports
 import bpy
 
@@ -48,4 +52,26 @@ def get_blender_version_string():
     # Return the version as a string
     return '%s_%s_%s' % (str(version[0]), str(version[1]), str(version[2]))
 
+
+####################################################################################################
+# @get_vmv_version
+####################################################################################################
+def get_vmv_version():
+    """Get VessMorphoVis version.
+
+    :return:
+        VessMorphoVis version tuple.
+    """
+
+    # Load the version from the version file
+    version_file_path = '%s/../../.version' % os.path.dirname(os.path.realpath(__file__))
+    version_file = open(version_file_path, 'r')
+    version_string = ''
+    for line in version_file:
+        version_string = line
+        break
+    version_file.close()
+
+    version = version_string.split(' ')
+    return [int(version[0]), int(version[1]), int(version[2])]
 

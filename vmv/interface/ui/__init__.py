@@ -21,4 +21,5 @@ from .io_panel import *
 from .meshing_panel import *
 from .meshing_panel_options import *
 from .morphology_panel import *
+from .about_panel import *
 from .common import *

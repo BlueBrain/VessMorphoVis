@@ -69,12 +69,14 @@ if "bpy" in locals():
     import vmv.interface.ui.analysis_panel
     import vmv.interface.ui.morphology_panel
     import vmv.interface.ui.meshing_panel
+    import vmv.interface.ui.about_panel
 
     # Reloading the modules
     imp.reload(vmv.interface.ui.io_panel)
     imp.reload(vmv.interface.ui.analysis_panel)
     imp.reload(vmv.interface.ui.morphology_panel)
     imp.reload(vmv.interface.ui.meshing_panel)
+    imp.reload(vmv.interface.ui.about_panel)
 
 else:
 
@@ -83,6 +85,7 @@ else:
     import vmv.interface.ui.analysis_panel
     import vmv.interface.ui.morphology_panel
     import vmv.interface.ui.meshing_panel
+    import vmv.interface.ui.about_panel
 
     vmv.logger.header('Loading VessMorphoVis')
     vmv.logger.info('Version [%s]' % str(__version__))
@@ -101,6 +104,7 @@ def register():
     vmv.interface.ui.analysis_panel.register_panel()
     vmv.interface.ui.morphology_panel.register_panel()
     vmv.interface.ui.meshing_panel.register_panel()
+    vmv.interface.ui.about_panel.register_panel()
 
 
 ####################################################################################################
@@ -115,6 +119,7 @@ def unregister():
     vmv.interface.ui.analysis_panel.unregister_panel()
     vmv.interface.ui.morphology_panel.unregister_panel()
     vmv.interface.ui.meshing_panel.unregister_panel()
+    vmv.interface.ui.about_panel.unregister_panel()
 
 
 ####################################################################################################
