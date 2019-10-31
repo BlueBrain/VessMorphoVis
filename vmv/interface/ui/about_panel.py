@@ -37,7 +37,7 @@ vmv_icons = None
 # @IOPanel
 ####################################################################################################
 class AboutPanel(bpy.types.Panel):
-    """NMV About Us panel"""
+    """VMV About Us panel"""
 
     ################################################################################################
     # Panel parameters
@@ -89,18 +89,18 @@ class AboutPanel(bpy.types.Panel):
         version_column.label(text='Version: %d.%d.%d' % (version[0], version[1], version[2]))
 
         update_button = layout.column()
-        update_button.operator('update.nmv', emboss=True,
+        update_button.operator('update.vmv', emboss=True,
                                icon_value=vmv.interface.ui_icons['github'].icon_id)
 
 
 ####################################################################################################
-# @UpdateNeuroMorphoVis
+# @UpdateVessMorphoVis
 ####################################################################################################
-class UpdateNeuroMorphoVis(bpy.types.Operator):
-    """Update NeuroMorphoVis"""
+class UpdateVessMorphoVis(bpy.types.Operator):
+    """Update VessMorphoVis"""
 
     # Operator parameters
-    bl_idname = "update.nmv"
+    bl_idname = "update.vmv"
     bl_label = "Update"
 
     ################################################################################################
@@ -146,7 +146,7 @@ def register_panel():
     bpy.utils.register_class(AboutPanel)
 
     # Buttons
-    bpy.utils.register_class(UpdateNeuroMorphoVis)
+    bpy.utils.register_class(UpdateVessMorphoVis)
 
 
 ####################################################################################################
@@ -159,4 +159,4 @@ def unregister_panel():
     bpy.utils.unregister_class(AboutPanel)
 
     # Buttons
-    bpy.utils.unregister_class(UpdateNeuroMorphoVis)
+    bpy.utils.unregister_class(UpdateVessMorphoVis)
