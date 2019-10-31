@@ -80,7 +80,7 @@ class AboutPanel(bpy.types.Panel):
         credits_column.label(text='Samuel Lapere', icon='OUTLINER_DATA_ARMATURE')
         credits_column.label(text='Pablo Blinder', icon='OUTLINER_DATA_ARMATURE')
         credits_column.label(text='Henry Markram', icon='OUTLINER_DATA_ARMATURE')
-        credits_column.label(text='Felix Shuermann', icon='OUTLINER_DATA_ARMATURE')
+        credits_column.label(text='Felix Schürmann', icon='OUTLINER_DATA_ARMATURE')
         credits_column.separator()
 
         # Version
