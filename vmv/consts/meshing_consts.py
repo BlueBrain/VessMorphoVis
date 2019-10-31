@@ -38,8 +38,14 @@ class Meshing:
     # Default sides of a bevel object
     BEVEL_OBJECT_SIDES = 16
 
-    # Meta-ball resolution
+    # Meta-ball default resolution
     META_RESOLUTION = 1.0
+
+    # Minimum meta ball resolution
+    MIN_META_BALL_RESOLUTION = 0.01
+
+    # Minimum meta ball resolution
+    MAX_META_BALL_RESOLUTION = 10.0
 
     # The suffix that is added to any reconstructed mesh to be able to search for it
     MESH_SUFFIX = '_vmv_mesh'

@@ -858,11 +858,14 @@ def clear_lights():
     """Clear the lights form the scene.
     """
 
+    # Deselect all object to avoid removing meshes or morphologies
+    vmv.scene.deselect_all()
+
     # Iterate over all the objects in the scene, and remove the 'Cube', 'Lamp' and 'Camera' if exist
     for scene_object in bpy.context.scene.objects:
 
         # Object selection
-        if 'Lamp' in scene_object.name:
+        if 'LIGHT' in scene_object.type:
 
             # Select the light
             scene_object.select_set(True)

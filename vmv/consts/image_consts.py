@@ -47,6 +47,12 @@ class Image:
     # Default image scale factor
     DEFAULT_IMAGE_SCALE_FACTOR = 1.0
 
+    # Minimum image scale factor
+    MIN_IMAGE_SCALE_FACTOR = 0.1
+
+    # Maximum image scale factor
+    MAX_IMAGE_SCALE_FACTOR = 25.0
+
     # Default full view resolution
     FULL_VIEW_RESOLUTION = 1024
 

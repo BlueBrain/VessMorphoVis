@@ -193,10 +193,30 @@ class VMVMeshingPanel(bpy.types.Panel):
         view_row.prop(context.scene, 'MeshRenderingView', icon='AXIS_FRONT')
         vmv.ui_options.mesh.camera_view = context.scene.MeshRenderingView
 
-        # Camera projection column
-        projection_row = layout.column()
-        projection_row.prop(context.scene, 'MeshCameraProjection', icon='MESH_CYLINDER')
-        vmv.ui_options.mesh.camera_projection = context.scene.MeshCameraProjection
+        # Rendering projection column only for a fixed resolution
+        if context.scene.MeshRenderingResolution == \
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+
+            # Due to a bug in the workbench renderer in Blender, we will allow the
+            # perspective projection for all the materials that use cycles and have high number of
+            # samples per pixel, mainly the artistic rendering.
+            if vmv.ui_options.mesh.material in vmv.enums.Shading.ARTISTIC_MATERIALS:
+
+                # Add the projection option
+                projection_row = self.layout.column()
+                projection_row.prop(context.scene, 'MeshCameraProjection', icon='AXIS_FRONT')
+                vmv.ui_options.mesh.camera_projection = \
+                    context.scene.MeshCameraProjection
+
+            # Set it by default to ORTHOGRAPHIC
+            else:
+                vmv.ui_options.mesh.camera_projection = \
+                    vmv.enums.Rendering.Projection.ORTHOGRAPHIC
+
+        # Set it by default to ORTHOGRAPHIC
+        else:
+            vmv.ui_options.mesh.camera_projection = \
+                vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
         # Render still images button
         mesh_still_image_rendering = layout.row()
@@ -370,7 +390,7 @@ class VMVRenderMeshImage(bpy.types.Operator):
             vmv.file.ops.clean_and_create_directory(vmv.interface.ui_options.io.images_directory)
 
         # Report the process starting in the UI
-        self.report({'INFO'}, 'Mesh Rendering ... Wait')
+        self.report({'INFO'}, 'Rendering Mesh ... Wait Please')
 
         # Compute the bounding box for the available meshes only
         bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
@@ -391,7 +411,6 @@ class VMVRenderMeshImage(bpy.types.Operator):
         if context.scene.MeshRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
-            pass
             # Render the morphology
             vmv.rendering.render(
                 bounding_box=rendering_bbox,

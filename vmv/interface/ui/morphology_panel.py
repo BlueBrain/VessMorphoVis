@@ -679,7 +679,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
             vmv.file.ops.clean_and_create_directory(vmv.interface.ui_options.io.images_directory)
 
         # Report the process starting in the UI
-        self.report({'INFO'}, 'Morphology Rendering ... Wait')
+        self.report({'INFO'}, 'Rendering Morphology ... Wait Please')
 
         # Compute the bounding box for the available meshes only
         bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()

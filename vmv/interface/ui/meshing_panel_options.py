@@ -51,7 +51,9 @@ bpy.types.Scene.MetaBallAutoResolution = bpy.props.BoolProperty(
 # Mesh color
 bpy.types.Scene.MetaBallResolution = bpy.props.FloatProperty(
     name="Resolution",
-    default=vmv.consts.Meshing.META_RESOLUTION, min=0.01, max=5.0,
+    default=vmv.consts.Meshing.META_RESOLUTION,
+    min=vmv.consts.Meshing.MIN_META_BALL_RESOLUTION,
+    max=vmv.consts.Meshing.MAX_META_BALL_RESOLUTION,
     description="The resolution of the meta object")
 
 # Rendering resolution
@@ -76,7 +78,7 @@ bpy.types.Scene.MeshRenderingView = bpy.props.EnumProperty(
            (vmv.enums.Rendering.View.TOP,
             'Top View',
             'Renders the top view of the mesh')],
-    name='View', default=vmv.enums.Rendering.View.TOP)
+    name='View', default=vmv.enums.Rendering.View.FRONT)
 
 # Projection
 bpy.types.Scene.MeshCameraProjection = bpy.props.EnumProperty(
@@ -130,11 +132,16 @@ bpy.types.Scene.MeshRenderingProgress = bpy.props.IntProperty(
 bpy.types.Scene.MeshFrameResolution = bpy.props.IntProperty(
     name='Resolution',
     description='The resolution of the image generated from rendering the mesh',
-    default=512, min=128, max=1024 * 10)
+    default=vmv.consts.Image.DEFAULT_RESOLUTION,
+    min=vmv.consts.Image.MIN_RESOLUTION,
+    max=vmv.consts.Image.MAX_RESOLUTION)
 
 # Frame scale factor 'for rendering to scale option '
 bpy.types.Scene.MeshFrameScaleFactor = bpy.props.FloatProperty(
-    name="Scale", default=1.0, min=1.0, max=100.0,
+    name="Scale",
+    default=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
+    min=vmv.consts.Image.MIN_IMAGE_SCALE_FACTOR,
+    max=vmv.consts.Image.MAX_IMAGE_SCALE_FACTOR,
     description="The scale factor for rendering a mesh to scale")
 
 # Reconstruction time
