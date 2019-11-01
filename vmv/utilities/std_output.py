@@ -17,6 +17,7 @@
 
 # System imports
 import sys
+import tempfile
 
 stdout_hook = None
 stderr_hook = None
@@ -36,8 +37,10 @@ def disable_std_output():
     stdout_hook = sys.stdout
     stderr_hook = sys.stderr
 
-    sys.stdout = open('stdout.output', 'w')
-    sys.stderr = open('stderr.output', 'w')
+    temporary_directory = tempfile.gettempdir()
+
+    sys.stdout = open('%s/stdout.output' % temporary_directory, 'w')
+    sys.stderr = open('%s/stderr.output' % temporary_directory, 'w')
 
 
 ####################################################################################################

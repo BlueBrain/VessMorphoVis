@@ -52,26 +52,19 @@ class VMVIOPanel(bpy.types.Panel):
     bpy.types.Scene.MorphologyFile = bpy.props.StringProperty(
         name="Morphology File",
         description="Select a specific vasculature morphology to load",
-        #default='/bbp/bbp-blender-packages/blender-2.80-50ccbe6bb233-linux-glibc217-x86_64/2.80/scripts/addons/vessmorphovis/data/vmv-morphologies/sample.vmv',
-        #default='/data/morphologies/vasculature/samples_vasculature/test3.h5',
-        default='/home/abdellah/Downloads/sample-1.vmv',
-        maxlen=2048, subtype='FILE_PATH')
-        #default='Select File', maxlen=2048,  subtype='FILE_PATH')
+        default='Select File', maxlen=2048,  subtype='FILE_PATH')
 
     # Morphology directory
     bpy.types.Scene.MorphologyDirectory = bpy.props.StringProperty(
         name="Morphology Directory",
         description="Select a directory to mesh all the morphologies in it",
-        default="/home/abdellah/Desktop/vasculature-tests", maxlen=2048, subtype='DIR_PATH')
-        #default="Select Directory", maxlen=2048, subtype='DIR_PATH')
+        default="Select Directory", maxlen=2048, subtype='DIR_PATH')
 
     # Output directory
     bpy.types.Scene.OutputDirectory = bpy.props.StringProperty(
         name="Output Directory",
         description="Select a directory where the results will be generated",
-        default="/home/abdellah/Desktop/vasculature-tests", maxlen=2048, subtype='DIR_PATH')
-
-        #default="Select Directory", maxlen=5000, subtype='DIR_PATH')
+        default="Select Directory", maxlen=5000, subtype='DIR_PATH')
 
     # Use default paths for the artifacts
     bpy.types.Scene.DefaultArtifactsRelativePath = bpy.props.BoolProperty(
