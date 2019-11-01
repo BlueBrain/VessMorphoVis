@@ -58,4 +58,3 @@ def enable_std_output():
     else:
         sys.stdout = stdout_hook
         sys.stderr = stderr_hook
-
