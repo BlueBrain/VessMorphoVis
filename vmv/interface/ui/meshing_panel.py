@@ -45,7 +45,7 @@ class VMVMeshingPanel(bpy.types.Panel):
     # Panel parameters
     ################################################################################################
     bl_label = 'Meshing'
-    bl_idname = "OBJECT_PT_Meshing"
+    bl_idname = "OBJECT_PT_VMV_Meshing"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = 'VessMorphoVis'

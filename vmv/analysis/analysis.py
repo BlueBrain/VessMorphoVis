@@ -482,6 +482,7 @@ def compute_number_of_components(sections_list):
     # Return the result
     return number_components_in_morphology
 
+
 ####################################################################################################
 # @analyze_morphology
 ####################################################################################################

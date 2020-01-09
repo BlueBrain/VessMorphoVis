@@ -43,7 +43,7 @@ class AboutPanel(bpy.types.Panel):
     # Panel parameters
     ################################################################################################
     bl_label = 'About'
-    bl_idname = "OBJECT_PT_Analysis"
+    bl_idname = "OBJECT_PT_VMV_About"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = 'VessMorphoVis'

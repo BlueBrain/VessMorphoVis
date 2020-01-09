@@ -41,7 +41,7 @@ class VMVIOPanel(bpy.types.Panel):
     ################################################################################################
     bl_category = 'VessMorphoVis'
     bl_label = 'Input / Output'
-    bl_idname = "OBJECT_PT_IO"
+    bl_idname = "OBJECT_PT_VMV_IO"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
 
@@ -311,10 +311,10 @@ class VMVLoadMorphology(bpy.types.Operator):
             # Update the viewport shading
             vmv.utilities.update_view_port_shading_to_solid()
 
+            # Show the loading time
             drawing_done = time.time()
-            # Update the interface
             context.scene.MorphologyDrawingTime = drawing_done - loading_done
-            vmv.logger.info('Morphology drawn in [%f] seconds' % (drawing_done - loading_done))
+            vmv.logger.info('Morphology loaded in [%f] seconds' % (drawing_done - loading_done))
 
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True

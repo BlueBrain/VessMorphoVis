@@ -35,9 +35,8 @@ class VMVAnalysisPanel(bpy.types.Panel):
     ################################################################################################
     # Panel parameters
     ################################################################################################
-
     bl_label = 'Analysis'
-    bl_idname = "OBJECT_PT_Analysis"
+    bl_idname = "OBJECT_PT_VMV_Analysis"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = 'VessMorphoVis'

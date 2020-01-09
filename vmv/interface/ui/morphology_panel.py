@@ -46,7 +46,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
     ################################################################################################
 
     bl_label = 'Morphology Reconstruction'
-    bl_idname = "OBJECT_PT_MorphologyReconstruction"
+    bl_idname = "OBJECT_PT_VMV_MorphologyReconstruction"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = 'VessMorphoVis'
@@ -91,7 +91,11 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 "The sections of a single arbor are connected together"),
                (vmv.enums.Skeletonization.Method.CONNECTED_SKELETON,
                 'Connected Skeleton',
-                "The morphology is reconstructed as a skeleton")],
+                "The morphology is reconstructed as a skeleton"),
+               (vmv.enums.Skeletonization.Method.SAMPLES,
+                'Samples',
+                "The morphology is reconstructed as a list of samples")
+               ],
         name="Method",
         default=vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS)
 
@@ -611,6 +615,14 @@ class VMVReconstructMorphology(bpy.types.Operator):
                 vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS:
 
             self.morphology_builder = vmv.builders.DisconnectedSectionsBuilder(
+                morphology=vmv.interface.ui.ui_morphology,
+                options=vmv.interface.ui.ui_options)
+
+        # Samples builder
+        elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
+                vmv.enums.Skeletonization.Method.SAMPLES:
+
+            self.morphology_builder = vmv.builders.SamplesBuilder(
                 morphology=vmv.interface.ui.ui_morphology,
                 options=vmv.interface.ui.ui_options)
 
