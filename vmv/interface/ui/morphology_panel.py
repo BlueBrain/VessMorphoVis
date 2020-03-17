@@ -80,24 +80,21 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # Reconstruction method
     bpy.types.Scene.ReconstructionMethod = bpy.props.EnumProperty(
-        items=[(vmv.enums.Skeletonization.Method.DISCONNECTED_SEGMENTS,
+        items=[(vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS,
                 'Disconnected Segments',
                 "Each segment is an independent object (this approach is time consuming)"),
-               (vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS,
+               (vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS,
                 'Disconnected Sections',
                 "Each section is an independent object"),
-               (vmv.enums.Skeletonization.Method.CONNECTED_SECTIONS,
+               (vmv.enums.Morphology.ReconstructionMethod.CONNECTED_SECTIONS,
                 'Connected Sections',
                 "The sections of a single arbor are connected together"),
-               (vmv.enums.Skeletonization.Method.CONNECTED_SKELETON,
-                'Connected Skeleton',
-                "The morphology is reconstructed as a skeleton"),
-               (vmv.enums.Skeletonization.Method.SAMPLES,
+               (vmv.enums.Morphology.ReconstructionMethod.SAMPLES,
                 'Samples',
                 "The morphology is reconstructed as a list of samples")
                ],
         name="Method",
-        default=vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS)
+        default=vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS)
 
     # Rendering resolution
     bpy.types.Scene.MorphologyRenderingResolution = bpy.props.EnumProperty(
@@ -134,17 +131,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 'Renders a perspective projection of the reconstructed morphology.'
                 'This type of rendering is more for artistic style')],
         name='Projection', default=vmv.enums.Rendering.Projection.ORTHOGRAPHIC)
-
-    # Branching, is it based on angles or radii
-    bpy.types.Scene.MorphologyBranching = bpy.props.EnumProperty(
-        items=[(vmv.enums.Skeletonization.Branching.ANGLES,
-                'Angles',
-                'Make the branching based on the angles at branching points'),
-               (vmv.enums.Skeletonization.Branching.RADII,
-                'Radii',
-                'Make the branching based on the radii of the children at the branching points')],
-        name='Branching Style',
-        default=vmv.enums.Skeletonization.Branching.RADII)
 
     # Mesh materials
     bpy.types.Scene.MorphologyMaterial = bpy.props.EnumProperty(
@@ -189,17 +175,17 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # Section radius
     bpy.types.Scene.SectionsRadii = bpy.props.EnumProperty(
-        items=[(vmv.enums.Skeletonization.Radii.AS_SPECIFIED,
+        items=[(vmv.enums.Morphology.Radii.AS_SPECIFIED,
                 'As Specified in Morphology',
                 "Use the cross-sectional radii as reported in the morphology file"),
-               (vmv.enums.Skeletonization.Radii.FIXED,
+               (vmv.enums.Morphology.Radii.FIXED,
                 'At a Fixed Radii',
                 "Set all the tubes to a fixed radius"),
-               (vmv.enums.Skeletonization.Radii.SCALED,
+               (vmv.enums.Morphology.Radii.SCALED,
                 'With Scale Factor',
                 "Scale all the tubes using a specified scale factor")],
         name="Radii",
-        default=vmv.enums.Skeletonization.Radii.AS_SPECIFIED)
+        default=vmv.enums.Morphology.Radii.AS_SPECIFIED)
 
     # Fixed section radius value
     bpy.types.Scene.FixedRadiusValue = bpy.props.FloatProperty(
@@ -271,38 +257,38 @@ class VMVMorphologyPanel(bpy.types.Panel):
         sections_radii_row.prop(context.scene, 'SectionsRadii', icon='SURFACE_NCURVE')
 
         # Radii as specified in the morphology file
-        if context.scene.SectionsRadii == vmv.enums.Skeletonization.Radii.AS_SPECIFIED:
+        if context.scene.SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
 
             # Pass options from UI to system
             vmv.interface.ui.ui_options.morphology.radii = \
-                vmv.enums.Skeletonization.Radii.AS_SPECIFIED
+                vmv.enums.Morphology.Radii.AS_SPECIFIED
             vmv.interface.ui.ui_options.morphology.scale_sections_radii = False
             vmv.interface.ui.ui_options.morphology.unify_sections_radii = False
             vmv.interface.ui.ui_options.morphology.sections_radii_scale = 1.0
 
         # Fixed diameter
-        elif context.scene.SectionsRadii == vmv.enums.Skeletonization.Radii.FIXED:
+        elif context.scene.SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
 
             fixed_diameter_row = self.layout.row()
             fixed_diameter_row.label(text='Fixed Radius Value:')
             fixed_diameter_row.prop(context.scene, 'FixedRadiusValue')
 
             # Pass options from UI to system
-            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Skeletonization.Radii.FIXED
+            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
             vmv.interface.ui.ui_options.morphology.scale_sections_radii = False
             vmv.interface.ui.ui_options.morphology.unify_sections_radii = True
             vmv.interface.ui.ui_options.morphology.sections_fixed_radii_value = \
                 context.scene.FixedRadiusValue
 
         # Scaled diameter
-        elif context.scene.SectionsRadii == vmv.enums.Skeletonization.Radii.SCALED:
+        elif context.scene.SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
 
             scaled_diameter_row = self.layout.row()
             scaled_diameter_row.label(text='Radius Scale Factor:')
             scaled_diameter_row.prop(context.scene, 'RadiusScaleValue')
 
             # Pass options from UI to system
-            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Skeletonization.Radii.SCALED
+            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
             vmv.interface.ui.ui_options.morphology.unify_sections_radii = False
             vmv.interface.ui.ui_options.morphology.scale_sections_radii = True
             vmv.interface.ui.ui_options.morphology.sections_radii_scale = \
@@ -606,13 +592,13 @@ class VMVReconstructMorphology(bpy.types.Operator):
         # Construct the skeleton builder
         # Disconnected segments builder
         if vmv.interface.ui.ui_options.morphology.reconstruction_method == \
-                vmv.enums.Skeletonization.Method.DISCONNECTED_SEGMENTS:
+                vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
             self.morphology_builder = vmv.builders.DisconnectedSegmentsBuilder(
                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
 
         # Disconnected sections builder
         elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
-                vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS:
+                vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
 
             self.morphology_builder = vmv.builders.DisconnectedSectionsBuilder(
                 morphology=vmv.interface.ui.ui_morphology,
@@ -620,7 +606,7 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
         # Samples builder
         elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
-                vmv.enums.Skeletonization.Method.SAMPLES:
+                vmv.enums.Morphology.ReconstructionMethod.SAMPLES:
 
             self.morphology_builder = vmv.builders.SamplesBuilder(
                 morphology=vmv.interface.ui.ui_morphology,
@@ -628,15 +614,10 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
         # Connected sections builder
         elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
-                vmv.enums.Skeletonization.Method.CONNECTED_SECTIONS:
+                vmv.enums.Morphology.ReconstructionMethod.CONNECTED_SECTIONS:
             self.morphology_builder = vmv.builders.ConnectedSectionsBuilder(
                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
 
-        # Connected sections builder
-        elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
-                vmv.enums.Skeletonization.Method.CONNECTED_SKELETON:
-            self.morphology_builder = vmv.builders.ConnectedSkeletonBuilder(
-                morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
         else:
             return {'FINISHED'}
 

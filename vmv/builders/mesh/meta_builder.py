@@ -224,7 +224,7 @@ class MetaBuilder:
             return
 
         # Fixed radii
-        if self.options.morphology.radii == vmv.enums.Skeletonization.Radii.FIXED:
+        if self.options.morphology.radii == vmv.enums.Morphology.Radii.FIXED:
 
             # Proceed segment by segment
             for i in range(len(samples) - 1):
@@ -237,7 +237,7 @@ class MetaBuilder:
                     r2=self.options.morphology.sections_fixed_radii_value * self.magic_scale_factor)
 
         # Scaled radii
-        elif self.options.morphology.radii == vmv.enums.Skeletonization.Radii.SCALED:
+        elif self.options.morphology.radii == vmv.enums.Morphology.Radii.SCALED:
 
             # Get the scale value
             scale = self.options.morphology.sections_radii_scale

@@ -44,21 +44,15 @@ class MorphologyOptions:
         # Morphology label, based on the morphology file name
         self.label = None
 
-        # The builder used to build the morphology skeleton object in the scene from the raw file
-        self.builder = vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS
+        # The method used to build the morphology skeleton object in the scene from the raw file
+        self.reconstruction_method = vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
 
-        # Skeletonization style, ORIGINAL by default
-        self.skeleton = vmv.enums.Skeletonization.Style.ORIGINAL
-
-        # Branching of the morphologies in the connected modes, either based on angles or radii
-        self.branching = vmv.enums.Skeletonization.Branching.ANGLES
-
-        # Color
-        self.color = vmv.consts.Color.GRAY
+        # Skeleton style, ORIGINAL by default
+        self.skeleton = vmv.enums.Morphology.Style.ORIGINAL
 
         # The radii of the sections (as specified in the morphology file, scaled with a given
         # scale factor, or constant at given fixed value)
-        self.radii = vmv.enums.Skeletonization.Radii.AS_SPECIFIED
+        self.radii = vmv.enums.Morphology.Radii.AS_SPECIFIED
 
         # A scale factor for the radii of the sections
         self.sections_radii_scale = 1.0
@@ -69,7 +63,7 @@ class MorphologyOptions:
         # Threshold radius, where any section with lower radius values will not drawn
         self.threshold_radius = vmv.consts.Math.INFINITY
 
-        # Global coordinates
+        # Load the morphology at the global coordinates, otherwise center it at the origin
         self.global_coordinates = False
 
         # Adaptive resampling of the sections to reduce the number of samples
@@ -79,11 +73,11 @@ class MorphologyOptions:
         # This parameter controls the quality of the reconstructed morphology
         self.bevel_object_sides = vmv.consts.Bevel.BEVEL_OBJECT_SIDES
 
-        # Selected a method to reconstruct the morphology
-        self.reconstruction_method = vmv.enums.Skeletonization.Method.CONNECTED_SECTIONS
-
         # Morphology material
         self.material = vmv.enums.Shading.GLOSSY_WORKBENCH
+
+        # Color
+        self.color = vmv.consts.Color.GRAY
 
         # SKELETON RENDERING #######################################################################
         # Camera view

@@ -54,9 +54,50 @@ def build_skeleton(cli_morphology,
         The morphology loaded from the command line interface (CLI).
     :param cli_options:
         System options parsed from the command line interface (CLI).
+    :return
+        True if the morphology is reconstructed, False otherwise for the follow up operations.
     """
 
-    if cli_options.morphology.
+    method = cli_options.morphology.reconstruction_method
+
+    # Disconnected sections
+    if method == vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
+
+        # Create the builder and build the morphology skeleton
+        builder = vmv.builders.DisconnectedSectionsBuilder(morphology=cli_morphology,
+                                                           options=cli_options)
+        builder.build_skeleton()
+        return True
+
+    # Disconnected segments
+    elif method == vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
+
+        # Create the builder and build the morphology skeleton
+        builder = vmv.builders.DisconnectedSegmentsBuilder(morphology=cli_morphology,
+                                                           options=cli_options)
+        builder.build_skeleton()
+        return True
+
+    # Connected sections
+    elif method == vmv.enums.Morphology.ReconstructionMethod.CONNECTED_SECTIONS:
+
+        # Create the builder and build the morphology skeleton
+        builder = vmv.builders.ConnectedSectionsBuilder(morphology=cli_morphology,
+                                                        options=cli_options)
+        builder.build_skeleton()
+        return True
+
+    # Samples builder
+    elif method == vmv.enums.Morphology.ReconstructionMethod.SAMPLES:
+
+        # Create the builder and build the morphology skeleton
+        builder = vmv.builders.SamplesBuilder(morphology=cli_morphology, options=cli_options)
+        builder.build_skeleton()
+        return True
+
+    # Otherwise, return False as the reconstruction did not happen
+    else:
+        return False
 
 
 ####################################################################################################
@@ -75,15 +116,16 @@ def reconstruct_vascular_morphology(cli_morphology,
     # Clear the scene
     vmv.scene.ops.clear_scene()
 
-    # Skeleton builder
-    skeleton_builder = vmv.builders.DisconnectedSectionsBuilder(morphology=cli_morphology,
-                                                    options=cli_options)
+    # Build the skeleton
+    if not build_skeleton(cli_morphology=cli_morphology, cli_options=cli_options):
+        vmv.logger.info('Morphology was NOT build. Terminating')
 
-    # Reconstruct the reconstructed morphology skeleton
-    morphology_skeleton_objects = skeleton_builder.build_skeleton()
+        # Terminate the execution
+        exit(0)
 
     # Export to .BLEND file
     if cli_options.morphology.export_blend:
+
         # Export the morphology to a .BLEND file, None indicates all components the scene
         vmv.file.export_mesh_object(
             None, cli_options.io.morphologies_directory, cli_morphology.label,
@@ -92,42 +134,28 @@ def reconstruct_vascular_morphology(cli_morphology,
     # Render a static image of the reconstructed morphology skeleton
     if cli_options.morphology.render:
 
-        # Compute the full morphology bounding box
-        bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
-
         # Render at a specific resolution
         if cli_options.morphology.resolution_basis == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Render the morphology
             vmv.rendering.render(
-                bounding_box=bounding_box,
+                bounding_box=cli_morphology.bounding_box,
                 camera_view=cli_options.morphology.camera_view,
                 camera_projection=cli_options.morphology.camera_projection,
                 image_resolution=cli_options.morphology.full_view_resolution,
-                image_name='MORPHOLOGY_FRONT_%s' % 'cli_morphology.label',
+                image_name='MORPHOLOGY_FRONT_%s' % cli_morphology.name,
                 image_directory=cli_options.io.images_directory)
 
         # Render at a specific scale factor
         else:
-
-            pass
-
-            # Render the image
-            vmv.rendering.NeuronSkeletonRenderer.render_to_scale(
-                bounding_box=bounding_box,
-                camera_view=vmv.enums.Camera.View.FRONT,
-                image_scale_factor=cli_options.mesh.resolution_scale_factor,
-                image_name='MESH_FRONT_%s' % cli_morphology.label,
-                image_directory=cli_options.io.images_directory)
+            vmv.rendering.render_to_scale(
+                bounding_box=cli_morphology.bounding_box,
+                camera_view=cli_options.morphology.camera_view,
+                image_scale_factor=cli_options.morphology.resolution_scale_factor,
+                image_name='MORPHOLOGY_FRONT_%s' % cli_morphology.name,
+                image_directory=vmv.interface.ui_options.io.images_directory)
 
     # Render a 360 sequence of the reconstructed morphology skeleton
     if cli_options.morphology.render_360:
-        # TODO: implement this option
-        pass
-
-    # Render a sequence of the progressive reconstruction of the morphology skeleton
-    if cli_options.morphology.render_progressive:
         # TODO: implement this option
         pass
 
@@ -174,9 +202,6 @@ if __name__ == "__main__":
     else:
         vmv.logger.log('ERROR: Invalid input option')
         exit(0)
-
-    # TODO: Implement the render_soma_two_dimensional_profile() function
-    # render_soma_two_dimensional_profile(cli_morphology=cli_morphology, cli_options=cli_options)
 
     # Neuron morphology reconstruction and visualization
     reconstruct_vascular_morphology(cli_morphology=cli_morphology, cli_options=cli_options)

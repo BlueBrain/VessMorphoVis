@@ -73,11 +73,11 @@ def update_skeleton_radii(morphology,
         Morphology options as set by the user.
     """
 
-    if options.morphology.radii == vmv.enums.Skeletonization.Radii.FIXED:
+    if options.morphology.radii == vmv.enums.Morphology.Radii.FIXED:
         set_skeleton_radii_to_fixed_value(
             morphology=morphology, fixed_radius_value=options.morphology.sections_fixed_radii_value)
 
-    elif options.morphology.radii == vmv.enums.Skeletonization.Radii.SCALED:
+    elif options.morphology.radii == vmv.enums.Morphology.Radii.SCALED:
         set_skeleton_radii_to_scaled_value(
             morphology=morphology, scale_factor=options.morphology.sections_radii_scale)
     else:
@@ -136,11 +136,11 @@ def update_poly_line_radii(poly_line,
     :return:
     """
 
-    if options.morphology.radii == vmv.enums.Skeletonization.Radii.FIXED:
+    if options.morphology.radii == vmv.enums.Morphology.Radii.FIXED:
         set_poly_line_radii_to_fixed_value(
             poly_line=poly_line, fixed_radius_value=options.morphology.sections_fixed_radii_value)
 
-    elif options.morphology.radii == vmv.enums.Skeletonization.Radii.SCALED:
+    elif options.morphology.radii == vmv.enums.Morphology.Radii.SCALED:
         set_poly_line_radii_to_scaled_value(
             poly_line=poly_line, scale_factor=options.morphology.sections_radii_scale)
     else:
@@ -157,8 +157,8 @@ def update_poly_lines_radii(poly_lines,
     """
 
     # Save the processing time
-    if options.morphology.radii == vmv.enums.Skeletonization.Radii.FIXED or \
-            options.morphology.radii == vmv.enums.Skeletonization.Radii.SCALED:
+    if options.morphology.radii == vmv.enums.Morphology.Radii.FIXED or \
+            options.morphology.radii == vmv.enums.Morphology.Radii.SCALED:
         for poly_line in poly_lines:
             update_poly_line_radii(poly_line=poly_line, options=options)
 

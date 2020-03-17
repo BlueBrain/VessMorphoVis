@@ -297,7 +297,7 @@ class VMVLoadMorphology(bpy.types.Operator):
         try:
 
             # Initially, set the radius to FIXED to represent a center line with radius of value 1.0
-            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Skeletonization.Radii.FIXED
+            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
             vmv.interface.ui.ui_options.morphology.sections_fixed_radii_value = 1.0
 
             # Construct a builder object
@@ -321,7 +321,7 @@ class VMVLoadMorphology(bpy.types.Operator):
 
             # Set back the radii of the morphology to that as specified in the loaded file
             vmv.interface.ui.ui_options.morphology.radii = \
-                vmv.enums.Skeletonization.Radii.AS_SPECIFIED
+                vmv.enums.Morphology.Radii.AS_SPECIFIED
 
         # Unable to load the morphology
         except ValueError:
