@@ -103,7 +103,6 @@ echo -e "\nRUNNING ... VessMorphoVis \n"
     --shader=$SHADER                                                                                \
     --execution-node=$EXECUTION_NODE                                                                \
     --tessellation-level=$TESSELLATION_LEVEL                                                        \
-    --number-cores=$NUMBER_CORES                                                                    \
     $BOOL_ARGS
 
 echo -e "\nDONE ... NeuroMorphoVis \n"
