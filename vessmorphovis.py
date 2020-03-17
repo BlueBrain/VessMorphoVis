@@ -78,7 +78,6 @@ def create_shell_commands_for_local_execution(arguments,
     # Morphology analysis task
     if arguments.analyze_morphology:
 
-
         # Add this command to the list
         shell_commands.append('%s -b --verbose 0 --python %s -- %s' %
                               (arguments.blender, cli_morphology_analysis, arguments_string))
@@ -86,27 +85,27 @@ def create_shell_commands_for_local_execution(arguments,
         # Return a list of commands
         return shell_commands
 
-    exit(0)
-
     # Morphology reconstruction task: call the @cli_morphology_reconstruction interface
     if arguments.reconstruct_morphology_skeleton or         \
-       arguments.render_vascular_morphology or                \
-       arguments.render_vascular_morphology_360 or            \
+       arguments.render_vascular_morphology or              \
+       arguments.render_vascular_morphology_360 or          \
        arguments.export_morphology_vmv or                   \
        arguments.export_morphology_h5 or                    \
        arguments.export_morphology_blend:
+
+        print('Morphologggggggggggggggggggggggy')
 
         # Add this command to the list
         shell_commands.append('%s -b --verbose 0 --python %s -- %s' %
                               (arguments.blender, cli_morphology_reconstruction, arguments_string))
 
     # Neuron mesh reconstruction related task: call the @cli_mesh_reconstruction interface
-    if arguments.reconstruct_vascular_mesh or                 \
-       arguments.render_vascular_mesh or                      \
-       arguments.render_vascular_mesh_360 or                  \
-       arguments.export_vascular_mesh_ply or                  \
-       arguments.export_vascular_mesh_obj or                  \
-       arguments.export_vascular_mesh_stl or                  \
+    if arguments.reconstruct_vascular_mesh or               \
+       arguments.render_vascular_mesh or                    \
+       arguments.render_vascular_mesh_360 or                \
+       arguments.export_vascular_mesh_ply or                \
+       arguments.export_vascular_mesh_obj or                \
+       arguments.export_vascular_mesh_stl or                \
        arguments.export_vascular_mesh_blend:
 
         # Add this command to the list
@@ -120,7 +119,7 @@ def create_shell_commands_for_local_execution(arguments,
 ####################################################################################################
 # @run_local_neuromorphovis
 ####################################################################################################
-def run_local_neuromorphovis(arguments):
+def run_local_vessmorphovis(arguments):
     """Run the framework on a local node, basically your machine.
 
     :param arguments:
@@ -196,55 +195,15 @@ def run_local_neuromorphovis(arguments):
 ####################################################################################################
 # @run_cluster_neuromorphovis
 ####################################################################################################
-def run_cluster_neuromorphovis(arguments):
+def run_cluster_vessmorphovis(arguments):
     """Run the NeuroMorphoVis framework on the BBP visualization cluster using SLURM.
 
     :param arguments:
         Command line arguments.
     """
 
-    # Use a specific circuit target
-    if arguments.input == 'target':
-
-        # Log
-        print('Loading a target [%s] in circuit [%s]' % (arguments.target, arguments.blue_config))
-
-        # Ensure a valid blue config and a target
-        if arguments.blue_config is None or arguments.target is None:
-            print('ERROR: Empty circuit configuration file or target')
-            exit(0)
-
-        # Import brain
-        try:
-            import brain
-        except ImportError:
-            print('ERROR: Cannot import [brain], please load brain or install it')
-            exit(0)
-
-        # Open a circuit with a given blue config
-        bbp_circuit = brain.Circuit(arguments.blue_config)
-
-        # Create a GID-set and load the morphologies from these GIDs
-        gids = bbp_circuit.gids(arguments.target)
-
-        # Run the jobs on the cluster
-        slurm.run_gid_jobs_on_cluster(arguments=arguments, gids=gids)
-
-    # Use a single GID
-    elif arguments.input == 'gid':
-
-        print('Loading a gid [%s] in circuit [%s]' % (str(arguments.gid), arguments.blue_config))
-
-        # Ensure a valid blue config and a GID
-        if arguments.blue_config is None or arguments.gid is None:
-            print('ERROR: Empty circuit configuration file or GID')
-            exit(0)
-
-        # Run the jobs on the cluster
-        slurm.run_gid_jobs_on_cluster(arguments=arguments, gids=[str(arguments.gid)])
-
-    # Use the morphology file (.H5 or .SWC)
-    elif arguments.input == 'file':
+    # Use the morphology file (.H5 or .VMV)
+    if arguments.input == 'file':
 
         # Get the arguments string list
         arguments_string = arguments_parser.get_arguments_string(arguments=arguments)
@@ -288,8 +247,8 @@ if __name__ == "__main__":
 
     # LOCAL EXECUTION: Compile the corresponding command and launch it on the current machine
     if arguments.execution_node == 'local':
-        run_local_neuromorphovis(arguments=arguments)
+        run_local_vessmorphovis(arguments=arguments)
 
     # BBP CLUSTER EXECUTION: Create the SLURM scripts and run them on the cluster (only @ BBP)
     else:
-        run_cluster_neuromorphovis(arguments=arguments)
+        run_cluster_vessmorphovis(arguments=arguments)

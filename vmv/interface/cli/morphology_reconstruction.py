@@ -43,10 +43,27 @@ import vmv.scene
 
 
 ####################################################################################################
-# @proceed_morphology_reconstruction_visualization
+# @reconstruct_vascular_morphology
 ####################################################################################################
-def reconstruct_neuron_morphology(cli_morphology,
-                                  cli_options):
+def build_skeleton(cli_morphology,
+                   cli_options):
+    """Creates a skeleton builder object and builds the morphology skeleton in the scene.
+    Once the skeleton is added to the scene it can be stored into a Blender file or rendered.
+
+    :param cli_morphology:
+        The morphology loaded from the command line interface (CLI).
+    :param cli_options:
+        System options parsed from the command line interface (CLI).
+    """
+
+    if cli_options.morphology.
+
+
+####################################################################################################
+# @reconstruct_vascular_morphology
+####################################################################################################
+def reconstruct_vascular_morphology(cli_morphology,
+                                    cli_options):
     """Morphology reconstruction and visualization operations.
 
     :param cli_morphology:
@@ -58,14 +75,12 @@ def reconstruct_neuron_morphology(cli_morphology,
     # Clear the scene
     vmv.scene.ops.clear_scene()
 
-    cli_options.morphology.connect_to_soma = True
-
     # Skeleton builder
-    skeleton_builder = vmv.builders.SkeletonBuilder(morphology=cli_morphology,
+    skeleton_builder = vmv.builders.DisconnectedSectionsBuilder(morphology=cli_morphology,
                                                     options=cli_options)
 
     # Reconstruct the reconstructed morphology skeleton
-    morphology_skeleton_objects = skeleton_builder.draw_morphology_skeleton()
+    morphology_skeleton_objects = skeleton_builder.build_skeleton()
 
     # Export to .BLEND file
     if cli_options.morphology.export_blend:
@@ -77,42 +92,26 @@ def reconstruct_neuron_morphology(cli_morphology,
     # Render a static image of the reconstructed morphology skeleton
     if cli_options.morphology.render:
 
-        # Compute the bounding box for a close up view
-        if cli_options.morphology.rendering_view == \
-                vmv.enums.Skeleton.Rendering.View.CLOSE_UP_VIEW:
-
-            # Compute the bounding box for a close up view
-            bounding_box = vmv.bbox.compute_unified_extent_bounding_box(
-                extent=cli_options.morphology.close_up_dimensions)
-
-        # Compute the bounding box for a mid shot view
-        elif cli_options.morphology.rendering_view == \
-                vmv.enums.Skeleton.Rendering.View.MID_SHOT_VIEW:
-
-            # Compute the bounding box for the available meshes only
-            bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
-
-        # Compute the bounding box for the wide shot view that correspond to the whole morphology
-        else:
-
-            # Compute the full morphology bounding box
-            bounding_box = vmv.skeleton.compute_full_morphology_bounding_box(
-                morphology=cli_morphology)
+        # Compute the full morphology bounding box
+        bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
 
         # Render at a specific resolution
         if cli_options.morphology.resolution_basis == \
-                vmv.enums.Skeleton.Rendering.Resolution.FIXED_RESOLUTION:
+                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
-            # Render the image
-            vmv.rendering.NeuronSkeletonRenderer.render(
+            # Render the morphology
+            vmv.rendering.render(
                 bounding_box=bounding_box,
-                camera_view=vmv.enums.Camera.View.FRONT,
+                camera_view=cli_options.morphology.camera_view,
+                camera_projection=cli_options.morphology.camera_projection,
                 image_resolution=cli_options.morphology.full_view_resolution,
-                image_name='MORPHOLOGY_FRONT_%s' % cli_morphology.label,
+                image_name='MORPHOLOGY_FRONT_%s' % 'cli_morphology.label',
                 image_directory=cli_options.io.images_directory)
 
         # Render at a specific scale factor
         else:
+
+            pass
 
             # Render the image
             vmv.rendering.NeuronSkeletonRenderer.render_to_scale(
@@ -153,7 +152,7 @@ if __name__ == "__main__":
         print('Output: [%s]' % arguments.output_directory)
 
     # Get the options from the arguments
-    cli_options = vmv.options.NeuroMorphoVisOptions()
+    cli_options = vmv.options.VessMorphoVisOptions()
 
     # Convert the CLI arguments to system options
     cli_options.consume_arguments(arguments=arguments)
@@ -161,21 +160,8 @@ if __name__ == "__main__":
     # Read the morphology
     cli_morphology = None
 
-    # If the input is a GID, then open the circuit and read it
-    if arguments.input == 'gid':
-
-        # Load the morphology from the file
-        loading_flag, cli_morphology = vmv.file.BBPReader.load_morphology_from_circuit(
-            blue_config=cli_options.morphology.blue_config,
-            gid=cli_options.morphology.gid)
-
-        if not loading_flag:
-            vmv.logger.log('ERROR: Cannot load the GID [%s] from the circuit [%s]' %
-                           cli_options.morphology.blue_config, str(cli_options.morphology.gid))
-            exit(0)
-
     # If the input is a morphology file, then use the parser to load it directly
-    elif arguments.input == 'file':
+    if arguments.input == 'file':
 
         # Read the morphology file
         loading_flag, cli_morphology = vmv.file.read_morphology_from_file(options=cli_options)
@@ -193,7 +179,7 @@ if __name__ == "__main__":
     # render_soma_two_dimensional_profile(cli_morphology=cli_morphology, cli_options=cli_options)
 
     # Neuron morphology reconstruction and visualization
-    reconstruct_neuron_morphology(cli_morphology=cli_morphology, cli_options=cli_options)
+    reconstruct_vascular_morphology(cli_morphology=cli_morphology, cli_options=cli_options)
     vmv.logger.log('NMV Done')
 
 

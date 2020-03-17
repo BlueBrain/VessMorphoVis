@@ -41,8 +41,11 @@ class MorphologyOptions:
         # Morphology file name
         self.morphology_file_name = None
 
-        # Morphology label (based on the morphology file name)
+        # Morphology label, based on the morphology file name
         self.label = None
+
+        # The builder used to build the morphology skeleton object in the scene from the raw file
+        self.builder = vmv.enums.Skeletonization.Method.DISCONNECTED_SECTIONS
 
         # Skeletonization style, ORIGINAL by default
         self.skeleton = vmv.enums.Skeletonization.Style.ORIGINAL

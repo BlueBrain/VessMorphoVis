@@ -504,5 +504,5 @@ def analyze_morphology(morphology_object):
     vmv.logger.info('Samples')
     total_number_samples = vmv.analysis.compute_total_number_samples_from_sections_list(
         morphology_object.sections_list)
-    print(total_number_samples)
+
 
