@@ -49,13 +49,10 @@ class MeshOptions:
         # Fixing morphology artifacts
         self.fix_morphology_artifacts = True
 
-        # Skeletonization technique
-        self.skeletonization = vmv.enums.Meshing.Skeleton.ORIGINAL
-
         # Meshing technique
         self.meshing_technique = vmv.enums.Meshing.Technique.META_BALLS
 
-        # Meta ball resolution
+        # Meta ball resolution value
         self.meta_resolution = vmv.consts.Meshing.META_RESOLUTION
 
         # Automatically detect the resolution of the meta ball object
@@ -72,9 +69,6 @@ class MeshOptions:
 
         # Edges of the meshes, either hard or smooth
         self.edges = vmv.enums.Meshing.Edges.HARD
-
-        # Branching of the meshes, either based on angles or radii
-        self.branching = vmv.enums.Meshing.Branching.ANGLES
 
         # COLOR & MATERIALS OPTIONS ################################################################
         # Morphology material

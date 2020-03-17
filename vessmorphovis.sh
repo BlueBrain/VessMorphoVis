@@ -86,6 +86,8 @@ echo -e "\nRUNNING ... VessMorphoVis \n"
     --morphology-reconstruction-algorithm=$MORPHOLOGY_RECONSTRUCTION_ALGORITHM                      \
     --morphology-skeleton=$SKELETON                                                                 \
     --meshing-algorithm=$MESHING_TECHNIQUE                                                          \
+    --meta-balls-resolution-setting=$META_BALLS_RESOLUTION_SETTING                                  \
+    --meta-balls-resolution=$META_BALLS_RESOLUTION_VALUE                                            \
     --edges=$EDGES                                                                                  \
     --surface=$SURFACE                                                                              \
     --morphology-color=$MESH_COLOR                                                                  \

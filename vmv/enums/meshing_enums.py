@@ -30,64 +30,6 @@ class Meshing:
         pass
 
     ################################################################################################
-    # @Skeleton
-    ################################################################################################
-    class Skeleton:
-        """Skeletonization
-        """
-
-        # Use the original morphology skeleton
-        ORIGINAL = 'MESHING_SKELETON_ORIGINAL'
-
-        # Create a tapered morphology skeleton
-        TAPERED = 'MESHING_SKELETON_TAPERED'
-
-        # Create a zigzagged morphology skeleton
-        ZIGZAG = 'MESHING_SKELETON_ZIGZAG'
-
-        # Create a zigzagged and tapered morphology skeleton
-        TAPERED_ZIGZAG = 'MESHING_SKELETON_TAPERED_ZIGZAG'
-
-        # Simplified
-        SIMPLIFIED = 'MESHING_SKELETON_SIMPLIFIED'
-
-        ############################################################################################
-        # @__init__
-        ############################################################################################
-        def __init__(self):
-            pass
-
-        ############################################################################################
-        # @get_enum
-        ############################################################################################
-        @staticmethod
-        def get_enum(argument):
-
-            # Original
-            if argument == 'original':
-                return Meshing.Skeleton.ORIGINAL
-
-            # Tapered
-            elif argument == 'tapered':
-                return Meshing.Skeleton.TAPERED
-
-            # Zigzag
-            elif argument == 'zigzag':
-                return Meshing.Skeleton.ZIGZAG
-
-            # Tapered zigzag
-            elif argument == 'tapered-zigzag':
-                return Meshing.Skeleton.TAPERED_ZIGZAG
-
-            # Tapered zigzag
-            elif argument == 'simplified':
-                return Meshing.Skeleton.SIMPLIFIED
-
-            # By default use the original skeleton
-            else:
-                return Meshing.Skeleton.ORIGINAL
-
-    ################################################################################################
     # @Technique
     ################################################################################################
     class Technique:
@@ -96,12 +38,6 @@ class Meshing:
 
         # Piecewise watertight meshing
         PIECEWISE_WATERTIGHT = 'MESHING_TECHNIQUE_PIECEWISE_WATERTIGHT'
-
-        # Bridging meshing
-        META_BALLS = 'MESHING_TECHNIQUE_BRIDGING'
-
-        # Skinning-based meshing
-        SKINNING = 'MESHING_TECHNIQUE_SKINNING'
 
         # Meta balls-based meshing
         META_BALLS = 'MESHING_TECHNIQUE_META_BALLS'
@@ -122,10 +58,6 @@ class Meshing:
             if argument == 'piecewise-watertight':
                 return Meshing.Technique.PIECEWISE_WATERTIGHT
 
-            # Union
-            elif argument == 'skinning':
-                return Meshing.Technique.SKINNING
-
             # Bridging
             elif argument == 'meta-balls':
                 return Meshing.Technique.META_BALLS
@@ -133,6 +65,40 @@ class Meshing:
             # By default use piecewise-watertight
             else:
                 return Meshing.Technique.PIECEWISE_WATERTIGHT
+
+    class MetaBalls:
+        """MetaBalls options
+        """
+
+        # Set the MetaBalls resolution automatically after building the proxy object
+        AUTO_RESOLUTION = 'META_BALL_AUTO_RESOLUTION'
+
+        # Use the resolution specified by the user in the input configuration
+        USER_DEFINED_RESOLUTION = 'META_BALL_USER_DEFINED_RESOLUTION'
+
+        ############################################################################################
+        # @__init__
+        ############################################################################################
+        def __init__(self):
+            pass
+
+        ############################################################################################
+        # @get_enum
+        ############################################################################################
+        @staticmethod
+        def get_enum(argument):
+
+            # Set the MetaBalls resolution automatically after building the proxy object
+            if argument == 'auto':
+                return Meshing.MetaBalls.AUTO_RESOLUTION
+
+            # User defined resolution
+            elif argument == 'user-defined':
+                return Meshing.MetaBalls.USER_DEFINED_RESOLUTION
+
+            # By default use auto-resolution
+            else:
+                return Meshing.MetaBalls.AUTO_RESOLUTION
 
     ################################################################################################
     # @ArborsConnection
@@ -209,43 +175,6 @@ class Meshing:
                 return Meshing.Edges.HARD
 
     ################################################################################################
-    # @Branching
-    ################################################################################################
-    class Branching:
-        """Branching method
-        """
-
-        # Make the branching based on the angles between the branches
-        ANGLES = 'ANGLE_BASED_BRANCHING'
-
-        # Make the branching based in the radii between the branches
-        RADII = 'RADII_BASED_BRANCHING'
-
-        ############################################################################################
-        # @__init__
-        ############################################################################################
-        def __init__(self):
-            pass
-
-        ############################################################################################
-        # @get_enum
-        ############################################################################################
-        @staticmethod
-        def get_enum(argument):
-
-            # Angle
-            if argument == 'angles':
-                return Meshing.Branching.ANGLES
-
-            # Radii
-            elif argument == 'radii':
-                return Meshing.Branching.RADII
-
-            # By default return angles
-            else:
-                return Meshing.Branching.ANGLES
-
-    ################################################################################################
     # @Model
     ################################################################################################
     class Surface:
@@ -297,9 +226,6 @@ class Meshing:
 
         # .obj
         OBJ = 'EXPORT_FORMAT_OBJ'
-
-        # .off
-        OFF = 'EXPORT_FORMAT_OFF'
 
         # .blend
         BLEND = 'EXPORT_FORMAT_BLEND'

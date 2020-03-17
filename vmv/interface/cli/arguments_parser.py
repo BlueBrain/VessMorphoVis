@@ -261,6 +261,23 @@ def parse_command_line_arguments():
         action='store', type=float, default=1.0,
         help=arg_help)
 
+    # MetaBalls resolution setting
+    arg_options = ['(auto)', 'user-defined']
+    arg_help = 'This parameter defines how the MetaBalls resolution is set.\n' \
+               'Options: %s' % arg_options
+    meshing_args.add_argument(
+        Args.META_BALLS_RESOLUTION_SETTING,
+        action='store', default='auto',
+        help=arg_help)
+
+    # User-defined MetaBalls resolution value
+    arg_help = 'MetaBalls resolution value.\n' \
+               'Default 2.0.'
+    meshing_args.add_argument(
+        Args.META_BALLS_RESOLUTION,
+        action='store', type=float, default=2.0,
+        help=arg_help)
+
     ################################################################################################
     # Geometry export arguments
     ################################################################################################

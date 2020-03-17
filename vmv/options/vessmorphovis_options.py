@@ -179,10 +179,6 @@ class VessMorphoVisOptions:
         # Reconstruct vascular mesh for exporting
         self.mesh.reconstruct_vascular_mesh = arguments.reconstruct_vascular_mesh
 
-        # Skeletonization
-        self.mesh.skeletonization = vmv.enums.Meshing.Skeleton.get_enum(
-            arguments.morphology_skeleton)
-
         # Tessellation level (between 0.1 and 1.0)
         self.mesh.tessellation_level = float(arguments.tessellation_level)
 
@@ -192,6 +188,25 @@ class VessMorphoVisOptions:
         # Meshing technique
         self.mesh.meshing_technique = vmv.enums.Meshing.Technique.get_enum(
             arguments.meshing_algorithm)
+
+        print(vmv.enums.Meshing.MetaBalls.get_enum(arguments.meta_balls_resolution_setting))
+        # MetaBalls resolution setting
+        if vmv.enums.Meshing.MetaBalls.get_enum(arguments.meta_balls_resolution_setting) == \
+                vmv.enums.Meshing.MetaBalls.AUTO_RESOLUTION:
+
+            # Set the auto resolution
+            self.mesh.meta_auto_resolution = True
+
+            # Set to the default resolution for later
+            self.mesh.meta_resolution = vmv.consts.Meshing.META_RESOLUTION
+
+        else:
+
+            # Unset the auto resolution
+            self.mesh.meta_auto_resolution = False
+
+            # Set the value of the MetaBalls resolution as per given by the user
+            self.mesh.meta_resolution = float(arguments.meta_balls_resolution)
 
         # Edges of the meshes, either hard or smooth
         self.mesh.edges = vmv.enums.Meshing.Edges.get_enum(arguments.edges)

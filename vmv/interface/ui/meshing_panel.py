@@ -343,18 +343,13 @@ class VMVReconstructMesh(bpy.types.Operator):
             builder = vmv.builders.MetaBuilder(morphology=vmv.interface.ui.ui_morphology,
                                                options=vmv.interface.ui.ui_options)
 
-        # Skinning
-        elif context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.SKINNING:
-            builder = vmv.builders.SkinningBuilder(morphology=vmv.interface.ui.ui_morphology,
-                                                   options=vmv.interface.ui.ui_options)
-
         # Using the piece-wise
         else:
             builder = vmv.builders.PiecewiseWatertightBuilder(
                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
 
-        # Build the vasculature mesh
-        builder.build()
+        # Build the vascular mesh
+        builder.build_mesh()
 
         # Update the interface with some parameters
         context.scene.MetaBallResolution = vmv.interface.ui_options.mesh.meta_resolution

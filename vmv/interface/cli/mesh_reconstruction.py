@@ -120,9 +120,9 @@ def export_neuron_mesh(cli_morphology,
 
 
 ####################################################################################################
-# @render_neuron_mesh_to_static_frame
+# @render_vascular_mesh_to_static_frame
 ####################################################################################################
-def render_neuron_mesh_to_static_frame(cli_morphology,
+def render_vascular_mesh_to_static_frame(cli_morphology,
                                        cli_options):
     """Renders a static frame of the reconstructed neuron mesh.
 
@@ -178,9 +178,9 @@ def render_neuron_mesh_to_static_frame(cli_morphology,
 ####################################################################################################
 # @render_mesh_360
 ####################################################################################################
-def render_neuron_mesh_360(cli_options,
-                           cli_morphology):
-    """Renders a 360 sequence of the reconstructed neuron mesh.
+def render_vascular_mesh_360(cli_options,
+                             cli_morphology):
+    """Renders a 360 sequence of the reconstructed vascular mesh.
 
     :param cli_options:
         CLI options.
@@ -320,11 +320,11 @@ if __name__ == "__main__":
 
     # Render the mesh
     if cli_options.mesh.render:
-        render_neuron_mesh_to_static_frame(cli_options=cli_options, cli_morphology=cli_morphology)
+        render_vascular_mesh_to_static_frame(cli_options=cli_options, cli_morphology=cli_morphology)
 
     # Render 360 of the mesh
     if cli_options.mesh.render_360:
-        render_neuron_mesh_360(cli_options=cli_options, cli_morphology=cli_morphology)
+        render_vascular_mesh_360(cli_options=cli_options, cli_morphology=cli_morphology)
 
     # Rendering the mesh
     vmv.logger.log('NMV Done')

@@ -31,10 +31,6 @@ bpy.types.Scene.MeshingTechnique = bpy.props.EnumProperty(
             'Piecewise watertight meshing, where a group of connected section will be created '
             'as a single watertight mesh, but the whole mesh will not be watertight. '
             'This approach is the fast and used to create a proxy mesh for visualization'),
-           (vmv.enums.Meshing.Technique.SKINNING,
-            'Skinning',
-            'Skinning-based meshing. The loops will be handled accurately, but the final mesh '
-            'is not guaranteed to be watertight'),
            (vmv.enums.Meshing.Technique.META_BALLS,
             'Meta Balls',
             'Creates watertight mesh models using meta balls. This method is SLOW and can '
@@ -115,9 +111,6 @@ bpy.types.Scene.ExportedMeshFormat = bpy.props.EnumProperty(
            (vmv.enums.Meshing.ExportFormat.STL,
             'Stereolithography CAD (.stl)',
             'Export the mesh to an .stl file'),
-           (vmv.enums.Meshing.ExportFormat.OFF,
-            'Object File Format (.off)',
-            'Export the mesh to an .off file'),
            (vmv.enums.Meshing.ExportFormat.BLEND,
             'Blender File (.blend)',
             'Export the mesh as a .blend file')],

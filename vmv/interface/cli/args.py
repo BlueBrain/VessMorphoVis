@@ -114,6 +114,12 @@ class Args:
     # Mesh tessellation level
     MESH_TESSELLATION_LEVEL = '--tessellation-level'
 
+    # MetaBalls resolution setting
+    META_BALLS_RESOLUTION_SETTING = '--meta-balls-resolution-setting'
+
+    # MetaBalls resolution value
+    META_BALLS_RESOLUTION = '--meta-balls-resolution'
+
     ################################################################################################
     # Geometry export arguments
     ################################################################################################
