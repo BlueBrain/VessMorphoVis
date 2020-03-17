@@ -1,8 +1,8 @@
 ####################################################################################################
-# Copyright (c) 2016 - 2018, EPFL / Blue Brain Project
-#               Marwan Abdellah <marwan.abdellah@epfl.ch>
+# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
-# This file is part of NeuroMorphoVis <https://github.com/BlueBrain/NeuroMorphoVis>
+# This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the
 # GNU General Public License as published by the Free Software Foundation, version 3 of the License.

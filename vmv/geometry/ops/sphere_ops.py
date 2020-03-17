@@ -1,6 +1,6 @@
 ####################################################################################################
-#  Copyright (c) 2016 - 2018, EPFL / Blue Brain Project
-#               Marwan Abdellah <marwan.abdellah@epfl.ch>
+#  Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
 #

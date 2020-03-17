@@ -1,6 +1,6 @@
 ####################################################################################################
 # Copyright (c) 2019, EPFL / Blue Brain Project
-#               Marwan Abdellah <marwan.abdellah@epfl.ch>
+# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
 #
@@ -22,4 +22,5 @@ from .math_consts import *
 from .meshing_consts import *
 from .messages_consts import *
 from .rendering_planes import *
+from .path_consts import *
 

@@ -1,6 +1,6 @@
 ####################################################################################################
-# Copyright (c) 2016 - 2018, EPFL / Blue Brain Project
-#               Marwan Abdellah <marwan.abdellah@epfl.ch>
+# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
 #
@@ -486,10 +486,23 @@ def compute_number_of_components(sections_list):
 ####################################################################################################
 # @analyze_morphology
 ####################################################################################################
-def analyze_morphology():
+def analyze_morphology(morphology_object):
 
-    # Construct an object to store all the data
-    analysis_items = items.AnalysisItems()
+    import time
+    analysis_stated = time.time()
 
-    # update the input to get an output
-    pass
+    import vmv.analysis
+
+    # Analysis string
+
+    # Morphology total length
+    morphology_total_length = vmv.analysis.compute_total_morphology_length(
+        morphology_object.sections_list)
+    print(morphology_total_length)
+
+    # Total number of samples
+    vmv.logger.info('Samples')
+    total_number_samples = vmv.analysis.compute_total_number_samples_from_sections_list(
+        morphology_object.sections_list)
+    print(total_number_samples)
+
