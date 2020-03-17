@@ -179,7 +179,7 @@ if __name__ == "__main__":
     else:
         print('Output: [%s]' % arguments.output_directory)
 
-    # Get the options from the arguments
+    # Get the options from the CLI arguments
     cli_options = vmv.options.VessMorphoVisOptions()
 
     # Convert the CLI arguments to system options
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         loading_flag, cli_morphology = vmv.file.read_morphology_from_file(options=cli_options)
 
         if not loading_flag:
-            vmv.logger.log('ERROR: Cannot load the morphology file [%s]' %
+            vmv.logger.log('ERROR: Cannot load the morphology file [%s]. Terminating!' %
                            str(cli_options.morphology.morphology_file_path))
             exit(0)
 
@@ -203,8 +203,10 @@ if __name__ == "__main__":
         vmv.logger.log('ERROR: Invalid input option')
         exit(0)
 
-    # Neuron morphology reconstruction and visualization
+    # Morphology reconstruction and visualization
     reconstruct_vascular_morphology(cli_morphology=cli_morphology, cli_options=cli_options)
-    vmv.logger.log('NMV Done')
+
+    # Done
+    vmv.logger.log('VessMorphoVis Done')
 
 

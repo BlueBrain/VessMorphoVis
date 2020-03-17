@@ -333,7 +333,7 @@ class PiecewiseWatertightBuilder:
     ################################################################################################
     # @build
     ################################################################################################
-    def build(self):
+    def build_mesh(self):
         """Reconstructs the neuronal mesh using meta objects.
         """
 

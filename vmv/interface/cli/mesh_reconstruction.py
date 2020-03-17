@@ -44,11 +44,11 @@ import vmv.scene
 
 
 ####################################################################################################
-# @reconstruct_neuron_mesh
+# @reconstruct_vascular_mesh
 ####################################################################################################
-def reconstruct_neuron_mesh(cli_morphology,
+def reconstruct_vascular_mesh(cli_morphology,
                             cli_options):
-    """Neuron mesh reconstruction and visualization operations.
+    """Vascular mesh reconstruction and visualization operations.
 
     :param cli_morphology:
         The morphology loaded from the command line interface (CLI).
@@ -59,44 +59,28 @@ def reconstruct_neuron_mesh(cli_morphology,
     # Clear the scene
     vmv.scene.ops.clear_scene()
 
-    # Neuron mesh reconstruction
-    neuron_mesh_builder = None
-
-    # UnionBuilder
-    if cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.UNION:
-
-        vmv.logger.log('Builder: Union')
-        neuron_mesh_builder = vmv.builders.UnionBuilder(cli_morphology, cli_options)
-
-    # BridgingBuilder
-    elif cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.META_OBJECTS:
-        vmv.logger.log('Builder: Meta')
-        neuron_mesh_builder = vmv.builders.MetaBuilder(cli_morphology, cli_options)
-
-    # BridgingBuilder
-    elif cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.SKINNING:
-        vmv.logger.log('Builder: Skinning')
-        neuron_mesh_builder = vmv.builders.SkinningBuilder(cli_morphology, cli_options)
-
-    # PiecewiseBuilder
-    elif cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
+    # PiecewiseWatertightBuilder
+    if cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
         vmv.logger.log('Builder: Piecewise Watertight')
-        neuron_mesh_builder = vmv.builders.PiecewiseBuilder(cli_morphology, cli_options)
+        builder = vmv.builders.mesh.PiecewiseWatertightBuilder(
+            cli_morphology, cli_options)
+        builder.build_mesh()
+        return True
 
-    # Unknown, kill NeuroMorphoVis
+    # MetaBall builder
+    elif cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.META_BALLS:
+        vmv.logger.log('Builder: MetaBalls')
+        builder = vmv.builders.MetaBuilder(cli_morphology, cli_options)
+        builder.build_mesh()
+        return True
+
     else:
 
         # Invalid meshing algorithm
         vmv.logger.log('ERROR: INVALID meshing technique')
 
-        # Kill NeuroMorphoVis
-        vmv.kill()
-
-    # A single mesh object of the neuron
-    reconstructed_neuron_mesh = neuron_mesh_builder.reconstruct_mesh()
-
-    # Return a reference to the reconstructed neuron mesh
-    return reconstructed_neuron_mesh
+        # Return False
+        return False
 
 
 ####################################################################################################
@@ -118,38 +102,21 @@ def export_neuron_mesh(cli_morphology,
     # Get a list of all the meshes in the scene
     mesh_objects = vmv.scene.get_list_of_meshes_in_scene()
 
+    if len(mesh_objects) == 0:
+        return
+
+    elif len(mesh_objects) == 1:
+        mesh_object = mesh_objects
+
+    else:
+        mesh_object = vmv.mesh.join_mesh_objects(mesh_objects, cli_morphology.name)
+
     # OBJ
     if cli_options.mesh.export_obj:
-        vmv.file.export_mesh_objects_to_file(mesh_objects,
-                                             cli_options.io.meshes_directory,
-                                             cli_morphology.label,
-                                             vmv.enums.Meshing.ExportFormat.OBJ,
-                                             cli_options.mesh.export_individuals)
-
-    # PLY
-    if cli_options.mesh.export_ply:
-        vmv.file.export_mesh_objects_to_file(mesh_objects,
-                                             cli_options.io.meshes_directory,
-                                             cli_morphology.label,
-                                             vmv.enums.Meshing.ExportFormat.PLY,
-                                             cli_options.mesh.export_individuals)
-
-    # STL
-    if cli_options.mesh.export_stl:
-        vmv.file.export_mesh_objects_to_file(mesh_objects,
-                                             cli_options.io.meshes_directory,
-                                             cli_morphology.label,
-                                             vmv.enums.Meshing.ExportFormat.STL,
-                                             cli_options.mesh.export_individuals)
-
-    # BLEND
-    if cli_options.mesh.export_blend:
-        vmv.file.export_mesh_objects_to_file(mesh_objects,
-                                             cli_options.io.meshes_directory,
-                                             cli_morphology.label,
-                                             vmv.enums.Meshing.ExportFormat.BLEND,
-                                             cli_options.mesh.export_individuals)
-
+        vmv.file.export_mesh_object(
+            mesh_object, cli_options.io.meshes_directory, cli_morphology.name,
+        cli_options.mesh.export_obj, cli_options.mesh.export_ply, cli_options.mesh.export_stl,
+        cli_options.mesh.export_blend)
 
 
 ####################################################################################################
@@ -172,38 +139,21 @@ def render_neuron_mesh_to_static_frame(cli_morphology,
     if not vmv.file.ops.path_exists(cli_options.io.images_directory):
         vmv.file.ops.clean_and_create_directory(cli_options.io.images_directory)
 
-    # Compute the bounding box for a close up view
-    if cli_options.mesh.rendering_view == vmv.enums.Meshing.Rendering.View.CLOSE_UP_VIEW:
-
-        # Compute the bounding box for a close up view
-        bounding_box = vmv.bbox.compute_unified_extent_bounding_box(
-            extent=cli_options.mesh.close_up_dimensions)
-
-    # Compute the bounding box for a mid shot view
-    elif cli_options.mesh.rendering_view == vmv.enums.Meshing.Rendering.View.MID_SHOT_VIEW:
-
-        # Compute the bounding box for the available meshes only
-        bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
-
-    # Compute the bounding box for the wide shot view that correspond to the whole morphology
-    else:
-
-        # Compute the full morphology bounding box
-        bounding_box = vmv.skeleton.compute_full_morphology_bounding_box(
-            morphology=cli_morphology)
+    # Compute the bounding box for the available meshes only
+    bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
 
     # Get the view prefix
-    if cli_options.mesh.camera_view == vmv.enums.Camera.View.FRONT:
+    if cli_options.mesh.camera_view == vmv.enums.Rendering.View.FRONT:
         view_prefix = 'FRONT'
-    elif cli_options.mesh.camera_view == vmv.enums.Camera.View.SIDE:
+    elif cli_options.mesh.camera_view == vmv.enums.Rendering.View.SIDE:
         view_prefix = 'SIDE'
-    elif cli_options.mesh.camera_view == vmv.enums.Camera.View.TOP:
+    elif cli_options.mesh.camera_view == vmv.enums.Rendering.View.TOP:
         view_prefix = 'TOP'
     else:
         view_prefix = 'FRONT'
 
     # Render at a specific resolution
-    if cli_options.mesh.resolution_basis == vmv.enums.Meshing.Rendering.Resolution.FIXED_RESOLUTION:
+    if cli_options.mesh.resolution_basis == vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
         # Render the image
         vmv.rendering.render(
@@ -335,7 +285,7 @@ if __name__ == "__main__":
         print('Output: [%s]' % arguments.output_directory)
 
     # Get the options from the arguments
-    cli_options = vmv.options.NeuroMorphoVisOptions()
+    cli_options = vmv.options.VessMorphoVisOptions()
 
     # Convert the CLI arguments to system options
     cli_options.consume_arguments(arguments=arguments)
@@ -343,27 +293,14 @@ if __name__ == "__main__":
     # Read the morphology
     cli_morphology = None
 
-    # If the input is a GID, then open the circuit and read it
-    if arguments.input == 'gid':
-
-        # Load the morphology from the file
-        loading_flag, cli_morphology = vmv.file.BBPReader.load_morphology_from_circuit(
-            blue_config=cli_options.morphology.blue_config,
-            gid=cli_options.morphology.gid)
-
-        if not loading_flag:
-            vmv.logger.log('ERROR: Cannot load the GID [%s] from the circuit [%s]' %
-                           cli_options.morphology.blue_config, str(cli_options.morphology.gid))
-            exit(0)
-
     # If the input is a morphology file, then use the parser to load it directly
-    elif arguments.input == 'file':
+    if arguments.input == 'file':
 
         # Read the morphology file
         loading_flag, cli_morphology = vmv.file.read_morphology_from_file(options=cli_options)
 
         if not loading_flag:
-            vmv.logger.log('ERROR: Cannot load the morphology file [%s]' %
+            vmv.logger.log('ERROR: Cannot load the morphology file [%s]. Terminating!' %
                            str(cli_options.morphology.morphology_file_path))
             exit(0)
 
@@ -371,8 +308,8 @@ if __name__ == "__main__":
         vmv.logger.log('ERROR: Invalid input option')
         exit(0)
 
-    # Soma mesh reconstruction and visualization
-    neuron_mesh = reconstruct_neuron_mesh(cli_morphology=cli_morphology, cli_options=cli_options)
+    # Vascular mesh reconstruction
+    neuron_mesh = reconstruct_vascular_mesh(cli_morphology=cli_morphology, cli_options=cli_options)
 
     # Saving the mesh
     if cli_options.mesh.export_ply or cli_options.mesh.export_obj or \

@@ -391,9 +391,10 @@ class MetaBuilder:
     ################################################################################################
     # @build
     ################################################################################################
-    def build(self):
-        """Reconstructs the neuronal mesh using meta objects.
+    def build_mesh(self):
+        """Reconstructs the vascular mesh using meta objects.
         """
+
         vmv.logger.header('Mesh reconstruction with MetaBalls')
 
         # Initialize the meta object
