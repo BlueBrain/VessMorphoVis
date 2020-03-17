@@ -189,7 +189,6 @@ class VessMorphoVisOptions:
         self.mesh.meshing_technique = vmv.enums.Meshing.Technique.get_enum(
             arguments.meshing_algorithm)
 
-        print(vmv.enums.Meshing.MetaBalls.get_enum(arguments.meta_balls_resolution_setting))
         # MetaBalls resolution setting
         if vmv.enums.Meshing.MetaBalls.get_enum(arguments.meta_balls_resolution_setting) == \
                 vmv.enums.Meshing.MetaBalls.AUTO_RESOLUTION:
@@ -222,6 +221,10 @@ class VessMorphoVisOptions:
 
         # Camera view [FRONT, SIDE or TOP]
         self.mesh.camera_view = vmv.enums.Rendering.View.get_enum(arguments.camera_view)
+
+        # Camera view [orthographic or perspective]
+        self.mesh.camera_projection = \
+            vmv.enums.Rendering.Projection.get_enum(arguments.camera_projection)
 
         # Rendering view
         self.mesh.rendering_view = vmv.enums.Rendering.View.get_enum(arguments.rendering_view)

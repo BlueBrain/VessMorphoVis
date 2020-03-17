@@ -171,6 +171,9 @@ class Args:
     # The view or the direction of the camera
     CAMERA_VIEW = '--camera-view'
 
+    # The projection or the camera
+    CAMERA_PROJECTION = '--camera-projection'
+
     # The resolution of full-view (mid-shot or wide-shot) images
     FULL_VIEW_RESOLUTION = '--full-view-resolution'
 

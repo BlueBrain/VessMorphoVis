@@ -97,6 +97,7 @@ echo -e "\nRUNNING ... VessMorphoVis \n"
     --fixed-section-radius=$FIXED_SECTION_RADIUS                                                    \
     --bevel-sides=$SECTION_BEVEL_SIDES                                                              \
     --camera-view=$CAMERA_VIEW                                                                      \
+    --camera-projection=$CAMERA_PROJECTION                                                          \
     --rendering-view=$RENDERING_VIEW                                                                \
     --full-view-resolution=$FULL_VIEW_FRAME_RESOLUTION                                              \
     --resolution-scale-factor=$FULL_VIEW_SCALE_FACTOR                                               \

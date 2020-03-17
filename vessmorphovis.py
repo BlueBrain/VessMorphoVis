@@ -93,8 +93,6 @@ def create_shell_commands_for_local_execution(arguments,
        arguments.export_morphology_h5 or                    \
        arguments.export_morphology_blend:
 
-        print('Morphologggggggggggggggggggggggy')
-
         # Add this command to the list
         shell_commands.append('%s -b --verbose 0 --python %s -- %s' %
                               (arguments.blender, cli_morphology_reconstruction, arguments_string))

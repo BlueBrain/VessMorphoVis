@@ -122,7 +122,7 @@ class Shading:
             return Shading.FLAT_CYCLES
         elif shader_type == 'electron':
             return Shading.ELECTRON_CYCLES
-        elif shader_type == 'artistic-electron':
+        elif shader_type == 'artistic-glossy':
             return Shading.ARTISTIC_GLOSSY_CYCLES
         elif shader_type == 'artistic-bumpy':
             return Shading.ARTISTIC_BUMPY_CYCLES

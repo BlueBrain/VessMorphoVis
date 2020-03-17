@@ -159,6 +159,7 @@ def render_vascular_mesh_to_static_frame(cli_morphology,
         vmv.rendering.render(
             bounding_box=bounding_box,
             camera_view=cli_options.mesh.camera_view,
+            camera_projection=cli_options.mesh.camera_projection,
             image_resolution=cli_options.mesh.full_view_resolution,
             image_name='MESH_%s_%s' % (view_prefix, cli_options.morphology.label),
             image_directory=cli_options.io.images_directory)

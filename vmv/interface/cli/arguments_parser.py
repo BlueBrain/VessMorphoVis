@@ -400,6 +400,15 @@ def parse_command_line_arguments():
         action='store', default='front',
         help=arg_help)
 
+    # Rendering projection
+    arg_options = ['(orthographic)', 'perspective']
+    arg_help = 'The camera projection. \n' \
+               'Options: %s' % arg_options
+    rendering_args.add_argument(
+        Args.CAMERA_PROJECTION,
+        action='store', default='orthographic',
+        help=arg_help)
+
     # Full view resolution
     arg_help = 'Base resolution of full view images (wide-shot or mid-shot). \n' \
                'Default 1024.'

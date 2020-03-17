@@ -490,6 +490,9 @@ class Camera:
             background_plane = vmv.rendering.add_background_plane(
                 bounding_box=bounding_box, camera_view=vmv.ui_options.morphology.camera_view)
 
+            # Ensure that the camera is active
+            self.set_active()
+
         # Setup the camera
         self.setup_camera_for_scene(bounding_box, camera_view, camera_projection)
 
