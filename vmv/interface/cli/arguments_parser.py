@@ -169,6 +169,15 @@ def parse_command_line_arguments():
         action='store', type=float, default=1.0,
         help=arg_help)
 
+    # Section minimum radius
+    arg_help = 'The minimum radius of a sample in all morphology sections.\n' \
+               'Valid only if --sections-radii = minimum.\n' \
+               'Default is 1.0'
+    skeletonization_args.add_argument(
+        Args.MINIMUM_SECTION_RADIUS,
+        action='store', type=float, default=1.0,
+        help=arg_help)
+
     # Morphology bevel object sides (sets the quality of the morphology)
     arg_help = 'Number of sides of the bevel object used to reconstruct the morphology. \n' \
                'Default 16 (4: low quality - 64: high quality)'

@@ -126,6 +126,9 @@ class VessMorphoVisOptions:
         # Radii scale factor
         self.morphology.sections_radii_scale = arguments.radii_scale_factor
 
+        # Minimum section radius
+        self.morphology.sections_radii_minimum = arguments.minimum_section_radius
+
         # Camera view [FRONT, SIDE or TOP]
         self.morphology.camera_view = vmv.enums.Rendering.View.get_enum(arguments.camera_view)
 

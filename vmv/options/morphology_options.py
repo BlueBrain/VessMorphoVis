@@ -60,6 +60,9 @@ class MorphologyOptions:
         # A fixed and unified value for the radii of all the sections in the morphology
         self.sections_fixed_radii_value = 1.0
 
+        # The minimum radius of the samples
+        self.sections_radii_minimum = 0.5
+
         # Threshold radius, where any section with lower radius values will not drawn
         self.threshold_radius = vmv.consts.Math.INFINITY
 

@@ -252,6 +252,32 @@ class MetaBuilder:
                     r1=samples[i].radius * self.magic_scale_factor * scale,
                     r2=samples[i + 1].radius * self.magic_scale_factor * scale)
 
+        # Minimum threshold
+        elif self.options.morphology.radii == vmv.enums.Morphology.Radii.MINIMUM:
+
+            # Get the scale value
+            value = self.options.morphology.sections_radii_minimum
+
+            # Proceed segment by segment
+            for i in range(len(samples) - 1):
+
+                if samples[i].radius < value:
+                    r1 = value
+                else:
+                    r1 = samples[i].radius
+
+                if samples[i + 1].radius < value:
+                    r2 = value
+                else:
+                    r2 = samples[i + 1].radius
+
+                # Create the meta segment
+                self.create_meta_segment(
+                    p1=samples[i].point - self.morphology.bounding_box.center,
+                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    r1=r1 * self.magic_scale_factor,
+                    r2=r2 * self.magic_scale_factor)
+
         # Default radii as specified in the morphology file
         else:
 

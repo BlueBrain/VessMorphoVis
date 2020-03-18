@@ -80,6 +80,9 @@ class Args:
     # Radii fixed section
     FIXED_SECTION_RADIUS = '--fixed-section-radius'
 
+    # Minimum section radius
+    MINIMUM_SECTION_RADIUS = '--minimum-section-radius'
+
     # Morphology bevel object sides
     MORPHOLOGY_BEVEL_SIDES = '--bevel-sides'
 

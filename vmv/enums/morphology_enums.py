@@ -140,6 +140,9 @@ class Morphology:
         # Scale the radii of the vessels using a constant factor
         SCALED = 'VESSELS_RADII_SCALED'
 
+        # Minimum threshold
+        MINIMUM = 'VESSELS_RADII_MINIMUM_THRESHOLD'
+
         ############################################################################################
         # @__init__
         ############################################################################################
@@ -163,6 +166,10 @@ class Morphology:
             # Fixed
             elif argument == 'fixed':
                 return Morphology.Radii.FIXED
+
+            # Minimum threshold
+            elif argument == 'minimum':
+                return Morphology.Radii.MINIMUM
 
             # By default, as specified in the morphology file
             else:
