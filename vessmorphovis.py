@@ -115,7 +115,7 @@ def create_shell_commands_for_local_execution(arguments,
 
 
 ####################################################################################################
-# @run_local_neuromorphovis
+# @run_local_vessmorphovis
 ####################################################################################################
 def run_local_vessmorphovis(arguments):
     """Run the framework on a local node, basically your machine.
@@ -142,7 +142,7 @@ def run_local_vessmorphovis(arguments):
         # Construct the shell command to run the workflow
         shell_commands = create_shell_commands_for_local_execution(arguments, arguments_string)
 
-        # Run NeuroMorphoVis from Blender in the background mode
+        # Run VessMorphoVis from Blender in the background mode
         for shell_command in shell_commands:
             print('RUNNING: ' + shell_command)
             subprocess.call(shell_command, shell=True)
@@ -180,7 +180,7 @@ def run_local_vessmorphovis(arguments):
         #Parallel(n_jobs=6)(
         #    delayed(execute_shell_command)(command) for command in shell_commands)
 
-        # Run NeuroMorphoVis from Blender in the background mode
+        # Run VessMorphoVis from Blender in the background mode
         for shell_command in shell_commands:
             # print('RUNNING: ' + shell_command)
             subprocess.call(shell_command, shell=True)
@@ -191,10 +191,10 @@ def run_local_vessmorphovis(arguments):
 
 
 ####################################################################################################
-# @run_cluster_neuromorphovis
+# @run_cluster_vessmorphovis
 ####################################################################################################
 def run_cluster_vessmorphovis(arguments):
-    """Run the NeuroMorphoVis framework on the BBP visualization cluster using SLURM.
+    """Run the VessMorphoVis framework on the BBP visualization cluster using SLURM.
 
     :param arguments:
         Command line arguments.
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     arguments = arguments_parser.parse_command_line_arguments()
 
     # Verify the output directory before screwing things !
-    file_ops.clean_and_create_directory(arguments.output_directory)
+    file_ops.create_directory(arguments.output_directory)
     if not file_ops.path_exists(arguments.output_directory):
         print('ERROR: Please set the output directory to a valid path')
         exit(0)

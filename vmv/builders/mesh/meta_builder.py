@@ -70,7 +70,7 @@ class MetaBuilder:
         self.magic_scale_factor = 1.575
 
         # The radius of the smallest sample in the morphology
-        self.smallest_radius = 100000
+        self.smallest_radius = 1e10
 
         # A list of all the materials that will be assigned to the reconstructed mesh
         self.materials = list()
@@ -125,7 +125,8 @@ class MetaBuilder:
             name='mesh_material', color=self.options.mesh.color)
 
         # Create an illumination specific for the given material
-        vmv.shading.create_material_specific_illumination(self.options.morphology.material)
+        vmv.shading.create_material_specific_illumination(
+            material_type=self.options.mesh.material, camera_view=self.options.mesh.camera_view)
 
     ################################################################################################
     # @create_meta_segment

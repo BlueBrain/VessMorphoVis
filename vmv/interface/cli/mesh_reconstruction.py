@@ -61,8 +61,7 @@ def reconstruct_vascular_mesh(cli_morphology,
 
     # PiecewiseWatertightBuilder
     if cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
-        builder = vmv.builders.mesh.PiecewiseWatertightBuilder(
-            cli_morphology, cli_options)
+        builder = vmv.builders.mesh.PiecewiseWatertightBuilder(cli_morphology, cli_options)
         builder.build_mesh()
         return True
 
@@ -135,7 +134,7 @@ def render_vascular_mesh_to_static_frame(cli_morphology,
 
     # Create the images directory if it does not exist
     if not vmv.file.ops.path_exists(cli_options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(cli_options.io.images_directory)
+        vmv.file.ops.create_output_tree(cli_options.io.output_directory)
 
     # Compute the bounding box for the available meshes only
     bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()

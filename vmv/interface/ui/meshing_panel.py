@@ -413,12 +413,6 @@ class VMVRenderMeshImage(bpy.types.Operator):
         rendering_bbox = copy.deepcopy(bounding_box)
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
-        # Adding the illumination
-        vmv.shading.create_material_specific_illumination(
-            vmv.interface.ui_options.mesh.material)
-
-        print(context.scene.MeshRenderingResolution)
-
         # Render at a specific resolution
         if context.scene.MeshRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:

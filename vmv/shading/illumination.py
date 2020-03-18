@@ -30,7 +30,7 @@ import vmv.scene
 ####################################################################################################
 # @create_lambert_ward_illumination
 ####################################################################################################
-def create_lambert_ward_illumination():
+def create_lambert_ward_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
     """
 
     """
@@ -62,7 +62,7 @@ def create_lambert_ward_illumination():
 ####################################################################################################
 # @create_artistic_glossy_illumination
 ####################################################################################################
-def create_artistic_glossy_illumination():
+def create_artistic_glossy_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
     """Creates illumination for the artistic glossy shader for Cycles rendering.
 
     :return:
@@ -83,11 +83,18 @@ def create_artistic_glossy_illumination():
         lamp_reference.location[0] = 0
         lamp_reference.location[1] = 0
         lamp_reference.location[2] = 0
-        lamp_reference.rotation_euler[0] = 1.5708
+        lamp_reference.rotation_euler[0] = 0
+        lamp_reference.rotation_euler[1] = 0
+        lamp_reference.rotation_euler[2] = 0
         lamp_reference.data.color[0] = 0.75
         lamp_reference.data.color[1] = 1.0
         lamp_reference.data.color[2] = 1.0
-        lamp_reference.data.energy = 5
+        lamp_reference.data.energy = 10
+
+        if camera_view == vmv.enums.Rendering.View.TOP:
+            lamp_reference.rotation_euler[0] = 3.14159
+        else:
+            lamp_reference.rotation_euler[0] = -1.5708
 
         vmv.scene.ops.deselect_all()
         bpy.ops.object.light_add(type='SUN', radius=1, location=(0, 0, 0))
@@ -97,17 +104,24 @@ def create_artistic_glossy_illumination():
         lamp_reference.location[0] = 0
         lamp_reference.location[1] = 0
         lamp_reference.location[2] = 0
-        lamp_reference.rotation_euler[0] = -1.5708
+        lamp_reference.rotation_euler[0] = 0
+        lamp_reference.rotation_euler[1] = 0
+        lamp_reference.rotation_euler[2] = 0
         lamp_reference.data.color[0] = 1.0
         lamp_reference.data.color[1] = 1.0
         lamp_reference.data.color[2] = 0.75
-        lamp_reference.data.energy = 5
+        lamp_reference.data.energy = 10
+
+        if camera_view == vmv.enums.Rendering.View.TOP:
+            lamp_reference.rotation_euler[0] = 0
+        else:
+            lamp_reference.rotation_euler[0] = 1.5708
 
 
 ####################################################################################################
 # @create_shadow_illumination
 ####################################################################################################
-def create_shadow_illumination():
+def create_shadow_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
 
     # Clear all the lights
     vmv.scene.ops.clear_lights()
@@ -142,7 +156,7 @@ def create_shadow_illumination():
 ####################################################################################################
 # @create_glossy_bumpy_illumination
 ####################################################################################################
-def create_glossy_bumpy_illumination():
+def create_glossy_bumpy_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
 
     vmv.scene.ops.clear_lights()
 
@@ -167,7 +181,7 @@ def create_glossy_bumpy_illumination():
 ####################################################################################################
 # @create_voronoi_cells_illumination
 ####################################################################################################
-def create_voronoi_cells_illumination():
+def create_voronoi_cells_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
     """
 
     :param name:
@@ -205,33 +219,36 @@ def create_voronoi_cells_illumination():
 ####################################################################################################
 # @create_illumination
 ####################################################################################################
-def create_material_specific_illumination(material_type):
+def create_material_specific_illumination(material_type,
+                                          camera_view=vmv.enums.Rendering.View.FRONT):
     """Create a specific illumination that corresponds to a given material.
 
     :param material_type:
         Material type.
+    :param camera_view:
+        The rendering view of the camera. FRONT, SIDE or TOP.
     """
 
     # Lambert Ward
     if material_type == vmv.enums.Shading.GLOSSY_WORKBENCH:
-        return create_lambert_ward_illumination()
+        return create_lambert_ward_illumination(camera_view=camera_view)
 
     # Lambert Ward
     elif material_type == vmv.enums.Shading.ARTISTIC_GLOSSY_CYCLES:
-        return create_artistic_glossy_illumination()
+        return create_artistic_glossy_illumination(camera_view=camera_view)
 
     # Shadow
     elif material_type == vmv.enums.Shading.SHADOW:
-        return create_lambert_ward_illumination()
+        return create_lambert_ward_illumination(camera_view=camera_view)
 
     # Glossy bumpy
     elif material_type == vmv.enums.Shading.ARTISTIC_BUMPY_CYCLES:
-        return create_artistic_glossy_illumination()
+        return create_artistic_glossy_illumination(camera_view=camera_view)
 
     # Voronoi
     elif material_type == vmv.enums.Shading.VORONOI:
-        return create_voronoi_cells_illumination()
+        return create_voronoi_cells_illumination(camera_view=camera_view)
 
     # Default, just use the lambert shader illumination
     else:
-        return create_lambert_ward_illumination()
+        return create_lambert_ward_illumination(camera_view=camera_view)

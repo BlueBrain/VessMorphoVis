@@ -24,6 +24,25 @@ from path_consts import *
 
 
 ####################################################################################################
+# @create_directory
+####################################################################################################
+def create_directory(path):
+    """Creates a new directory.
+
+    :param path :
+        The path of the directory to be created.
+    """
+
+    # if the path exists, remove it and create another one.
+    if os.path.exists(path):
+        return
+    try:
+        os.mkdir(path)
+    except ValueError:
+        print('ERROR: cannot create directory %s' % path)
+
+
+####################################################################################################
 # @clean_and_create_directory
 ####################################################################################################
 def clean_and_create_directory(path):
@@ -38,7 +57,7 @@ def clean_and_create_directory(path):
         shutil.rmtree(path)
     try:
         os.mkdir(path)
-    except:
+    except ValueError:
         print('ERROR: cannot create directory %s' % path)
 
 
@@ -116,35 +135,35 @@ def create_output_tree(output_directory):
     """
 
     # Output directory
-    clean_and_create_directory(output_directory)
+    create_directory(output_directory)
 
     # SLURM directory
     slurm_directory = '%s/%s' % (output_directory, Paths.SLURM_FOLDER)
-    clean_and_create_directory(slurm_directory)
+    create_directory(slurm_directory)
 
     # SLURM jobs directory
     slurm_jobs_directory = '%s/%s' % (output_directory, Paths.SLURM_JOBS_FOLDER)
-    clean_and_create_directory(slurm_jobs_directory)
+    create_directory(slurm_jobs_directory)
 
     # SLURM logs directory
     slurm_logs_directory = '%s/%s' % (output_directory, Paths.SLURM_LOGS_FOLDER)
-    clean_and_create_directory(slurm_logs_directory)
+    create_directory(slurm_logs_directory)
 
     # Morphologies directory
     meshes_directory = '%s/%s' % (output_directory, Paths.MORPHOLOGIES_FOLDER)
-    clean_and_create_directory(meshes_directory)
+    create_directory(meshes_directory)
 
     # Meshes directory
     meshes_directory = '%s/%s' % (output_directory, Paths.MESHES_FOLDER)
-    clean_and_create_directory(meshes_directory)
+    create_directory(meshes_directory)
 
     # Images directory
     images_directory = '%s/%s' % (output_directory, Paths.IMAGES_FOLDER)
-    clean_and_create_directory(images_directory)
+    create_directory(images_directory)
 
     # Sequences directory
     sequences_directory = '%s/%s' % (output_directory, Paths.SEQUENCES_FOLDER)
-    clean_and_create_directory(sequences_directory)
+    create_directory(sequences_directory)
 
 
 ####################################################################################################

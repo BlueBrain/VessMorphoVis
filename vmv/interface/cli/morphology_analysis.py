@@ -62,7 +62,7 @@ def analyze_morphology_skeleton(cli_morphology,
         
         # Create the analysis directory if it does not exist
         if not vmv.file.ops.path_exists(cli_options.io.analysis_directory):
-            vmv.file.ops.clean_and_create_directory(cli_options.io.analysis_directory)
+            vmv.file.ops.vmv.file.ops.create_output_tree(cli_options.io.output_directory)
 
         # Export the analysis results
         #vmv.interface.ui.export_analysis_results(

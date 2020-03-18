@@ -118,28 +118,13 @@ class VessMorphoVisOptions:
         self.morphology.bevel_object_sides = arguments.bevel_sides
 
         # Sections radii
+        self.morphology.radii = vmv.enums.Morphology.Radii.get_enum(arguments.sections_radii)
+
         # Fixed radius across all the arbors
-        if arguments.sections_radii == 'fixed':
-            self.morphology.scale_sections_radii = False
-            self.morphology.unify_sections_radii = True
-            self.morphology.sections_fixed_radii_value = arguments.fixed_section_radius
+        self.morphology.sections_fixed_radii_value = arguments.fixed_section_radius
 
-        # Scaled radii w.r.t the given in the morphology file
-        elif arguments.sections_radii == 'scaled':
-            self.morphology.scale_sections_radii = True
-            self.morphology.unify_sections_radii = False
-            self.morphology.sections_radii_scale = arguments.radii_scale_factor
-
-        # Filtered
-        elif arguments.sections_radii == 'filtered':
-            self.morphology.scale_sections_radii = False
-            self.morphology.unify_sections_radii = False
-            self.morphology.sections_radii_scale = arguments.radii_scale_factor
-
-        # Default as given in the morphology file
-        else:
-            self.morphology.scale_sections_radii = False
-            self.morphology.unify_sections_radii = False
+        # Radii scale factor
+        self.morphology.sections_radii_scale = arguments.radii_scale_factor
 
         # Camera view [FRONT, SIDE or TOP]
         self.morphology.camera_view = vmv.enums.Rendering.View.get_enum(arguments.camera_view)
