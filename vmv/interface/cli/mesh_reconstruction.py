@@ -61,7 +61,6 @@ def reconstruct_vascular_mesh(cli_morphology,
 
     # PiecewiseWatertightBuilder
     if cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
-        vmv.logger.log('Builder: Piecewise Watertight')
         builder = vmv.builders.mesh.PiecewiseWatertightBuilder(
             cli_morphology, cli_options)
         builder.build_mesh()
@@ -69,7 +68,6 @@ def reconstruct_vascular_mesh(cli_morphology,
 
     # MetaBall builder
     elif cli_options.mesh.meshing_technique == vmv.enums.Meshing.Technique.META_BALLS:
-        vmv.logger.log('Builder: MetaBalls')
         builder = vmv.builders.MetaBuilder(cli_morphology, cli_options)
         builder.build_mesh()
         return True
@@ -283,7 +281,7 @@ if __name__ == "__main__":
         vmv.logger.log('ERROR: Please set the output directory to a valid path')
         exit(0)
     else:
-        print('Output: [%s]' % arguments.output_directory)
+        print('      * Output will be generated to [%s]' % arguments.output_directory)
 
     # Get the options from the arguments
     cli_options = vmv.options.VessMorphoVisOptions()
@@ -326,8 +324,5 @@ if __name__ == "__main__":
     # Render 360 of the mesh
     if cli_options.mesh.render_360:
         render_vascular_mesh_360(cli_options=cli_options, cli_morphology=cli_morphology)
-
-    # Rendering the mesh
-    vmv.logger.log('NMV Done')
 
 

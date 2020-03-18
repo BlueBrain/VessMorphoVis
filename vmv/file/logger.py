@@ -61,13 +61,13 @@ class Logger:
 
         # Log file path
         self.log_file_path = '%s/vmv.log' % self.path
-        print('Log file [%s]' % self.log_file_path)
+        print('      * Log file [%s]' % self.log_file_path)
 
         # Open the log file in the write mode for the first time only
         log_file = open(self.log_file_path, 'w')
 
         # Starting message and time
-        log_file.write('VessMorphoVis - Marwan Abdellah (C) Blue Brain Project / EPFL \n')
+        log_file.write('VessMorphoVis - (C) Blue Brain Project / EPFL, Marwan Abdellah\n')
         log_file.write(datetime.datetime.now().strftime("%I:%M %p on %B %d, %Y\n"))
 
         # Close

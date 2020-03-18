@@ -106,5 +106,5 @@ echo -e "\nRUNNING ... VessMorphoVis \n"
     --tessellation-level=$TESSELLATION_LEVEL                                                        \
     $BOOL_ARGS
 
-echo -e "\nDONE ... NeuroMorphoVis \n"
+echo -e "\nVessMorphoVis DONE !\n"
 ####################################################################################################

@@ -39,7 +39,7 @@ class RenderingPlanes:
     TOP_FACE_DELTA = 1000
 
     # Bottom face delta in %
-    BOTTOM_FACE_DELTA = 0.1
+    BOTTOM_FACE_DELTA = 1
 
     # Horizon scale
     HORIZON_SCALE = 100

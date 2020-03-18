@@ -177,7 +177,7 @@ if __name__ == "__main__":
         vmv.logger.log('ERROR: Please set the output directory to a valid path')
         exit(0)
     else:
-        print('Output: [%s]' % arguments.output_directory)
+        print('      * Output will be generated to [%s]' % arguments.output_directory)
 
     # Get the options from the CLI arguments
     cli_options = vmv.options.VessMorphoVisOptions()
@@ -205,8 +205,3 @@ if __name__ == "__main__":
 
     # Morphology reconstruction and visualization
     reconstruct_vascular_morphology(cli_morphology=cli_morphology, cli_options=cli_options)
-
-    # Done
-    vmv.logger.log('VessMorphoVis Done')
-
-

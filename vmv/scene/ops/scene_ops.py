@@ -22,7 +22,7 @@ import bpy
 from mathutils import Vector
 
 # Internal imports
-import vmv
+import vmv.bbox
 import vmv.utilities
 
 

@@ -488,7 +488,7 @@ class Camera:
         background_plane = None
         if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
             background_plane = vmv.rendering.add_background_plane(
-                bounding_box=bounding_box, camera_view=vmv.ui_options.morphology.camera_view)
+                bounding_box=bounding_box, camera_view=camera_view)
 
         # Setup the camera
         self.setup_camera_for_scene(bounding_box, camera_view, camera_projection)
@@ -538,8 +538,8 @@ class Camera:
             vmv.scene.ops.delete_object_in_scene(self.camera)
 
         # Delete the background plane
-        if background_plane is not None:
-            vmv.scene.delete_object_in_scene(background_plane)
+        #if background_plane is not None:
+        #    vmv.scene.delete_object_in_scene(background_plane)
 
     ################################################################################################
     # @render_scene_bounding_box

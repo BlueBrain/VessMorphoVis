@@ -417,6 +417,8 @@ class VMVRenderMeshImage(bpy.types.Operator):
         vmv.shading.create_material_specific_illumination(
             vmv.interface.ui_options.mesh.material)
 
+        print(context.scene.MeshRenderingResolution)
+
         # Render at a specific resolution
         if context.scene.MeshRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
@@ -424,8 +426,8 @@ class VMVRenderMeshImage(bpy.types.Operator):
             # Render the morphology
             vmv.rendering.render(
                 bounding_box=rendering_bbox,
-                camera_view=vmv.ui_options.mesh.camera_view,
-                camera_projection=vmv.ui_options.mesh.camera_projection,
+                camera_view=vmv.interface.ui_options.mesh.camera_view,
+                camera_projection=vmv.interface.ui_options.mesh.camera_projection,
                 image_resolution=context.scene.MeshFrameResolution,
                 image_name=image_name,
                 image_directory=vmv.interface.ui_options.io.images_directory)

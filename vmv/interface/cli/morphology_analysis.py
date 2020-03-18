@@ -90,7 +90,7 @@ if __name__ == "__main__":
         vmv.logger.log('ERROR: Please set the output directory to a valid path')
         exit(0)
     else:
-        print('Output: [%s]' % arguments.output_directory)
+        print('      * Output will be generated to [%s]' % arguments.output_directory)
 
     # Get the options from the arguments
     cli_options = vmv.options.VessMorphoVisOptions()
@@ -118,6 +118,3 @@ if __name__ == "__main__":
 
     # Morphology analysis
     analyze_morphology_skeleton(cli_morphology=cli_morphology, cli_options=cli_options)
-    vmv.logger.log('NMV Done')
-
-

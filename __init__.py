@@ -78,6 +78,12 @@ if "bpy" in locals():
     imp.reload(vmv.interface.ui.meshing_panel)
     imp.reload(vmv.interface.ui.about_panel)
 
+    vmv.logger.header('Loading VessMorphoVis')
+    vmv.logger.info('Version (%s)' % str(__version__))
+    vmv.logger.info('Copyrights © Blue Brain Project (BBP) - EPFL')
+    vmv.logger.info('Author(s): Marwan Abdellah')
+
+
 else:
 
     # Import the modules
@@ -90,7 +96,7 @@ else:
     vmv.logger.header('Loading VessMorphoVis')
     vmv.logger.info('Version (%s)' % str(__version__))
     vmv.logger.info('Copyrights © Blue Brain Project (BBP) - EPFL')
-    vmv.logger.info('Author: Marwan Abdellah')
+    vmv.logger.info('Author(s): Marwan Abdellah')
 
 
 ####################################################################################################
@@ -102,9 +108,7 @@ def register():
 
     # Register panels
     vmv.interface.ui.io_panel.register_panel()
-    if True:
-        print('register')
-        vmv.interface.ui.analysis_panel.register_panel()
+    vmv.interface.ui.analysis_panel.register_panel()
     vmv.interface.ui.morphology_panel.register_panel()
     vmv.interface.ui.meshing_panel.register_panel()
     vmv.interface.ui.about_panel.register_panel()

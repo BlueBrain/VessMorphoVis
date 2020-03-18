@@ -39,8 +39,8 @@ def disable_std_output():
 
     temporary_directory = tempfile.gettempdir()
 
-    sys.stdout = open('%s/stdout.output' % temporary_directory, 'w')
-    sys.stderr = open('%s/stderr.output' % temporary_directory, 'w')
+    sys.stdout = open('%s/vmv-stdout.output' % temporary_directory, 'w')
+    sys.stderr = open('%s/vmv-stderr.output' % temporary_directory, 'w')
 
 
 ####################################################################################################
