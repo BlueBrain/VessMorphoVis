@@ -48,11 +48,11 @@ class Logger:
 
             # MAC
             if str(platform.system()) == "Darwin":
-                self.path = os.getenv("HOME")
+                self.path = os.path.dirname(os.path.realpath(__file__)) # os.getenv("HOME")
             elif str(platform.system()) == "Windows":
                 self.path = os.path.dirname(os.path.realpath(__file__))
             else:
-                self.path = os.getenv("HOME")
+                self.path = os.path.dirname(os.path.realpath(__file__)) # os.getenv("HOME")
         else:
             self.path = path
 
