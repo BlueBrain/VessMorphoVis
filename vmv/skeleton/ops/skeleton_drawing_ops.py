@@ -47,7 +47,7 @@ def get_section_poly_line(section):
         point = section.points[i]
 
         # Get the radius of the sample
-        radius = section.diameters[i] * 0.2
+        radius = section.diameters[i] * 0.5
 
         # TODO: Add an option to set the radii at the terminal or branching points to zero
         """

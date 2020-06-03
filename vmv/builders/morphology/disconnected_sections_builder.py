@@ -79,6 +79,9 @@ class DisconnectedSectionsBuilder:
         # A list of all the poly-lines
         poly_lines_data = list()
 
+        import time
+        start = time.time()
+
         # Get the poly-line data of each section
         for i, section in enumerate(self.morphology.sections):
 
@@ -91,6 +94,9 @@ class DisconnectedSectionsBuilder:
             # Add the poly-line to the aggregate list
             poly_lines_data.append([poly_line_samples, poly_line_material_index])
 
+        end = time.time()
+
+        print('Get polylines %f' % (end - start))
         # Return the poly-lines list
         return poly_lines_data
 
