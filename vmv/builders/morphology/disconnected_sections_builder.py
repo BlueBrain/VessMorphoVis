@@ -80,7 +80,7 @@ class DisconnectedSectionsBuilder:
         poly_lines_data = list()
 
         # Get the poly-line data of each section
-        for i, section in enumerate(self.morphology.sections_list):
+        for i, section in enumerate(self.morphology.sections):
 
             # Poly-line samples
             poly_line_samples = vmv.skeleton.ops.get_section_poly_line(section=section)
@@ -131,5 +131,5 @@ class DisconnectedSectionsBuilder:
         vmv.logger.info('Drawing object')
         self.morphology_objects.append(vmv.geometry.create_poly_lines_object_from_poly_lines_data(
             poly_lines_data, color=self.options.morphology.color,
-            material=self.options.morphology.material, name=self.morphology.name,
+            material=self.options.morphology.material, name='sample', #self.morphology.name,
             bevel_object=bevel_object))

@@ -41,13 +41,13 @@ def get_section_poly_line(section):
     poly_line = list()
 
     # Construct the section from all the samples
-    for i in range(len(section.samples)):
+    for i in range(len(section.points)):
 
         # Get the coordinates of the sample
-        point = section.samples[i].point
+        point = section.points[i]
 
         # Get the radius of the sample
-        radius = section.samples[i].radius
+        radius = section.diameters[i] * 0.2
 
         # TODO: Add an option to set the radii at the terminal or branching points to zero
         """

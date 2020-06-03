@@ -32,7 +32,7 @@ import vmv.skeleton
 class H5Reader:
     """H5 morphology reader for the vasculature.
 
-    NOTE: This solution should be replaced by MorphoIO.
+    NOTE: This solution should be replaced by MorphIO.
     """
 
     ################################################################################################
