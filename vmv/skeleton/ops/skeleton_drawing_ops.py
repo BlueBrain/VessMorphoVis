@@ -23,12 +23,26 @@ from mathutils import Vector
 
 import vmv
 import vmv.geometry
+import numpy as np
+
+
+def get_section_poly_line(section):
+    #points_4d = np.hstack((section.points, np.ones((len(section.points), 1))))
+
+    #print(points_4d)
+    #print('-')
+    #print(points_4d.tolist())
+
+    poly_list = list(map(list, zip(map(tuple, np.hstack((section.points, np.ones((len(section.points), 1))))), 0.5 * section.diameters)))
+
+    #print(poly_list)
+    return  poly_list
 
 
 ####################################################################################################
 # @get_section_poly_line
 ####################################################################################################
-def get_section_poly_line(section):
+def get_section_poly_line_(section):
     """Get the poly-line list or a series of points that reflect the skeleton of a single section.
 
     :param section:
@@ -62,6 +76,8 @@ def get_section_poly_line(section):
 
         # Use the actual radius of the samples reported in the morphology file
         poly_line.append([(point[0], point[1], point[2], 1), radius])
+
+    print(poly_line)
 
     # Return the poly-line list
     return poly_line
