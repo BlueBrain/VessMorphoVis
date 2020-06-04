@@ -80,47 +80,6 @@ class MorphIOLoader:
         self.roots = list()
 
     ################################################################################################
-    # @resample_section_adaptively
-    ################################################################################################
-    def resample_section_adaptively(self, section):
-
-        # If the section has no samples, ignore this filter and return
-        if len(section[0].points) < 4:
-            return
-
-        import numpy
-
-        # The section has more than three samples, then it can be re-sampled, but never remove
-        # the first or the last samples
-
-        i = 0
-        while True:
-
-            # Just keep the last sample of the branch just in case
-            if i < len(section[0].points) - 2:
-
-                sample_1_point = Vector((section[0].points[i][0], section[0].points[i][1], section[0].points[i][2]))
-                sample_2_point = Vector((section[0].points[i + 1][0], section[0].points[i + 1][1], section[0].points[i + 1][2]))
-
-                sample_1_radius = section[0].radii[i]
-                sample_2_radius = section[0].radii[i + 1]
-
-                # Segment length
-                segment_length = (sample_2_point - sample_1_point).length
-
-                # If the distance between the two samples if less than the radius of the first
-                # sample remove the second sample
-                if segment_length < sample_1_radius + sample_2_radius:
-                    section[0].points = numpy.delete(section[0].points, i + 1, axis=0)
-                    i = 0
-                else:
-                    i += 1
-
-            # No more samples to process, break please
-            else:
-                break
-
-    ################################################################################################
     # @read_data_from_file
     ################################################################################################
     def read_data_from_file(self,
@@ -142,7 +101,7 @@ class MorphIOLoader:
             from morphio import RawDataError, VasculatureSectionType
 
             # Ignore the console warning and output
-            #vmv.utilities.disable_std_output()
+            vmv.utilities.disable_std_output()
 
             morphology_data = \
                 vasculature.Vasculature(vmv.interface.ui_options.io.morphology_file_path)
@@ -174,9 +133,6 @@ class MorphIOLoader:
 
                 # Section id
                 section = vmv.skeleton.Section(index=section_morphio[0].id)
-
-                #if resample_morphology:
-                #    self.resample_section_adaptively(section=section_morphio)
 
                 # Samples list
                 samples = list()
@@ -228,7 +184,7 @@ class MorphIOLoader:
                     self.roots.append(section)
 
             # Enable std output again
-            #vmv.utilities.enable_std_output()
+            vmv.utilities.enable_std_output()
 
         # Raise an exception if we cannot import the h5py module
         except ImportError:

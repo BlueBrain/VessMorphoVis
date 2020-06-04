@@ -86,8 +86,6 @@ class Morphology:
         # Morphology bounding box
         self.bounding_box = None
 
-        self.radii_list = None
-
         # Compute the bounding box of the morphology
         self.compute_bounding_box()
 
