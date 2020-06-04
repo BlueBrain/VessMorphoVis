@@ -345,12 +345,13 @@ class ConnectedSectionsBuilder:
             poly_lines_data, color=self.options.morphology.color,
             material=self.options.morphology.material, name=self.morphology.name,
             bevel_object=bevel_object))
-
+        '''
         # Center the object
         if not self.options.morphology.global_coordinates:
             vmv.logger.detail('Centering at the origin')
             for morphology_object in self.morphology_objects:
                 morphology_object.location -= self.morphology.get_center()
+        '''
 
 
     def build_skeletonxx(self):

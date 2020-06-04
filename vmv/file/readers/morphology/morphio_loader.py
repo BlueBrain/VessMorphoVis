@@ -126,10 +126,14 @@ class MorphIOLoader:
                                      section.predecessors, section.successors) for section in
                  morphology_data.iter()])
 
+            # A dictionary to keep track on the indices of the parents in the array
+            index_parent_dictionary = {}
+            for i_section, sec in enumerate(sections_morphio):
+                index_parent_dictionary[sec[0].id] = i_section
+
             # Construct a list of sections to be given to the constructor
             sections_list = list()
-
-            for section_morphio in sections_morphio:
+            for x, section_morphio in enumerate(sections_morphio):
 
                 # Section id
                 section = vmv.skeleton.Section(index=section_morphio[0].id)
@@ -169,9 +173,11 @@ class MorphIOLoader:
                     children_ids.append(k.id)
 
                 for parent_id in parents_ids:
-                    sections_list[i].parents.append(sections_list[parent_id])
+                    sections_list[i].parents.append(
+                        sections_list[index_parent_dictionary[parent_id]])
                 for children_id in children_ids:
-                    sections_list[i].children.append(sections_list[children_id])
+                    sections_list[i].children.append(
+                        sections_list[index_parent_dictionary[children_id]])
 
             # Data
             self.sections_list = sections_list
