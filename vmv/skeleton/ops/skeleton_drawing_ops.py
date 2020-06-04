@@ -23,6 +23,20 @@ from mathutils import Vector
 
 import vmv
 import vmv.geometry
+import numpy as np
+
+
+def get_section_poly_line_(section):
+    #points_4d = np.hstack((section.points, np.ones((len(section.points), 1))))
+
+    #print(points_4d)
+    #print('-')
+    #print(points_4d.tolist())
+
+    poly_list = list(map(list, zip(map(tuple, np.hstack((section.points, np.ones((len(section.points), 1))))), 0.5 * section.diameters)))
+
+    #print(poly_list)
+    return  poly_list
 
 
 ####################################################################################################
@@ -41,13 +55,13 @@ def get_section_poly_line(section):
     poly_line = list()
 
     # Construct the section from all the samples
-    for i in range(len(section.samples)):
+    for sample in section.samples:
 
         # Get the coordinates of the sample
-        point = section.samples[i].point
+        point = sample.point
 
         # Get the radius of the sample
-        radius = section.samples[i].radius
+        radius = sample.radius
 
         # TODO: Add an option to set the radii at the terminal or branching points to zero
         """
@@ -684,6 +698,49 @@ def draw_connected_sections(section, name='sample',
 
 
 ####################################################################################################
+# @resample_samples_list_adaptively
+####################################################################################################
+def resample_samples_list_adaptively(samples):
+
+    """Re-samples a list of samples adaptively.
+
+    :param samples:
+        A list of samples to be re-sampled.
+    """
+
+    # If the section has no samples, ignore this filter and return
+    if len(samples) < 4:
+        return
+
+    # The section has more than three samples, then it can be re-sampled, but never remove
+    # the first or the last samples
+
+    i = 0
+    while True:
+
+        # Just keep the last sample of the branch just in case
+        if i < len(samples) - 2:
+
+            sample_1 = samples[i]
+            sample_2 = samples[i + 1]
+
+            # Segment length
+            segment_length = (sample_2.point - sample_1.point).length
+
+            # If the distance between the two samples if less than the radius of the first
+            # sample remove the second sample
+            if segment_length < sample_1.radius + sample_2.radius:
+                samples.remove(samples[i + 1])
+                i = 0
+            else:
+                i += 1
+
+        # No more samples to process, break please
+        else:
+            break
+
+
+####################################################################################################
 # @resample_section_adaptively
 ####################################################################################################
 def resample_section_adaptively(section):
@@ -694,57 +751,7 @@ def resample_section_adaptively(section):
         A given section to resample.
     """
 
-    # If the section has no samples, ignore this filter and return
-    if len(section.samples) == 0:
-        return
-
-    # If the section has ONLY ONE sample, ignore this filter and return
-    elif len(section.samples) == 1:
-        return
-
-    # If the section has ONLY TWO sample, ignore this filter and return
-    elif len(section.samples) == 2:
-
-        # Compute section length
-        section_length = (section.samples[1].point - section.samples[0].point).length
-
-        # Compute the combined radii of the samples
-        radii = (section.samples[1].radius + section.samples[0].radius)
-
-        if section_length < radii:
-            vmv.logger.detail('\t\t* BAD SECTION')
-
-    # If the section has ONLY three sample, continue
-    elif len(section.samples) == 3:
-        return
-
-    # The section has more than three samples, then it can be re-sampled, but never remove
-    # the first or the last samples
-    else:
-
-        i = 0
-        while True:
-
-            # Just keep the last sample of the branch just in case
-            if i < len(section.samples) - 2:
-
-                sample_1 = section.samples[i]
-                sample_2 = section.samples[i + 1]
-
-                # Segment length
-                segment_length = (sample_2.point - sample_1.point).length
-
-                # If the distance between the two samples if less than the radius of the first
-                # sample remove the second sample
-                if segment_length < sample_1.radius + sample_2.radius:
-                    section.samples.remove(section.samples[i + 1])
-                    i = 0
-                else:
-                    i += 1
-
-            # No more samples to process, break please
-            else:
-                break
+    return resample_samples_list_adaptively(section.samples)
 
 
 def update_samples(section, index=0):

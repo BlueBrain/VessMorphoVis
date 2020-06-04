@@ -37,6 +37,7 @@ class Morphology:
                  morphology_name='VESSEL',
                  morphology_file_path=None,
                  points_list=None,
+                 radii_list=None,
                  structures_list=None,
                  connectivity_list=None,
                  sections_list=None,
@@ -47,6 +48,8 @@ class Morphology:
             Morphology file path as loaded from disk.
         :param points_list:
             A list of all the points or samples.
+        :param radii_list:
+            A list of all the radii in the morphology.
         :param structures_list:
             A list of all the sections.
         :param connectivity_list:
@@ -64,6 +67,9 @@ class Morphology:
 
         # A list of all the points (or samples) in the morphology file
         self.points_list = points_list
+
+        # A list of the radii of all the samples in the morphology file
+        self.radii_list = radii_list
 
         # A list of all the structures in the morphology file
         self.structures_list = structures_list

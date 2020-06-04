@@ -272,11 +272,11 @@ def compute_total_number_sections(sections_list):
 ####################################################################################################
 # @analyze_samples_with_zero_radii
 ####################################################################################################
-def analyze_samples_with_zero_radii(samples_list, epsilon=1e-3):
+def analyze_samples_with_zero_radii(radii_list, epsilon=1e-3):
     """Count the number of samples that have zero-radii.
 
-    :param samples_list:
-        A list of all the sample of the morphology.
+    :param radii_list:
+        A list of all the radii of the morphology.
     :param epsilon:
         Very small value that is close to zero, it is user defined and by default any sample that
         has a radius less than this value is an error.
@@ -288,10 +288,10 @@ def analyze_samples_with_zero_radii(samples_list, epsilon=1e-3):
     zero_radii_samples = 0
 
     # Iterate over all the samples and detect
-    for sample in samples_list:
+    for radius in radii_list:
 
         # If smaller than epsilon
-        if sample[3] < epsilon:
+        if radius < epsilon:
 
             # Increment
             zero_radii_samples += 1
@@ -329,22 +329,18 @@ def correct_samples_with_zero_radii(sections_list, epsilon=1e-3):
             if sample.radius < epsilon:
                 sample.radius = mean_radius
 
+
 ####################################################################################################
 # @analyze_samples_radii
 ####################################################################################################
-def analyze_samples_radii(samples_list):
+def analyze_samples_radii(radii_list):
     """Analyse the distribution of the samples of the whole morphology
 
-    :param samples_list:
-        A list of all the samples of the morphology
+    :param radii_list:
+        A list of all the radii of the morphology
     :return:
         Minimum, maximum and average samples radii.
     """
-
-    # Compile a list of all the radii
-    radii_list = list()
-    for sample in samples_list:
-        radii_list.append(sample[3])
 
     # Compute the minimum
     minimum_sample_radius = min(radii_list)

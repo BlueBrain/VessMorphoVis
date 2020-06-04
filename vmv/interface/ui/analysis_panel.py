@@ -423,14 +423,14 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         # Samples radius stats.
         vmv.logger.info('Radii')
         minimum_sample_radius, maximum_sample_radius, average_sample_radius = \
-            vmv.analysis.analyze_samples_radii(vmv.interface.ui.ui_morphology.points_list)
+            vmv.analysis.analyze_samples_radii(vmv.interface.ui.ui_morphology.radii_list)
         context.scene.MinimumSampleRadius = minimum_sample_radius
         context.scene.MaximumSampleRadius = maximum_sample_radius
         context.scene.AverageSampleRadius = average_sample_radius
 
         vmv.logger.info('Zero-radii')
         context.scene.NumberZeroRadiusSamples = vmv.analysis.analyze_samples_with_zero_radii(
-            vmv.interface.ui.ui_morphology.points_list)
+            vmv.interface.ui.ui_morphology.radii_list)
 
         vmv.logger.info('Repair Zero-radii')
         vmv.analysis.correct_samples_with_zero_radii(vmv.interface.ui.ui_morphology.sections_list)

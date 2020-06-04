@@ -183,7 +183,7 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
     bpy.context.scene.collection.objects.link(line_object)
 
     # Add the two points to the line object and scale their radii
-    line_strip = line_data.splines.new('NURBS')
+    line_strip = line_data.splines.new('POLY')
     line_strip.points.add(1)
     line_strip.points[0].co = (point1[0], point1[1], point1[2]) + (1.0,)
     line_strip.points[1].co = (point2[0], point2[1], point2[2]) + (1.0,)
@@ -284,7 +284,7 @@ def create_poly_lines_object_materials(poly_lines_object,
 ####################################################################################################
 def append_poly_line_to_poly_lines_object(poly_lines_object,
                                           poly_line_data,
-                                          poly_line_type='NURBS'):
+                                          poly_line_type='POLY'):
     """Creates a poly-line object and appends to the aggregate poly-lines-object that is created
     before.
 
@@ -383,6 +383,7 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     aggregate_poly_lines_object = bpy.data.objects.new(str(name), poly_lines_object)
 
     if poly_line_type == 'NURBS':
+        print('hola')
         aggregate_poly_lines_object.data.splines[0].order_u = 6
         aggregate_poly_lines_object.data.splines[0].use_endpoint_u = True
 

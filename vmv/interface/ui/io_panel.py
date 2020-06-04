@@ -21,6 +21,7 @@ import time
 
 # Blender imports
 import bpy
+from mathutils import Vector
 
 # Internal imports
 import vmv
@@ -284,12 +285,13 @@ class VMVLoadMorphology(bpy.types.Operator):
 
         # Construct a morphology object to be used later by the entire application
         loading_start = time.time()
+
         vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
             center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin,
             resample_morphology=vmv.interface.ui_options.io.resample_morphology)
-        loading_done = time.time()
 
         # Update the interface
+        loading_done = time.time()
         context.scene.MorphologyLoadingTime = loading_done - loading_start
         vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))
 
@@ -314,7 +316,7 @@ class VMVLoadMorphology(bpy.types.Operator):
             # Show the loading time
             drawing_done = time.time()
             context.scene.MorphologyDrawingTime = drawing_done - loading_done
-            vmv.logger.info('Morphology loaded in [%f] seconds' % (drawing_done - loading_done))
+            vmv.logger.info('Morphology drawn in [%f] seconds' % (drawing_done - loading_done))
 
             # The morphology is loaded
             vmv.interface.ui_morphology_loaded = True

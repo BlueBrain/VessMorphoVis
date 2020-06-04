@@ -47,7 +47,7 @@ def create_line_object_from_data(data,
     # Add the two points to the line object
     # NOTE: Once the strip is created, it contains by default a single point, so we need to add
     # another point to make an array fr two points
-    line_strip = data.splines.new('NURBS')
+    line_strip = data.splines.new('POLY')
     line_strip.points.add(1)
 
     # Add the coordinates of the two points
