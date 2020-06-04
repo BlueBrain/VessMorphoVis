@@ -81,7 +81,7 @@ class Morphology:
         self.bounding_box = None
 
         # Compute the bounding box of the morphology
-        self.compute_bounding_box()
+        # self.compute_bounding_box()
 
     ################################################################################################
     # @get_center

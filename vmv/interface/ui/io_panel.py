@@ -21,6 +21,7 @@ import time
 
 # Blender imports
 import bpy
+from mathutils import Vector
 
 # Internal imports
 import vmv
@@ -246,6 +247,14 @@ class VMVIOPanel(bpy.types.Panel):
             drawing_time_row.enabled = False
 
 
+class SectionMorphIO:
+    def __init__(self, id, points, radii):
+        self.id = id
+        self.points = points
+        self.radii = radii
+
+
+
 ####################################################################################################
 # @VMVLoadMorphology
 ####################################################################################################
@@ -292,11 +301,40 @@ class VMVLoadMorphology(bpy.types.Operator):
         import morphio.vasculature as vasculature
         from morphio import RawDataError, VasculatureSectionType
 
-        vmv.interface.ui.ui_morphology = \
+        morphology_data = \
             vasculature.Vasculature(vmv.interface.ui_options.io.morphology_file_path)
-        loading_done = time.time()
+
+
+        import numpy
+
+        # Transform the data of the morphology into a normal structure
+        sections_morphio = numpy.vstack(
+            [SectionMorphIO(section.id, section.points, 0.5 * section.diameters) for section in
+             morphology_data.iter()])
+
+        sections = list()
+
+        import vmv.skeleton
+        for section_morphio in sections_morphio:
+            section = vmv.skeleton.Section(index=section_morphio[0].id)
+
+            samples = list()
+            for i in range(len(section_morphio[0].points)):
+                sample = vmv.skeleton.Sample(
+                    point=Vector((section_morphio[0].points[i][0],
+                                  section_morphio[0].points[i][1],
+                                  section_morphio[0].points[i][2])),
+                    radius=section_morphio[0].radii[i])
+                samples.append(sample)
+            section.samples = samples
+
+            sections.append(section)
+
+        vmv.interface.ui.ui_morphology = vmv.skeleton.Morphology()
+        vmv.interface.ui.ui_morphology.sections = sections
 
         # Update the interface
+        loading_done = time.time()
         context.scene.MorphologyLoadingTime = loading_done - loading_start
         vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))
 

@@ -24,10 +24,8 @@ class Sample:
 
     The section is composed of a set of segments, and each segment is composed of two samples.
     Each sample has a point in the cartesian coordinates and a radius that reflect the
-    cross-sectional area of the morphology at a certain point. The sample is identified by
-    two indexes or IDs, the first is used to label the order of the sample along the
-    morphological section, and the second represents the order of the sample in the morphology
-    file.
+    cross-sectional area of the morphology at a certain point.
+    Note that the samples
     """
 
     ################################################################################################
@@ -36,22 +34,13 @@ class Sample:
     def __init__(self,
                  point,
                  radius,
-                 index):
+                 index=-1):
         """Constructor
 
         :param point:
             Sample position in the cartesian space, Vector((x, y, z)).
         :param radius:
             Sample radius.
-        :param id:
-            Sample index along the section from 0 to N-1 if the section has N samples.
-        :param type:
-            Sample type.
-        :param morphology_id:
-            Sample index as reported in the morphology file.
-        :param section:
-            A reference to the section where the sample belongs to, initially None.
-            This member is updated after re-constructing the morphology skeleton.
         """
 
         # Sample cartesian point
@@ -59,7 +48,3 @@ class Sample:
 
         # Sample radius
         self.radius = radius
-
-        # Sample index along the section (from 0 to N, updated after section construction)
-        self.index = index
-
