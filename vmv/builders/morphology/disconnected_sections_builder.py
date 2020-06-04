@@ -83,7 +83,7 @@ class DisconnectedSectionsBuilder:
         start = time.time()
 
         # Get the poly-line data of each section
-        for i, section in enumerate(self.morphology.sections):
+        for i, section in enumerate(self.morphology.sections_list):
 
             # Poly-line samples
             poly_line_samples = vmv.skeleton.ops.get_section_poly_line(section=section)
@@ -96,7 +96,6 @@ class DisconnectedSectionsBuilder:
 
         end = time.time()
 
-        print('Get polylines %f' % (end - start))
         # Return the poly-lines list
         return poly_lines_data
 

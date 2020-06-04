@@ -247,14 +247,6 @@ class VMVIOPanel(bpy.types.Panel):
             drawing_time_row.enabled = False
 
 
-class SectionMorphIO:
-    def __init__(self, id, points, radii):
-        self.id = id
-        self.points = points
-        self.radii = radii
-
-
-
 ####################################################################################################
 # @VMVLoadMorphology
 ####################################################################################################
@@ -294,44 +286,9 @@ class VMVLoadMorphology(bpy.types.Operator):
         # Construct a morphology object to be used later by the entire application
         loading_start = time.time()
 
-        #vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
-        #    center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin,
-        #    resample_morphology=vmv.interface.ui_options.io.resample_morphology)
-
-        import morphio.vasculature as vasculature
-        from morphio import RawDataError, VasculatureSectionType
-
-        morphology_data = \
-            vasculature.Vasculature(vmv.interface.ui_options.io.morphology_file_path)
-
-
-        import numpy
-
-        # Transform the data of the morphology into a normal structure
-        sections_morphio = numpy.vstack(
-            [SectionMorphIO(section.id, section.points, 0.5 * section.diameters) for section in
-             morphology_data.iter()])
-
-        sections = list()
-
-        import vmv.skeleton
-        for section_morphio in sections_morphio:
-            section = vmv.skeleton.Section(index=section_morphio[0].id)
-
-            samples = list()
-            for i in range(len(section_morphio[0].points)):
-                sample = vmv.skeleton.Sample(
-                    point=Vector((section_morphio[0].points[i][0],
-                                  section_morphio[0].points[i][1],
-                                  section_morphio[0].points[i][2])),
-                    radius=section_morphio[0].radii[i])
-                samples.append(sample)
-            section.samples = samples
-
-            sections.append(section)
-
-        vmv.interface.ui.ui_morphology = vmv.skeleton.Morphology()
-        vmv.interface.ui.ui_morphology.sections = sections
+        vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
+            center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin,
+            resample_morphology=vmv.interface.ui_options.io.resample_morphology)
 
         # Update the interface
         loading_done = time.time()
