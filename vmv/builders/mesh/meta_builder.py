@@ -232,8 +232,8 @@ class MetaBuilder:
 
                 # Create the meta segment
                 self.create_meta_segment(
-                    p1=samples[i].point - self.morphology.bounding_box.center,
-                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    p1=samples[i].point,
+                    p2=samples[i + 1].point,
                     r1=self.options.morphology.sections_fixed_radii_value * self.magic_scale_factor,
                     r2=self.options.morphology.sections_fixed_radii_value * self.magic_scale_factor)
 
@@ -247,8 +247,8 @@ class MetaBuilder:
             for i in range(len(samples) - 1):
                 # Create the meta segment
                 self.create_meta_segment(
-                    p1=samples[i].point - self.morphology.bounding_box.center,
-                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    p1=samples[i].point,
+                    p2=samples[i + 1].point,
                     r1=samples[i].radius * self.magic_scale_factor * scale,
                     r2=samples[i + 1].radius * self.magic_scale_factor * scale)
 
@@ -273,8 +273,8 @@ class MetaBuilder:
 
                 # Create the meta segment
                 self.create_meta_segment(
-                    p1=samples[i].point - self.morphology.bounding_box.center,
-                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    p1=samples[i].point,
+                    p2=samples[i + 1].point,
                     r1=r1 * self.magic_scale_factor,
                     r2=r2 * self.magic_scale_factor)
 
@@ -286,8 +286,8 @@ class MetaBuilder:
 
                 # Create the meta segment
                 self.create_meta_segment(
-                    p1=samples[i].point - self.morphology.bounding_box.center,
-                    p2=samples[i + 1].point - self.morphology.bounding_box.center,
+                    p1=samples[i].point,
+                    p2=samples[i + 1].point,
                     r1=samples[i].radius * self.magic_scale_factor,
                     r2=samples[i + 1].radius * self.magic_scale_factor)
 
