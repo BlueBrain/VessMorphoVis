@@ -430,7 +430,7 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
 
         vmv.logger.info('Zero-radii')
         context.scene.NumberZeroRadiusSamples = vmv.analysis.analyze_samples_with_zero_radii(
-            vmv.interface.ui.ui_morphology.points_list)
+            vmv.interface.ui.ui_morphology.radii_list)
 
         vmv.logger.info('Repair Zero-radii')
         vmv.analysis.correct_samples_with_zero_radii(vmv.interface.ui.ui_morphology.sections_list)

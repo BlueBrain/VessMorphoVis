@@ -48,8 +48,11 @@ class VMVReader:
         # Set the path to the given vmv text file
         self.morphology_file = vmv_file
 
-        # A list of all the points (or samples) in the morphology file
+        # A list of all the points (or samples) in the morphology
         self.points_list = list()
+
+        # A list of radii of all the samples in the morphology
+        self.radii_list = list()
 
         # A list of all the sections that were extracted from the loaded data
         self.sections_list = list()
@@ -216,7 +219,10 @@ class VMVReader:
                 radius = float(vertex_entry[4])
 
                 # Add this point to the points list with the position and radius
-                self.points_list.append([x, y, z, radius, index])
+                self.points_list.append([x, y, z, index])
+
+                # Radii
+                self.radii_list.append(radius)
 
             # Compute the bounding box of the morphology
             self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(
@@ -260,10 +266,13 @@ class VMVReader:
                     # Get the point
                     point = self.points_list[int(i_point) - 1]
 
+                    # Radius
+                    radius = self.radii_list[int(i_point) - 1]
+
                     # Construct a sample
                     sample = vmv.skeleton.Sample(point=Vector((point[0], point[1], point[2])),
-                                                 radius=point[3],
-                                                 index=point[4])
+                                                 radius=radius,
+                                                 index=point[3])
 
                     # Add the sample to the samples list
                     samples_list.append(sample)
@@ -350,7 +359,7 @@ class VMVReader:
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
             morphology_name=morphology_name, morphology_file_path=self.morphology_file,
-            points_list=self.points_list, structures_list=None,
+            points_list=self.points_list, radii_list=self.radii_list, structures_list=None,
             connectivity_list=None, sections_list=self.sections_list,
             roots=self.roots)
 
