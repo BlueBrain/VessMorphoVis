@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
+from pathlib import Path
+from itertools import chain
 
 # Blender imports
 from mathutils import Vector
@@ -26,26 +28,26 @@ import vmv.file
 import vmv.skeleton
 
 
+################################################################################################
+# @SectionMorphIO
+################################################################################################
+class SectionMorphIO:
+    """An auxilliary structure to keep track on the
+
+    """
+    def __init__(self, section):
+        self.id = section.id
+        self.points = section.points
+        self.radii = section.diameters * 0.5
+        self.predecessors = section.predecessors
+        self.successors = section.successors
+
 ####################################################################################################
 # @H5Reader
 ####################################################################################################
 class MorphIOLoader:
     """A generic morphology reader based on the MorphIO library.
     """
-
-    ################################################################################################
-    # @SectionMorphIO
-    ################################################################################################
-    class SectionMorphIO:
-        """An auxilliary structure to keep track on the
-
-        """
-        def __init__(self, id, points, radii, predecessors, successors):
-            self.id = id
-            self.points = points
-            self.radii = radii
-            self.predecessors = predecessors
-            self.successors = successors
 
     ################################################################################################
     # @__init__
@@ -99,104 +101,74 @@ class MorphIOLoader:
             import vmv.skeleton
             import morphio.vasculature as vasculature
             from morphio import RawDataError, VasculatureSectionType
-
-            # Ignore the console warning and output
-            vmv.utilities.disable_std_output()
-
-            morphology_data = \
-                vasculature.Vasculature(vmv.interface.ui_options.io.morphology_file_path)
-
-            # Get a list of points using the iterator
-            points_list = list()
-            points = numpy.vstack([section.points for section in morphology_data.iter()])
-            for point in points:
-                points_list.append(Vector((point[0], point[1], point[2])))
-
-            # Compute the bounding box of the morphology
-            self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(
-                points_list)
-
-            # Get a list of radii using the iterator
-            radii_list = numpy.hstack(
-                [0.5 * section.diameters for section in morphology_data.iter()]).tolist()
-
-            # Transform the data of the morphology into a normal structure
-            sections_morphio = numpy.vstack(
-                [self.SectionMorphIO(section.id, section.points, 0.5 * section.diameters,
-                                     section.predecessors, section.successors) for section in
-                 morphology_data.iter()])
-
-            # A dictionary to keep track on the indices of the parents in the array
-            index_parent_dictionary = {}
-            for i_section, sec in enumerate(sections_morphio):
-                index_parent_dictionary[sec[0].id] = i_section
-
-            # Construct a list of sections to be given to the constructor
-            sections_list = list()
-            for x, section_morphio in enumerate(sections_morphio):
-
-                # Section id
-                section = vmv.skeleton.Section(index=section_morphio[0].id)
-
-                # Samples list
-                samples = list()
-                for i in range(len(section_morphio[0].points)):
-
-                    # A reference to the point
-                    point = Vector((section_morphio[0].points[i][0],
-                                    section_morphio[0].points[i][1],
-                                    section_morphio[0].points[i][2]))
-
-                    # Center the morphology at the origin if required by the user
-                    if center_at_origin:
-                        point[0] -= self.bounding_box.center[0]
-                        point[1] -= self.bounding_box.center[1]
-                        point[2] -= self.bounding_box.center[2]
-
-                    sample = vmv.skeleton.Sample(
-                        point=point,
-                        radius=section_morphio[0].radii[i])
-                    samples.append(sample)
-                section.samples = samples
-
-                # Append the section to the list
-                sections_list.append(section)
-
-            # Updating parents and children
-            for i in range(len(sections_list)):
-
-                parents_ids = list()
-                children_ids = list()
-                for j in sections_morphio[i][0].predecessors:
-                    parents_ids.append(j.id)
-                for k in sections_morphio[i][0].successors:
-                    children_ids.append(k.id)
-
-                for parent_id in parents_ids:
-                    sections_list[i].parents.append(
-                        sections_list[index_parent_dictionary[parent_id]])
-                for children_id in children_ids:
-                    sections_list[i].children.append(
-                        sections_list[index_parent_dictionary[children_id]])
-
-            # Data
-            self.sections_list = sections_list
-            self.points_list = points_list
-            self.radii_list = radii_list
-
-            # Detect the root sections and update the list
-            for section in self.sections_list:
-                if section.is_root():
-                    self.roots.append(section)
-
-            # Enable std output again
-            vmv.utilities.enable_std_output()
-
         # Raise an exception if we cannot import the h5py module
-        except ImportError:
-
-            print('ERROR: Cannot *import h5py* to read the file [%s]' % self.morphology_file)
+        except ImportError as e:
+            print('ERROR: Cannot read the file [%s]' % self.morphology_file)
+            print(str(e))
             exit(0)
+
+        # Ignore the console warning and output
+        vmv.utilities.disable_std_output()
+
+        morphology_data = vasculature.Vasculature(self.morphology_file)
+
+        # Get a list of points using the iterator
+        points = chain.from_iterable(section.points for section in morphology_data.iter())
+        points_list = list(map(Vector, points))
+
+        # Compute the bounding box of the morphology
+        self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(
+            points_list)
+
+        # Transform the data of the morphology into a normal structure
+        sections_morphio = list(map(SectionMorphIO, morphology_data.iter()))
+
+        index_parent_dictionary = {
+            sec.id: i_section
+            for i_section, sec in enumerate(sections_morphio)
+        }
+
+        # Construct a list of sections to be given to the constructor
+        sections_list = list()
+        for section_morphio in sections_morphio:
+
+            # Section id
+            section = vmv.skeleton.Section(index=section_morphio.id)
+
+            # Samples list
+            samples = list()
+            for point, radius in zip(section_morphio.points, section_morphio.radii):
+                point = Vector(point)
+
+                # Center the morphology at the origin if required by the user
+                if center_at_origin:
+                    point -= Vector(self.bounding_box.center)
+
+                samples.append(vmv.skeleton.Sample(
+                    point=point,
+                    radius=radius))
+            section.samples = samples
+            sections_list.append(section)
+
+        # Updating parents and children
+        for section_morphio, section in zip(sections_morphio, sections_list):
+            for parent in section_morphio.predecessors:
+                section.parents.append(sections_list[index_parent_dictionary[parent.id]])
+
+            for child in section_morphio.successors:
+                section.children.append(sections_list[index_parent_dictionary[child.id]])
+
+        # Data
+        self.sections_list = sections_list
+        self.points_list = points_list
+        self.radii_list = np.hstack([0.5 * section.diameters for section in
+                                     morphology_data.iter()]).tolist()
+
+        self.roots = [section for section in self.sections_list if section.is_root()]
+
+        # Enable std output again
+        vmv.utilities.enable_std_output()
+
 
     ################################################################################################
     # @construct_morphology_object
@@ -225,14 +197,14 @@ class MorphIOLoader:
             for section in self.sections_list:
                 vmv.skeleton.resample_section_adaptively(section)
 
-        # Get the morphology name from the file
-        morphology_name = vmv.file.ops.get_file_name_from_path(self.morphology_file)
-
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
-            morphology_name=morphology_name, morphology_file_path=self.morphology_file,
-            points_list=self.points_list, sections_list=self.sections_list,
-            radii_list=self.radii_list, roots=self.roots)
+            morphology_name=Path(self.morphology_file).name,
+            morphology_file_path=self.morphology_file,
+            points_list=self.points_list,
+            sections_list=self.sections_list,
+            radii_list=self.radii_list,
+            roots=self.roots)
 
         # Return the object
         return morphology_object
