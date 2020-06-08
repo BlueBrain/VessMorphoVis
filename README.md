@@ -15,6 +15,26 @@ VessMorphoVis is an integrated suite of toolboxes for interactive visualization 
 
 # Package Details
 
+_VessMorphoVis_ is mainly based on [Blender](https://www.blender.org/). 
+Blender is a free software and can be downloaded from [Blender.org](http://download.blender.org/release/). 
+Blender is released under the GNU General Public License ([GPL](https://www.blender.org/about/license/), or 
+“free software”).
+The current version of _VessMorphoVis_ is compatible with the following Blender versions:
+
++ [Blender 2.80](http://download.blender.org/release/Blender2.80/)
++ [Blender 2.81](http://download.blender.org/release/Blender2.81/)
++ [Blender 2.82](http://download.blender.org/release/Blender2.82/)
++ [Blender 2.83](http://download.blender.org/release/Blender2.83/)
+
+_VessMorphoVis_ can be downloaded as a __binary archive bundled within Blender__ that can be easily 
+extracted and used [out-of-the-box](https://en.wikipedia.org/wiki/Out_of_the_box_(feature)). 
+The optional dependencies are already shiped within this archive using [pip](https://pypi.org/project/pip/) 
+on each respective platform. This package (released every minor version update of the software) is 
+recommended for __Windows users__ or those who cannot use 
+the [__Terminal__](https://en.wikipedia.org/wiki/Unix_shell). 
+Otherwise, users can just download an installation script that will automatically install the entire 
+package to a user-specified directory. This script __does not__ require __sudo__ permissions.
+
 # Known Bugs or Feature Requests
 
 Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorphoVis/issues) for fixed and open bugs. User can also report any bugs and request new features needed for their research. We are happy to provide direct [support](#contact) . 
