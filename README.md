@@ -46,8 +46,8 @@ If you use _VessMorphoVis_ for your research, media design or other purposes, pl
 
 ```
 @article{abdellah2020interactive,
-  title={Interactive visualization and analysis of morphological skeletons of brain vasculature networks with 
-         VessMorphoVis},
+  title={Interactive visualization and analysis of morphological skeletons of brain vasculature 
+         networks with VessMorphoVis},
   author={Abdellah, Marwan and Guerrero, Nadir Román abd Lapere, Samule and Coggan, Jay S. and 
           Coste, Benoit and Dagaer, Snigdha and Keller, Daniel and Courcol, Jean-Denis and 
           Markram, Henry and Sch{\"u}rmann, Felix},
