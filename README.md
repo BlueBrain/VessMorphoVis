@@ -22,10 +22,10 @@ Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorp
 
 # Publications & Citation 
 
-If you use _NeuroMorphoVis_ for your research, media design or other purposes, please cite our paper _Interactive visualization and analysis of morphological skeletons of brain vasculature networks with VessMorphoVis_ using the following entry:
+If you use _VessMorphoVis_ for your research, media design or other purposes, please cite our paper _Interactive visualization and analysis of morphological skeletons of brain vasculature networks with VessMorphoVis_ using the following entry:
 
 ```
-@article{abdellah2018neuromorphovis,
+@article{abdellah2020interactive,
   title={Interactive visualization and analysis of morphological skeletons of brain vasculature networks with VessMorphoVis},
   author={Abdellah, Marwan and Guerrero, Nadir Román abd Lapere, Samule and Coggan, Jay S. and Coste, Benoit and Dagaer, Snigdha and Keller, Daniel and Courcol, Jean-Denis and Markram, Henry and Sch{\"u}rmann, Felix},
   journal={Bioinformatics},
@@ -37,7 +37,7 @@ If you use _NeuroMorphoVis_ for your research, media design or other purposes, p
 
 # Contact
 
-For more information on _NeuroMorphoVis_, comments or suggestions, please contact:
+For more information on _VessMorphoVis_, comments or suggestions, please contact:
 
 __Marwan Abdellah__  
 Scientific Visualiation Engineer  
@@ -48,7 +48,7 @@ __Felix Schürmann__
 Co-director of the Blue Brain Project    
 [felix.schuermann@epfl.ch](samuel.lapere@epfl.ch) 
 
-Should you have any questions concerning press enquiriries, please contact:
+Should you have any questions concerning press enquiries, please contact:
 
 __Kate Mullins__  
 Communications  
