@@ -37,7 +37,7 @@ class MorphIOLoader:
     # @SectionMorphIO
     ################################################################################################
     class SectionMorphIO:
-        """An auxilliary structure to keep track on the
+        """An auxiliary structure to keep track on the structure.
 
         """
         def __init__(self, id, points, radii, predecessors, successors):
@@ -103,8 +103,8 @@ class MorphIOLoader:
             # Ignore the console warning and output
             vmv.utilities.disable_std_output()
 
-            morphology_data = \
-                vasculature.Vasculature(vmv.interface.ui_options.io.morphology_file_path)
+            # Load the morphology data using MorphIO
+            morphology_data = vasculature.Vasculature(self.morphology_file)
 
             # Get a list of points using the iterator
             points_list = list()

@@ -67,8 +67,8 @@ class SamplesBuilder:
     ################################################################################################
     # @draw_section_samples_as_spheres
     ################################################################################################
-    def draw_section_samples_as_spheres(self,
-                                        section):
+    @staticmethod
+    def draw_section_samples_as_spheres(section):
         """Draw the section samples as a set of spheres.
 
         :param section:
@@ -79,7 +79,7 @@ class SamplesBuilder:
         output = list()
         for sample in section.samples:
             sphere = vmv.bmeshi.create_ico_sphere(
-                radius=sample.radius, location=sample.point, subdivisions=3)
+                radius=sample.radius, location=sample.point, subdivisions=1)
             output.append(sphere)
         return output
 
@@ -100,7 +100,6 @@ class SamplesBuilder:
             Prefix to name each sphere object after linking it to the scene.
         """
 
-        print(len(sphere_list))
         joint_bmesh = vmv.bmeshi.join_bmeshes_list(bmeshes_list=sphere_list)
 
         # Link the bmesh spheres to the scene
