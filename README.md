@@ -1,6 +1,11 @@
 # Introduction 
 
-VessMorphoVis is an integrated suite of toolboxes for interactive visualization and analysis of vast brain vascular networks represented by morphological graphs segmented originally from imaging or microscopy stacks. Our workflow leverages the outstanding potentials of Blender, aiming to establish an integrated, extensible and domain-specific framework capable of interactive visualization, analysis, repair, high-fidelity meshing and high-quality rendering of vascular morphologies.
+_VessMorphoVis_ is an integrated suite of toolboxes for interactive visualization and analysis of 
+vast brain vascular networks represented by morphological graphs segmented originally from imaging 
+or microscopy stacks. Our workflow leverages the outstanding potentials of Blender, aiming to 
+establish an integrated, extensible and domain-specific framework capable of interactive 
+visualization, analysis, repair, high-fidelity meshing and high-quality rendering of vascular 
+morphologies.
 
 ## Features
 
@@ -37,12 +42,16 @@ package to a user-specified directory. This script __does not__ require __sudo__
 
 # Known Bugs or Feature Requests
 
-Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorphoVis/issues) for fixed and open bugs. User can also report any bugs and request new features needed for their research. We are happy to provide direct [support](#contact) . 
+Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorphoVis/issues) for 
+fixed and open bugs. User can also report any bugs and request new features needed for their research. 
+We are happy to provide direct [support](#contact) . 
 
 
 # Publications & Citation 
 
-If you use _VessMorphoVis_ for your research, media design or other purposes, please cite our paper _Interactive visualization and analysis of morphological skeletons of brain vasculature networks with VessMorphoVis_ using the following entry:
+If you use _VessMorphoVis_ for your research, media design or other purposes, please cite our 
+paper _Interactive visualization and analysis of morphological skeletons of brain vasculature 
+networks with VessMorphoVis_ using the following entry:
 
 ```
 @article{abdellah2020interactive,
