@@ -79,7 +79,7 @@ class SamplesBuilder:
         output = list()
         for sample in section.samples:
             sphere = vmv.bmeshi.create_ico_sphere(
-                radius=sample.radius, location=sample.point, subdivisions=3)
+                radius=sample.radius, location=sample.point, subdivisions=2)
             output.append(sphere)
         return output
 
@@ -168,29 +168,20 @@ class SamplesBuilder:
             name='axon_skeleton', material_type=self.options.morphology.material,
             color=self.options.morphology.color)
 
-        spheres = list()
+        # Pre-process the radii
+        vmv.logger.info('Adjusting radii')
+        vmv.skeleton.update_skeleton_radii(morphology=self.morphology, options=self.options)
 
+        # Construct the final object and add it to the morphology
+        vmv.logger.info('Constructing object')
+
+        spheres = list()
         for section in self.morphology.sections_list:
             spheres.extend(self.draw_section_samples_as_spheres(section))
 
-
-        '''
-        # Pre-process the radii
-        vmv.logger.info('Adjusting radii')
-        vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
-
-        # Adaptively resampling the reconstructed sections
-        if self.options.morphology.adaptive_resampling:
-            vmv.logger.info('Re-sampling poly-lines')
-            vmv.skeleton.resample_poly_lines_adaptively(poly_lines=poly_lines_data)
-
         # Construct the final object and add it to the morphology
-        vmv.logger.info('Drawing object')
-        self.morphology_objects.append(vmv.geometry.create_poly_lines_object_from_poly_lines_data(
-            poly_lines_data, color=self.options.morphology.color,
-            material=self.options.morphology.material, name=self.morphology.name,
-            bevel_object=bevel_object))
-        '''
+        vmv.logger.info('Linking spheres')
+
         self.link_and_shade_spheres(sphere_list=spheres,
                                     materials_list=self.materials,
                                     prefix='samples')

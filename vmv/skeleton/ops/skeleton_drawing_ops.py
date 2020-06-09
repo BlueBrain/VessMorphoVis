@@ -205,6 +205,44 @@ def get_segments_poly_lines(section):
     return poly_lines
 
 
+def get_segments_poly_lines_with_color_code(section, min_radius, max_radius):
+
+    # A list of all the poly-lines that correspond to each segment in the morphology
+    poly_lines = list()
+
+    # Construct the section from all the samples
+    for i in range(len(section.samples) - 1):
+
+        # Segment poly-line
+        poly_line = list()
+
+        average_radius = 0
+
+        # First sample
+        point = section.samples[i].point
+        radius = section.samples[i].radius
+        poly_line.append([(point[0], point[1], point[2], 1), radius])
+
+        average_radius += radius
+
+        # Second sample
+        point = section.samples[i + 1].point
+        radius = section.samples[i + 1].radius
+        poly_line.append([(point[0], point[1], point[2], 1), radius])
+
+        average_radius += radius
+
+        average_radius /= 2.0
+
+        # Poly-line material index (we use two colors to highlight the sections)
+        poly_line_material_index = int(16 * average_radius / (max_radius - min_radius))
+
+        # Add the poly-line to the aggregate list
+        poly_lines.append([poly_line, poly_line_material_index])
+
+    return poly_lines
+
+
 ####################################################################################################
 # @get_section_poly_line_and_append_disconnections
 ####################################################################################################
