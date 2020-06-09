@@ -17,11 +17,7 @@
 
 
 from .common import *
-from .center_line_skeleton_builder import *
 from .connected_sections_builder import *
 from .disconnected_sections_builder import *
 from .disconnected_segments_builder import *
-from .simplified_skeleton_builder import *
-from .connected_skeleton_builder import *
-from .proxy_skeleton_builder import *
 from .samples_builder import *

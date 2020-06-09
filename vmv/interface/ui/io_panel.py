@@ -298,10 +298,6 @@ class VMVLoadMorphology(bpy.types.Operator):
         # Just draw the skeleton as a sign of complete morphology loading
         try:
 
-            # Initially, set the radius to FIXED to represent a center line with radius of value 1.0
-            vmv.interface.ui.ui_options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
-            vmv.interface.ui.ui_options.morphology.sections_fixed_radii_value = 1.0
-
             # Construct a builder object
             builder = vmv.builders.DisconnectedSectionsBuilder(
                  morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
