@@ -153,3 +153,20 @@ class Morphology:
 
                 # Reset the traversal list
                 section.traversed = False
+
+    ################################################################################################
+    # @average_terminal_samples_radii
+    ################################################################################################
+    def average_terminal_samples_radii(self):
+        """Computes the average radii of the terminal samples and update them.
+        NOTE: This function is used to smooth the connections between sections. It might be better
+        to implement it as a pre-processing step like the resampling.
+        """
+
+        # Compute the average radii
+        for section in self.sections_list:
+            section.compute_terminals_average_radii()
+
+        # Update the radii values
+        for section in self.sections_list:
+            section.update_terminals_radii()

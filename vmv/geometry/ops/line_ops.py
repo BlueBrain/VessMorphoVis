@@ -336,7 +336,8 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
                                                   bevel_object=None,
                                                   caps=True,
                                                   texture_size=5,
-                                                  center=Vector((0.0, 0.0, 0.0))):
+                                                  center=Vector((0.0, 0.0, 0.0)),
+                                                  color_vector=None):
     """Creates an aggregate poly-lines object from a list of poly-lines data.
 
     NOTE: This method is extremely fast and capable of creating an object with few millions of
@@ -369,9 +370,27 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     poly_lines_object = create_poly_lines_object_base(
         name=name, bevel_object=bevel_object, caps=caps, texture_size=texture_size)
 
-    # Create the materials and assign them to the poly-lines object
-    create_poly_lines_object_materials(
-        poly_lines_object=poly_lines_object, material=material, color=color)
+    if color_vector is None:
+        # Create the materials and assign them to the poly-lines object
+        create_poly_lines_object_materials(
+            poly_lines_object=poly_lines_object, material=material, color=color)
+    else:
+
+        # Create the materials
+        #materials_list = vmv.skeleton.ops.create_skeleton_materials(
+        #    name='morphology_skeleton', material_type=material, color=color)
+
+        materials_list = list()
+
+        # Create the material and append it to the list
+        for i, color in enumerate(color_vector):
+            materialx = vmv.shading.create_material(
+                name='%s_color_%d' % (name, i), color=color, material_type=material)
+            materials_list.append(materialx)
+
+        # Add the materials to the object
+        for materiala in materials_list:
+            poly_lines_object.materials.append(materiala)
 
     # For each poly-line in the poly-lines list, create an object and append it to the aggregate one
     for poly_line_data in poly_lines_data:
@@ -383,9 +402,10 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     aggregate_poly_lines_object = bpy.data.objects.new(str(name), poly_lines_object)
 
     if poly_line_type == 'NURBS':
-        print('hola')
-        aggregate_poly_lines_object.data.splines[0].order_u = 6
-        aggregate_poly_lines_object.data.splines[0].use_endpoint_u = True
+        print('NURBS')
+        #aggregate_poly_lines_object.data.splines[0].order_u = 6
+        #aggregate_poly_lines_object.data.splines[0].use_endpoint_u = True
+
 
     # Link this object to the scene
     bpy.context.scene.collection.objects.link(aggregate_poly_lines_object)
