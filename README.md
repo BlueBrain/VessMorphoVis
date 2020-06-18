@@ -40,6 +40,9 @@ the [__Terminal__](https://en.wikipedia.org/wiki/Unix_shell).
 Otherwise, users can just download an installation script that will automatically install the entire 
 package to a user-specified directory. This script __does not__ require __sudo__ permissions.
 
+# Documentation 
+The documentation is available [here](https://github.com/BlueBrain/VessMorphoVis/wiki). 
+
 # Known Bugs or Feature Requests
 
 Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorphoVis/issues) for 
