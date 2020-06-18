@@ -40,6 +40,9 @@ the [__Terminal__](https://en.wikipedia.org/wiki/Unix_shell).
 Otherwise, users can just download an installation script that will automatically install the entire 
 package to a user-specified directory. This script __does not__ require __sudo__ permissions.
 
+# Documentation 
+The documentation is available [here](https://github.com/BlueBrain/VessMorphoVis/wiki). 
+
 # Known Bugs or Feature Requests
 
 Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorphoVis/issues) for 
@@ -66,6 +69,10 @@ networks with VessMorphoVis_ using the following entry:
   publisher={Oxford University Press}
 }
 ```
+
+# Acknowledgement & Funding
+_VessMorphoVis_ is developed by the Visualization team at the [Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), [Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
+This study was supported by funding to the Blue Brain Project, a research center of the École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH Board of the Swiss Federal Institutes of Technology.
 
 # Contact
 
