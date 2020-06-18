@@ -345,7 +345,7 @@ class VMVReconstructMesh(bpy.types.Operator):
 
         # Using the piece-wise
         else:
-            builder = vmv.builders.PiecewiseWatertightBuilder(
+            builder = vmv.builders.PolylineBuilder(
                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
 
         # Build the vascular mesh

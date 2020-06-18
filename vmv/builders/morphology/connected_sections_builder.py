@@ -33,7 +33,6 @@ import vmv.skeleton
 import vmv.builders
 
 
-
 ####################################################################################################
 # @ConnectedSectionsBuilder
 ####################################################################################################
@@ -380,7 +379,6 @@ class ConnectedSectionsBuilder:
                     poly_line_data=poly_line, name='line', material=None,
                     bevel_object=self.bevel_object)
 
-
         # Reset the traversal state
         self.morphology.reset_traversal_states()
 
@@ -401,4 +399,8 @@ class ConnectedSectionsBuilder:
         #for section in self.morphology.sections_list:
         #    self.build_section(section)
 
+        # self.morphology.update_terminals_radii()
+
         self.build_skeleton()
+
+        return self.morphology_objects

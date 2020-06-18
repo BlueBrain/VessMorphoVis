@@ -57,6 +57,12 @@ class Section:
         # tree or not. This flag is reset after each traversal to False.
         self.traversed = False
 
+        # The average radius of the first sample w.r.t to pre-connected-sections
+        self.first_sample_average_radius = 0
+
+        # The average radius of the last sample w.r.t post-connected sections
+        self.last_sample_average_radius = 0
+
     ################################################################################################
     # @has_children
     ################################################################################################
@@ -168,5 +174,45 @@ class Section:
 
         if len(self.children[0].parents) > 1:
             return True
+
+    ################################################################################################
+    # @compute_terminals_average_radii
+    ################################################################################################
+    def compute_terminals_average_radii(self):
+        """Compute the average radii of the terminal samples.
+        """
+
+        # First sample
+        self.first_sample_average_radius = self.samples[0].radius
+
+        # If parents exist
+        if len(self.parents) > 0:
+            for parent in self.parents:
+                self.first_sample_average_radius += parent.samples[-1].radius
+            self.first_sample_average_radius /= (len(self.parents) + 1)
+
+        # Last sample
+        self.last_sample_average_radius = self.samples[-1].radius
+
+        # If children exist
+        if len(self.children) > 0:
+            for child in self.children:
+                self.last_sample_average_radius += child.samples[0].radius
+            self.last_sample_average_radius /= (len(self.children) + 1)
+
+    ################################################################################################
+    # @update_terminals_radii
+    ################################################################################################
+    def update_terminals_radii(self):
+        """Updates the radii of the terminal samples after computing the average.
+        """
+
+        # First sample
+        self.samples[0] = self.first_sample_average_radius
+
+        # Last sample
+        self.samples[-1] = self.last_sample_average_radius
+
+
 
 
