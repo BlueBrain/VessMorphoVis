@@ -7,6 +7,10 @@ establish an integrated, extensible and domain-specific framework capable of int
 visualization, analysis, repair, high-fidelity meshing and high-quality rendering of vascular 
 morphologies.
 
+<p align="center">
+	<img src="images/rendering/vascular_mesh_column.jpeg" width="800">
+</p>
+
 ## Features
 
 + Interactive visualization, analysis and automated repair of large-scale vasculature morphology skeletons.
