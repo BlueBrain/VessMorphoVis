@@ -8,7 +8,7 @@ visualization, analysis, repair, high-fidelity meshing and high-quality renderin
 morphologies.
 
 <p align="center">
-	<img src="images/rendering/vascular_mesh_column.jpeg" width="800">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/rendering/vascular_mesh_column.jpeg" width="800">
 </p>
 
 ## Features
