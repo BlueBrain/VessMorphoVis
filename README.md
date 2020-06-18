@@ -70,6 +70,10 @@ networks with VessMorphoVis_ using the following entry:
 }
 ```
 
+# Acknowledgement & Funding
+_VessMorphoVis_ is developed by the Visualization team at the [Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), [Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
+This study was supported by funding to the Blue Brain Project, a research center of the École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH Board of the Swiss Federal Institutes of Technology.
+
 # Contact
 
 For more information on _VessMorphoVis_, comments or suggestions, please contact:
