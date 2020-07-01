@@ -129,12 +129,16 @@ Blender is released under the GNU Public License, as Free Software, and therefor
 by anyone freely. 
 
 * The SWC morphology samples are available from the  
-[Brain Vasculature (BraVa) database](http://cng.gmu.edu/brava/home.php?s=1&name_browser=false). 
+[Brain Vasculature (BraVa) database](http://cng.gmu.edu/brava). 
 The Brain Vasculature (BraVa) database contains digital reconstructions of the human brain arterial 
 arborizations from 61 healthy adult subjects along with extracted morphological measurements.
 The arterial arborizations include the six major trees stemming from the circle of Willis, 
 namely: the left and right Anterior Cerebral Arteries (ACAs), Middle Cerebral Arteries (MCAs), 
-and Posterior Cerebral Arteries (PCAs).
+and Posterior Cerebral Arteries (PCAs). 
+Citation: [Susan N. Wright, Peter Kochunov, Fernando Mut Maurizio Bergamino, Kerry M. Brown, John C. Mazziotta, 
+Arthur W. Toga, Juan R. Cebral, Giorgio A. Ascoli. 
+Digital reconstruction and morphometric analysis of human brain arterial vasculature from magnetic 
+resonance angiography. NeuroImage, 82, 170-181, (2013)](http://dx.doi.org/10.1016/j.neuroimage.2013.05.089). 
 
 * The VMV morphology samples are available with permissions from 
 [Pablo Blinder](http://pblab.tau.ac.il/en/), Department of Neurobiology at the Tel Aviv University,
