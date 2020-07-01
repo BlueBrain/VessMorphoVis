@@ -77,7 +77,7 @@ class MorphologyOptions:
         self.bevel_object_sides = vmv.consts.Bevel.BEVEL_OBJECT_SIDES
 
         # Morphology material
-        self.material = vmv.enums.Shading.GLOSSY_WORKBENCH
+        self.material = vmv.enums.Shader.LAMBERT_WARD
 
         # Color
         self.color = vmv.consts.Color.GRAY

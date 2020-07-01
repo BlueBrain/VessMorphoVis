@@ -72,7 +72,7 @@ class MeshOptions:
 
         # COLOR & MATERIALS OPTIONS ################################################################
         # Morphology material
-        self.material = vmv.enums.Shading.GLOSSY_WORKBENCH
+        self.material = vmv.enums.Shader.LAMBERT_WARD
 
         # Morphology color
         self.color = vmv.consts.Color.DEFAULT_BLOOD_COLOR

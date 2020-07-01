@@ -120,9 +120,9 @@ bpy.types.Scene.ExportedMeshFormat = bpy.props.EnumProperty(
 
 # Mesh materials
 bpy.types.Scene.MeshMaterial = bpy.props.EnumProperty(
-    items=vmv.enums.Shading.MATERIAL_ITEMS,
+    items=vmv.enums.Shader.MATERIAL_ITEMS,
     name="Material",
-    default=vmv.enums.Shading.GLOSSY_WORKBENCH)
+    default=vmv.enums.Shader.LAMBERT_WARD)
 
 # Mesh color
 bpy.types.Scene.MeshColor = bpy.props.FloatVectorProperty(

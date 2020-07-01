@@ -215,7 +215,7 @@ class VMVMeshingPanel(bpy.types.Panel):
             # Due to a bug in the workbench renderer in Blender, we will allow the
             # perspective projection for all the materials that use cycles and have high number of
             # samples per pixel, mainly the artistic rendering.
-            if vmv.ui_options.mesh.material in vmv.enums.Shading.ARTISTIC_MATERIALS:
+            if vmv.ui_options.mesh.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
 
                 # Add the projection option
                 projection_row = self.layout.column()

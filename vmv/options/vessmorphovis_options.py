@@ -109,7 +109,7 @@ class VessMorphoVisOptions:
             self.morphology.label = vmv.file.ops.get_file_name_from_path(arguments.morphology_file)
 
         # Morphology material
-        self.morphology.material = vmv.enums.Shading.get_enum(arguments.shader)
+        self.morphology.material = vmv.enums.Shader.get_enum(arguments.shader)
 
         # Morphology color
         self.morphology.color = vmv.utilities.parse_color_from_argument(arguments.morphology_color)
@@ -228,7 +228,7 @@ class VessMorphoVisOptions:
         self.mesh.full_view_resolution = arguments.full_view_resolution
 
         # Mesh material
-        self.mesh.material = vmv.enums.Shading.get_enum(arguments.shader)
+        self.mesh.material = vmv.enums.Shader.get_enum(arguments.shader)
 
         # Mesh color
         self.mesh.color = vmv.utilities.parse_color_from_argument(arguments.mesh_color)

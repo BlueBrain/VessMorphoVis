@@ -57,211 +57,6 @@ def import_shader(shader_name):
 
 
 ####################################################################################################
-# @create_workbench_material
-####################################################################################################
-def create_workbench_material(name,
-                              color=vmv.consts.Color.WHITE,
-                              roughness=0.0,
-                              metallic=0.0):
-    """Creates a material that can be only used with the Workbench renderer.
-
-    :param name:
-        Material name.
-    :param color:
-        Diffuse component.
-    :param roughness:
-        Material roughness, 0.0 for glossy, 1.0 for matte.
-    :param metallic:
-        Material metallic, 0.0 for glossy, 1.0 for matte.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Set the current rendering engine to WORKBENCH
-    if not current_scene.render.engine == 'BLENDER_WORKBENCH':
-        current_scene.render.engine = 'BLENDER_WORKBENCH'
-
-    # Create a new material (color) and assign it to the line
-    color = mathutils.Vector((color[0], color[1], color[2], 1.0))
-
-    # Create a new material (color) and assign it to the line
-    line_material = bpy.data.materials.new('color.%s' % name)
-    line_material.diffuse_color = color
-
-    # Zero-metallic and roughness
-    line_material.roughness = roughness
-    line_material.metallic = metallic
-
-    # Return a reference to the material
-    return line_material
-
-
-####################################################################################################
-# @create_flat_material
-####################################################################################################
-def create_flat_material(name,
-                         color=vmv.consts.Color.WHITE):
-    """Creates a flat shader that can be used with Cycles.
-    The shader is quite simple and uses an emitting color that is sufficient to render it with one
-    sample per pixel.
-
-    :param name:
-        Material name
-    :param color:
-        Material color.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='flat-material')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    # Set, or FORCE, the number of samples per pixel to ONE
-    bpy.context.scene.cycles.samples = 1
-
-    # Update the color gradient
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2]
-
-    # Return a reference to the material
-    return material_reference
-
-
-####################################################################################################
-# @create_electron_light_material
-####################################################################################################
-def create_electron_light_material(name,
-                                   color=vmv.consts.Color.WHITE):
-    """Creates a light electron shader.
-
-    :param name:
-        Material name
-    :param color:
-        Material color.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='electron-light-material')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    # Update the color gradient
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
-
-    # Return a reference to the material
-    return material_reference
-
-
-####################################################################################################
-# @create_artistic_glossy_material
-####################################################################################################
-def create_artistic_glossy_material(name,
-                                    color=vmv.consts.Color.DEFAULT_BLOOD_COLOR):
-    """Creates a an artistic glossy shader for Cycles rendering.
-
-    :param name:
-        Material name
-    :param color:
-        Material color.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
-
-    # Use de-noising
-    current_scene.view_layers['View Layer'].cycles.use_denoising = True
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='artistic-glossy')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    # Return a reference to the material
-    return material_reference
-
-####################################################################################################
-# @create_super_electron_light_material
-####################################################################################################
-def create_super_electron_light_material(name,
-                                         color=vmv.consts.Color.WHITE):
-    """Creates a light electron shader that can be used with Cycles..
-
-    :param name:
-        Material name
-    :param color:
-        Material color, by default white.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='super-electron-light-material')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    # Set, or FORCE, the number of samples per pixel to ONE
-    bpy.context.scene.cycles.samples = 1
-
-    # Update the color gradient
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
-    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
-
-    # Return a reference to the material
-    return material_reference
-
-
-####################################################################################################
 # @create_shadow_material
 ####################################################################################################
 def create_shadow_material(name,
@@ -282,8 +77,10 @@ def create_shadow_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
+
+    # Use 64 samples per pixel to create a nice image.
+    bpy.context.scene.cycles.samples = 64
 
     # Import the material from the library
     material_reference = import_shader(shader_name='shadow-material')
@@ -298,6 +95,9 @@ def create_shadow_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
 
     # Return a reference to the material
     return material_reference
@@ -322,8 +122,10 @@ def create_super_electron_light_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
+
+    # Use only 2 samples
+    bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
 
     # Import the material from the library
     material_reference = import_shader(shader_name='super-electron-light-material')
@@ -338,6 +140,9 @@ def create_super_electron_light_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
 
     # Return a reference to the material
     return material_reference
@@ -362,8 +167,10 @@ def create_super_electron_dark_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
+
+    # Use only 2 samples
+    bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
 
     # Import the material from the library
     material_reference = import_shader(shader_name='super-electron-dark-material')
@@ -379,19 +186,233 @@ def create_super_electron_dark_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
 
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
     # Return a reference to the material
     return material_reference
-
-
-
 
 
 ####################################################################################################
 # @create_flat_material
 ####################################################################################################
-def create_voroni_cells_material(name,
+def create_flat_material(name,
+                         color=vmv.consts.Color.WHITE):
+    """Creates a flat shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    if vmv.utilities.is_blender_280():
+
+        # Set the current rendering engine to Blender
+        current_scene.render.engine = 'BLENDER_WORKBENCH'
+
+        # Create a new material (color) and assign it to the line
+        color = mathutils.Vector((color[0], color[1], color[2], 1.0))
+
+        # Create a new material (color) and assign it to the line
+        material_reference = bpy.data.materials.new('color.%s' % name)
+        material_reference.diffuse_color = color
+
+        # Zero-metallic and roughness
+        material_reference.roughness = 0.0
+        material_reference.metallic = 0.0
+
+        # Flat shading
+        bpy.context.scene.display.shading.light = 'FLAT'
+        vmv.scene.set_scene_transparency(transparent=False)
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('RENDERED')
+
+    else:
+
+        # Switch the rendering engine to cycles to be able to create the material
+        current_scene.render.engine = 'CYCLES'
+
+        # Use only 2 samples
+        bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
+
+        # Import the material from the library
+        material_reference = import_shader(shader_name='flat-material')
+
+        # Rename the material
+        material_reference.name = str(name)
+
+        # Update the color gradient
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2]
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_transparent_material
+####################################################################################################
+def create_transparent_material(name,
+                                color=vmv.consts.Color.WHITE):
+    """Creates a flat shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    if vmv.utilities.is_blender_280():
+
+        # Set the current rendering engine to Blender
+        current_scene.render.engine = 'BLENDER_WORKBENCH'
+
+        # Create a new material (color) and assign it to the line
+        color = mathutils.Vector((color[0], color[1], color[2], 1.0))
+
+        # Create a new material (color) and assign it to the line
+        material_reference = bpy.data.materials.new('color.%s' % name)
+        material_reference.diffuse_color = color
+
+        # Zero-metallic and roughness
+        material_reference.roughness = 0.0
+        material_reference.metallic = 0.0
+
+        # Transparent shading
+        bpy.context.scene.display.shading.light = 'STUDIO'
+        bpy.context.scene.display.shading.studio_light = 'Default'
+        bpy.context.scene.display.shading.show_xray = True
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('SOLID')
+
+        # Switch to transparent
+        vmv.scene.set_scene_transparency(transparent=True)
+
+    else:
+
+        # Switch the rendering engine to cycles to be able to create the material
+        current_scene.render.engine = 'CYCLES'
+
+        # Use only 2 samples
+        bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
+
+        # Import the material from the library
+        material_reference = import_shader(shader_name='flat-material')
+
+        # Rename the material
+        material_reference.name = str(name)
+
+        # Update the color gradient
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2]
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_toon_material
+####################################################################################################
+def create_toon_material(name,
+                            color=vmv.consts.Color.WHITE):
+    """Creates a carton shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    if vmv.utilities.is_blender_280():
+
+        # Set the current rendering engine to Blender
+        current_scene.render.engine = 'BLENDER_WORKBENCH'
+
+        # Create a new material (color) and assign it to the line
+        color = mathutils.Vector((color[0], color[1], color[2], 1.0))
+
+        # Create a new material (color) and assign it to the line
+        material_reference = bpy.data.materials.new('color.%s' % name)
+        material_reference.diffuse_color = color
+
+        # Zero-metallic and roughness
+        material_reference.roughness = 0.0
+        material_reference.metallic = 0.0
+
+        # Flat shading
+        bpy.context.scene.display.shading.light = 'MATCAP'
+        bpy.context.scene.display.shading.studio_light = 'toon.exr'
+        vmv.scene.set_scene_transparency(transparent=False)
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('SOLID')
+
+    else:
+
+        # Switch the rendering engine to cycles to be able to create the material
+        current_scene.render.engine = 'CYCLES'
+
+        bpy.context.scene.cycles.samples = 2
+
+        # Import the material from the library
+        material_reference = import_shader(shader_name='flat-material')
+
+        # Rename the material
+        material_reference.name = str(name)
+
+        # Update the color gradient
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1]
+        material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2]
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_voronoi_cells_material
+####################################################################################################
+def create_voronoi_cells_material(name,
                                  color=vmv.consts.Color.WHITE):
-    """Creates a voroni shader.
+    """Creates a voronoi shader.
 
     :param name:
         Material name
@@ -405,11 +426,10 @@ def create_voroni_cells_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
 
     # Import the material from the library
-    material_reference = import_shader(shader_name='voroni-cells')
+    material_reference = import_shader(shader_name='voronoi-cells')
 
     # Rename the material
     material_reference.name = str(name)
@@ -422,10 +442,101 @@ def create_voroni_cells_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1]
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2]
 
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
     # Return a reference to the material
     return material_reference
 
 
+####################################################################################################
+# @create_wire_frame_material
+####################################################################################################
+def create_wire_frame_material(name,
+                                 color=vmv.consts.Color.WHITE):
+    """Creates a wire frame shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    current_scene.render.engine = 'CYCLES'
+
+    # Use only 2 samples
+    bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='wire-frame')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    # Update the color gradient
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2]
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_electron_light_material
+####################################################################################################
+def create_electron_light_material(name,
+                                   color=vmv.consts.Color.WHITE):
+    """Creates a light electron shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    current_scene.render.engine = 'CYCLES'
+
+    # Use only 2 samples
+    bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='electron-light-material')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    # Update the color gradient
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[0] = color[0]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[1] = color[1]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[0].color[2] = color[2]
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[0] = color[0] / 2.0
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
+    material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
 
 
 ####################################################################################################
@@ -447,8 +558,10 @@ def create_electron_dark_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
+
+    # Use only 2 samples
+    bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
 
     # Import the material from the library
     material_reference = import_shader(shader_name='electron-dark-material')
@@ -464,24 +577,30 @@ def create_electron_dark_material(name,
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[1] = color[1] / 2.0
     material_reference.node_tree.nodes['ColorRamp'].color_ramp.elements[1].color[2] = color[2] / 2.0
 
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
     # Return a reference to the material
     return material_reference
-
-
-
 
 
 ####################################################################################################
 # @create_default_material
 ####################################################################################################
 def create_lambert_ward_material(name,
-                                 color=vmv.consts.Color.WHITE):
+                                 color=vmv.consts.Color.WHITE,
+                                 specular=(1, 1, 1),
+                                 alpha=0.0):
     """Creates a a texture material.
 
     :param name:
         Material name.
     :param color:
         Diffuse component.
+    :param specular:
+        Specular component.
+    :param alpha:
+        Transparency value, default opaque alpha = 0.
     :return:
         A reference to the material.
     """
@@ -489,23 +608,59 @@ def create_lambert_ward_material(name,
     # Get active scene
     current_scene = bpy.context.scene
 
-    # Set the current rendering engine to WORKBENCH
-    if not current_scene.render.engine == 'BLENDER_WORKBENCH':
+    # Set the current rendering engine to Blender
+
+    if vmv.utilities.is_blender_280():
         current_scene.render.engine = 'BLENDER_WORKBENCH'
 
-    # Create a new material (color) and assign it to the line
-    color = mathutils.Vector((color[0], color[1], color[2], 1.0))
+        # Create a new material (color) and assign it to the line
+        color = mathutils.Vector((color[0], color[1], color[2], 1.0))
 
-    # Create a new material (color) and assign it to the line
-    line_material = bpy.data.materials.new('color.%s' % name)
-    line_material.diffuse_color = color
+        # Create a new material (color) and assign it to the line
+        line_material = bpy.data.materials.new('color.%s' % name)
+        line_material.diffuse_color = color
 
-    # Zero-metallic and roughness
-    line_material.roughness = 0
-    line_material.metallic = 0
+        # Zero-metallic and roughness
+        line_material.roughness = 0.0
+        line_material.metallic = 0.0
 
-    # Return a reference to the material
-    return line_material
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('SOLID')
+
+        bpy.context.scene.display.shading.light = 'STUDIO'
+        bpy.context.scene.display.shading.studio_light = 'Default'
+        vmv.scene.set_scene_transparency(transparent=False)
+
+        # Return a reference to the material
+        return line_material
+
+    else:
+        current_scene.render.engine = 'BLENDER_RENDER'
+
+        # Create a new material
+        material_reference = bpy.data.materials.new(name)
+
+        # Set the diffuse parameters
+        material_reference.diffuse_color = color
+        material_reference.diffuse_shader = 'LAMBERT'
+        material_reference.diffuse_intensity = 1.0
+
+        # Set the specular parameters
+        material_reference.specular_color = specular
+        material_reference.specular_shader = 'WARDISO'
+        material_reference.specular_intensity = 1
+
+        # Transparency
+        material_reference.alpha = alpha
+
+        # Set the ambient parameters
+        material_reference.ambient = 1.0
+
+        # Switch the view port shading
+        vmv.scene.switch_scene_shading('SOLID')
+
+        # Return a reference to the material
+        return material_reference
 
 
 ####################################################################################################
@@ -527,8 +682,10 @@ def create_glossy_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
+
+    # Use 64 samples per pixel to create a nice image.
+    bpy.context.scene.cycles.samples = 64
 
     # Import the material from the library
     material_reference = import_shader(shader_name='glossy')
@@ -539,6 +696,9 @@ def create_glossy_material(name,
     material_reference.node_tree.nodes["RGB"].outputs[0].default_value[0] = color[0]
     material_reference.node_tree.nodes["RGB"].outputs[0].default_value[1] = color[1]
     material_reference.node_tree.nodes["RGB"].outputs[0].default_value[2] = color[2]
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
 
     # Return a reference to the material
     return material_reference
@@ -563,8 +723,10 @@ def create_glossy_bumpy_material(name,
     current_scene = bpy.context.scene
 
     # Switch the rendering engine to cycles to be able to create the material
-    if not current_scene.render.engine == 'CYCLES':
-        current_scene.render.engine = 'CYCLES'
+    current_scene.render.engine = 'CYCLES'
+
+    # Use 64 samples per pixel to create a nice image.
+    bpy.context.scene.cycles.samples = 64
 
     # Import the material from the library
     material_reference = import_shader(shader_name='glossy-bumpy')
@@ -576,73 +738,8 @@ def create_glossy_bumpy_material(name,
     material_reference.node_tree.nodes["RGB"].outputs[0].default_value[1] = color[1]
     material_reference.node_tree.nodes["RGB"].outputs[0].default_value[2] = color[2]
 
-    # Return a reference to the material
-    return material_reference
-
-
-####################################################################################################
-# @create_ceramic_material
-####################################################################################################
-def create_ceramic_material(name,
-                            color=vmv.consts.Color.WHITE):
-    """Creates a glossy bumpy shader.
-
-    :param name:
-        Material name
-    :param color:
-        Material color.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='ceramic')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    material_reference.node_tree.nodes["Group"].inputs[0].default_value[0] = color[0]
-    material_reference.node_tree.nodes["Group"].inputs[0].default_value[1] = color[1]
-    material_reference.node_tree.nodes["Group"].inputs[0].default_value[2] = color[2]
-
-    # Return a reference to the material
-    return material_reference
-
-
-####################################################################################################
-# @create_skin_material
-####################################################################################################
-def create_skin_material(name,
-                         color=vmv.consts.Color.WHITE):
-    """Creates a glossy bumpy shader.
-
-    :param name:
-        Material name
-    :param color:
-        Material color.
-    :return:
-        A reference to the material.
-    """
-
-    # Get active scene
-    current_scene = bpy.context.scene
-
-    # Import the material from the library
-    material_reference = import_shader(shader_name='skin')
-
-    # Rename the material
-    material_reference.name = str(name)
-
-    material_reference.node_tree.nodes["Group"].inputs[0].default_value[0] = color[0]
-    material_reference.node_tree.nodes["Group"].inputs[0].default_value[1] = color[1]
-    material_reference.node_tree.nodes["Group"].inputs[0].default_value[2] = color[2]
-
-    material_reference.node_tree.nodes["Group.001"].inputs[0].default_value[0] = color[0]
-    material_reference.node_tree.nodes["Group.001"].inputs[0].default_value[1] = color[1]
-    material_reference.node_tree.nodes["Group.001"].inputs[0].default_value[2] = color[2]
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
 
     # Return a reference to the material
     return material_reference
@@ -666,30 +763,61 @@ def create_material(name,
         A reference to the created material
     """
 
-    # Glossy, for the workbench renderer
-    if material_type == vmv.enums.Shading.GLOSSY_WORKBENCH:
-        return create_workbench_material(name='%s_color' % name, color=color)
+    # By default, set colors to filmic
+    vmv.scene.set_colors_to_filimc()
 
-    # Matte, for the workbench renderer
-    elif material_type == vmv.enums.Shading.MATTE_WORKBENCH:
-        return create_workbench_material(
-            name='%s_color' % name, color=color, roughness=1.0, metallic=1.0)
+    # Setting the scene transparency to False before the creating of any shader
+    vmv.scene.set_scene_transparency(transparent=False)
 
-    # Flat
-    elif material_type == vmv.enums.Shading.FLAT_CYCLES:
-        return create_flat_material(name='%s_color' % name, color=color)
+    # Lambert Ward
+    if material_type == vmv.enums.Shader.LAMBERT_WARD:
+        return create_lambert_ward_material(name='%s_color' % name, color=color)
 
-    # EM shader
-    elif material_type == vmv.enums.Shading.ELECTRON_CYCLES:
+    # Super electron light
+    elif material_type == vmv.enums.Shader.SUPER_ELECTRON_LIGHT:
+        return create_super_electron_light_material(name='%s_color' % name, color=color)
+
+    # Super electron dark
+    elif material_type == vmv.enums.Shader.SUPER_ELECTRON_DARK:
+        return create_super_electron_dark_material(name='%s_color' % name, color=color)
+
+    # Electron light
+    elif material_type == vmv.enums.Shader.ELECTRON_LIGHT:
         return create_electron_light_material(name='%s_color' % name, color=color)
 
-    # Artistic glossy shader
-    elif material_type == vmv.enums.Shading.ARTISTIC_GLOSSY_CYCLES:
-        return create_artistic_glossy_material(name='%s_color' % name, color=color)
+    # Electron dark
+    elif material_type == vmv.enums.Shader.ELECTRON_DARK:
+        return create_electron_dark_material(name='%s_color' % name, color=color)
+
+    # Glossy
+    elif material_type == vmv.enums.Shader.GLOSSY:
+        return create_glossy_material(name='%s_color' % name, color=color)
+
+    # Glossy
+    elif material_type == vmv.enums.Shader.WAX:
+        return create_glossy_material(name='%s_color' % name, color=color)
 
     # Glossy bumpy
-    elif material_type == vmv.enums.Shading.ARTISTIC_BUMPY_CYCLES:
+    elif material_type == vmv.enums.Shader.GLOSSY_BUMPY:
         return create_glossy_bumpy_material(name='%s_color' % name, color=color)
+
+    # Wire frame
+    elif material_type == vmv.enums.Shader.WIRE_FRAME:
+        return create_wire_frame_material(name='%s_color' % name, color=color)
+
+    # Flat
+    elif material_type == vmv.enums.Shader.FLAT:
+        # Always set the colors to raw when using the flat material
+        vmv.scene.set_colors_to_raw()
+        return create_flat_material(name='%s_color' % name, color=color)
+
+    # Toon
+    elif material_type == vmv.enums.Shader.TOON:
+        return create_toon_material(name='%s_color' % name, color=color)
+
+    # Transparent
+    elif material_type == vmv.enums.Shader.TRANSPARENT:
+        return create_transparent_material(name='%s_color' % name, color=color)
 
     # Default
     else:
@@ -720,7 +848,7 @@ def set_material_to_object(mesh_object,
 # @adjust_material_uv
 ####################################################################################################
 def adjust_material_uv(mesh_object,
-                       size=1):
+                       size=5.0):
     """Update the texture space of the created meshes
 
     :param mesh_object:
@@ -729,12 +857,49 @@ def adjust_material_uv(mesh_object,
         The texture space size of the material, by default set to 1.
     """
     # Select the mesh
-    mesh_object.select_set(True)
+    vmv.scene.set_active_object(mesh_object)
 
     # Set the 'auto_texspace' to False
-    bpy.context.object.data.use_auto_texspace = False
+    mesh_object.data.use_auto_texspace = False
 
     # Update the texture space size
-    bpy.context.object.data.texspace_size[0] = size
-    bpy.context.object.data.texspace_size[1] = size
-    bpy.context.object.data.texspace_size[2] = size
+    mesh_object.data.texspace_size[0] = size
+    mesh_object.data.texspace_size[1] = size
+    mesh_object.data.texspace_size[2] = size
+
+
+################################################################################################
+# @create_materials
+################################################################################################
+def create_materials(material_type,
+                     name,
+                     color):
+    """Creates just two materials of the mesh on the input parameters of the user.
+
+    :param material_type:
+        The type of the material.
+    :param name:
+        The name of the material/color.
+    :param color:
+        The code of the given colors.
+    :return:
+        A list of two elements (different or same colors) where we can apply later to the drawn
+        sections or segments.
+    """
+
+    # By default, no transparency
+    vmv.scene.set_scene_transparency(transparent=False)
+
+    # A list of the created materials
+    materials_list = list()
+    for i in range(2):
+
+        # Create the material
+        material = vmv.shading.create_material(name='%s_color_%d' % (name, i), color=color,
+                                               material_type=material_type)
+
+        # Append the material to the materials list
+        materials_list.append(material)
+
+    # Return the list
+    return materials_list

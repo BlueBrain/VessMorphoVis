@@ -85,6 +85,11 @@ We are happy to provide direct [support](#contact) .
 	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/rendering/vascular_mesh_column.jpeg" width="600">
 </p>
 
+<p align="center">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/rendering/per_segment_coloring_1.jpeg" height="400">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/rendering/per_segment_coloring_2.jpeg" height="400">
+</p>
+
 
 # Publications & Citation 
 

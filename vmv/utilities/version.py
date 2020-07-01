@@ -33,6 +33,7 @@ def get_blender_version():
         A list of the version of the running Blender.
     """
 
+    import bpy
     return bpy.app.version
 
 
@@ -51,6 +52,21 @@ def get_blender_version_string():
 
     # Return the version as a string
     return '%s_%s_%s' % (str(version[0]), str(version[1]), str(version[2]))
+
+
+####################################################################################################
+# @is_blender_280
+####################################################################################################
+def is_blender_280():
+    """Checks if the used version of Blender is greater than 2.8 or not.
+
+    :return:
+        True if this version of Blender is 2.8 or greater to work with the new API, otherwise False.
+    """
+
+    if get_blender_version() >= (2, 80, 0):
+        return True
+    return False
 
 
 ####################################################################################################

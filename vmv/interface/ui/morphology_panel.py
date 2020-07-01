@@ -134,9 +134,9 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # Mesh materials
     bpy.types.Scene.MorphologyMaterial = bpy.props.EnumProperty(
-        items=vmv.enums.Shading.MATERIAL_ITEMS,
+        items=vmv.enums.Shader.MATERIAL_ITEMS,
         name="Material",
-        default=vmv.enums.Shading.GLOSSY_WORKBENCH)
+        default=vmv.enums.Shader.LAMBERT_WARD)
 
     # Mesh color
     bpy.types.Scene.MorphologyColor = bpy.props.FloatVectorProperty(
@@ -201,9 +201,9 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # Material
     bpy.types.Scene.MorphologyMaterial = bpy.props.EnumProperty(
-        items=vmv.enums.Shading.MATERIAL_ITEMS,
+        items=vmv.enums.Shader.MATERIAL_ITEMS,
         name="Material",
-        default=vmv.enums.Shading.GLOSSY_WORKBENCH)
+        default=vmv.enums.Shader.LAMBERT_WARD)
 
     # Color each component
     bpy.types.Scene.ColorComponents = bpy.props.BoolProperty(
@@ -466,7 +466,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
             # Due to a bug in the workbench renderer in Blender, we will allow the
             # perspective projection for all the materials that use cycles and have high number of
             # samples per pixel, mainly the artistic rendering.
-            if vmv.ui_options.morphology.material in vmv.enums.Shading.ARTISTIC_MATERIALS:
+            if vmv.ui_options.morphology.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
 
                 # Add the projection option
                 projection_row = self.layout.column()
