@@ -233,7 +233,8 @@ class SWCLoader:
     ################################################################################################
     # @read_samples
     ################################################################################################
-    def read_samples(self):
+    def read_samples(self,
+                     center_at_origin=False):
         """Reads an SWC files and returns a list of all the samples in the file"""
 
         # Open the file, read it line by line and store the result in list.
@@ -311,9 +312,10 @@ class SWCLoader:
                 translation[2] = z
 
             # Update the coordinates if the morphology is transformed
-            x = x - translation[0]
-            y = y - translation[1]
-            z = z - translation[2]
+            if center_at_origin:
+                x = x - translation[0]
+                y = y - translation[1]
+                z = z - translation[2]
 
             if sample_type == 0 and parent_index > -1:
                 sample_type = vmv.consts.Skeleton.SWC_BASAL_DENDRITE_SAMPLE_TYPE
@@ -540,7 +542,7 @@ class SWCLoader:
         """
 
         # Read all the samples from the morphology file an store them into a list
-        self.read_samples()
+        self.read_samples(center_at_origin=center_at_origin)
 
         # Construct the connected paths from the samples list
         self.build_connected_paths_from_samples()
@@ -559,6 +561,10 @@ class SWCLoader:
         # From axon
         self.sections_list.extend(self.get_sections_of_specific_type(
             vmv.consts.Skeleton.SWC_AXON_SAMPLE_TYPE))
+
+        if resample_morphology:
+            for section in self.sections_list:
+                vmv.skeleton.resample_section_adaptively(section)
 
         # Get the morphology name from the file
         morphology_name = vmv.file.ops.get_file_name_from_path(self.morphology_file)

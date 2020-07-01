@@ -66,7 +66,7 @@ class PolylineBuilder:
         self.meta_skeleton = None
 
         # Meta object mesh, used to build the mesh of the morphology
-        self.meta_mesh = None
+        self.mesh = None
 
         # Final mesh center
         self.center = Vector((0.0, 0.0, 0.0))
@@ -135,7 +135,7 @@ class PolylineBuilder:
         vmv.scene.ops.deselect_all()
 
         # Activate the mesh object
-        bpy.context.view_layer.objects.active = self.meta_mesh
+        bpy.context.view_layer.objects.active = self.mesh
 
         # Adjusting the texture space, before assigning the material
         bpy.context.object.data.use_auto_texspace = False
@@ -144,11 +144,11 @@ class PolylineBuilder:
         bpy.context.object.data.texspace_size[2] = 5
 
         # Assign the material to the selected mesh
-        vmv.shading.set_material_to_object(self.meta_mesh, self.materials[0])
+        vmv.shading.set_material_to_object(self.mesh, self.materials[0])
 
         # Activate the mesh object
-        self.meta_mesh.select = True
-        bpy.context.view_layer.objects.active = self.meta_mesh
+        self.mesh.set_select(True)
+        bpy.context.view_layer.objects.active = self.mesh
 
     ################################################################################################
     # @build
@@ -171,7 +171,7 @@ class PolylineBuilder:
         else:
             morphology_object = morphology_skeleton_objects[0]
 
-        self.meta_mesh = vmv.scene.convert_object_to_mesh(morphology_object)
+        self.mesh = vmv.scene.convert_object_to_mesh(morphology_object)
 
         # We can here create the materials at the end to avoid any issues
         self.create_skeleton_materials()
@@ -183,4 +183,4 @@ class PolylineBuilder:
         vmv.logger.header('Done!')
 
         # Return a reference to the created mesh
-        return self.meta_mesh
+        return self.mesh
