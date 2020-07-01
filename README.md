@@ -5,7 +5,8 @@ vast brain vascular networks represented by morphological graphs segmented origi
 or microscopy stacks. Our workflow leverages the outstanding potentials of Blender, aiming to 
 establish an integrated, extensible and domain-specific framework capable of interactive 
 visualization, analysis, repair, high-fidelity meshing and high-quality rendering of vascular 
-morphologies.
+morphologies. _VessMorphoVis_ is developed as an extension to its sister 
+[_NeuroMorphoVis_](https://github.com/BlueBrain/NeuroMorphoVis). 
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-logo.jpeg" width="600">
