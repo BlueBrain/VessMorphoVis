@@ -8,7 +8,7 @@ visualization, analysis, repair, high-fidelity meshing and high-quality renderin
 morphologies.
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/rendering/vascular_mesh_column.jpeg" width="800">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-logo.jpeg" width="600">
 </p>
 
 ## Features
@@ -79,6 +79,11 @@ We are happy to provide direct [support](#contact) .
 <p align="center">
 	<img src="https://github.com/BlueBrain/VessMorphoVis/wiki/images/rendering/BH0031.CNG_artistic.jpg" width=600>
 </p>
+
+<p align="center">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/rendering/vascular_mesh_column.jpeg" width="600">
+</p>
+
 
 # Publications & Citation 
 
