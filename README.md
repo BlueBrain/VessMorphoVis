@@ -74,6 +74,12 @@ Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorp
 fixed and open bugs. User can also report any bugs and request new features needed for their research. 
 We are happy to provide direct [support](#contact) . 
 
+# Gallery 
+
+<p align="center">
+	<img src="https://github.com/BlueBrain/VessMorphoVis/wiki/images/rendering/BH0031.CNG_artistic.jpg" width=600>
+</p>
+
 # Publications & Citation 
 
 If you use _VessMorphoVis_ for your research, media design or other purposes, please cite our 
