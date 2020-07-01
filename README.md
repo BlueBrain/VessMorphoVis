@@ -131,11 +131,14 @@ namely: the left and right Anterior Cerebral Arteries (ACAs), Middle Cerebral Ar
 and Posterior Cerebral Arteries (PCAs).
 
 * The VMV morphology samples are available with permissions from 
-[Pablo Blinder](http://pblab.tau.ac.il/en/), Department of Neurobiology at the Tel Aviv University. 
+[Pablo Blinder](http://pblab.tau.ac.il/en/), Department of Neurobiology at the Tel Aviv University,
+Israel. 
 
 * The H5 morphology samples are available with permissions from the 
 [Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), 
-[Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
+[Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). The original dataset 
+courtesy of [Bruno Weber](https://www.neuroscience.uzh.ch/en/about/people/steering/Weber.html), 
+University of Zurich, Switzerland.
 
 * _VessMorphoVis_ depends on the [MorphIO library](https://github.com/BlueBrain/MorphIO) to load 
 H5 morphologies. MorphIO is licensed under the terms of the GNU Lesser General Public License 
