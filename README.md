@@ -90,6 +90,37 @@ This study was supported by funding to the Blue Brain Project, a research center
 École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH Board of the 
 Swiss Federal Institutes of Technology.
 
+
+# License 
+_VessMorphoVis_ is available to download and use under the GNU General Public License 
+([GPL](https://www.gnu.org/licenses/gpl.html), or “free software”). 
+The code is open sourced with approval from the open sourcing committee and principal coordinators 
+of the Blue Brain Project in June 2020. 
+
+# Attributions 
+
+* [Blender](https://www.blender.org/) (C) is copyright to Blender Foundation. The Blender Foundation is a non-profit organization responsible for the development of Blender. Blender is released under the GNU Public License, as Free Software, and therefore can be distributed by anyone freely. 
+
+* The SWC morphology samples are available from the  
+[Brain Vasculature (BraVa) database](http://cng.gmu.edu/brava/home.php?s=1&name_browser=false). 
+The Brain Vasculature (BraVa) database contains digital reconstructions of the human brain arterial 
+arborizations from 61 healthy adult subjects along with extracted morphological measurements.
+The arterial arborizations include the six major trees stemming from the circle of Willis, 
+namely: the left and right Anterior Cerebral Arteries (ACAs), Middle Cerebral Arteries (MCAs), 
+and Posterior Cerebral Arteries (PCAs).
+
+* The VMV morphology samples are available with permissions from 
+[Pablo Blinder](http://pblab.tau.ac.il/en/), Department of Neurobiology at the Tel Aviv University. 
+
+* The H5 morphology samples are available with permissions from the 
+[Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), 
+[Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
+
+* The table of contents for all the user documentation pages are generated 
+with [markdown-toc](http://ecotrust-canada.github.io/markdown-toc/).
+
+ 
+ 
 # Contact
 
 For more information on _VessMorphoVis_, comments or suggestions, please contact:
