@@ -128,8 +128,7 @@ The Blender Foundation is a non-profit organization responsible for the developm
 Blender is released under the GNU Public License, as Free Software, and therefore can be distributed 
 by anyone freely. 
 
-* The SWC morphology samples are available from the  
-[Brain Vasculature (BraVa) database](http://cng.gmu.edu/brava). 
+* The SWC morphology samples are available from the [Brain Vasculature (BraVa) database](http://cng.gmu.edu/brava). 
 The Brain Vasculature (BraVa) database contains digital reconstructions of the human brain arterial 
 arborizations from 61 healthy adult subjects along with extracted morphological measurements.
 The arterial arborizations include the six major trees stemming from the circle of Willis, 
