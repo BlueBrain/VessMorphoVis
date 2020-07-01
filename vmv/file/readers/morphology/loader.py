@@ -105,9 +105,9 @@ def create_morphology_reader(morphology_file_path):
     if '.h5' in morphology_extension:
         return vmv.file.readers.MorphIOLoader(morphology_file=morphology_file_path)
 
-    # If it is a .mat file, use the Matlab loader
-    elif '.mat' in morphology_extension:
-        return vmv.file.readers.MATReader(mat_file=morphology_file_path)
+    # If it is a .h5 file, use the MorphIO loader
+    elif '.swc' in morphology_extension:
+        return vmv.file.readers.SWCLoader(morphology_file=morphology_file_path)
 
     # If it is a .vmv file, use the VMVReader
     elif '.vmv' in morphology_extension:

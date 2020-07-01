@@ -208,10 +208,10 @@ class Section:
         """
 
         # First sample
-        self.samples[0] = self.first_sample_average_radius
+        self.samples[0].radius = self.first_sample_average_radius
 
         # Last sample
-        self.samples[-1] = self.last_sample_average_radius
+        self.samples[-1].radius = self.last_sample_average_radius
 
 
 

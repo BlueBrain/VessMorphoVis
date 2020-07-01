@@ -23,4 +23,5 @@ from .meshing_consts import *
 from .messages_consts import *
 from .rendering_planes import *
 from .path_consts import *
+from .skeleton_consts import *
 

@@ -17,6 +17,6 @@
 
 from .loader import *
 from .morphio_loader import *
-from .mat_loader import *
 from .h5_loader import *
 from .vmv_loader import *
+from .swc_loader import *

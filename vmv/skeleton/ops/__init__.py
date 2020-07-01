@@ -19,3 +19,4 @@
 from .skeleton_drawing_ops import *
 from .skeleton_coloring_ops import *
 from .skeleton_geometry_ops import *
+from .skeleton_reconstruction_ops import *

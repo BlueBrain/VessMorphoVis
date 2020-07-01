@@ -69,7 +69,7 @@ class VMVReader:
         # The number of samples when the morphology was loaded
         self.number_samples_original = 0
 
-        # The total number of samples along the morphology after resampling
+        # The total number of samples along the morphology after re-sampling
         self.number_samples_after_resampling = 0
 
     ################################################################################################

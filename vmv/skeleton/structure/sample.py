@@ -34,7 +34,8 @@ class Sample:
     def __init__(self,
                  point,
                  radius,
-                 index=-1):
+                 index=-1,
+                 parent_index=-1):
         """Constructor
 
         :param point:
@@ -48,3 +49,7 @@ class Sample:
 
         # Sample radius
         self.radius = radius
+
+        self.index=index
+
+        self.parent_index = parent_index
