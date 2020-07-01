@@ -99,7 +99,10 @@ of the Blue Brain Project in June 2020.
 
 # Attributions 
 
-* [Blender](https://www.blender.org/) (C) is copyright to Blender Foundation. The Blender Foundation is a non-profit organization responsible for the development of Blender. Blender is released under the GNU Public License, as Free Software, and therefore can be distributed by anyone freely. 
+* [Blender](https://www.blender.org/) (C) is copyright to Blender Foundation. 
+The Blender Foundation is a non-profit organization responsible for the development of Blender. 
+Blender is released under the GNU Public License, as Free Software, and therefore can be distributed 
+by anyone freely. 
 
 * The SWC morphology samples are available from the  
 [Brain Vasculature (BraVa) database](http://cng.gmu.edu/brava/home.php?s=1&name_browser=false). 
@@ -116,10 +119,12 @@ and Posterior Cerebral Arteries (PCAs).
 [Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), 
 [Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
 
+* _VessMorphoVis_ depends on the [MorphIO library](https://github.com/BlueBrain/MorphIO) to load 
+H5 morphologies. MorphIO is licensed under the terms of the GNU Lesser General Public License 
+version 3.
+
 * The table of contents for all the user documentation pages are generated 
 with [markdown-toc](http://ecotrust-canada.github.io/markdown-toc/).
-
- 
  
 # Contact
 
