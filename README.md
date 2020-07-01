@@ -177,6 +177,9 @@ Communications
 Blue Brain Project  
 [kate.mullins@epfl.ch](kate.mullins@epfl.ch)
 
+<p align="center">
+	<img src="https://github.com/BlueBrain/VessMorphoVis/wiki/images/logos/epfl-logo.jpg" width=200>
+</p>
 
 
 
