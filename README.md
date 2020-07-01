@@ -14,7 +14,7 @@ morphologies.
 ## Features
 
 + Interactive visualization, analysis and automated repair of large-scale vasculature morphology 
-skeletons (up to few millions of samples).
+skeletons (up to millions of samples).
 + Sketching and building three-dimensional representations of the vascular morphology skeletons 
 using various methods for visual analytics.
 + Analysis of neuronal morphology skeletons that are digitally reconstructed from imaging or 
@@ -30,7 +30,6 @@ morphologies based on the piecewise meshing method presented by
 [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file), 
 [STL](https://en.wikipedia.org/wiki/STL_(file_format)) 
 and also as a Blender file ([.blend](https://en.wikipedia.org/wiki/Blender_(software)#File_format)).
-
 
 # Package Details
 
