@@ -379,6 +379,8 @@ class MetaBuilder:
     # @assign_material_to_mesh
     ################################################################################################
     def assign_material_to_mesh(self):
+        """Assign the material to the reconstructed mesh. 
+        """
 
         # Deselect all objects
         vmv.scene.ops.deselect_all()

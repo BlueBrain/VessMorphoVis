@@ -13,13 +13,23 @@ morphologies.
 
 ## Features
 
-+ Interactive visualization, analysis and automated repair of large-scale vasculature morphology skeletons.
-+ Sketching and building three-dimensional representations of the vascular morphology skeletons using various methods for visual analytics.
-+ Automated analysis of neuronal morphology skeletons that are digitally reconstructed from optical microscopy stacks. 
++ Interactive visualization, analysis and automated repair of large-scale vasculature morphology 
+skeletons (up to few millions of samples).
++ Sketching and building three-dimensional representations of the vascular morphology skeletons 
+using various methods for visual analytics.
++ Analysis of neuronal morphology skeletons that are digitally reconstructed from imaging or 
+microscopy stacks. 
 + An easy context to load broken morphology skeletons and repair them manually. 
-+ Automated reconstruction of polygonal mesh models that represent the surface of the vasvular morphologies based on the piecewise meshing method presented by [Abdellah et al., 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1788-4).
-+ Accurate mesh reconstruction with meta balls to create watertight meshes for reaction-diffusion simulations.
-+ Exporting the reconstructed meshes in several file formats including [PLY](https://en.wikipedia.org/wiki/PLY_(file_format)), [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file), [STL](https://en.wikipedia.org/wiki/STL_(file_format)) and also as a Blender file ([.blend](https://en.wikipedia.org/wiki/Blender_(software)#File_format)).
++ Automated reconstruction of polygonal mesh models that represent the surface of the vasvular 
+morphologies based on the piecewise meshing method presented by 
+[Abdellah et al., 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1788-4).
++ Accurate mesh reconstruction with MetaBalls to create watertight meshes for 
+[reaction-diffusion simulations](https://en.wikipedia.org/wiki/Reaction%E2%80%93diffusion_system).
++ Exporting the reconstructed meshes in several file formats including 
+[PLY](https://en.wikipedia.org/wiki/PLY_(file_format)), 
+[OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file), 
+[STL](https://en.wikipedia.org/wiki/STL_(file_format)) 
+and also as a Blender file ([.blend](https://en.wikipedia.org/wiki/Blender_(software)#File_format)).
 
 
 # Package Details
@@ -53,7 +63,6 @@ Please refer to the [github issue tracker](https://github.com/BlueBrain/VessMorp
 fixed and open bugs. User can also report any bugs and request new features needed for their research. 
 We are happy to provide direct [support](#contact) . 
 
-
 # Publications & Citation 
 
 If you use _VessMorphoVis_ for your research, media design or other purposes, please cite our 
@@ -65,7 +74,7 @@ networks with VessMorphoVis_ using the following entry:
   title={Interactive visualization and analysis of morphological skeletons of brain vasculature 
          networks with VessMorphoVis},
   author={Abdellah, Marwan and Guerrero, Nadir Román abd Lapere, Samule and Coggan, Jay S. and 
-          Coste, Benoit and Dagaer, Snigdha and Keller, Daniel and Courcol, Jean-Denis and 
+          Coste, Benoit and Dagar, Snigdha and Keller, Daniel and Courcol, Jean-Denis and 
           Markram, Henry and Sch{\"u}rmann, Felix},
   journal={Bioinformatics},
   volume={In press},
@@ -75,8 +84,12 @@ networks with VessMorphoVis_ using the following entry:
 ```
 
 # Acknowledgement & Funding
-_VessMorphoVis_ is developed by the Visualization team at the [Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), [Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
-This study was supported by funding to the Blue Brain Project, a research center of the École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH Board of the Swiss Federal Institutes of Technology.
+_VessMorphoVis_ is developed by the Visualization team at the 
+[Blue Brain Project](https://bluebrain.epfl.ch/page-52063.html), 
+[Ecole Polytechnique Federale de Lausanne (EPFL)](https://www.epfl.ch/). 
+This study was supported by funding to the Blue Brain Project, a research center of the 
+École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH Board of the 
+Swiss Federal Institutes of Technology.
 
 # Contact
 
@@ -89,7 +102,7 @@ Blue Brain Project
  
 __Felix Schürmann__  
 Co-director of the Blue Brain Project    
-[felix.schuermann@epfl.ch](samuel.lapere@epfl.ch) 
+[felix.schuermann@epfl.ch](felix.schuermann@epfl.ch) 
 
 Should you have any questions concerning press enquiries, please contact:
 
