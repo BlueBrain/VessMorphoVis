@@ -15,16 +15,28 @@ morphologies.
 
 + Interactive visualization, analysis and automated repair of large-scale vasculature morphology 
 skeletons (up to millions of samples).
+
 + Sketching and building three-dimensional representations of the vascular morphology skeletons 
 using various methods for visual analytics.
+
 + Analysis of neuronal morphology skeletons that are digitally reconstructed from imaging or 
 microscopy stacks. 
+
 + An easy context to load broken morphology skeletons and repair them manually. 
+
 + Automated reconstruction of polygonal mesh models that represent the surface of the vasvular 
 morphologies based on the piecewise meshing method presented by 
 [Abdellah et al., 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1788-4).
+
 + Accurate mesh reconstruction with MetaBalls to create watertight meshes for 
 [reaction-diffusion simulations](https://en.wikipedia.org/wiki/Reaction%E2%80%93diffusion_system).
+
++ Large scale and efficient rendering of the vascular morphologies and meshes using the 
+Workbench renderer.
+ 
++ Automated high quality rendering of the vascular morphologies and their corresponding meshes 
+using different shading nodes with Cycles.
+
 + Exporting the reconstructed meshes in several file formats including 
 [PLY](https://en.wikipedia.org/wiki/PLY_(file_format)), 
 [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file), 
