@@ -27,14 +27,16 @@ import vmv.utilities
 # Meshing technique
 bpy.types.Scene.MeshingTechnique = bpy.props.EnumProperty(
     items=[(vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT,
-            'Piecewise Watertight',
-            'Piecewise watertight meshing, where a group of connected section will be created '
+            'Poly-lines ',
+            'Piecewise watertight meshing, where a group of connected segments will be created '
             'as a single watertight mesh, but the whole mesh will not be watertight. '
-            'This approach is the fast and used to create a proxy mesh for visualization'),
+            'This approach is relatively fast for large scale morphologies and us used to create '
+            'a proxy mesh for visualization'),
            (vmv.enums.Meshing.Technique.META_BALLS,
             'Meta Balls',
-            'Creates watertight mesh models using meta balls. This method is SLOW and can '
-            'take few hours to make a mesh based on the resolution and setting'), ],
+            'Creates watertight mesh models using the meta balls algorithm. '
+            'This method is SLOW and can take few hours to make a mesh based on the resolution '
+            'and setting'), ],
     name='Method', default=vmv.enums.Meshing.Technique.META_BALLS)
 
 # Mesh tessellation flag
