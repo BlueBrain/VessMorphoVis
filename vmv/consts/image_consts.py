@@ -38,8 +38,8 @@ class Image:
     # Default resolution
     DEFAULT_RESOLUTION = 1024
 
-    # Default number of samples per pixels
-    DEFAULT_SAMPLES_PER_PIXELS = 32
+    # Default samples per pixels
+    DEFAULT_SPP = 8
 
     # Samples per pixel in case of emission shader
     SAMPLES_PER_PIXELS_EMISSION_SHADER = 2
@@ -55,12 +55,6 @@ class Image:
 
     # Default full view resolution
     FULL_VIEW_RESOLUTION = 1024
-
-    # Default close up view resolution
-    CLOSE_UP_RESOLUTION = 512
-
-    # Default close up dimensions (in microns)
-    CLOSE_UP_DIMENSIONS = 20
 
     # The bounding box increment that will clean the edges around the images
     GAP_DELTA = 5.0
