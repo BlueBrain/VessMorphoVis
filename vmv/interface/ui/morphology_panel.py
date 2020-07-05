@@ -229,6 +229,20 @@ class VMVMorphologyPanel(bpy.types.Panel):
         description="The time it takes to reconstruct the vasculature morphology",
         default=0, min=0, max=1000000)
 
+
+
+    
+    color_1 = Vector((0.5, 1.0, 0.8))
+    color_2 = Vector((1.0, 0.4, 0.3))
+
+    colors = vmv.utilities.interpolate_colors(color_1, color_2, 5)
+    
+    for i in range(5):
+        setattr(bpy.types.Scene, 'Color%d' % i, bpy.props.FloatVectorProperty(
+                name='', subtype='COLOR', default=colors[i], min=0.0, max=1.0, description=''))
+
+
+
     ################################################################################################
     # @draw_mesh_reconstruction_options
     ################################################################################################
@@ -337,6 +351,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Get a reference to the layout of the panel
         layout = self.layout
+
+        colors = layout.row()
+        for i in range(5):
+            colors.prop(context.scene, 'Color%d' % i)
 
         # Coloring parameters
         colors_row = self.layout.row()

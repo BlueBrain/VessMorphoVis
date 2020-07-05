@@ -21,4 +21,4 @@ from .interface import *
 from .time_line import *
 from .timer import *
 from .version import *
-
+from .math import *
