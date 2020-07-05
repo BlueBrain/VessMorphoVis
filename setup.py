@@ -123,7 +123,7 @@ def log_detail(msg):
 # @install_for_linux
 ####################################################################################################
 def install_for_linux(directory, blender_version, verbose=False):
-    """Install NeuroMorphoVis on Linux operating system.
+    """Install VessMorphoVis on Linux operating system.
 
     :param directory:
         Installation directory.
@@ -150,6 +150,10 @@ def install_for_linux(directory, blender_version, verbose=False):
         python_version = '3.7'
         package_name = 'blender-2.82a-linux64'
         extension = 'tar.xz'
+    elif blender_version == '2.83':
+        python_version = '3.7'
+        package_name = 'blender-2.83a-linux64'
+        extension = 'tar.xz'
     else:
         print('ERROR: Wrong Blender version [%s]' % blender_version)
         exit(0)
@@ -171,7 +175,7 @@ def install_for_linux(directory, blender_version, verbose=False):
     run_command(shell_command, verbose)
 
     # Moving to blender
-    blender_directory = '%s/blender-neuromorphovis' % directory
+    blender_directory = '%s/bluebrain-blender' % directory
     shell_command = 'mv %s/%s %s' % (directory, package_name, blender_directory)
     if os.path.exists(blender_directory):
         os.rmdir(blender_directory)
@@ -179,12 +183,12 @@ def install_for_linux(directory, blender_version, verbose=False):
 
     # Clone VessMorphoVis into the 'addons' directory
     addons_directory = '%s/blender-bluebrain/%s/scripts/addons/' % (directory, blender_version)
-    neuromorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
-    shell_command = 'git clone %s %s/vessmorphovis' % (neuromorphovis_url, addons_directory)
+    vessmorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
+    shell_command = 'git clone %s %s/vessmorphovis' % (vessmorphovis_url, addons_directory)
     run_command(shell_command, verbose)
 
     # Installing dependencies
-    pip_wheels = ['h5py', 'numpy', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
+    pip_wheels = ['morphio', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
 
     # Removing the site-packages directory
     blender_python_wheels = '%s/blender-vessorphovis/%s/python/lib/python%s/site-packages/' % \
@@ -254,6 +258,9 @@ def install_for_mac(directory, blender_version, verbose=False):
     elif blender_version == '2.82':
         python_version = '3.7'
         package_name = 'blender-2.82a-macOS.dmg'
+    elif blender_version == '2.83':
+        python_version = '3.7'
+        package_name = 'blender-2.83.1-macOS.dmg'
     else:
         print('ERROR: Wrong Blender version [%s]' % blender_version)
         exit(0)
@@ -282,7 +289,7 @@ def install_for_mac(directory, blender_version, verbose=False):
     shell_command = 'hdiutil detach /Volumes/Blender'
     run_command(shell_command, verbose)
 
-    # Clone NeuroMorphoVis into the 'addons' directory
+    # Clone VessMorphoVis into the 'addons' directory
     log_process('Clone VessMorphoVis')
     if blender_version == '2.79':
         blender_app_directory = '%s/Blender/blender.app' % directory
@@ -290,8 +297,8 @@ def install_for_mac(directory, blender_version, verbose=False):
         blender_app_directory = '%s/Blender.app' % directory
     addons_directory = '%s/Contents/Resources/%s/scripts/addons/' % (blender_app_directory,
                                                                      blender_version)
-    neuromorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
-    shell_command = 'git clone %s %s/neuromorphovis' % (neuromorphovis_url, addons_directory)
+    vessmorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
+    shell_command = 'git clone %s %s/vessmorphovis' % (vessmorphovis_url, addons_directory)
     run_command(shell_command, verbose)
 
     # Blender python
@@ -401,12 +408,15 @@ if __name__ == "__main__":
         log_header('Blender 2.81')
     elif args.blender_version == '2.82':
         log_header('Blender 2.82')
+    elif args.blender_version == '2.83':
+        log_header('Blender 2.83')
     else:
-        log_header('VessMorphoVis is ONLY available for Blender versions 2.79, 2.80, 2.81, 2.82')
+        log_header('VessMorphoVis is ONLY available for Blender versions '
+            '2.79, 2.80, 2.81, 2.82, 2.83. Recommended version: 2.83')
         exit(0)
 
     # Installation directory
-    installation_directory = '%s/blender-%s' % (args.install_prefix, args.blender_version)
+    installation_directory = '%s/bluebrain-blender-%s' % (args.install_prefix, args.blender_version)
 
     # Verify the installation directory
     if not os.path.exists(installation_directory):
@@ -417,4 +427,4 @@ if __name__ == "__main__":
         os.mkdir(installation_directory)
 
     # Download blender based on the software
-    install_neuromorphovis(installation_directory, args.blender_version, args.verbose)
+    install_vessmorphovis(installation_directory, args.blender_version, args.verbose)
