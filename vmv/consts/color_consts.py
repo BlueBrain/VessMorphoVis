@@ -58,3 +58,5 @@ class Color:
 
     # Default color for blood
     DEFAULT_BLOOD_COLOR = Vector((172.0 / 256.0, 4.0 / 256.0, 4.0 / 256.0))
+
+    NUMBER_COLORS_UI = 8

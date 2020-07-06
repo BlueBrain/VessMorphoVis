@@ -15,6 +15,7 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+from .colormaps_enums import *
 from .morphology_enums import *
 from .meshing_enums import *
 from .rendering_enums import *

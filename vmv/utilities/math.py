@@ -36,6 +36,18 @@ def interpolate_list(input_list, fi):
 
 
 ####################################################################################################
+# @hex_to_rgb
+####################################################################################################
+def hex_to_rgb(hex_color):
+    
+    # Create an RGB tuple with 256 
+    rgb = tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+
+    # Return the Vector for mathutil compatability 
+    return Vector((rgb[0] / 256.0, rgb[1] / 256.0, rgb[2] / 256.0)) 
+
+
+####################################################################################################
 # @ create_color_map_from_color_list
 ####################################################################################################
 def create_color_map_from_color_list(color_list, number_colors):
@@ -67,3 +79,20 @@ def create_color_map_from_color_list(color_list, number_colors):
             Vector((interpolated_r_list[i], interpolated_g_list[i], interpolated_b_list[i])))
                 
     return interpolated_colors
+
+
+####################################################################################################
+# @ create_color_map_from_hex_list
+####################################################################################################
+def create_color_map_from_hex_list(hex_list, 
+                                   number_colors):
+
+    # A list of the RGB colors
+    rgb_color_list = list()
+
+    # Convert the HEX colors to RGB 
+    for color in hex_list:
+        rgb_color_list.append(hex_to_rgb(color))
+
+    # Create the RGB color list
+    return create_color_map_from_color_list(rgb_color_list, number_colors)

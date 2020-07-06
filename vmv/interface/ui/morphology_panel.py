@@ -35,6 +35,75 @@ import vmv.rendering
 import vmv.shading
 
 
+class ColorMapOperator(bpy.types.Operator):
+    """Really?"""
+    bl_idname = "operator.colormap"
+    bl_label = "Do you really want to do that?"
+    bl_options = {'REGISTER', 'INTERNAL'}
+
+    def update_func(self, context):
+        colors = vmv.utilities.create_color_map_from_hex_list(
+        vmv.enums.ColorMaps.get_hex_color_list(context.scene.ColorMap), 
+        vmv.consts.Color.NUMBER_COLORS_UI)
+
+        for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+            setattr(bpy.types.Scene, 'Color%d' % i, bpy.props.FloatVectorProperty(
+                    name='', subtype='COLOR', default=colors[i], min=0.0, max=1.0, description=''))
+
+    '''
+    my_enum : bpy.props.EnumProperty(
+        items = (("RND", "Randomize", ""),("SET", "Set", "")),
+        update = update_func)
+
+    my_color : bpy.props.FloatVectorProperty(
+        subtype='COLOR', 
+        min=0.0, 
+        max=1.0,
+        size=4) # Alpha
+    '''
+
+    bpy.types.Scene.ColorMap = bpy.props.EnumProperty(
+        items=vmv.ColorMaps.COLOR_MAPS,
+        name="ColorMap",
+        default=vmv.enums.ColorMaps.VIRIDIS,
+        update = update_func)
+
+    colors = vmv.utilities.create_color_map_from_hex_list(
+        vmv.enums.ColorMaps.get_hex_color_list(bpy.types.Scene.ColorMap), 
+        vmv.consts.Color.NUMBER_COLORS_UI)
+
+    for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+        setattr(bpy.types.Scene, 'Color%d' % i, bpy.props.FloatVectorProperty(
+                name='', subtype='COLOR', default=colors[i], min=0.0, max=1.0, description=''))
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        self.report({'INFO'}, "YES!")
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def draw(self, context):
+
+        layout = self.layout
+
+        color_map = layout.row()
+        color_map.prop(context.scene, 'ColorMap')
+
+        colors = layout.row()
+        for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+            colors.prop(context.scene, 'Color%d' % i)
+            
+
+        #row.prop(self, "my_enum", text="Property A")
+        #if self.my_enum == "SET":
+        #    row.prop(self, "my_color", text="Property B")
+
+
 ####################################################################################################
 # @VMVMorphologyPanel
 ####################################################################################################
@@ -51,6 +120,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_category = 'VessMorphoVis'
     bl_options = {'DEFAULT_CLOSED'}
+
+            
 
     ################################################################################################
     # Panel options
@@ -228,18 +299,9 @@ class VMVMorphologyPanel(bpy.types.Panel):
         name="Reconstruction Time (Sec)",
         description="The time it takes to reconstruct the vasculature morphology",
         default=0, min=0, max=1000000)
-
-
-
     
-    color_1 = Vector((0.5, 1.0, 0.8))
-    color_2 = Vector((1.0, 0.4, 0.3))
-
-    colors = vmv.utilities.interpolate_colors(color_1, color_2, 5)
     
-    for i in range(5):
-        setattr(bpy.types.Scene, 'Color%d' % i, bpy.props.FloatVectorProperty(
-                name='', subtype='COLOR', default=colors[i], min=0.0, max=1.0, description=''))
+    
 
 
 
@@ -349,12 +411,23 @@ class VMVMorphologyPanel(bpy.types.Panel):
             Context.
         """
 
+        layout = self.layout
+        layout.operator(ColorMapOperator.bl_idname)
+        
         # Get a reference to the layout of the panel
         layout = self.layout
 
-        colors = layout.row()
-        for i in range(5):
-            colors.prop(context.scene, 'Color%d' % i)
+        
+
+
+        #colors = vmv.utilities.create_color_map_from_hex_list(
+        #vmv.enums.ColorMaps.get_hex_color_list(bpy.types.Scene.ColorMap), 
+        #vmv.consts.Color.NUMBER_COLORS_UI)
+
+        #for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+        #    setattr(context.scene, 'Color%d' % i, colors[i])
+
+        
 
         # Coloring parameters
         colors_row = self.layout.row()
@@ -925,11 +998,7 @@ class VMVExportMorphology(bpy.types.Operator):
 
         """
         # Load the morphology file
-<<<<<<< HEAD
         loading_result = vmv.interface.ui.load_morphology(self, context.scene)
-=======
-        loading_result = vmv.interface.ui.load_morphology(self, context.scene)
->>>>>>> Adding sketched.
 
         # If the result is None, report the issue
         if loading_result is None:
@@ -937,7 +1006,6 @@ class VMVExportMorphology(bpy.types.Operator):
             return {'FINISHED'}
 
         # Meshing technique
-<<<<<<< HEAD
         meshing_technique = vmv.interface.ui_options.mesh.meshing_technique
 
         # Piece-wise watertight meshing
@@ -997,67 +1065,6 @@ class VMVExportMorphology(bpy.types.Operator):
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-=======
-        meshing_technique = vmv.interface.ui_options.mesh.meshing_technique
-
-        # Piece-wise watertight meshing
-        if meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.PiecewiseBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.ui_options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        # Bridging
-        elif meshing_technique == vmv.enums.Meshing.Technique.BRIDGING:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.BridgingBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.ui_options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        # Union
-        elif meshing_technique == vmv.enums.Meshing.Technique.UNION:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.UnionBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.ui_options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        # Extrusion
-        elif meshing_technique == vmv.enums.Meshing.Technique.EXTRUSION:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.ExtrusionBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.ui_options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        elif meshing_technique == vmv.enums.Meshing.Technique.SKINNING:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.SkinningBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.ui_options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        elif meshing_technique == vmv.enums.Meshing.Technique.META_OBJECTS:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.MetaBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.ui_options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
->>>>>>> Adding sketched.
 
         else:
 
@@ -1072,6 +1079,8 @@ class VMVExportMorphology(bpy.types.Operator):
 ####################################################################################################
 def register_panel():
     """Registers all the classes in this panel"""
+
+    bpy.utils.register_class(ColorMapOperator)
 
     # Panel
     bpy.utils.register_class(VMVMorphologyPanel)
@@ -1092,6 +1101,9 @@ def register_panel():
 ####################################################################################################
 def unregister_panel():
     """Un-registers all the classes in this panel"""
+
+    bpy.utils.unregister_class(ColorMapOperator)
+
 
     # Panel
     bpy.utils.unregister_class(VMVMorphologyPanel)
