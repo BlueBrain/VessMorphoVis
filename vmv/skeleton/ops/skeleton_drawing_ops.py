@@ -219,6 +219,213 @@ def get_segments_poly_lines(section):
     return poly_lines
 
 
+####################################################################################################
+# @get_color_coded_segments_poly_lines_based_on_radius
+####################################################################################################
+def get_color_coded_segments_poly_lines_based_on_radius(section, 
+                                                        minimum, 
+                                                        maximum):
+    """Gets a list of all the segments composing the section color-coded based 
+    on their radii in the morphology.
+
+    :param section:     
+        A given section to extract its segments from.
+    :param minimum_radius:  
+        The radius of the smaller sample in the morphology. 
+    :param maximum_radius: [description]
+        The radius of the larger sample in the morphology.
+    :return:
+        A list of segments represented by color-coded poly-lines. 
+    """
+
+    # A list of all the poly-lines that correspond to each segment in the morphology
+    poly_lines = list()
+
+    # Construct the section from all the samples
+    for i in range(len(section.samples) - 1):
+
+        # Segment poly-line
+        poly_line = list()
+
+        # Initialize the average radius to zero 
+        average_radius = 0
+
+        # First sample
+        point = section.samples[i].point
+        radius = section.samples[i].radius
+        poly_line.append([(point[0], point[1], point[2], 1), radius])
+
+        # Add the value of the first sample radius
+        average_radius += radius
+
+        # Second sample
+        point = section.samples[i + 1].point
+        radius = section.samples[i + 1].radius
+        poly_line.append([(point[0], point[1], point[2], 1), radius])
+
+        # Add the value of the second sample radius 
+        average_radius += radius
+
+        # Get the average radius 
+        average_radius /= 2.0
+
+        # Poly-line color index (we use two colors to highlight the segment)
+        color_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * 
+            average_radius / (maximum - minimum))
+
+        # Add the poly-line to the aggregate list
+        poly_lines.append([poly_line, color_index])
+
+    # Return the list of polylines 
+    return poly_lines
+
+
+####################################################################################################
+# @get_color_coded_segments_poly_lines_based_on_radius
+####################################################################################################
+def get_color_coded_segments_poly_lines_based_on_length(section, 
+                                                        minimum, 
+                                                        maximum):
+    """Gets a list of all the segments composing the section color-coded based 
+    on their length in the morphology.
+
+    :param section:     
+        A given section to extract its segments from.
+    :param minimum_length:  
+        The length of the shortest segment in the morphology. 
+    :param maximum_length: [description]
+        The length of the longest segment in the morphology.
+    :return:
+        A list of segments represented by color-coded poly-lines. 
+    """
+
+    # A list of all the poly-lines that correspond to each segment in the morphology
+    poly_lines = list()
+
+    # Construct the section from all the samples
+    for i in range(len(section.samples) - 1):
+
+        # Segment poly-line
+        poly_line = list()
+
+        # First sample
+        point_1 = section.samples[i].point
+        radius_1 = section.samples[i].radius
+        poly_line.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+
+        # Second sample
+        point_2 = section.samples[i + 1].point
+        radius_2 = section.samples[i + 1].radius
+        poly_line.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+
+        # Segment length 
+        segment_length = (point_1 - point_2).length
+
+        # Poly-line color index (we use two colors to highlight the segment)
+        color_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * 
+            segment_length / (maximum - minimum))
+
+        # Add the poly-line to the aggregate list
+        poly_lines.append([poly_line, color_index])
+
+    # Return the list of polylines 
+    return poly_lines
+
+
+####################################################################################################
+# @get_color_coded_segments_poly_lines_based_on_radius
+####################################################################################################
+def get_color_coded_segments_poly_lines_based_on_surface_area(section, 
+                                                              minimum, 
+                                                              maximum):
+    """Gets a list of all the segments composing the section color-coded based 
+    on their length in the morphology.
+
+    :param section:     
+        A given section to extract its segments from.
+    :param minimum_length:  
+        The length of the shortest segment in the morphology. 
+    :param maximum_length: [description]
+        The length of the longest segment in the morphology.
+    :return:
+        A list of segments represented by color-coded poly-lines. 
+    """
+
+    # A list of all the poly-lines that correspond to each segment in the morphology
+    poly_lines = list()
+
+    # Construct the section from all the samples
+    for i in range(len(section.samples) - 1):
+
+        # Segment poly-line
+        poly_line = list()
+
+        # First sample
+        point_1 = section.samples[i].point
+        radius_1 = section.samples[i].radius
+        poly_line.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+
+        # Second sample
+        point_2 = section.samples[i + 1].point
+        radius_2 = section.samples[i + 1].radius
+        poly_line.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+
+        # Surface area 
+        segment_surface_area = vmv.skeleton.compute_segment_surface_area(
+            section.samples[i], section.samples[i + 1])
+
+        # Poly-line color index (we use two colors to highlight the segment)
+        color_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * 
+            segment_surface_area / (maximum - minimum))
+
+        # Add the poly-line to the aggregate list
+        poly_lines.append([poly_line, color_index])
+
+    # Return the list of polylines 
+    return poly_lines
+
+
+####################################################################################################
+# @get_color_coded_segments_poly_lines_based_on_radius
+####################################################################################################
+def get_color_coded_segments_poly_lines_based_on_volume(section, 
+                                                        minimum, 
+                                                        maximum):
+
+    # A list of all the poly-lines that correspond to each segment in the morphology
+    poly_lines = list()
+
+    # Construct the section from all the samples
+    for i in range(len(section.samples) - 1):
+
+        # Segment poly-line
+        poly_line = list()
+
+        # First sample
+        point_1 = section.samples[i].point
+        radius_1 = section.samples[i].radius
+        poly_line.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+
+        # Second sample
+        point_2 = section.samples[i + 1].point
+        radius_2 = section.samples[i + 1].radius
+        poly_line.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+
+        # Surface area 
+        segment_volume = vmv.skeleton.compute_segment_volume(
+            section.samples[i], section.samples[i + 1])
+
+        # Poly-line color index (we use two colors to highlight the segment)
+        color_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * 
+            segment_volume / (maximum - minimum))
+
+        # Add the poly-line to the aggregate list
+        poly_lines.append([poly_line, color_index])
+
+    # Return the list of polylines 
+    return poly_lines
+
+
 def get_segments_poly_lines_with_color_code(section, min_radius, max_radius):
 
     # A list of all the poly-lines that correspond to each segment in the morphology
@@ -249,7 +456,7 @@ def get_segments_poly_lines_with_color_code(section, min_radius, max_radius):
         average_radius /= 2.0
 
         # Poly-line material index (we use two colors to highlight the sections)
-        poly_line_material_index = int(16 * average_radius / (max_radius - min_radius))
+        poly_line_material_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * average_radius / (max_radius - min_radius))
 
         # Add the poly-line to the aggregate list
         poly_lines.append([poly_line, poly_line_material_index])

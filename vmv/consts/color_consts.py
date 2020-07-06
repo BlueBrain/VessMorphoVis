@@ -60,3 +60,6 @@ class Color:
     DEFAULT_BLOOD_COLOR = Vector((172.0 / 256.0, 4.0 / 256.0, 4.0 / 256.0))
 
     NUMBER_COLORS_UI = 8
+
+    # The number of samples in the color map
+    COLOR_MAP_SAMPLES = 64

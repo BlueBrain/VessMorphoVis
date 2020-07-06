@@ -109,7 +109,7 @@ class Shader:
             return Shader.LAMBERT_WARD
 
     ################################################################################################
-    # A list of all the available materials in NeuroMorphoVis
+    # A list of all the available materials in VessMorphoVis
     ################################################################################################
     MATERIAL_ITEMS = [
         (LAMBERT_WARD,

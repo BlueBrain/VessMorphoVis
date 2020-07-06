@@ -79,6 +79,18 @@ class MorphologyOptions:
         # Morphology material
         self.material = vmv.enums.Shader.LAMBERT_WARD
 
+        # Segments color coding scheme 
+        self.segments_color_coding = vmv.enums.ColorCoding.Segment.SINGLE_COLOR
+
+        # Sections color coding schemes
+        self.sections_color_coding = vmv.enums.ColorCoding.Section.SINGLE_COLOR
+
+        # Morphology color-map name (this is probably loaded from the CLI)
+        self.color_map = None
+
+        # Morphology color-map colors (this is probably set from the GUI)
+        self.color_map_colors = list()
+
         # Color
         self.color = vmv.consts.Color.GRAY
 

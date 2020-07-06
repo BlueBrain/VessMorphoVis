@@ -35,39 +35,36 @@ import vmv.rendering
 import vmv.shading
 
 
-class ColorMapOperator(bpy.types.Operator):
-    """Really?"""
-    bl_idname = "operator.colormap"
-    bl_label = "Do you really want to do that?"
+####################################################################################################
+# @VMVColorMapOperator
+####################################################################################################
+class VMVColorMapOperator(bpy.types.Operator):
+    """Color-map operator for interactively changing the color-map in the UI"""
+
+    ################################################################################################
+    # Operator parameters
+    ################################################################################################
+    bl_idname = "operator.pick_colormap"
+    bl_label = "Select ColorMap"
     bl_options = {'REGISTER', 'INTERNAL'}
 
-    def update_func(self, context):
+    def update_ui_colors(self, context):
         colors = vmv.utilities.create_color_map_from_hex_list(
         vmv.enums.ColorMaps.get_hex_color_list(context.scene.ColorMap), 
         vmv.consts.Color.NUMBER_COLORS_UI)
 
         for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-            setattr(bpy.types.Scene, 'Color%d' % i, bpy.props.FloatVectorProperty(
-                    name='', subtype='COLOR', default=colors[i], min=0.0, max=1.0, description=''))
+            setattr(context.scene, 'Color%d' % i, colors[i])
 
-    '''
-    my_enum : bpy.props.EnumProperty(
-        items = (("RND", "Randomize", ""),("SET", "Set", "")),
-        update = update_func)
-
-    my_color : bpy.props.FloatVectorProperty(
-        subtype='COLOR', 
-        min=0.0, 
-        max=1.0,
-        size=4) # Alpha
-    '''
-
+    # A list of all the color maps available in VessMorphoVis
+    # Note that once a new colormap is selected, the corresponding colors will be set in the UI 
     bpy.types.Scene.ColorMap = bpy.props.EnumProperty(
         items=vmv.ColorMaps.COLOR_MAPS,
         name="ColorMap",
         default=vmv.enums.ColorMaps.VIRIDIS,
-        update = update_func)
+        update=update_ui_colors)
 
+    # Create a list of colors from the selected colormap 
     colors = vmv.utilities.create_color_map_from_hex_list(
         vmv.enums.ColorMaps.get_hex_color_list(bpy.types.Scene.ColorMap), 
         vmv.consts.Color.NUMBER_COLORS_UI)
@@ -94,9 +91,17 @@ class ColorMapOperator(bpy.types.Operator):
         color_map = layout.row()
         color_map.prop(context.scene, 'ColorMap')
 
+        if len(vmv.interface.ui.ui_options.morphology.color_map_colors) > 0:
+                vmv.interface.ui.ui_options.morphology.color_map_colors.clear()
+            
         colors = layout.row()
         for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
             colors.prop(context.scene, 'Color%d' % i)
+
+            color = getattr(context.scene, 'Color%d' % i)
+            
+                
+            vmv.interface.ui.ui_options.morphology.color_map_colors.append(color)
             
 
         #row.prop(self, "my_enum", text="Property A")
@@ -113,7 +118,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
     ################################################################################################
     # Panel parameters
     ################################################################################################
-
     bl_label = 'Morphology Reconstruction'
     bl_idname = "OBJECT_PT_VMV_MorphologyReconstruction"
     bl_space_type = "VIEW_3D"
@@ -300,11 +304,18 @@ class VMVMorphologyPanel(bpy.types.Panel):
         description="The time it takes to reconstruct the vasculature morphology",
         default=0, min=0, max=1000000)
     
+    # Segments color-coding
+    bpy.types.Scene.PerSegmentColorCodingBasis = bpy.props.EnumProperty(
+        items=vmv.enums.ColorCoding.Segment.SEGMENTS_COLOR_CODING_ITEMS,
+        name='Color Coding',
+        default=vmv.enums.ColorCoding.Segment.SINGLE_COLOR)
+
+    # Sections color-coding
+    bpy.types.Scene.PerSectionColorCodingBasis = bpy.props.EnumProperty(
+        items=vmv.enums.ColorCoding.Section.SECTIONS_COLOR_CODING_ITEMS,
+        name='Color Coding',
+        default=vmv.enums.ColorCoding.Section.SINGLE_COLOR)
     
-    
-
-
-
     ################################################################################################
     # @draw_mesh_reconstruction_options
     ################################################################################################
@@ -411,23 +422,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
             Context.
         """
 
-        layout = self.layout
-        layout.operator(ColorMapOperator.bl_idname)
-        
         # Get a reference to the layout of the panel
         layout = self.layout
-
-        
-
-
-        #colors = vmv.utilities.create_color_map_from_hex_list(
-        #vmv.enums.ColorMaps.get_hex_color_list(bpy.types.Scene.ColorMap), 
-        #vmv.consts.Color.NUMBER_COLORS_UI)
-
-        #for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-        #    setattr(context.scene, 'Color%d' % i, colors[i])
-
-        
 
         # Coloring parameters
         colors_row = self.layout.row()
@@ -437,6 +433,59 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_material_row = self.layout.row()
         morphology_material_row.prop(context.scene, 'MorphologyMaterial')
         vmv.interface.ui.ui_options.morphology.material = context.scene.MorphologyMaterial
+    
+        # If the disconnected segments is selected
+        if vmv.interface.ui.ui_options.morphology.reconstruction_method == \
+            vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
+
+            # Per-segment color coding 
+            color_coding_row = layout.row()
+            color_coding_row.prop(context.scene, 'PerSegmentColorCodingBasis')
+            vmv.interface.ui.ui_options.morphology.segments_color_coding = \
+                context.scene.PerSegmentColorCodingBasis
+
+            # Single color 
+            if vmv.interface.ui.ui_options.morphology.segments_color_coding == \
+                vmv.enums.ColorCoding.Segment.SINGLE_COLOR:
+
+                # Morphology color
+                color_row = self.layout.row()
+                color_row.prop(context.scene, 'MorphologyColor')
+                vmv.interface.ui.ui_options.morphology.color = context.scene.MorphologyColor 
+                
+            # Alternating colors
+            elif vmv.interface.ui.ui_options.morphology.segments_color_coding == \
+                vmv.enums.ColorCoding.Segment.ALTERNATING_COLORS:
+                pass 
+            
+            # Color-map based colring 
+            else:
+                
+                # Color-mapping 
+                layout = self.layout
+                layout.operator(VMVColorMapOperator.bl_idname, icon='COLOR')
+                
+                # 
+                colors = layout.row()
+                for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+                    colors.prop(context.scene, 'Color%d' % i)
+        
+
+        # Disconnected sections builder
+        elif vmv.interface.ui.ui_options.morphology.reconstruction_method == \
+                vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
+
+            # Per-section color coding 
+            color_coding_row = layout.row()
+            color_coding_row.prop(context.scene, 'PerSectionColorCodingBasis')
+            vmv.interface.ui.ui_options.morphology.sections_color_coding = \
+                context.scene.PerSectionColorCodingBasis
+        
+        else:
+            pass 
+
+        color_components_row = layout.row()
+        color_components_row.prop(context.scene, 'ColorComponents')
 
         # Coloring individual components
         color_components_row = layout.row()
@@ -1080,7 +1129,8 @@ class VMVExportMorphology(bpy.types.Operator):
 def register_panel():
     """Registers all the classes in this panel"""
 
-    bpy.utils.register_class(ColorMapOperator)
+    # ColorMap 
+    bpy.utils.register_class(VMVColorMapOperator)
 
     # Panel
     bpy.utils.register_class(VMVMorphologyPanel)
@@ -1102,8 +1152,8 @@ def register_panel():
 def unregister_panel():
     """Un-registers all the classes in this panel"""
 
-    bpy.utils.unregister_class(ColorMapOperator)
-
+    # ColorMap 
+    bpy.utils.unregister_class(VMVColorMapOperator)
 
     # Panel
     bpy.utils.unregister_class(VMVMorphologyPanel)

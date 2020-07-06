@@ -41,6 +41,9 @@ class ColorMaps:
     # Plasma
     PLASMA = 'PLASMA_COLOR_MAP'
 
+    # Gray-scale
+    GRAY_SCALE = 'GRAY_SCALE_COLOR_MAP'
+
     ################################################################################################
     # get_enum
     ################################################################################################
@@ -60,14 +63,21 @@ class ColorMaps:
         else:
             return ColorMaps.RGB
 
+    ################################################################################################
+    # get_hex_color_list
+    ################################################################################################
+    @staticmethod
     def get_hex_color_list(color_map_enum):
-
-        if color_map_enum == ColorMaps.VIRIDIS:
+        
+        if color_map_enum == ColorMaps.HSV:
+            return ['F92024', '42FDF9', 'FA7380'] 
+        elif color_map_enum == ColorMaps.VIRIDIS:
             return ['430652', '308C8B', 'F7E545'] 
         elif color_map_enum == ColorMaps.PLASMA:
             return ['1B0D85', 'CA4F75', 'EEF447']
+        elif color_map_enum == ColorMaps.GRAY_SCALE:
+            return ['000000', 'FFFFFF']
         else:
-            
             return ['1B0D85', 'CA4F75', 'EEF447']
 
     ################################################################################################
@@ -76,11 +86,16 @@ class ColorMaps:
     COLOR_MAPS = [
 
         # HSV
-        (VIRIDIS, 'VIRIDIS', 'Viridis color map'),
+        (HSV, 'HSV', 'HSV color map'),
+        
+        # Viridis
+        (VIRIDIS, 'Viridis', 'Viridis color map'),
 
         # Plasma
-        (PLASMA, 'PLASMA', 'Plasma color map'),
+        (PLASMA, 'Plasma', 'Plasma color map'),
 
+        # Gray Scale
+        (GRAY_SCALE, 'Gray Scale', 'Gray-scale color map'),        
     ]
 
 
