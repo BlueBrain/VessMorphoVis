@@ -153,24 +153,24 @@ class VMVIOPanel(bpy.types.Panel):
         # Input morphology file
         morphology_file_row = layout.row()
         morphology_file_row.prop(scene, 'MorphologyFile')
-        vmv.interface.ui_options.io.morphology_file_path = scene.MorphologyFile
+        vmv.interface.options.io.morphology_file_path = scene.MorphologyFile
 
         # Get the morphology file path, name and label from the given morphology file
-        vmv.interface.ui_options.morphology.morphology_file_path = scene.MorphologyFile
-        vmv.interface.ui_options.morphology.morphology_file_name = \
+        vmv.interface.options.morphology.morphology_file_path = scene.MorphologyFile
+        vmv.interface.options.morphology.morphology_file_name = \
             vmv.file.get_file_name_from_path(scene.MorphologyFile)
-        vmv.interface.ui_options.morphology.label = \
+        vmv.interface.options.morphology.label = \
             vmv.file.get_file_name_from_path(scene.MorphologyFile)
 
         # Center the morphology at the origin
         morphology_centering_check_box = layout.row()
         morphology_centering_check_box.prop(scene, 'CenterMorphologyAtOrigin')
-        vmv.interface.ui_options.io.center_morphology_at_origin = scene.CenterMorphologyAtOrigin
+        vmv.interface.options.io.center_morphology_at_origin = scene.CenterMorphologyAtOrigin
 
         # Center the morphology at the origin
         morphology_resampling_check_box = layout.row()
         morphology_resampling_check_box.prop(scene, 'ResampleMorphology')
-        vmv.interface.ui_options.io.resample_morphology = scene.ResampleMorphology
+        vmv.interface.options.io.resample_morphology = scene.ResampleMorphology
 
         loading_button_row = layout.row()
         loading_button_row .operator('load.morphology', icon='LIBRARY_DATA_DIRECT')
@@ -183,7 +183,7 @@ class VMVIOPanel(bpy.types.Panel):
         # Output directory
         output_directory_row = layout.row()
         output_directory_row.prop(scene, 'OutputDirectory')
-        vmv.interface.ui_options.io.output_directory = scene.OutputDirectory
+        vmv.interface.options.io.output_directory = scene.OutputDirectory
         show_hide_elements.append(output_directory_row)
 
         # Default paths
@@ -197,27 +197,27 @@ class VMVIOPanel(bpy.types.Panel):
 
         # Images path
         output_paths_column.prop(scene, 'ImagesPath')
-        vmv.interface.ui_options.io.images_directory = \
+        vmv.interface.options.io.images_directory = \
             '%s/%s' % (scene.OutputDirectory, scene.ImagesPath)
 
         # Sequences path
         output_paths_column.prop(scene, 'SequencesPath')
-        vmv.interface.ui_options.io.sequences_directory = \
+        vmv.interface.options.io.sequences_directory = \
             '%s/%s' % (scene.OutputDirectory, scene.SequencesPath)
 
         # Meshes path
         output_paths_column.prop(scene, 'MeshesPath')
-        vmv.interface.ui_options.io.meshes_directory = \
+        vmv.interface.options.io.meshes_directory = \
             '%s/%s' % (scene.OutputDirectory, scene.MeshesPath)
 
         # Morphologies path
         output_paths_column.prop(scene, 'MorphologiesPath')
-        vmv.interface.ui_options.io.morphologies_directory = \
+        vmv.interface.options.io.morphologies_directory = \
             '%s/%s' % (scene.OutputDirectory, scene.MorphologiesPath)
 
         # Analysis path
         output_paths_column.prop(scene, 'AnalysisPath')
-        vmv.interface.ui_options.io.analysis_directory = \
+        vmv.interface.options.io.analysis_directory = \
             '%s/%s' % (scene.OutputDirectory, scene.AnalysisPath)
 
         if vmv.interface.ui_morphology_loaded:
@@ -281,14 +281,14 @@ class VMVLoadMorphology(bpy.types.Operator):
 
         # Create a morphology reader object
         morphology_reader = vmv.file.create_morphology_reader(
-            vmv.interface.ui_options.io.morphology_file_path)
+            vmv.interface.options.io.morphology_file_path)
 
         # Construct a morphology object to be used later by the entire application
         loading_start = time.time()
 
         vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
-            center_at_origin=vmv.interface.ui_options.io.center_morphology_at_origin,
-            resample_morphology=vmv.interface.ui_options.io.resample_morphology)
+            center_at_origin=vmv.interface.options.io.center_morphology_at_origin,
+            resample_morphology=vmv.interface.options.io.resample_morphology)
 
         # Update the interface
         loading_done = time.time()
@@ -300,7 +300,7 @@ class VMVLoadMorphology(bpy.types.Operator):
 
             # Construct a builder object
             builder = vmv.builders.DisconnectedSectionsBuilder(
-                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.ui_options)
+                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.options)
             builder.build_skeleton()
 
             # Switch to full view along some axis
@@ -318,7 +318,7 @@ class VMVLoadMorphology(bpy.types.Operator):
             vmv.interface.ui_morphology_loaded = True
 
             # Set back the radii of the morphology to that as specified in the loaded file
-            vmv.interface.ui.ui_options.morphology.radii = \
+            vmv.interface.ui.options.morphology.radii = \
                 vmv.enums.Morphology.Radii.AS_SPECIFIED
 
         # Unable to load the morphology

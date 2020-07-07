@@ -85,11 +85,17 @@ class MorphologyOptions:
         # Morphology color-map name (this is probably loaded from the CLI)
         self.color_map = vmv.enums.ColorMaps.PLASMA
 
+        # The resolution of the colormap (number of samples)
+        self.color_map_resolution = 64
+
         # Morphology color-map colors (this is probably set from the GUI)
         self.color_map_colors = list()
 
-        # Color
+        # Base morphology color
         self.color = vmv.consts.Color.GRAY
+
+        # Alternating morphology color (use for ALTERNATING_COLORS schemes)
+        self.alternating_color = vmv.consts.Color.BLACK
 
         # SKELETON RENDERING #######################################################################
         # Camera view

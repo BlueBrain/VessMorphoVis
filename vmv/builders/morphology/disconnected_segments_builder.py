@@ -80,7 +80,8 @@ class DisconnectedSegmentsBuilder:
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
             poly_lines_data.extend(vmv.skeleton.ops.get_color_coded_segments_poly_lines_based_on_radius(
-                section=section, minimum=minimum, maximum=maximum))
+                section=section, minimum=minimum, maximum=maximum, 
+                color_map_samples=self.options.morphology.color_map_resolution))
 
         # Return the list 
         return poly_lines_data
@@ -105,7 +106,8 @@ class DisconnectedSegmentsBuilder:
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
             poly_lines_data.extend(vmv.skeleton.ops.get_color_coded_segments_poly_lines_based_on_length(
-                section=section, minimum=minimum, maximum=maximum))
+                section=section, minimum=minimum, maximum=maximum,
+                color_map_samples=self.options.morphology.color_map_resolution))
 
         # Return the list 
         return poly_lines_data
@@ -131,7 +133,8 @@ class DisconnectedSegmentsBuilder:
         for section in self.morphology.sections_list:
             poly_lines_data.extend(
                 vmv.skeleton.ops.get_color_coded_segments_poly_lines_based_on_surface_area(
-                section=section, minimum=minimum, maximum=maximum))
+                section=section, minimum=minimum, maximum=maximum,
+                color_map_samples=self.options.morphology.color_map_resolution))
 
         # Return the list 
         return poly_lines_data
@@ -157,7 +160,8 @@ class DisconnectedSegmentsBuilder:
         for section in self.morphology.sections_list:
             poly_lines_data.extend(
                 vmv.skeleton.ops.get_color_coded_segments_poly_lines_based_on_volume(
-                section=section, minimum=minimum, maximum=maximum))
+                section=section, minimum=minimum, maximum=maximum,
+                color_map_samples=self.options.morphology.color_map_resolution))
 
         # Return the list 
         return poly_lines_data

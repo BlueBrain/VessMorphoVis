@@ -70,7 +70,7 @@ def validate_output_directory(panel_object,
     """
 
     # Ensure that there is a valid directory where the images will be written to
-    if vmv.interface.ui_options.io.output_directory is None:
+    if vmv.interface.options.io.output_directory is None:
         panel_object.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
         return {'FINISHED'}
 
@@ -100,8 +100,8 @@ def render_morphology_image(panel_object,
         panel_object=panel_object, context_scene=context_scene)
 
     # Create the images directory if it does not exist
-    if not vmv.file.ops.path_exists(vmv.interface.ui_options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(vmv.interface.ui_options.io.images_directory)
+    if not vmv.file.ops.path_exists(vmv.interface.options.io.images_directory):
+        vmv.file.ops.clean_and_create_directory(vmv.interface.options.io.images_directory)
 
     # Report the process starting in the UI
     panel_object.report({'INFO'}, 'Rendering ... Wait')
@@ -147,8 +147,8 @@ def render_morphology_image(panel_object,
             bounding_box=bounding_box,
             camera_view=view,
             image_resolution=context_scene.MorphologyFrameResolution,
-            image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.ui_options.morphology.label),
-            image_directory=vmv.interface.ui_options.io.images_directory,
+            image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
+            image_directory=vmv.interface.options.io.images_directory,
             keep_camera_in_scene=context_scene.KeepMeshCameras)
 
     # Render at a specific scale factor
@@ -159,8 +159,8 @@ def render_morphology_image(panel_object,
             bounding_box=bounding_box,
             camera_view=view,
             image_scale_factor=context_scene.MorphologyFrameScaleFactor,
-            image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.ui_options.morphology.label),
-            image_directory=vmv.interface.ui_options.io.images_directory,
+            image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
+            image_directory=vmv.interface.options.io.images_directory,
             keep_camera_in_scene=context_scene.KeepMeshCameras)
 
     # Report the process termination in the UI
@@ -191,8 +191,8 @@ def render_mesh_image(panel_object,
         panel_object=panel_object, context_scene=context_scene)
 
     # Create the images directory if it does not exist
-    if not vmv.file.ops.path_exists(vmv.interface.ui_options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(vmv.interface.ui_options.io.images_directory)
+    if not vmv.file.ops.path_exists(vmv.interface.options.io.images_directory):
+        vmv.file.ops.clean_and_create_directory(vmv.interface.options.io.images_directory)
 
     # Report the process starting in the UI
     panel_object.report({'INFO'}, 'Rendering ... Wait')
@@ -211,7 +211,7 @@ def render_mesh_image(panel_object,
 
     # If background plane is required
     background_plane = vmv.rendering.add_background_plane(
-        bounding_box=bounding_box, camera_view=vmv.ui_options.mesh.camera_view)
+        bounding_box=bounding_box, camera_view=vmv.options.mesh.camera_view)
 
     # Render at a specific resolution
     if context_scene.MeshRenderingResolution == \
@@ -223,8 +223,8 @@ def render_mesh_image(panel_object,
             camera_view=rendering_view,
             camera_projection=camera_projection,
             image_resolution=context_scene.MeshFrameResolution,
-            image_name='MESH_%s_%s' % (view_prefix, vmv.interface.ui_options.morphology.label),
-            image_directory=vmv.interface.ui_options.io.images_directory)
+            image_name='MESH_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
+            image_directory=vmv.interface.options.io.images_directory)
 
     # Render at a specific scale factor
     else:
@@ -234,8 +234,8 @@ def render_mesh_image(panel_object,
             bounding_box=bounding_box,
             camera_view=rendering_view,
             image_scale_factor=context_scene.MeshFrameScaleFactor,
-            image_name='MESH_%s_%s' % (view_prefix, vmv.interface.ui_options.morphology.label),
-            image_directory=vmv.interface.ui_options.io.images_directory)
+            image_name='MESH_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
+            image_directory=vmv.interface.options.io.images_directory)
 
     # Report the process termination in the UI
     panel_object.report({'INFO'}, 'Rendering Done')
