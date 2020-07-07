@@ -306,15 +306,15 @@ class VMVMorphologyPanel(bpy.types.Panel):
     
     # Segments color-coding
     bpy.types.Scene.PerSegmentColorCodingBasis = bpy.props.EnumProperty(
-        items=vmv.enums.ColorCoding.Segment.SEGMENTS_COLOR_CODING_ITEMS,
+        items=vmv.enums.ColorCoding.SEGMENTS_COLOR_CODING_ITEMS,
         name='Color Coding',
-        default=vmv.enums.ColorCoding.Segment.SINGLE_COLOR)
+        default=vmv.enums.ColorCoding.SINGLE_COLOR)
 
     # Sections color-coding
     bpy.types.Scene.PerSectionColorCodingBasis = bpy.props.EnumProperty(
-        items=vmv.enums.ColorCoding.Section.SECTIONS_COLOR_CODING_ITEMS,
+        items=vmv.enums.ColorCoding.SECTIONS_COLOR_CODING_ITEMS,
         name='Color Coding',
-        default=vmv.enums.ColorCoding.Section.SINGLE_COLOR)
+        default=vmv.enums.ColorCoding.SINGLE_COLOR)
     
     ################################################################################################
     # @draw_mesh_reconstruction_options
@@ -441,12 +441,12 @@ class VMVMorphologyPanel(bpy.types.Panel):
             # Per-segment color coding 
             color_coding_row = layout.row()
             color_coding_row.prop(context.scene, 'PerSegmentColorCodingBasis')
-            vmv.interface.ui.ui_options.morphology.segments_color_coding = \
+            vmv.interface.ui.ui_options.morphology.color_coding = \
                 context.scene.PerSegmentColorCodingBasis
 
             # Single color 
-            if vmv.interface.ui.ui_options.morphology.segments_color_coding == \
-                vmv.enums.ColorCoding.Segment.SINGLE_COLOR:
+            if vmv.interface.ui.ui_options.morphology.color_coding == \
+                vmv.enums.ColorCoding.SINGLE_COLOR:
 
                 # Morphology color
                 color_row = self.layout.row()
@@ -454,8 +454,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 vmv.interface.ui.ui_options.morphology.color = context.scene.MorphologyColor 
                 
             # Alternating colors
-            elif vmv.interface.ui.ui_options.morphology.segments_color_coding == \
-                vmv.enums.ColorCoding.Segment.ALTERNATING_COLORS:
+            elif vmv.interface.ui.ui_options.morphology.color_coding == \
+                vmv.enums.ColorCoding.ALTERNATING_COLORS:
                 pass 
             
             # Color-map based colring 
@@ -478,7 +478,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
             # Per-section color coding 
             color_coding_row = layout.row()
             color_coding_row.prop(context.scene, 'PerSectionColorCodingBasis')
-            vmv.interface.ui.ui_options.morphology.sections_color_coding = \
+            vmv.interface.ui.ui_options.morphology.color_coding = \
                 context.scene.PerSectionColorCodingBasis
         
         else:

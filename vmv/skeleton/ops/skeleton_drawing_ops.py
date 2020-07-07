@@ -198,23 +198,23 @@ def get_segments_poly_lines(section):
     for i in range(len(section.samples) - 1):
 
         # Segment poly-line
-        poly_line = list()
+        samples = list()
 
         # First sample
         point = section.samples[i].point
         radius = section.samples[i].radius
-        poly_line.append([(point[0], point[1], point[2], 1), radius])
+        samples.append([(point[0], point[1], point[2], 1), radius])
 
         # Second sample
         point = section.samples[i + 1].point
         radius = section.samples[i + 1].radius
-        poly_line.append([(point[0], point[1], point[2], 1), radius])
+        samples.append([(point[0], point[1], point[2], 1), radius])
 
         # Poly-line material index (we use two colors to highlight the sections)
         poly_line_material_index = i % 2
 
         # Add the poly-line to the aggregate list
-        poly_lines.append([poly_line, poly_line_material_index])
+        poly_lines.append(vmv.skeleton.PolyLine(poly_line, poly_line_material_index))
 
     return poly_lines
 
@@ -245,7 +245,7 @@ def get_color_coded_segments_poly_lines_based_on_radius(section,
     for i in range(len(section.samples) - 1):
 
         # Segment poly-line
-        poly_line = list()
+        samples = list()
 
         # Initialize the average radius to zero 
         average_radius = 0
@@ -253,7 +253,7 @@ def get_color_coded_segments_poly_lines_based_on_radius(section,
         # First sample
         point = section.samples[i].point
         radius = section.samples[i].radius
-        poly_line.append([(point[0], point[1], point[2], 1), radius])
+        samples.append([(point[0], point[1], point[2], 1), radius])
 
         # Add the value of the first sample radius
         average_radius += radius
@@ -261,7 +261,7 @@ def get_color_coded_segments_poly_lines_based_on_radius(section,
         # Second sample
         point = section.samples[i + 1].point
         radius = section.samples[i + 1].radius
-        poly_line.append([(point[0], point[1], point[2], 1), radius])
+        samples.append([(point[0], point[1], point[2], 1), radius])
 
         # Add the value of the second sample radius 
         average_radius += radius
@@ -274,11 +274,61 @@ def get_color_coded_segments_poly_lines_based_on_radius(section,
             average_radius / (maximum - minimum))
 
         # Add the poly-line to the aggregate list
-        poly_lines.append([poly_line, color_index])
+        poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=color_index))
 
     # Return the list of polylines 
     return poly_lines
 
+
+
+####################################################################################################
+# @get_color_coded_sections_poly_lines_based_on_radius
+####################################################################################################
+def get_color_coded_section_poly_line_based_on_radius(section,
+                                                      minimum, 
+                                                      maximum):
+
+    
+    # Compute the average radius of the section 
+    section_average_radius = vmv.skeleton.compute_section_average_radius(section)
+        
+    # Add the samples 
+    samples = [[(sample.point[0], sample.point[1], sample.point[2], 1), sample.radius] 
+        for sample in section.samples]
+        
+    # Poly-line color index (we use two colors to highlight the segment)
+    color_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * 
+        section_average_radius / (maximum - minimum))
+
+    # Return the constructed poly-lines 
+    return vmv.skeleton.PolyLine(samples=samples, color_index=color_index)
+
+
+####################################################################################################
+# @get_color_coded_sections_poly_lines_based_on_radius
+####################################################################################################
+def get_color_coded_section_poly_line_based_on_length(section,
+                                                      minimum, 
+                                                      maximum):
+
+    
+    # Compute the average radius of the section 
+    section_length = vmv.skeleton.compute_section_length(section)
+
+    # Poly-line samples 
+    samples = list()
+    
+    # Add the samples 
+    for sample in section.samples:
+        samples.append([(sample.point[0], sample.point[1], sample.point[2], 1), sample.radius])
+
+        
+    # Poly-line color index (we use two colors to highlight the segment)
+    color_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * 
+        section_length / (maximum - minimum))
+
+    # Return the constructed poly-lines 
+    return vmv.skeleton.PolyLine(samples=samples, color_index=color_index)
 
 ####################################################################################################
 # @get_color_coded_segments_poly_lines_based_on_radius
@@ -306,17 +356,17 @@ def get_color_coded_segments_poly_lines_based_on_length(section,
     for i in range(len(section.samples) - 1):
 
         # Segment poly-line
-        poly_line = list()
+        samples = list()
 
         # First sample
         point_1 = section.samples[i].point
         radius_1 = section.samples[i].radius
-        poly_line.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+        samples.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
 
         # Second sample
         point_2 = section.samples[i + 1].point
         radius_2 = section.samples[i + 1].radius
-        poly_line.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+        samples.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
 
         # Segment length 
         segment_length = (point_1 - point_2).length
@@ -326,7 +376,7 @@ def get_color_coded_segments_poly_lines_based_on_length(section,
             segment_length / (maximum - minimum))
 
         # Add the poly-line to the aggregate list
-        poly_lines.append([poly_line, color_index])
+        poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=color_index))
 
     # Return the list of polylines 
     return poly_lines
@@ -358,17 +408,17 @@ def get_color_coded_segments_poly_lines_based_on_surface_area(section,
     for i in range(len(section.samples) - 1):
 
         # Segment poly-line
-        poly_line = list()
+        samples = list()
 
         # First sample
         point_1 = section.samples[i].point
         radius_1 = section.samples[i].radius
-        poly_line.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+        samples.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
 
         # Second sample
         point_2 = section.samples[i + 1].point
         radius_2 = section.samples[i + 1].radius
-        poly_line.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+        samples.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
 
         # Surface area 
         segment_surface_area = vmv.skeleton.compute_segment_surface_area(
@@ -379,7 +429,7 @@ def get_color_coded_segments_poly_lines_based_on_surface_area(section,
             segment_surface_area / (maximum - minimum))
 
         # Add the poly-line to the aggregate list
-        poly_lines.append([poly_line, color_index])
+        poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=color_index))
 
     # Return the list of polylines 
     return poly_lines
@@ -399,17 +449,17 @@ def get_color_coded_segments_poly_lines_based_on_volume(section,
     for i in range(len(section.samples) - 1):
 
         # Segment poly-line
-        poly_line = list()
+        samples = list()
 
         # First sample
         point_1 = section.samples[i].point
         radius_1 = section.samples[i].radius
-        poly_line.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+        samples.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
 
         # Second sample
         point_2 = section.samples[i + 1].point
         radius_2 = section.samples[i + 1].radius
-        poly_line.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+        samples.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
 
         # Surface area 
         segment_volume = vmv.skeleton.compute_segment_volume(
@@ -420,47 +470,9 @@ def get_color_coded_segments_poly_lines_based_on_volume(section,
             segment_volume / (maximum - minimum))
 
         # Add the poly-line to the aggregate list
-        poly_lines.append([poly_line, color_index])
+        poly_lines.append(vmv.skeleton.PolyLine(samples, color_index))
 
     # Return the list of polylines 
-    return poly_lines
-
-
-def get_segments_poly_lines_with_color_code(section, min_radius, max_radius):
-
-    # A list of all the poly-lines that correspond to each segment in the morphology
-    poly_lines = list()
-
-    # Construct the section from all the samples
-    for i in range(len(section.samples) - 1):
-
-        # Segment poly-line
-        poly_line = list()
-
-        average_radius = 0
-
-        # First sample
-        point = section.samples[i].point
-        radius = section.samples[i].radius
-        poly_line.append([(point[0], point[1], point[2], 1), radius])
-
-        average_radius += radius
-
-        # Second sample
-        point = section.samples[i + 1].point
-        radius = section.samples[i + 1].radius
-        poly_line.append([(point[0], point[1], point[2], 1), radius])
-
-        average_radius += radius
-
-        average_radius /= 2.0
-
-        # Poly-line material index (we use two colors to highlight the sections)
-        poly_line_material_index = int(vmv.consts.Color.COLOR_MAP_SAMPLES * average_radius / (max_radius - min_radius))
-
-        # Add the poly-line to the aggregate list
-        poly_lines.append([poly_line, poly_line_material_index])
-
     return poly_lines
 
 

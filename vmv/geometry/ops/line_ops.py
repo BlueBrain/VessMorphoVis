@@ -301,22 +301,16 @@ def append_poly_line_to_poly_lines_object(poly_lines_object,
     # Create a new poly-line object integrated into the poly-lines object
     poly_line_object = poly_lines_object.splines.new(poly_line_type)
 
-    # Poly-line samples
-    poly_line_samples = poly_line_data[0]
-
-    # Poly-line material index
-    poly_line_material_index = poly_line_data[1]
-
     # Define the number of samples of the poly-line object
     # NOTE: Use n-1 points because once the poly-line is created it has already one point added
 
-    poly_line_object.points.add(len(poly_line_samples) - 1)
+    poly_line_object.points.add(len(poly_line_data.samples) - 1)
 
     # Define the material for this poly-line
-    poly_line_object.material_index = poly_line_material_index
+    poly_line_object.material_index = poly_line_data.color_index
 
     # Add the points (or the samples) and their radii to the poly-line curve object
-    for i, poly_line_sample in enumerate(poly_line_samples):
+    for i, poly_line_sample in enumerate(poly_line_data.samples):
 
         # Sample coordinates
         poly_line_object.points[i].co = poly_line_sample[0]

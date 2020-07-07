@@ -163,26 +163,25 @@ class DisconnectedSegmentsBuilder:
         return poly_lines_data
 
     ################################################################################################
-    # @get_segment_poly_lines_data
+    # @get_segments_poly_lines_data
     ################################################################################################
-    def get_segment_poly_lines_data(self, 
-                                    color_coding_scheme):
+    def get_segments_poly_lines_data(self):
 
         # A list of all the poly-lines
         poly_lines_data = list()
 
-        # Single color 
-        if color_coding_scheme == vmv.enums.ColorCoding.Segment.SINGLE_COLOR:
+        # Get the data based on the color-coding scheme  
+        if self.options.morphology.color_coding == vmv.enums.ColorCoding.SINGLE_COLOR:
             pass  
-        elif color_coding_scheme == vmv.enums.ColorCoding.Segment.ALTERNATING_COLORS:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
             pass
-        elif color_coding_scheme == vmv.enums.ColorCoding.Segment.BY_RADIUS:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_RADIUS:
             return self.get_poly_line_data_based_on_radius() 
-        elif color_coding_scheme == vmv.enums.ColorCoding.Segment.BY_LENGTH:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_LENGTH:
             return self.get_poly_line_data_based_on_length() 
-        elif color_coding_scheme == vmv.enums.ColorCoding.Segment.BY_AREA:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_AREA:
             return self.get_poly_line_data_based_on_surface_area()
-        elif color_coding_scheme == vmv.enums.ColorCoding.Segment.BY_VOLUME:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_VOLUME:
             return self.get_poly_line_data_based_on_volume() 
         else:
             pass 
@@ -193,7 +192,7 @@ class DisconnectedSegmentsBuilder:
     ################################################################################################
     # @get_segments_poly_lines_data
     ################################################################################################
-    def get_segments_poly_lines_data(self,
+    def get_segmentsas_poly_lines_data(self,
                                      color_code_based_on_radii=False,
                                      min_radius=0,
                                      max_radius=0):
@@ -238,6 +237,7 @@ class DisconnectedSegmentsBuilder:
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
+        vmv.logger.info('Creating assets')
         vmv.scene.ops.clear_scene_materials()
 
         rgb_colors = vmv.utilities.create_color_map_from_color_list(
@@ -249,14 +249,14 @@ class DisconnectedSegmentsBuilder:
 
         # Construct sections poly-lines
         vmv.logger.info('Constructing poly-lines')
-        poly_lines_data = self.get_segment_poly_lines_data(self.options.morphology.segments_color_coding)
+        poly_lines_data = self.get_segments_poly_lines_data()
             
         # Pre-process the radii
         vmv.logger.info('Adjusting radii')
         vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
 
         # Construct the final object and add it to the morphology
-        vmv.logger.info('Drawing object')
+        vmv.logger.info('Drawing poly-lines')
         self.morphology_objects.append(
             vmv.geometry.create_poly_lines_object_from_poly_lines_data(
                 poly_lines_data, color=self.options.morphology.color,

@@ -147,6 +147,73 @@ def update_poly_line_radii(poly_line,
     else:
         pass
 
+####################################################################################################
+# @compute_segment_surface_area
+####################################################################################################
+def compute_segment_surface_area(sample_1, sample_2):
+
+    # Retrieve the data of the samples along each segment on the section
+    p0 = sample_1.point
+    p1 = sample_2.point
+    r0 = sample_1.radius
+    r1 = sample_2.radius
+
+    # Compute the segment lateral area
+    segment_length = (p0 - p1).length
+    r_sum = r0 + r1
+    r_diff = r0 - r1
+    segment_lateral_area = math.pi * r_sum * math.sqrt((r_diff * r_diff) + segment_length)
+
+    return segment_lateral_area
+
+####################################################################################################
+# @compute_section_length
+####################################################################################################
+def compute_section_average_radius(section):
+    
+    # If the section has no samples, then return 0
+    if len(section.samples) == 0:
+        return 0.0
+
+    # Initially, set to zero
+    section_average_radius = 0.0
+
+    # Add the radii  
+    for sample in section.samples:
+        section_average_radius += sample.radius
+    
+    # Average 
+    section_average_radius /= len(section.samples)
+
+    # Return the section average radius 
+    return section_average_radius
+
+
+####################################################################################################
+# @get_minumum_and_maximum_sections_average_radii
+####################################################################################################
+def get_minumum_and_maximum_sections_average_radii(morphology):
+
+    # Get a list of radii 
+    radii = [compute_section_average_radius(section=section) 
+        for section in morphology.sections_list]
+
+    # Return the minimum and maximum 
+    return min(radii), max(radii)
+
+
+####################################################################################################
+# @get_minumum_and_maximum_sections_lengths
+####################################################################################################
+def get_minumum_and_maximum_sections_lengths(morphology):
+
+    # Get a list of lengths 
+    sections_lengths = [compute_section_length(section=section) 
+        for section in morphology.sections_list]
+
+    # Return the minimum and maximum
+    return min(sections_lengths), max(sections_lengths)
+
 
 ####################################################################################################
 # @get_minumum_and_maximum_samples_radii
@@ -189,24 +256,26 @@ def get_minumum_and_maximum_segments_length(morphology):
     
     return minimum, maximum
 
+
+
 ####################################################################################################
-# @compute_segment_surface_area
+# @compute_section_length
 ####################################################################################################
-def compute_segment_surface_area(sample_1, sample_2):
+def compute_section_length(section):
+    
+    # If the section has less than two samples, then report the error
+    if len(section.samples) < 2:
+        return 0.0
 
-    # Retrieve the data of the samples along each segment on the section
-    p0 = sample_1.point
-    p1 = sample_2.point
-    r0 = sample_1.radius
-    r1 = sample_2.radius
+    # Initially, set to zero
+    section_length = 0.0
 
-    # Compute the segment lateral area
-    segment_length = (p0 - p1).length
-    r_sum = r0 + r1
-    r_diff = r0 - r1
-    segment_lateral_area = math.pi * r_sum * math.sqrt((r_diff * r_diff) + segment_length)
-
-    return segment_lateral_area
+    # Compute the length from the segments 
+    for i in range(len(section.samples) - 1):
+        section_length += (section.samples[i + 1].point - section.samples[i].point).length
+    
+    # Return the section length 
+    return section_length
 
 
 ####################################################################################################

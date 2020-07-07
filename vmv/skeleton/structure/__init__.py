@@ -19,4 +19,5 @@
 from .morphology import *
 from .sample import *
 from .section import *
+from .polyline import * 
 

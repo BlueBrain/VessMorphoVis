@@ -31,7 +31,7 @@ import vmv.skeleton
 
 
 ####################################################################################################
-# @MorphologyBuilder
+# @DisconnectedSectionsBuilder
 ####################################################################################################
 class DisconnectedSectionsBuilder:
     """Morphology builder with disconnected sections, where each section is drawn as an independent
@@ -62,9 +62,71 @@ class DisconnectedSectionsBuilder:
         self.morphology_objects = []
 
     ################################################################################################
+    # @get_poly_lines_data_based_on_radius
+    ################################################################################################
+    def get_poly_lines_data_based_on_radius(self):
+
+        # Get minimum and maximum (average-radii) of the sections morphology
+        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_average_radii(
+            self.morphology)
+
+        # Get the poly-line data of each section
+        poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_radius(
+                    section=section, minimum=minimum, maximum=maximum) \
+                        for section in self.morphology.sections_list] 
+        
+        # Return the list 
+        return poly_lines_data
+
+    ################################################################################################
+    # @get_poly_lines_data_based_on_length
+    ################################################################################################
+    def get_poly_lines_data_based_on_length(self):
+
+        # The poly-lines data list 
+        poly_lines_data = list() 
+
+        # Get minimum and maximum (average-radii) of the sections morphology
+        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_lengths(
+            self.morphology)
+
+        # Get the poly-line data of each section
+        for section in self.morphology.sections_list:
+            poly_lines_data.append(
+                vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_length(
+                    section=section, minimum=minimum, maximum=maximum))
+
+        # Return the list 
+        return poly_lines_data
+
+
+    def get_sections_poly_lines_data(self):
+
+        # A list of all the poly-lines
+        poly_lines_data = list()
+        
+        # Get the data based on the color-coding scheme  
+        if self.options.morphology.color_coding == vmv.enums.ColorCoding.SINGLE_COLOR:
+            pass  
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
+            pass
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_RADIUS:
+            return self.get_poly_lines_data_based_on_radius() 
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_LENGTH:
+            return self.get_poly_lines_data_based_on_length() 
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_AREA:
+            pass # return self.get_poly_line_data_based_on_surface_area()
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_VOLUME:
+            pass # return self.get_poly_line_data_based_on_volume() 
+        else:
+            pass
+
+        return poly_lines_data 
+    
+    ################################################################################################
     # @get_sections_poly_lines_data
     ################################################################################################
-    def get_sections_poly_lines_data(self):
+    def get_sections_poly_lines_data_(self):
         """Gets a list of the data of all the poly-lines that correspond to the sections in the
         morphology.
 
@@ -113,7 +175,15 @@ class DisconnectedSectionsBuilder:
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
+        vmv.logger.info('Creating assets')
         vmv.scene.ops.clear_scene_materials()
+
+        rgb_colors = vmv.utilities.create_color_map_from_hex_list(
+            vmv.enums.ColorMaps.get_hex_color_list(vmv.enums.ColorMaps.PLASMA), 
+            vmv.consts.Color.COLOR_MAP_SAMPLES)
+
+        #rgb_colors = vmv.utilities.create_color_map_from_color_list(
+        #    self.options.morphology.color_map_colors, number_colors=vmv.consts.Color.COLOR_MAP_SAMPLES)
 
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
@@ -133,8 +203,9 @@ class DisconnectedSectionsBuilder:
             vmv.skeleton.resample_poly_lines_adaptively(poly_lines=poly_lines_data)
 
         # Construct the final object and add it to the morphology
-        vmv.logger.info('Drawing object')
-        self.morphology_objects.append(vmv.geometry.create_poly_lines_object_from_poly_lines_data(
-            poly_lines_data, color=self.options.morphology.color,
-            material=self.options.morphology.material, name='sample', #self.morphology.name,
-            bevel_object=bevel_object))
+        if len(poly_lines_data) > 0:
+            vmv.logger.info('Drawing object')
+            self.morphology_objects.append(vmv.geometry.create_poly_lines_object_from_poly_lines_data(
+                poly_lines_data, color=self.options.morphology.color,
+                material=self.options.morphology.material, name='Hola', #self.morphology.name,
+                bevel_object=bevel_object, color_vector=rgb_colors))

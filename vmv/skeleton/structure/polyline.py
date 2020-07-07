@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Copyright (c) 2019, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -15,8 +15,26 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .kernels import * 
-from .items import *
-from .analysis import *
+
+####################################################################################################
+# PolyLine
+####################################################################################################
+class PolyLine:
+    """Blender poly-lines that are used to represent a section with some parameters.
+    """
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self,
+                 samples,
+                 color_index):
+
+        # Poly-line samples arranged in the format [(X, Y, Z, 1), R]
+        self.samples = samples
+
+        # Poly-line color index to be able to diffrentiate it in other poly-lines in 
+        # the same dataset
+        self.color_index = color_index
 
 
