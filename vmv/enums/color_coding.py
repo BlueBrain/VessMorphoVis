@@ -127,7 +127,7 @@ class ColorCoding:
             'the distribution of the sections volumes along the entire morphology'),
 
         # Number of samples 
-        (BY_VOLUME,
+        (BY_NUMBER_SAMPLES,
             'Number of Samples',
             'Color-code the morphology based on the number of samples along the section')
     ]

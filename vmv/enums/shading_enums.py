@@ -32,6 +32,9 @@ class Shader:
     # Flat or 'shade-less' shader
     FLAT = 'FLAT_SHADER'
 
+    # Flat or 'shade-less' shader with transparency
+    FLAT_TRANSPARENT = 'FLAT_TRANSPARENT_SHADER'
+
     # Blender default lambert shader
     LAMBERT_WARD = 'LAMBERT_WARD_SHADER'
 
@@ -85,6 +88,8 @@ class Shader:
         """
         if shader_type == 'flat':
             return Shader.FLAT
+        elif shader_type == 'flat-transparent':
+            return Shader.FLAT_TRANSPARENT
         elif shader_type == 'electron-light':
             return Shader.ELECTRON_LIGHT
         elif shader_type == 'electron-dark':
@@ -121,6 +126,11 @@ class Shader:
          'Flat',
          "Use Flat shader. This shader is used to create high resolution images in few seconds. "
          "The rendering quality of this shader is not the best"),
+
+        (FLAT_TRANSPARENT,
+         'Flat Transparent',
+         "Use Flat Transparent shader. This shader is used to create high resolution images in "
+         "few seconds. The rendering quality of this shader is not the best"),
 
         (TOON,
          'Toon',

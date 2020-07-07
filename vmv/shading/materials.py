@@ -197,13 +197,16 @@ def create_super_electron_dark_material(name,
 # @create_flat_material
 ####################################################################################################
 def create_flat_material(name,
-                         color=vmv.consts.Color.WHITE):
+                         color=vmv.consts.Color.WHITE,
+                         transparent=False):
     """Creates a flat shader.
 
     :param name:
         Material name
     :param color:
         Material color.
+    :param transparent:
+        Use transparency.
     :return:
         A reference to the material.
     """
@@ -229,7 +232,7 @@ def create_flat_material(name,
 
         # Flat shading
         bpy.context.scene.display.shading.light = 'FLAT'
-        vmv.scene.set_scene_transparency(transparent=False)
+        vmv.scene.set_scene_transparency(transparent=transparent)
 
         # Switch the view port shading
         vmv.scene.switch_scene_shading('RENDERED')
@@ -809,7 +812,13 @@ def create_material(name,
     elif material_type == vmv.enums.Shader.FLAT:
         # Always set the colors to raw when using the flat material
         vmv.scene.set_colors_to_raw()
-        return create_flat_material(name='%s_color' % name, color=color)
+        return create_flat_material(name='%s_color' % name, color=color, transparent=False)
+
+    # Flat with transparency
+    elif material_type == vmv.enums.Shader.FLAT_TRANSPARENT:
+        # Always set the colors to raw when using the flat material
+        vmv.scene.set_colors_to_raw()
+        return create_flat_material(name='%s_color' % name, color=color, transparent=True)
 
     # Toon
     elif material_type == vmv.enums.Shader.TOON:

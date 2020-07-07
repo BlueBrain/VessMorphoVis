@@ -32,11 +32,12 @@ import vmv.shading
 ####################################################################################################
 def set_skeleton_radii_to_fixed_value(morphology,
                                       fixed_radius_value):
-    """
+    """Sets the radii of the morphology to a fixed value.
 
     :param morphology:
+        Given morphology skeleton.
     :param fixed_radius_value:
-    :return:
+        The value of the radius.
     """
 
     for section in morphology.sections_list:
@@ -49,11 +50,12 @@ def set_skeleton_radii_to_fixed_value(morphology,
 ####################################################################################################
 def set_skeleton_radii_to_scaled_value(morphology,
                                        scale_factor):
-    """
-
+    """Sets the radii of the morphology to a scaled value.
+    
     :param morphology:
+        Given morphology skeleton.
     :param scale_factor:
-    :return:
+        The scale factor used to the scale the radius of each sample
     """
 
     for section in morphology.sections_list:
@@ -315,6 +317,30 @@ def compute_segments_surface_areas_in_section(section,
 
 
 ####################################################################################################
+# @compute_section_surface_area
+####################################################################################################
+def compute_section_surface_area(section):
+    
+    # If the section has less than two samples, then report the error
+    if len(section.samples) < 2:
+        return 0.0
+
+    # Initially, set to zero
+    segments_surface_areas = list()
+
+    # Compute the surface areas from the segments
+    compute_segments_surface_areas_in_section(
+        section=section, segments_surface_areas=segments_surface_areas)
+    
+    # Sum 
+    section_surface_area = sum(segments_surface_areas)
+
+    # Return the section surface area 
+    return section_surface_area
+
+
+
+####################################################################################################
 # @compute_segment_volume
 ####################################################################################################
 def compute_segment_volume(sample_1, sample_2):
@@ -367,6 +393,28 @@ def compute_segments_volumes_in_section(section,
 
 
 ####################################################################################################
+# @compute_section_volume
+####################################################################################################
+def compute_section_volume(section):
+    
+    # If the section has less than two samples, then report the error
+    if len(section.samples) < 2:
+        return 0.0
+
+    # Initially, set to zero
+    segments_volumes = list()
+
+    # Compute the volumes from the segments
+    compute_segments_volumes_in_section(section=section, segments_volumes=segments_volumes)
+    
+    # Sum 
+    section_volume = sum(segments_volumes)
+
+    # Return the section volume 
+    return section_volume
+
+
+####################################################################################################
 # @compute_sections_surface_areas_from_segments
 ####################################################################################################
 def compute_sections_surface_areas_from_segments(section,
@@ -401,8 +449,6 @@ def get_minumum_and_maximum_segments_surface_area(morphology):
     return min(segments_surface_areas), max(segments_surface_areas)
 
 
-
-
 ###################################################################################################
 # @get_minumum_and_maximum_segments_volume
 ####################################################################################################
@@ -420,7 +466,50 @@ def get_minumum_and_maximum_segments_volume(morphology):
 
 
 
+###################################################################################################
+# @get_minumum_and_maximum_sections_surface_area
+####################################################################################################
+def get_minumum_and_maximum_sections_surface_areas(morphology):
+
+    sections_surface_area = list()
+
+    for section in morphology.sections_list:
+        sections_surface_area.append(compute_section_surface_area(section=section))
+            
+    return min(sections_surface_area), max(sections_surface_area)
+
+
+###################################################################################################
+# @get_minumum_and_maximum_sections_volume
+####################################################################################################
+def get_minumum_and_maximum_sections_volumes(morphology):
+
     
+    sections_volumes = list()
+
+    for section in morphology.sections_list:
+
+        sections_volumes.append(compute_section_volume(section=section))
+            
+    return min(sections_volumes), max(sections_volumes)
+
+
+###################################################################################################
+# @get_minumum_and_maximum_sections_number_samples
+####################################################################################################
+def get_minumum_and_maximum_sections_number_samples(morphology):
+
+    
+    sections_number_samples = list()
+
+    for section in morphology.sections_list:
+
+        sections_number_samples.append(len(section.samples))
+            
+    return min(sections_number_samples), max(sections_number_samples)
+
+
+
 
 def update_poly_lines_radii(poly_lines,
                             options):
