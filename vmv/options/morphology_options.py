@@ -86,7 +86,7 @@ class MorphologyOptions:
         self.color_map = vmv.enums.ColorMaps.PLASMA
 
         # The resolution of the colormap (number of samples)
-        self.color_map_resolution = 64
+        self.color_map_resolution = vmv.consts.Color.COLOR_MAP_RESOLUTION
 
         # Morphology color-map colors (this is probably set from the GUI)
         self.color_map_colors = list()

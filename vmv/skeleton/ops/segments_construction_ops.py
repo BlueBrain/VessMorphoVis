@@ -95,7 +95,7 @@ def get_color_coded_segments_poly_lines_with_alternating_colors(section):
 def get_color_coded_segments_poly_lines_based_on_radius(section, 
                                                         minimum, 
                                                         maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
     """Gets a list of all the segments composing the section color-coded based 
     on their radii in the morphology.
 
@@ -156,7 +156,7 @@ def get_color_coded_segments_poly_lines_based_on_radius(section,
 def get_color_coded_segments_poly_lines_based_on_length(section, 
                                                         minimum, 
                                                         maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
     """Gets a list of all the segments composing the section color-coded based 
     on their length in the morphology.
 
@@ -208,7 +208,7 @@ def get_color_coded_segments_poly_lines_based_on_length(section,
 def get_color_coded_segments_poly_lines_based_on_surface_area(section, 
                                                               minimum, 
                                                               maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
     """Gets a list of all the segments composing the section color-coded based 
     on their length in the morphology.
 
@@ -261,7 +261,7 @@ def get_color_coded_segments_poly_lines_based_on_surface_area(section,
 def get_color_coded_segments_poly_lines_based_on_volume(section, 
                                                         minimum, 
                                                         maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
 
     # A list of all the poly-lines that correspond to each segment in the morphology
     poly_lines = list()

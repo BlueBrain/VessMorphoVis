@@ -61,6 +61,9 @@ class DisconnectedSectionsBuilder:
         # All the reconstructed objects of the morphology, for example, tubes, spheres, etc...
         self.morphology_objects = list()
 
+        # Context for the UI to display certain messages 
+        self.context=None
+
     ################################################################################################
     # @get_poly_lines_data_colored_with_single_color
     ################################################################################################
@@ -105,6 +108,11 @@ class DisconnectedSectionsBuilder:
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_average_radii(
             self.morphology)
 
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
+
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_radius(
                     section=section, minimum=minimum, maximum=maximum, 
@@ -127,6 +135,11 @@ class DisconnectedSectionsBuilder:
         # Get minimum and maximum lengths of the sections in the morphology
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_lengths(
             self.morphology)
+
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_length(
@@ -151,6 +164,11 @@ class DisconnectedSectionsBuilder:
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_surface_areas(
             self.morphology)
 
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
+
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_surface_area(
             section=section, minimum=minimum, maximum=maximum, 
@@ -172,6 +190,11 @@ class DisconnectedSectionsBuilder:
 
         # Get minimum and maximum volumes of the sections in the morphology
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_volumes(self.morphology)
+
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_volume(
@@ -196,6 +219,11 @@ class DisconnectedSectionsBuilder:
         # Get minimum and maximum volumes of the sections in the morphology
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_number_samples(
             self.morphology)
+
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [
@@ -265,11 +293,14 @@ class DisconnectedSectionsBuilder:
     ################################################################################################
     # @build_skeleton
     ################################################################################################
-    def build_skeleton(self):
+    def build_skeleton(self, context=None):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
         vmv.logger.header('Building skeleton: DisconnectedSectionsBuilder')
+
+        # Get the context 
+        self.context = context
 
         # Clear the scene
         vmv.logger.info('Clearing scene')

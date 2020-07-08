@@ -61,6 +61,9 @@ class DisconnectedSegmentsBuilder:
         # All the reconstructed objects of the morphology, for example, tubes, spheres, etc... .
         self.morphology_objects = list()
 
+        # UI Context 
+        self.context = None
+
     ################################################################################################
     # @get_poly_line_data_colored_with_single_color
     ################################################################################################
@@ -111,6 +114,11 @@ class DisconnectedSegmentsBuilder:
         # Get minimum and maximum radii of the morphology
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_samples_radii(self.morphology)
 
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
+
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
             poly_lines_data.extend(
@@ -135,8 +143,12 @@ class DisconnectedSegmentsBuilder:
         poly_lines_data = list() 
 
         # Get minimum and maximum radii of the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_length(
-            self.morphology)
+        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_length(self.morphology)
+        
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
@@ -165,6 +177,11 @@ class DisconnectedSegmentsBuilder:
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_surface_area(
             self.morphology)
         
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
+
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
             poly_lines_data.extend(
@@ -192,6 +209,11 @@ class DisconnectedSegmentsBuilder:
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_volume(
             self.morphology)
         
+        # Update the interface with the minimum and maximum values for the colormapping  
+        if self.context is not None:
+            self.context.scene.MinimumValue = str(minimum)
+            self.context.scene.MaximumValue = str(maximum)
+
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
             poly_lines_data.extend(
@@ -252,11 +274,15 @@ class DisconnectedSegmentsBuilder:
     ################################################################################################
     # @build_skeleton
     ################################################################################################
-    def build_skeleton(self):
+    def build_skeleton(self, 
+                       context=None):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
         vmv.logger.header('Building skeleton: DisconnectedSegmentsBuilder')
+
+        # Get the context 
+        self.context = context 
 
         # Clear the scene
         vmv.logger.info('Clearing scene')
@@ -288,5 +314,3 @@ class DisconnectedSegmentsBuilder:
             vmv.geometry.create_poly_lines_object_from_poly_lines_data(
                 poly_lines_data, material=self.options.morphology.material, color_map=color_map, 
                 name=self.morphology.name, bevel_object=bevel_object))
-
-

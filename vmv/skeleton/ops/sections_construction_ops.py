@@ -61,7 +61,7 @@ def get_color_coded_section_poly_line_with_alternating_colors(section):
 def get_color_coded_section_poly_line_based_on_radius(section,
                                                       minimum, 
                                                       maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
 
     
     # Compute the average radius of the section 
@@ -85,7 +85,7 @@ def get_color_coded_section_poly_line_based_on_radius(section,
 def get_color_coded_section_poly_line_based_on_length(section,
                                                       minimum, 
                                                       maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
 
     
     # Compute the average radius of the section 
@@ -112,7 +112,7 @@ def get_color_coded_section_poly_line_based_on_length(section,
 def get_color_coded_section_poly_line_based_on_surface_area(section,
                                                             minimum, 
                                                             maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
 
     # Compute the average radius of the section 
     section_surface_area = vmv.skeleton.compute_section_surface_area(section)
@@ -137,7 +137,7 @@ def get_color_coded_section_poly_line_based_on_surface_area(section,
 def get_color_coded_section_poly_line_based_on_volume(section,
                                                       minimum, 
                                                       maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
 
     # Compute the average radius of the section 
     section_volume = vmv.skeleton.compute_section_volume(section)
@@ -163,7 +163,7 @@ def get_color_coded_section_poly_line_based_on_volume(section,
 def get_color_coded_section_poly_line_based_on_number_samples(section,
                                                               minimum, 
                                                               maximum,
-    color_map_resolution=vmv.consts.Color.COLOR_MAP_SAMPLES):
+    color_map_resolution=vmv.consts.Color.COLOR_MAP_RESOLUTION):
 
     # Poly-line samples 
     samples = list()

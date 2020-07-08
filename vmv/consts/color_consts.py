@@ -63,4 +63,4 @@ class Color:
     NUMBER_COLORS_UI = 8
 
     # The default number of samples in the color map
-    COLOR_MAP_SAMPLES = 32
+    COLOR_MAP_RESOLUTION = 32
