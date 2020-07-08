@@ -17,7 +17,8 @@
 
 # Internal imports
 from .morphology import *
+from .polyline import * 
 from .sample import *
 from .section import *
-from .polyline import * 
+
 

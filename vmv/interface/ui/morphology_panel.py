@@ -83,7 +83,6 @@ class VMVColorMapOperator(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        self.report({'INFO'}, "YES!")
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -98,7 +97,8 @@ class VMVColorMapOperator(bpy.types.Operator):
         
         color_map_resolution = layout.row()
         color_map_resolution.prop(context.scene, 'ColorMapResolution')
-        vmv.interface.ui.options.morphology.color_map_resolution = context.scene.ColorMapResolution - 1
+        vmv.interface.ui.options.morphology.color_map_resolution = \
+            context.scene.ColorMapResolution - 1
 
         if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
                 vmv.interface.ui.options.morphology.color_map_colors.clear()
@@ -434,81 +434,89 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Get a reference to the layout of the panel
         layout = self.layout
 
+        # Get a reference to the scene 
+        scene = context.scene 
+
+        # Reference to morphology options 
+        morphology_options = vmv.interface.ui.options.morphology
+
         # Coloring parameters
         colors_row = self.layout.row()
         colors_row.label(text='Colors & Materials:', icon='COLOR')
 
         # Morphology material
         morphology_material_row = self.layout.row()
-        morphology_material_row.prop(context.scene, 'MorphologyMaterial')
-        vmv.interface.ui.options.morphology.material = context.scene.MorphologyMaterial
+        morphology_material_row.prop(scene, 'MorphologyMaterial')
+        morphology_options.material = scene.MorphologyMaterial
     
         # If the disconnected segments is selected
-        if vmv.interface.ui.options.morphology.reconstruction_method == \
+        if morphology_options.reconstruction_method == \
             vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
 
             # Per-segment color coding 
             color_coding_row = layout.row()
-            color_coding_row.prop(context.scene, 'PerSegmentColorCodingBasis')
-            vmv.interface.ui.options.morphology.color_coding = \
-                context.scene.PerSegmentColorCodingBasis
+            color_coding_row.prop(scene, 'PerSegmentColorCodingBasis')
+            morphology_options.color_coding = scene.PerSegmentColorCodingBasis
 
             # Single color 
-            if vmv.interface.ui.options.morphology.color_coding == \
-                vmv.enums.ColorCoding.SINGLE_COLOR:
+            if scene.PerSegmentColorCodingBasis == vmv.enums.ColorCoding.SINGLE_COLOR:
 
-                # Morphology color
+                # Base morphology color
                 color_row = self.layout.row()
-                color_row.prop(context.scene, 'MorphologyColor')
-                vmv.interface.ui.options.morphology.color = context.scene.MorphologyColor 
+                color_row.prop(scene, 'MorphologyColor')
+                morphology_options.color = scene.MorphologyColor
                 
-            # Alternating colors
-            elif vmv.interface.ui.options.morphology.color_coding == \
-                vmv.enums.ColorCoding.ALTERNATING_COLORS:
-                pass 
-            
-            # Color-map based colring 
+            elif scene.PerSegmentColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
+
+                # Base morphology color
+                color_row = self.layout.row()
+                color_row.prop(scene, 'MorphologyColor')
+                morphology_options.color = scene.MorphologyColor
+
+                # Alternating morphology color
+                color_row = self.layout.row()
+                color_row.prop(scene, 'MorphologyAlternatingColor')
+                morphology_options.alternating_color = scene.MorphologyAlternatingColor
+
             else:
-                
+
                 # Color-mapping 
                 layout = self.layout
                 layout.operator(VMVColorMapOperator.bl_idname, icon='COLOR')
                 
-                # 
+                # Fill the list of colors 
                 colors = layout.row()
                 for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                    colors.prop(context.scene, 'Color%d' % i)
+                    colors.prop(scene, 'Color%d' % i)  
         
         # Disconnected sections builder
-        elif vmv.interface.ui.options.morphology.reconstruction_method == \
+        elif morphology_options.reconstruction_method == \
                 vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
 
             # Per-section color coding 
             color_coding_row = layout.row()
             color_coding_row.prop(context.scene, 'PerSectionColorCodingBasis')
-            vmv.interface.ui.options.morphology.color_coding = \
-                context.scene.PerSectionColorCodingBasis
+            morphology_options.color_coding = scene.PerSectionColorCodingBasis
 
             # Single color 
-            if context.scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.SINGLE_COLOR:
+            if scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.SINGLE_COLOR:
 
                 # Base morphology color
                 color_row = self.layout.row()
-                color_row.prop(context.scene, 'MorphologyColor')
-                vmv.interface.ui.options.morphology.color = context.scene.MorphologyColor
+                color_row.prop(scene, 'MorphologyColor')
+                morphology_options.color = scene.MorphologyColor
                 
-            elif context.scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS \
-                or context.scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.SHORT_SECTIONS:
+            elif scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
 
                 # Base morphology color
                 color_row = self.layout.row()
-                color_row.prop(context.scene, 'MorphologyColor')
-                vmv.interface.ui.options.morphology.color = context.scene.MorphologyColor
+                color_row.prop(scene, 'MorphologyColor')
+                morphology_options.color = scene.MorphologyColor
 
                 # Alternating morphology color
                 color_row = self.layout.row()
-                color_row.prop(context.scene, 'MorphologyAlternatingColor')
-                vmv.interface.ui.options.morphology.alternating_color = context.scene.MorphologyColor
+                color_row.prop(scene, 'MorphologyAlternatingColor')
+                morphology_options.alternating_color = scene.MorphologyAlternatingColor
 
             else:
 
@@ -516,35 +524,13 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 layout = self.layout
                 layout.operator(VMVColorMapOperator.bl_idname, icon='COLOR')
                 
-                # 
+                # Fill the list of colors 
                 colors = layout.row()
                 for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                    colors.prop(context.scene, 'Color%d' % i) 
+                    colors.prop(scene, 'Color%d' % i)  
 
         else:
-            pass 
-
-        
-        # Color morphology components based on random coloring or using black-white alternatives
-        if context.scene.ColorComponents:
-
-            # Set the color to the COLOR CODE of the random coloring
-            vmv.interface.ui.options.morphology.color = Vector((-1, 0, 0))
-
-            # Turn on the option to use black-white coloring scheme
-            color_black_white_row.enabled = True
-
-            # If the black-white coloring is enabled
-            if context.scene.ColorComponentsBlackAndWhite:
-
-                # Set the color to the COLOR CODE of the random coloring
-                vmv.interface.ui.options.morphology.color = Vector((0, -1, 0))
-
-        # Otherwise, select the morphology color from the palette
-        else:
-            pass 
-
-            
+            pass
 
     ################################################################################################
     # @draw_morphology_reconstruction_button
