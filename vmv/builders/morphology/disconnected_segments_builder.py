@@ -28,6 +28,7 @@ import vmv.geometry
 import vmv.mesh
 import vmv.scene
 import vmv.skeleton
+import vmv.utilities
 
 
 ####################################################################################################
@@ -114,7 +115,7 @@ class DisconnectedSegmentsBuilder:
         # Get minimum and maximum radii of the morphology
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_samples_radii(self.morphology)
 
-        # Update the interface with the minimum and maximum values for the colormapping  
+        # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
             self.context.scene.MinimumValue = str(minimum)
             self.context.scene.MaximumValue = str(maximum)
@@ -145,7 +146,7 @@ class DisconnectedSegmentsBuilder:
         # Get minimum and maximum radii of the morphology
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_length(self.morphology)
         
-        # Update the interface with the minimum and maximum values for the colormapping  
+        # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
             self.context.scene.MinimumValue = str(minimum)
             self.context.scene.MaximumValue = str(maximum)
@@ -177,7 +178,7 @@ class DisconnectedSegmentsBuilder:
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_surface_area(
             self.morphology)
         
-        # Update the interface with the minimum and maximum values for the colormapping  
+        # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
             self.context.scene.MinimumValue = str(minimum)
             self.context.scene.MaximumValue = str(maximum)
@@ -209,7 +210,7 @@ class DisconnectedSegmentsBuilder:
         minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_volume(
             self.morphology)
         
-        # Update the interface with the minimum and maximum values for the colormapping  
+        # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
             self.context.scene.MinimumValue = str(minimum)
             self.context.scene.MaximumValue = str(maximum)
@@ -267,9 +268,9 @@ class DisconnectedSegmentsBuilder:
         
         # Otherwise, it is a color-map
         else:
-             return vmv.utilities.create_color_map_from_color_list(
-                 self.options.morphology.color_map_colors, 
-                 number_colors=self.options.morphology.color_map_resolution)
+            return vmv.utilities.create_color_map_from_color_list(
+                self.options.morphology.color_map_colors,
+                number_colors=self.options.morphology.color_map_resolution)
 
     ################################################################################################
     # @build_skeleton
@@ -310,7 +311,6 @@ class DisconnectedSegmentsBuilder:
 
         # Construct the final object and add it to the morphology
         vmv.logger.info('Drawing poly-lines')
-        self.morphology_objects.append(
-            vmv.geometry.create_poly_lines_object_from_poly_lines_data(
-                poly_lines_data, material=self.options.morphology.material, color_map=color_map, 
-                name=self.morphology.name, bevel_object=bevel_object))
+        return vmv.geometry.create_poly_lines_object_from_poly_lines_data(
+            poly_lines_data, material=self.options.morphology.material, color_map=color_map,
+            name=self.morphology.name, bevel_object=bevel_object)

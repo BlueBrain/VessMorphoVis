@@ -53,7 +53,7 @@ class VMVColorMapOperator(bpy.types.Operator):
     ################################################################################################
     def update_ui_colors(self, context):
         colors = vmv.utilities.create_color_map_from_hex_list(
-        vmv.enums.ColorMaps.get_hex_color_list(context.scene.ColorMap), 
+        vmv.enums.ColorMaps.get_hex_color_list(context.scene.ColorMap),
         vmv.consts.Color.NUMBER_COLORS_UI)
 
         for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
@@ -350,11 +350,11 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
     # The minimum value associatd with the color map 
     bpy.types.Scene.MinimumValue = bpy.props.StringProperty(
-        name='', description='', default='', maxlen=10)
+        name='', description='', default='0', maxlen=10)
 
     # The maximum value associated with the color map 
     bpy.types.Scene.MaximumValue = bpy.props.StringProperty(
-        name='', description='', default='', maxlen=10)
+        name='', description='', default='100', maxlen=10)
 
     ################################################################################################
     # @draw_mesh_reconstruction_options
@@ -518,16 +518,21 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
                     vmv.interface.ui.options.morphology.color_map_colors.clear()
 
-                # Fill the list of colors 
-                colors = layout.row()
-                colors.label(text=str(context.scene.MinimumValue))
-                for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                    colors.prop(scene, 'Color%d' % i) 
+                # Interpolations
+                color_map_range = \
+                    float(context.scene.MaximumValue) - float(context.scene.MinimumValue)
+                delta = color_map_range / float(vmv.consts.Color.NUMBER_COLORS_UI)
 
-                    # Get the color value 
+                # Fill the list of colors
+                for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+                    value = format(float(context.scene.MinimumValue) + (i * delta), '.5f')
+                    colors = layout.row()
+                    colors.prop(scene, 'Color%d' % i)
+                    colors.label(text=str(value))
+
+                    # Get the color value
                     color = getattr(context.scene, 'Color%d' % i)
                     vmv.interface.ui.options.morphology.color_map_colors.append(color)
-                colors.label(text=str(context.scene.MaximumValue))
         
         # Disconnected sections builder
         elif morphology_options.reconstruction_method == \
@@ -568,17 +573,23 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
                     vmv.interface.ui.options.morphology.color_map_colors.clear()
                         
-                # Fill the list of colors 
-                colors = layout.row()
-                colors.label(text=str(context.scene.MinimumValue))
+                # Interpolations
+                color_map_range = \
+                    float(context.scene.MaximumValue) - float(context.scene.MinimumValue)
+                delta = color_map_range / float(vmv.consts.Color.NUMBER_COLORS_UI - 1)
+
+                # Fill the list of colors
                 for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                    colors.prop(scene, 'Color%d' % i)  
+
+                    value = format(float(context.scene.MinimumValue) + (i * delta), '.5f')
+                    colors = layout.row()
+                    colors.prop(scene, 'Color%d' % i)
+                    colors.label(text=str(value))
 
                     # Get the color value 
                     color = getattr(context.scene, 'Color%d' % i)
                     vmv.interface.ui.options.morphology.color_map_colors.append(color)
-                colors.label(text=str(context.scene.MaximumValue))
-                
+
         else:
             pass
 

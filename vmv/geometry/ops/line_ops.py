@@ -368,9 +368,9 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
 
     # Create the material and append it to the list
     for i, color in enumerate(color_map):
-        materialx = vmv.shading.create_material(
-            name='%s_color_%d' % (name, i), color=color, material_type=material)
-        materials_list.append(materialx)
+        materials = vmv.shading.create_material(
+            name='%s_color_%d' % ('material', i), color=color, material_type=material)
+        materials_list.append(materials)
 
     # Add the materials to the object
     for material in materials_list:

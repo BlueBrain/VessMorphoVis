@@ -48,12 +48,6 @@ class VMVReader:
         # Set the path to the given vmv text file
         self.morphology_file = vmv_file
 
-        # A list of all the points (or samples) in the morphology
-        self.points_list = list()
-
-        # A list of radii of all the samples in the morphology
-        self.radii_list = list()
-
         # A list of all the sections that were extracted from the loaded data
         self.sections_list = list()
 
@@ -207,6 +201,8 @@ class VMVReader:
             end_vertex_index = starting_vertex_index + number_vertices
 
             # Parse the vertices
+            points_list = list()
+            radii_list = list()
             for i in range(starting_vertex_index, end_vertex_index):
 
                 # Split the entry
@@ -219,14 +215,13 @@ class VMVReader:
                 radius = float(vertex_entry[4])
 
                 # Add this point to the points list with the position and radius
-                self.points_list.append([x, y, z, index])
+                points_list.append([x, y, z, index])
 
                 # Radii
-                self.radii_list.append(radius)
+                radii_list.append(radius)
 
             # Compute the bounding box of the morphology
-            self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(
-                self.points_list)
+            self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(points_list)
 
             # Center the morphology at the origin if required by the user
             if center_at_origin:
@@ -264,10 +259,10 @@ class VMVReader:
                 for i_point in strand_entry:
 
                     # Get the point
-                    point = self.points_list[int(i_point) - 1]
+                    point = points_list[int(i_point) - 1]
 
                     # Radius
-                    radius = self.radii_list[int(i_point) - 1]
+                    radius = radii_list[int(i_point) - 1]
 
                     # Construct a sample
                     sample = vmv.skeleton.Sample(point=Vector((point[0], point[1], point[2])),
@@ -300,10 +295,11 @@ class VMVReader:
         """
 
         # Center each point in the points list
-        for point in self.points_list:
-            point[0] -= self.bounding_box.center[0]
-            point[1] -= self.bounding_box.center[1]
-            point[2] -= self.bounding_box.center[2]
+        for section in self.sections_list:
+            for sample in section.samples:
+                sample.point[0] -= self.bounding_box.center[0]
+                sample.point[1] -= self.bounding_box.center[1]
+                sample.point[2] -= self.bounding_box.center[2]
 
     ################################################################################################
     # @load_morphology_file
@@ -359,9 +355,7 @@ class VMVReader:
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
             morphology_name=morphology_name, morphology_file_path=self.morphology_file,
-            points_list=self.points_list, radii_list=self.radii_list, structures_list=None,
-            connectivity_list=None, sections_list=self.sections_list,
-            roots=self.roots)
+            sections_list=self.sections_list, roots=self.roots)
 
         # Return the object
         return morphology_object

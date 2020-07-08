@@ -36,12 +36,9 @@ class Morphology:
     def __init__(self,
                  morphology_name='VESSEL',
                  morphology_file_path=None,
-                 points_list=None,
-                 radii_list=None,
-                 structures_list=None,
-                 connectivity_list=None,
                  sections_list=None,
-                 roots=None):
+                 roots=None,
+                 bounding_box=None):
         """Constructor
 
         :param morphology_file_path:
@@ -65,18 +62,6 @@ class Morphology:
         # Morphology file path
         self.morphology_file_path = morphology_file_path
 
-        # A list of all the points (or samples) in the morphology file
-        self.points_list = points_list
-
-        # A list of the radii of all the samples in the morphology file
-        self.radii_list = radii_list
-
-        # A list of all the structures in the morphology file
-        self.structures_list = structures_list
-
-        # A list of the connectivity data in the morphology file
-        self.connectivity_list = connectivity_list
-
         # A list of all the sections that were extracted from the loaded data
         self.sections_list = sections_list
 
@@ -84,10 +69,7 @@ class Morphology:
         self.roots = roots
 
         # Morphology bounding box
-        self.bounding_box = None
-
-        # Compute the bounding box of the morphology
-        self.compute_bounding_box()
+        self.bounding_box = bounding_box
 
     ################################################################################################
     # @get_center
@@ -104,6 +86,12 @@ class Morphology:
     # @compute_bounding_box
     ################################################################################################
     def compute_bounding_box(self):
+
+        # If the bounding box is already computed, then return it
+        if self.bounding_box is not None:
+            return self.bounding_box
+
+        # Otherwise, compute it
 
         # Initialize the min and max points
         p_min = Vector((vmv.consts.Math.INFINITY,

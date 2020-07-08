@@ -51,8 +51,7 @@ def hex_to_rgb(hex_color):
 # @ create_color_map_from_color_list
 ####################################################################################################
 def create_color_map_from_color_list(color_list, number_colors):
-    
-    
+
     # RGB lists 
     r_list = list()
     g_list = list()

@@ -305,7 +305,7 @@ class SWCLoader:
             # Get the sample parent index
             parent_index = int(data[vmv.consts.Skeleton.SWC_SAMPLE_PARENT_INDEX_IDX])
 
-            # If this is the soma sample, get the translation vector
+            # If this is the first (centric) sample, get the translation vector
             if parent_index == -1:
                 translation[0] = x
                 translation[1] = y
@@ -572,9 +572,7 @@ class SWCLoader:
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
             morphology_name=morphology_name, morphology_file_path=self.morphology_file,
-            points_list=self.points_list, radii_list=self.radii_list, structures_list=None,
-            connectivity_list=None, sections_list=self.sections_list,
-            roots=self.roots)
+            sections_list=self.sections_list, roots=self.roots)
 
         # Return the object
         return morphology_object
