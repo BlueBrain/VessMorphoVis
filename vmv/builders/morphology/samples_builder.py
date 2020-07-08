@@ -64,6 +64,8 @@ class SamplesBuilder:
         # A list of the colors/materials of the skeleton
         self.materials = None
 
+        self.context = None
+
     ################################################################################################
     # @draw_section_samples_as_spheres
     ################################################################################################
@@ -150,11 +152,15 @@ class SamplesBuilder:
     ################################################################################################
     # @build_skeleton
     ################################################################################################
-    def build_skeleton(self):
+    def build_skeleton(self, 
+                       context=None):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
         vmv.logger.header('Building skeleton: SamplesBuilder')
+
+        # Get the context 
+        self.context = context 
 
         # Clear the scene
         vmv.logger.info('Clearing scene')

@@ -89,6 +89,9 @@ class ConnectedSectionsBuilder:
         # of the morphology
         self.bevel_object = vmv.mesh.create_bezier_circle(radius=1.0, vertices=16, name='bevel')
 
+        # UI context 
+        self.context = None
+
     def get_number_components(self):
         return  len(self.components)
 
@@ -313,12 +316,16 @@ class ConnectedSectionsBuilder:
     ################################################################################################
     # @build_skeleton
     ################################################################################################
-    def build_skeleton(self):
+    def build_skeleton(self, 
+                       context=None):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
         vmv.logger.header('Building skeleton: ConnectedSectionsBuilder')
 
+        # Get the context 
+        self.context = context 
+        
         # Clear the scene
         vmv.logger.detail('Clearing scene')
         vmv.scene.ops.clear_scene()
@@ -385,12 +392,16 @@ class ConnectedSectionsBuilder:
     ################################################################################################
     # @build
     ################################################################################################
-    def build(self):
+    def build(self, context=None):
         """Draws the morphology skeleton using fast reconstruction and drawing methods.
         """
 
+        # Get the context 
+        self.context = context 
+
         # Clear the scene
-        #vmv.scene.ops.clear_scene()
+        vmv.scene.ops.clear_scene()
+
 
         # Get the center of the morphology
         self.center = self.morphology.bounding_box.center
