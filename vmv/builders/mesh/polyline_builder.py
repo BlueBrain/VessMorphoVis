@@ -162,16 +162,14 @@ class PolylineBuilder:
 
         self.center = self.morphology.bounding_box.center
 
-        morphology_builder = vmv.builders. ConnectedSectionsBuilder(self.morphology, self.options)
-        morphology_skeleton_objects = morphology_builder.build()
+        # Create an instance of the morphology builder
+        morphology_builder = vmv.builders.ConnectedSectionsBuilder(self.morphology, self.options)
 
-        # group the morphology
-        if len(morphology_skeleton_objects) > 1:
-            morphology_object = vmv.scene.join_objects(morphology_skeleton_objects, 'obj')
-        else:
-            morphology_object = morphology_skeleton_objects[0]
+        # Build the skeleton and return a reference to it
+        morphology_skeleton = morphology_builder.build_skeleton()
 
-        self.mesh = vmv.scene.convert_object_to_mesh(morphology_object)
+        # Convert it to a mesh
+        self.mesh = vmv.scene.convert_object_to_mesh(morphology_skeleton)
 
         # We can here create the materials at the end to avoid any issues
         self.create_skeleton_materials()

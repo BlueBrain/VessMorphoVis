@@ -107,11 +107,11 @@ def get_connected_sections_poly_lines(section):
             for child in section.children:
 
                 # Get the section data
-                poly_line = vmv.skeleton.ops.get_connectivity_poly_line_from_parent_to_child(
+                samples = vmv.skeleton.ops.get_connectivity_poly_line_from_parent_to_child(
                     section=section, parent=parent, child=child)
 
                 # Add the data to the list
-                poly_lines.append([poly_line, 0])
+                poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=0))
 
     # If the section has no parents but has some children
     if len(section.parents) == 0 and len(section.children) > 0:
@@ -120,11 +120,11 @@ def get_connected_sections_poly_lines(section):
         for child in section.children:
 
             # Get the section data
-            poly_line = vmv.skeleton.ops.get_connectivity_poly_line_from_section_to_child(
+            samples = vmv.skeleton.ops.get_connectivity_poly_line_from_section_to_child(
                 section=section, child=child)
 
             # Add the data to the list
-            poly_lines.append([poly_line, 0])
+            poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=0))
 
     # If the section has some parent and no children
     if len(section.parents) > 0 and len(section.children) == 0:
@@ -133,22 +133,22 @@ def get_connected_sections_poly_lines(section):
         for parent in section.parents:
 
             # Get the section data
-            poly_line = vmv.skeleton.ops.get_connectivity_poly_line_from_parent_to_section(
+            samples = vmv.skeleton.ops.get_connectivity_poly_line_from_parent_to_section(
                 section=section, parent=parent)
 
             # Add the data to the list
-            poly_lines.append([poly_line, 0])
+            poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=0))
 
     # If the section is an orphan, or has no parents and no children
     if len(section.parents) == 0 and len(section.children) == 0:
 
         # Get the section data of this section only
-        poly_line = vmv.skeleton.ops.get_section_poly_line(
-            section=section)
+        samples = vmv.skeleton.ops.get_section_poly_line(section=section)
 
         # Add the data to the list
-        poly_lines.append([poly_line, 0])
+        poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=0))
 
+    print(len(poly_lines))
     # Return the poly-line list
     return poly_lines
 

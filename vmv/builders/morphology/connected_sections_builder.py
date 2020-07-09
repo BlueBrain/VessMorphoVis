@@ -302,7 +302,7 @@ class ConnectedSectionsBuilder:
         poly_lines_data = list()
 
         # Get the poly-line data of each section
-        for i, section in enumerate(self.morphology.sections_list):
+        for section in self.morphology.sections_list:
 
             # Poly-line samples
             poly_lines = vmv.skeleton.ops.get_connected_sections_poly_lines(section=section)
@@ -331,7 +331,12 @@ class ConnectedSectionsBuilder:
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
+        vmv.logger.info('Clearing assets')
         vmv.scene.ops.clear_scene_materials()
+
+        # Create assets and color - maps
+        vmv.logger.info('Creating assets')
+        color_map = [self.options.mesh.color]
 
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
@@ -347,17 +352,9 @@ class ConnectedSectionsBuilder:
 
         # Construct the final object and add it to the morphology
         vmv.logger.log('Drawing object')
-        self.morphology_objects.append(vmv.geometry.create_poly_lines_object_from_poly_lines_data(
-            poly_lines_data, color=self.options.morphology.color,
-            material=self.options.morphology.material, name=self.morphology.name,
-            bevel_object=bevel_object))
-        '''
-        # Center the object
-        if not self.options.morphology.global_coordinates:
-            vmv.logger.detail('Centering at the origin')
-            for morphology_object in self.morphology_objects:
-                morphology_object.location -= self.morphology.get_center()
-        '''
+        return vmv.geometry.create_poly_lines_object_from_poly_lines_data(
+            poly_lines_data, material=self.options.morphology.material, color_map=color_map,
+            name=self.morphology.name, bevel_object=bevel_object)
 
 
     def build_skeletonxx(self):

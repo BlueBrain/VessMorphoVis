@@ -71,6 +71,9 @@ class Morphology:
         # Morphology bounding box
         self.bounding_box = bounding_box
 
+        if bounding_box is None:
+            self.bounding_box = self.compute_bounding_box()
+
     ################################################################################################
     # @get_center
     ################################################################################################

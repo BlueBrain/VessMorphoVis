@@ -66,6 +66,21 @@ class Meshing:
             else:
                 return Meshing.Technique.PIECEWISE_WATERTIGHT
 
+        # Meshing techniques items for the list
+        MESHING_TECHNIQUES_ITEMS = [
+            (PIECEWISE_WATERTIGHT,
+             'Poly-lines ',
+             'Piecewise watertight meshing, where a group of connected segments will be created '
+             'as a single watertight mesh, but the whole mesh will not be watertight. '
+             'This approach is relatively fast for large scale morphologies and us used to create '
+             'a proxy mesh for visualization'),
+            (META_BALLS,
+             'Meta Balls',
+             'Creates watertight mesh models using the meta balls algorithm. '
+             'This method is SLOW and can take few hours to make a mesh based on the resolution '
+             'and setting')
+        ]
+
     class MetaBalls:
         """MetaBalls options
         """
@@ -229,6 +244,13 @@ class Meshing:
 
         # .blend
         BLEND = 'EXPORT_FORMAT_BLEND'
+
+        FILE_FORMATS_ITEMS = [
+            (PLY, 'Stanford (.ply)', 'Export the mesh to a .ply file'),
+            (OBJ, 'Wavefront(.obj)', 'Export the mesh to a .obj file'),
+            (STL, 'Stereolithography CAD (.stl)', 'Export the mesh to an .stl file'),
+            (BLEND, 'Blender File (.blend)', 'Export the mesh as a .blend file')
+        ]
 
         ############################################################################################
         # @__init__

@@ -80,6 +80,53 @@ def validate_output_directory(panel_object,
 
 
 ####################################################################################################
+# @configure_output_directory
+####################################################################################################
+def configure_output_directory(options,
+                               context=None):
+    """Configures the output directory after loading the data.
+
+    :param options:
+        System options.
+    :param context:
+        Context.
+    """
+
+    # If the output directory is not set
+    if options.io.output_directory is None or 'Select Directory' in options.io.output_directory:
+
+        # Suggest an output directory at the home folder
+        suggested_output_folder = '%s/vessmorphovis-output' % os.path.expanduser('~')
+
+        # Check if the output directory already exists or not
+        if os.path.exists(suggested_output_folder):
+
+            # Update the system options
+            vmv.interface.ui.options.io.output_directory = suggested_output_folder
+
+            # Update the UI
+            context.scene.OutputDirectory = suggested_output_folder
+
+        # Otherwise, create it
+        else:
+
+            # Try to create the directory there
+            try:
+
+                # Create the directory
+                os.mkdir(suggested_output_folder)
+
+                # Update the system options
+                vmv.interface.ui.options.io.output_directory = suggested_output_folder
+
+                # Update the UI
+                context.scene.OutputDirectory = suggested_output_folder
+
+            # Voila
+            except ValueError:
+                pass
+
+####################################################################################################
 # @render_mesh_image
 ####################################################################################################
 def render_morphology_image(panel_object,

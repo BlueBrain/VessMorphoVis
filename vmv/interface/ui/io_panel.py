@@ -321,6 +321,10 @@ class VMVLoadMorphology(bpy.types.Operator):
             vmv.interface.ui.options.morphology.radii = \
                 vmv.enums.Morphology.Radii.AS_SPECIFIED
 
+            # Configure the output directory
+            vmv.interface.configure_output_directory(options=vmv.interface.ui.options,
+                                                     context=context)
+
         # Unable to load the morphology
         except ValueError:
             vmv.logger.log('ERROR: Unable to load the morphology file')

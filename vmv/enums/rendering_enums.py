@@ -54,6 +54,13 @@ class Rendering:
         # 360
         FRONT_360 = 'FRONT_360_VIEW'
 
+        # Rendering view items for the GUI
+        VIEW_ITEMS = [
+            (FRONT, 'Front View', 'Render the front view of the reconstruction'),
+            (SIDE, 'Side View', 'Renders the side view of the reconstruction'),
+            (TOP, 'Top View', 'Renders the top view of the reconstruction')
+        ]
+
         ############################################################################################
         # @get_enum
         ############################################################################################
@@ -99,6 +106,18 @@ class Rendering:
         # Perspective
         PERSPECTIVE = 'PERSPECTIVE_VIEW'
 
+        # Projection items to be added to the GUI
+        PROJECTION_ITEMS = [
+            (ORTHOGRAPHIC,
+             'Orthographic',
+             'Render an orthographic projection of the reconstruction. '
+             'This type of rendering is accurate and crucial for scientific images'),
+            (PERSPECTIVE,
+             'Perspective',
+             'Renders a perspective projection of the reconstruction.'
+             'This type of rendering is more for artistic style')
+        ]
+
         ############################################################################################
         # @get_enum
         ############################################################################################
@@ -129,6 +148,16 @@ class Rendering:
 
         # Rendering based on a user defined resolution
         FIXED_RESOLUTION = 'RENDER_AT_FIXED_RESOLUTION'
+
+        # Resolution items to be added in the GUI
+        RESOLUTION_ITEMS = [
+            (FIXED_RESOLUTION,
+             'Fixed',
+             'Renders an image of the mesh at a specific resolution given by the user'),
+            (TO_SCALE,
+             'To Scale',
+             'Renders an image of the mesh at factor of the exact scale')
+        ]
 
         ############################################################################################
         # @__init__

@@ -19,7 +19,6 @@
 from .analysis import *
 from .consts import *
 from .enums import *
-from .file import *
 from .options import *
 from .interface import *
 from .scene import *

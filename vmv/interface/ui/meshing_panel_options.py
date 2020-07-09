@@ -26,17 +26,7 @@ import vmv.utilities
 
 # Meshing technique
 bpy.types.Scene.MeshingTechnique = bpy.props.EnumProperty(
-    items=[(vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT,
-            'Poly-lines ',
-            'Piecewise watertight meshing, where a group of connected segments will be created '
-            'as a single watertight mesh, but the whole mesh will not be watertight. '
-            'This approach is relatively fast for large scale morphologies and us used to create '
-            'a proxy mesh for visualization'),
-           (vmv.enums.Meshing.Technique.META_BALLS,
-            'Meta Balls',
-            'Creates watertight mesh models using the meta balls algorithm. '
-            'This method is SLOW and can take few hours to make a mesh based on the resolution '
-            'and setting'), ],
+    items=vmv.enums.Meshing.Technique.MESHING_TECHNIQUES_ITEMS,
     name='Method', default=vmv.enums.Meshing.Technique.META_BALLS)
 
 # Mesh tessellation flag
@@ -68,54 +58,23 @@ bpy.types.Scene.MetaBallResolution = bpy.props.FloatProperty(
 
 # Rendering resolution
 bpy.types.Scene.MeshRenderingResolution = bpy.props.EnumProperty(
-    items=[(vmv.enums.Rendering.Resolution.FIXED_RESOLUTION,
-            'Fixed',
-            'Renders an image of the mesh at a specific resolution given by the user'),
-           (vmv.enums.Rendering.Resolution.TO_SCALE,
-            'To Scale',
-            'Renders an image of the mesh at factor of the exact scale')],
+    items=vmv.enums.Rendering.Resolution.RESOLUTION_ITEMS,
     name='Type',
     default=vmv.enums.Rendering.Resolution.FIXED_RESOLUTION)
 
 # Rendering views
 bpy.types.Scene.MeshRenderingView = bpy.props.EnumProperty(
-    items=[(vmv.enums.Rendering.View.FRONT,
-            'Front View',
-            'Render the front view of the mesh'),
-           (vmv.enums.Rendering.View.SIDE,
-            'Side View',
-            'Renders the side view of the mesh'),
-           (vmv.enums.Rendering.View.TOP,
-            'Top View',
-            'Renders the top view of the mesh')],
+    items=vmv.enums.Rendering.View.VIEW_ITEMS,
     name='View', default=vmv.enums.Rendering.View.FRONT)
 
 # Projection
 bpy.types.Scene.MeshCameraProjection = bpy.props.EnumProperty(
-    items=[(vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
-            'Orthographic',
-            'Render an orthographic projection of the mesh. '
-            'This type of rendering is accurate and crucial for scientific images'),
-           (vmv.enums.Rendering.Projection.PERSPECTIVE,
-            'Perspective',
-            'Renders a perspective projection of the mesh.'
-            'This type of rendering is more for artistic style')],
+    items=vmv.enums.Rendering.Projection.PROJECTION_ITEMS,
     name='Projection', default=vmv.enums.Rendering.Projection.ORTHOGRAPHIC)
 
 # Exported mesh file formats
 bpy.types.Scene.ExportedMeshFormat = bpy.props.EnumProperty(
-    items=[(vmv.enums.Meshing.ExportFormat.PLY,
-            'Stanford (.ply)',
-            'Export the mesh to a .ply file'),
-           (vmv.enums.Meshing.ExportFormat.OBJ,
-            'Wavefront(.obj)',
-            'Export the mesh to a .obj file'),
-           (vmv.enums.Meshing.ExportFormat.STL,
-            'Stereolithography CAD (.stl)',
-            'Export the mesh to an .stl file'),
-           (vmv.enums.Meshing.ExportFormat.BLEND,
-            'Blender File (.blend)',
-            'Export the mesh as a .blend file')],
+    items=vmv.enums.Meshing.ExportFormat.FILE_FORMATS_ITEMS,
     name='Format', default=vmv.enums.Meshing.ExportFormat.PLY)
 
 # Mesh materials

@@ -290,7 +290,7 @@ class DisconnectedSegmentsBuilder:
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
-        vmv.logger.info('Creating assets')
+        vmv.logger.info('Clearing assets')
         vmv.scene.ops.clear_scene_materials()
 
         # Create assets and color-maps 
@@ -304,7 +304,7 @@ class DisconnectedSegmentsBuilder:
         # Construct sections poly-lines
         vmv.logger.info('Constructing poly-lines')
         poly_lines_data = self.get_segments_poly_lines_data()
-            
+
         # Pre-process the radii
         vmv.logger.info('Adjusting radii')
         vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
