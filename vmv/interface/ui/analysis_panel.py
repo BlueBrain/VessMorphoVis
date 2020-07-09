@@ -461,7 +461,8 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         # Bounding box data
         vmv.logger.info('Bounding box')
         if vmv.interface.ui.ui_morphology.bounding_box is None:
-            vmv.interface.ui.ui_morphology.bounding_box = vmv.interface.ui.ui_morphology.compute_bounding_box()
+            vmv.interface.ui.ui_morphology.bounding_box = \
+                vmv.interface.ui.ui_morphology.compute_bounding_box()
         context.scene.BBoxCenterX = vmv.interface.ui.ui_morphology.bounding_box.center[0]
         context.scene.BBoxCenterY = vmv.interface.ui.ui_morphology.bounding_box.center[1]
         context.scene.BBoxCenterZ = vmv.interface.ui.ui_morphology.bounding_box.center[2]
