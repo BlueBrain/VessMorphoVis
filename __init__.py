@@ -36,7 +36,7 @@ bl_info = {
     # The earliest Blender version this add-on will work with. If you're not sure what versions of
     # Blender this add-on is compatible with, use the version of Blender you're developing
     # the add-on with.
-    "blender": (2, 80, 0),
+    "blender": (2, 80, 3),
     # Description
     "description": "Vasculature morphology reconstruction, analysis, meshing and visualization.",
     # Optional: specifies the wiki URL for an add-on.
