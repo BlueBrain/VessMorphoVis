@@ -21,6 +21,8 @@ import vmv.options
 # The morphology skeleton object loaded after UI interaction.
 ui_morphology = None
 
+morphology_skeleton = None
+
 # All the icons loaded for the UI
 ui_icons = None
 

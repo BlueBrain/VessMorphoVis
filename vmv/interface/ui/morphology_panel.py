@@ -30,6 +30,7 @@ import vmv.enums
 import vmv.file
 import vmv.builders
 import vmv.skeleton
+import vmv.interface
 import vmv.utilities
 import vmv.rendering
 import vmv.shading
@@ -58,6 +59,21 @@ class VMVColorMapOperator(bpy.types.Operator):
 
         for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
             setattr(context.scene, 'Color%d' % i, colors[i])
+
+        if vmv.interface.ui.morphology_skeleton is not None:
+            print(len(vmv.ui.options.morphology.color_map_colors))
+
+            # Interpolate
+            colors = vmv.utilities.create_color_map_from_color_list(
+                vmv.interface.ui.options.morphology.color_map_colors,
+                number_colors=vmv.interface.ui.options.morphology.color_map_resolution)
+
+            print(len(vmv.interface.ui.morphology_skeleton.material_slots))
+
+            for i in range(len(vmv.interface.ui.morphology_skeleton.material_slots)):
+                vmv.interface.ui.morphology_skeleton.active_material_index = i
+                vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
+                    Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
     # A list of all the color maps available in VessMorphoVis
     # Note that once a new colormap is selected, the corresponding colors will be set in the UI 
@@ -121,7 +137,7 @@ class VMVColorMapOperator(bpy.types.Operator):
         
         # Clear the color map passed to VMV if it is full 
         if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
-                vmv.interface.ui.options.morphology.color_map_colors.clear()
+            vmv.interface.ui.options.morphology.color_map_colors.clear()
         
         # UI color elements 
         colors = layout.row()
@@ -348,13 +364,26 @@ class VMVMorphologyPanel(bpy.types.Panel):
         name='Color Coding',
         default=vmv.enums.ColorCoding.SINGLE_COLOR)
 
-    # The minimum value associatd with the color map 
+    # The minimum value associated with the color map
     bpy.types.Scene.MinimumValue = bpy.props.StringProperty(
         name='', description='', default='0', maxlen=10)
 
     # The maximum value associated with the color map 
     bpy.types.Scene.MaximumValue = bpy.props.StringProperty(
         name='', description='', default='100', maxlen=10)
+
+    # Reconstruction time
+    bpy.types.Scene.MorphologyReconstructionTime = bpy.props.FloatProperty(
+        name="Reconstruction Time (Sec)",
+        description="The time it takes to reconstruct the vasculature morphology",
+        default=0, min=0, max=1000000)
+
+    delta = 100.0 / float(vmv.consts.Color.NUMBER_COLORS_UI - 1)
+
+    # UI color elements for the color map
+    for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+        setattr(bpy.types.Scene, 'Value%d' % i, bpy.props.FloatProperty(
+            name='', default=0 + (i * delta), min=0.0, max=1e10, description=''))
 
     ################################################################################################
     # @draw_mesh_reconstruction_options
@@ -518,21 +547,18 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
                     vmv.interface.ui.options.morphology.color_map_colors.clear()
 
-                # Interpolations
-                color_map_range = \
-                    float(context.scene.MaximumValue) - float(context.scene.MinimumValue)
-                delta = color_map_range / float(vmv.consts.Color.NUMBER_COLORS_UI)
-
-                # Fill the list of colors
-                for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                    value = format(float(context.scene.MinimumValue) + (i * delta), '.5f')
-                    colors = layout.row()
-                    colors.prop(scene, 'Color%d' % i)
-                    colors.label(text=str(value))
-
-                    # Get the color value
-                    color = getattr(context.scene, 'Color%d' % i)
-                    vmv.interface.ui.options.morphology.color_map_colors.append(color)
+                    # Fill the list of colors
+                    for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+                        colors = layout.row()
+                        cmap = colors.column()
+                        cmap.prop(scene, 'Color%d' % i)
+                        cmap.enabled = False
+                        values = colors.column()
+                        values.prop(scene, 'Value%d' % i)
+                        values.enabled = False
+                        # Get the color value
+                        color = getattr(context.scene, 'Color%d' % i)
+                        vmv.interface.ui.options.morphology.color_map_colors.append(color)
         
         # Disconnected sections builder
         elif morphology_options.reconstruction_method == \
@@ -572,24 +598,19 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 # Clear the color map passed to VMV if it is full 
                 if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
                     vmv.interface.ui.options.morphology.color_map_colors.clear()
-                        
-                # Interpolations
-                color_map_range = \
-                    float(context.scene.MaximumValue) - float(context.scene.MinimumValue)
-                delta = color_map_range / float(vmv.consts.Color.NUMBER_COLORS_UI - 1)
 
                 # Fill the list of colors
                 for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-
-                    value = format(float(context.scene.MinimumValue) + (i * delta), '.5f')
                     colors = layout.row()
-                    colors.prop(scene, 'Color%d' % i)
-                    colors.label(text=str(value))
-
+                    cmap = colors.column()
+                    cmap.prop(scene, 'Color%d' % i)
+                    cmap.enabled = False
+                    values = colors.column()
+                    values.prop(scene, 'Value%d' % i)
+                    values.enabled = False
                     # Get the color value 
                     color = getattr(context.scene, 'Color%d' % i)
                     vmv.interface.ui.options.morphology.color_map_colors.append(color)
-
         else:
             pass
 
@@ -839,13 +860,21 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
         # Build the morphology skeleton directly
         # NOTE: each builder must have this function @build_skeleton() implemented in it
-        self.morphology_builder.build_skeleton(context=context)
+        vmv.interface.ui.morphology_skeleton = self.morphology_builder.build_skeleton(context=context)
+
+        # Interpolations
+        color_map_range = \
+            float(context.scene.MaximumValue) - float(context.scene.MinimumValue)
+        delta = color_map_range / float(vmv.consts.Color.NUMBER_COLORS_UI - 1)
+
+        # Fill the list of colors
+        for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
+            value = float(context.scene.MinimumValue) + (i * delta)
+            setattr(context.scene, 'Value%d' % i, value)
 
         # Reconstruction timer
         reconstruction_done = time.time()
         context.scene.MorphologyReconstructionTime = reconstruction_done - start_reconstruction
-
-        
 
         # Done, return {'FINISHED'}
         return {'FINISHED'}
