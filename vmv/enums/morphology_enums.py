@@ -92,6 +92,21 @@ class Morphology:
         # Use the SamplesBuilder Drawing samples only as spheres
         SAMPLES = 'SAMPLES_RECONSTRUCTION'
 
+        # The list that will appear in the GUI
+        METHOD_ITEMS = [
+            (DISCONNECTED_SEGMENTS,
+             'Disconnected Segments',
+             "Each segment is an independent object (this approach is time consuming)"),
+            (DISCONNECTED_SECTIONS,
+             'Disconnected Sections',
+             "Each section is an independent object"),
+            (CONNECTED_SECTIONS,
+             'Connected Sections',
+             "The sections of a single arbor are connected together"),
+            (SAMPLES,
+             'Samples',
+             "The morphology is reconstructed as a list of samples")
+        ]
         ############################################################################################
         # @__init__
         ############################################################################################

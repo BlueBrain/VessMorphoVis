@@ -65,11 +65,13 @@ class AboutPanel(bpy.types.Panel):
 
         # Credits
         credits_column = layout.column()
-        credits_column.label(text='Copyrights')
-        credits_column.label(text='Blue Brain Project (BBP)',
-                             icon_value=vmv.interface.ui_icons['bbp'].icon_id)
-        credits_column.label(text='Ecole Polytechnique Federale de Lausanne (EPFL)',
-                             icon_value=vmv.interface.ui_icons['epfl'].icon_id)
+        credits_column.label(text='Copyrights (c)')
+        credits_column.label(text='Blue Brain Project (BBP)', icon='PMARKER')
+        credits_column.label(text='Ecole Polytechnique Federale de Lausanne (EPFL)', icon='PMARKER')
+        credits_column.separator()
+
+        credits_column.label(text='License')
+        credits_column.label(text='GPL', icon='UNLOCKED')
         credits_column.separator()
 
         credits_column.label(text='Main Author')
@@ -81,9 +83,8 @@ class AboutPanel(bpy.types.Panel):
         credits_column.label(text='Felix Schürmann', icon='OUTLINER_DATA_ARMATURE')
         credits_column.separator()
         credits_column.label(text='Credits')
-        credits_column.label(text='Nadir Román Guerrero,', icon='OUTLINER_DATA_ARMATURE')
+        credits_column.label(text='Nadir Román Guerrero', icon='OUTLINER_DATA_ARMATURE')
         credits_column.label(text='Caitlin Monney', icon='OUTLINER_DATA_ARMATURE')
-        credits_column.label(text='Pablo Blinder', icon='OUTLINER_DATA_ARMATURE')
         credits_column.label(text='Pablo Blinder', icon='OUTLINER_DATA_ARMATURE')
         credits_column.label(text='Stéphanie Battini', icon='OUTLINER_DATA_ARMATURE')
         credits_column.label(text='Alexis Arnaudon', icon='OUTLINER_DATA_ARMATURE')
@@ -96,8 +97,65 @@ class AboutPanel(bpy.types.Panel):
         version_column.label(text='Version: %d.%d.%d' % (version[0], version[1], version[2]))
 
         update_button = layout.column()
-        update_button.operator('update.vmv', emboss=True,
-                               icon_value=vmv.interface.ui_icons['github'].icon_id)
+        update_button.operator('update.nmv', emboss=True, icon='NODETREE')
+        update_button.operator('open.github', emboss=True, icon='SCRIPT')
+        update_button.operator('open.wiki', emboss=True, icon='URL')
+
+
+####################################################################################################
+# @OpenDocumentation
+####################################################################################################
+class OpenDocumentation(bpy.types.Operator):
+    """Open the Github repository page"""
+
+    # Operator parameters
+    bl_idname = "open.wiki"
+    bl_label = "Documentation"
+
+    ################################################################################################
+    # @execute
+    ################################################################################################
+    def execute(self,
+                context):
+        """Execute the operator.
+
+        :param context:
+            Blender context
+        :return:
+            'FINISHED'
+        """
+
+        import webbrowser
+        webbrowser.open('https://github.com/BlueBrain/VessMorphoVis/wiki')
+        return {'FINISHED'}
+
+
+####################################################################################################
+# @OpenRepository
+####################################################################################################
+class OpenRepository(bpy.types.Operator):
+    """Open the Github repository page"""
+
+    # Operator parameters
+    bl_idname = "open.github"
+    bl_label = "Code"
+
+    ################################################################################################
+    # @execute
+    ################################################################################################
+    def execute(self,
+                context):
+        """Execute the operator.
+
+        :param context:
+            Blender context
+        :return:
+            'FINISHED'
+        """
+
+        import webbrowser
+        webbrowser.open('https://github.com/BlueBrain/VessMorphoVis')
+        return {'FINISHED'}
 
 
 ####################################################################################################
@@ -107,7 +165,7 @@ class UpdateVessMorphoVis(bpy.types.Operator):
     """Update VessMorphoVis"""
 
     # Operator parameters
-    bl_idname = "update.vmv"
+    bl_idname = "update.nmv"
     bl_label = "Update"
 
     ################################################################################################
@@ -122,6 +180,14 @@ class UpdateVessMorphoVis(bpy.types.Operator):
         :return:
             'FINISHED'
         """
+
+        # git must be installed to update the tool.
+        if not vmv.utilities.command_exists('git'):
+            self.report({'INFO'}, 'Cannot update VessMorphoVis! git must be installed.')
+            return {'FINISHED'}
+
+        # TODO: Verify git or use wget or curl.
+        # TODO: Ignore this option for windows.
 
         # Get the current path
         current_path = os.path.dirname(os.path.realpath(__file__))
@@ -154,6 +220,8 @@ def register_panel():
 
     # Buttons
     bpy.utils.register_class(UpdateVessMorphoVis)
+    bpy.utils.register_class(OpenRepository)
+    bpy.utils.register_class(OpenDocumentation)
 
 
 ####################################################################################################
@@ -167,3 +235,5 @@ def unregister_panel():
 
     # Buttons
     bpy.utils.unregister_class(UpdateVessMorphoVis)
+    bpy.utils.unregister_class(OpenRepository)
+    bpy.utils.unregister_class(OpenDocumentation)

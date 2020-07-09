@@ -18,6 +18,7 @@
 from .ui_data import *
 from .analysis_panel import *
 from .io_panel import *
+from .io_panel_options import *
 from .meshing_panel import *
 from .meshing_panel_options import *
 from .morphology_panel import *
