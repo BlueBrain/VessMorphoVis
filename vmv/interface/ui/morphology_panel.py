@@ -61,19 +61,25 @@ class VMVColorMapOperator(bpy.types.Operator):
             setattr(context.scene, 'Color%d' % i, colors[i])
 
         if vmv.interface.ui.morphology_skeleton is not None:
-            print(len(vmv.ui.options.morphology.color_map_colors))
 
             # Interpolate
             colors = vmv.utilities.create_color_map_from_color_list(
                 vmv.interface.ui.options.morphology.color_map_colors,
                 number_colors=vmv.interface.ui.options.morphology.color_map_resolution)
 
-            print(len(vmv.interface.ui.morphology_skeleton.material_slots))
-
             for i in range(len(vmv.interface.ui.morphology_skeleton.material_slots)):
                 vmv.interface.ui.morphology_skeleton.active_material_index = i
-                vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
-                    Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
+
+                if bpy.context.scene.render.engine == 'CYCLES':
+                    material_nodes = vmv.interface.ui.morphology_skeleton.active_material.node_tree
+                    color_1 = material_nodes.nodes['ColorRamp'].color_ramp.elements[0].color
+                    color_2 = material_nodes.nodes['ColorRamp'].color_ramp.elements[1].color
+                    for j in range(3):
+                        color_1[j] = colors[i][j]
+                        color_2[j] = 0.5 * colors[i][j]
+                else:
+                    vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
+                        Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
     # A list of all the color maps available in VessMorphoVis
     # Note that once a new colormap is selected, the corresponding colors will be set in the UI 
