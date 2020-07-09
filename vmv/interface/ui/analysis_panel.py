@@ -422,15 +422,12 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
 
         # Samples radius stats.
         vmv.logger.info('Radii')
-        minimum_sample_radius, maximum_sample_radius, average_sample_radius = \
-            vmv.analysis.analyze_samples_radii(vmv.interface.ui.ui_morphology.radii_list)
+        minimum_sample_radius, maximum_sample_radius, average_sample_radius, zero_radii_sample = \
+            vmv.analysis.analyze_samples_radii(vmv.interface.ui.ui_morphology.sections_list)
         context.scene.MinimumSampleRadius = minimum_sample_radius
         context.scene.MaximumSampleRadius = maximum_sample_radius
         context.scene.AverageSampleRadius = average_sample_radius
-
-        vmv.logger.info('Zero-radii')
-        context.scene.NumberZeroRadiusSamples = vmv.analysis.analyze_samples_with_zero_radii(
-            vmv.interface.ui.ui_morphology.radii_list)
+        context.scene.NumberZeroRadiusSamples = zero_radii_sample
 
         vmv.logger.info('Repair Zero-radii')
         vmv.analysis.correct_samples_with_zero_radii(vmv.interface.ui.ui_morphology.sections_list)
@@ -463,6 +460,8 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
 
         # Bounding box data
         vmv.logger.info('Bounding box')
+        if vmv.interface.ui.ui_morphology.bounding_box is None:
+            vmv.interface.ui.ui_morphology.bounding_box = vmv.interface.ui.ui_morphology.compute_bounding_box()
         context.scene.BBoxCenterX = vmv.interface.ui.ui_morphology.bounding_box.center[0]
         context.scene.BBoxCenterY = vmv.interface.ui.ui_morphology.bounding_box.center[1]
         context.scene.BBoxCenterZ = vmv.interface.ui.ui_morphology.bounding_box.center[2]

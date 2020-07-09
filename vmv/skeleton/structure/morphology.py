@@ -92,7 +92,6 @@ class Morphology:
             return self.bounding_box
 
         # Otherwise, compute it
-
         # Initialize the min and max points
         p_min = Vector((vmv.consts.Math.INFINITY,
                         vmv.consts.Math.INFINITY,
@@ -101,29 +100,32 @@ class Morphology:
                         -1 * vmv.consts.Math.INFINITY,
                         -1 * vmv.consts.Math.INFINITY))
 
-        for point in self.points_list:
+        for section in self.sections_list:
+            for sample in section.samples:
+                # Points
+                x = sample.point[0]
+                y = sample.point[1]
+                z = sample.point[2]
 
-            # Points
-            x = point[0]
-            y = point[1]
-            z = point[2]
+                if x < p_min[0]:
+                    p_min[0] = x
+                if y < p_min[1]:
+                    p_min[1] = y
+                if z < p_min[2]:
+                    p_min[2] = z
 
-            if x < p_min[0]:
-                p_min[0] = x
-            if y < p_min[1]:
-                p_min[1] = y
-            if z < p_min[2]:
-                p_min[2] = z
-
-            if x > p_max[0]:
-                p_max[0] = x
-            if y > p_max[1]:
-                p_max[1] = y
-            if z > p_max[2]:
-                p_max[2] = z
+                if x > p_max[0]:
+                    p_max[0] = x
+                if y > p_max[1]:
+                    p_max[1] = y
+                if z > p_max[2]:
+                    p_max[2] = z
 
         # Build bounding box object
         self.bounding_box = vmv.bbox.BoundingBox(p_min, p_max)
+
+        # Return the bounding box
+        return self.bounding_box
 
     ################################################################################################
     # @reset_traversal_states

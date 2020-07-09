@@ -15,6 +15,9 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import copy
+
 # Internal imports
 from vmv.analysis import items
 
@@ -333,26 +336,32 @@ def correct_samples_with_zero_radii(sections_list, epsilon=1e-3):
 ####################################################################################################
 # @analyze_samples_radii
 ####################################################################################################
-def analyze_samples_radii(radii_list):
+def analyze_samples_radii(sections_list):
     """Analyse the distribution of the samples of the whole morphology
 
-    :param radii_list:
-        A list of all the radii of the morphology
+    :param sections_list:
+        A list of all the sections of the morphology
     :return:
         Minimum, maximum and average samples radii.
     """
 
+    # Get a list of all the radii in the morphology
+    radii_list = [sample.radius for section in sections_list for sample in section.samples]
+
+    # Get a list of zero-radii
+    zero_radii = [radius for radius in radii_list if radius < 0.0001]
+
     # Compute the minimum
-    minimum_sample_radius = min(radii_list)
+    minimum_sample_radius = copy.deepcopy(min(radii_list))
 
     # Compute the maximum
-    maximum_sample_radius = max(radii_list)
+    maximum_sample_radius = copy.deepcopy(max(radii_list))
 
     # Compute the average
     average_sample_radius = sum(radii_list) / (1.0 * len(radii_list))
 
     # Return the results
-    return minimum_sample_radius, maximum_sample_radius, average_sample_radius
+    return minimum_sample_radius, maximum_sample_radius, average_sample_radius, len(zero_radii)
 
 
 ####################################################################################################
