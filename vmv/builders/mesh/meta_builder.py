@@ -184,20 +184,23 @@ class MetaBuilder:
         z = p1[2]
 
         # Construct the meta elements along the segment
+        i = 0
         while travelled_distance < segment_length:
 
             # Make a meta ball (or sphere) at this point
             meta_element = self.meta_skeleton.elements.new()
 
             # Set its radius
-            # TODO: Find a solution to compensate the connection points
-            meta_element.radius = r
+            if i == 0:
+                meta_element.radius = r * 0.90
+            else:
+                meta_element.radius = r
 
             # Update its coordinates
             meta_element.co = (x, y, z)
 
-            # Proceed to the second point
-            travelled_distance += r / 2
+            # Proceed to the next point
+            travelled_distance += 0.5 * r
 
             r = r1 + (travelled_distance * dr / segment_length)
 
@@ -205,6 +208,8 @@ class MetaBuilder:
             x = p1[0] + (travelled_distance * dx / segment_length)
             y = p1[1] + (travelled_distance * dy / segment_length)
             z = p1[2] + (travelled_distance * dz / segment_length)
+
+            i += 1
 
     ################################################################################################
     # @create_meta_section
@@ -331,7 +336,7 @@ class MetaBuilder:
         scene.collection.objects.link(self.meta_mesh)
 
         # Update the resolution of the meta skeleton
-        self.meta_skeleton.resolution = 2.5
+        self.meta_skeleton.resolution = 1.0
 
     ################################################################################################
     # @finalize_meta_object
@@ -344,7 +349,7 @@ class MetaBuilder:
         # vmv.logger.header('Meshing the Meta Object')
 
         if self.options.mesh.meta_auto_resolution:
-            self.meta_skeleton.resolution = self.smallest_radius * 0.5
+            self.meta_skeleton.resolution = self.smallest_radius * 0.9
         else:
             self.meta_skeleton.resolution = self.options.mesh.meta_resolution
 

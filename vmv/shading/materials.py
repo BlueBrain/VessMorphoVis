@@ -28,6 +28,7 @@ import vmv
 import vmv.consts
 import vmv.enums
 import vmv.scene
+import vmv.utilities
 
 
 ####################################################################################################
@@ -231,8 +232,10 @@ def create_flat_material(name,
         material_reference.metallic = 0.0
 
         # Flat shading
+        bpy.context.scene.display.shading.light = 'STUDIO'
+        bpy.context.scene.display.shading.studio_light = 'Default'
+        bpy.context.scene.display.shading.show_xray = transparent
         bpy.context.scene.display.shading.light = 'FLAT'
-        vmv.scene.set_scene_transparency(transparent=transparent)
 
         # Switch the view port shading
         vmv.scene.switch_scene_shading('RENDERED')

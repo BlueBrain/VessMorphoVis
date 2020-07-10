@@ -43,9 +43,10 @@ bpy.types.Scene.MeshTessellationLevel = bpy.props.FloatProperty(
 
 # Auto-detected meta balls resolution
 bpy.types.Scene.MetaBallAutoResolution = bpy.props.BoolProperty(
-    name="Auto Detected",
+    name="Auto Detected Resolution",
     description='Detects the resolution of the meta balls object based on the radius of the '
-                'smallest sample in the morphology',
+                'smallest sample in the morphology. You can disable this option and set a '
+                'user-specific resolution below',
     default=True)
 
 # Mesh color

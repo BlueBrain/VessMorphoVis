@@ -69,16 +69,25 @@ class VMVMeshingPanel(bpy.types.Panel):
         meshing_method_row = self.layout.row()
         meshing_method_row.prop(context.scene, 'MeshingTechnique', icon='OUTLINER_OB_EMPTY')
 
-        # Auto meta-ball resolution
-        meta_auto_resolution_row = self.layout.row()
-        meta_auto_resolution_row.prop(context.scene, 'MetaBallAutoResolution',
-                                      icon='OUTLINER_OB_EMPTY')
-        vmv.options.mesh.meta_auto_resolution = context.scene.MetaBallAutoResolution
+        # Options only for the Meta-balls algorithm
+        if context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
 
-        # Meta-ball resolution
-        meta_resolution_row = self.layout.row()
-        meta_resolution_row.prop(context.scene, 'MetaBallResolution', icon='OUTLINER_OB_EMPTY')
-        vmv.options.mesh.meta_resolution = context.scene.MetaBallResolution
+            # Auto meta-ball resolution
+            meta_auto_resolution_row = self.layout.row()
+            meta_auto_resolution_row.prop(context.scene, 'MetaBallAutoResolution',
+                                          icon='OUTLINER_OB_EMPTY')
+            vmv.options.mesh.meta_auto_resolution = context.scene.MetaBallAutoResolution
+
+            # Meta-ball resolution
+            meta_resolution_row = self.layout.row()
+            meta_resolution_row.prop(context.scene, 'MetaBallResolution', icon='OUTLINER_OB_EMPTY')
+            vmv.options.mesh.meta_resolution = context.scene.MetaBallResolution
+
+            # Disable the resolution box if the auto resolution is set on
+            if context.scene.MetaBallAutoResolution:
+                meta_resolution_row.enabled = False
+            else:
+                meta_resolution_row.enabled = True
 
         # Tessellation parameters
         tess_level_row = self.layout.row()
@@ -87,6 +96,7 @@ class VMVMeshingPanel(bpy.types.Panel):
         tess_level_column.prop(context.scene, 'MeshTessellationLevel')
 
         if not context.scene.TessellateMesh:
+
             # Use 1.0 to disable the tessellation
             vmv.interface.options.mesh.tessellate_mesh = False
             vmv.interface.options.mesh.tessellation_level = 1.0
@@ -94,12 +104,6 @@ class VMVMeshingPanel(bpy.types.Panel):
         else:
             vmv.interface.options.mesh.tessellate_mesh = context.scene.TessellateMesh
             vmv.interface.options.mesh.tessellation_level = context.scene.MeshTessellationLevel
-
-        # Disable the resolution box if the auto resolution is set on
-        if context.scene.MetaBallAutoResolution:
-            meta_resolution_row.enabled = False
-        else:
-            meta_resolution_row.enabled = True
 
     ################################################################################################
     # @draw_mesh_color_options

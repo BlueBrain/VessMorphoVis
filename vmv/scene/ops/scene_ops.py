@@ -1254,6 +1254,13 @@ def set_scene_transparency(transparent=False):
         If True, switch to the transparent mode, otherwise normal mode.
     """
 
+    # If Workbench render is used, adjust the color as follows
+    if bpy.context.scene.render.engine == 'BLENDER_WORKBENCH':
+
+        bpy.context.scene.display.shading.light = 'STUDIO'
+        bpy.context.scene.display.shading.studio_light = 'Default'
+        bpy.context.scene.display.shading.show_xray = transparent
+
     if vmv.utilities.is_blender_280():
         views3d = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
         for a in views3d:
