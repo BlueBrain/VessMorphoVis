@@ -505,6 +505,8 @@ def select_object_containing_string(search_string):
     for scene_object in bpy.context.scene.objects:
         if search_string in scene_object.name:
             select_object(scene_object)
+            return scene_object
+
 
 ####################################################################################################
 # @deselect_object_by_name

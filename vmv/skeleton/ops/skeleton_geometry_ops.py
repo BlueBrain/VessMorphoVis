@@ -94,17 +94,14 @@ def set_poly_line_radii_to_fixed_value(poly_line,
                                        fixed_radius_value):
     """
 
-    :param poly_line:
+    :param polyline:
     :param fixed_radius_value:
     :return:
     """
 
-    # Poly-line samples
-    poly_line_samples = poly_line[0]
-
     # Update the radii of all the samples. Note that [0] is the coordinate and [1] is the radius
-    for poly_line_sample in poly_line_samples:
-        poly_line_sample[1] = fixed_radius_value
+    for sample in poly_line.samples:
+        sample[1] = fixed_radius_value
 
 
 ####################################################################################################
@@ -119,12 +116,9 @@ def set_poly_line_radii_to_scaled_value(poly_line,
     :return:
     """
 
-    # Poly-line samples
-    poly_line_samples = poly_line[0]
-
     # Update the radii of all the samples. Note that [0] is the coordinate and [1] is the radius
-    for poly_line_sample in poly_line_samples:
-        poly_line_sample[1] *= scale_factor
+    for sample in poly_line.samples:
+        sample[1] *= scale_factor
 
 
 ####################################################################################################
@@ -149,6 +143,7 @@ def update_poly_line_radii(poly_line,
     else:
         pass
 
+
 ####################################################################################################
 # @compute_segment_surface_area
 ####################################################################################################
@@ -167,6 +162,7 @@ def compute_segment_surface_area(sample_1, sample_2):
     segment_lateral_area = math.pi * r_sum * math.sqrt((r_diff * r_diff) + segment_length)
 
     return segment_lateral_area
+
 
 ####################################################################################################
 # @compute_section_length
@@ -221,7 +217,6 @@ def get_minumum_and_maximum_sections_lengths(morphology):
 # @get_minumum_and_maximum_samples_radii
 ####################################################################################################
 def get_minumum_and_maximum_samples_radii(morphology):
-
 
     minimum = vmv.consts.Math.INFINITY  
     maximum = -vmv.consts.Math.INFINITY
@@ -523,6 +518,7 @@ def update_poly_lines_radii(poly_lines,
     # Save the processing time
     if options.morphology.radii == vmv.enums.Morphology.Radii.FIXED or \
             options.morphology.radii == vmv.enums.Morphology.Radii.SCALED:
+
         for poly_line in poly_lines:
             update_poly_line_radii(poly_line=poly_line, options=options)
 

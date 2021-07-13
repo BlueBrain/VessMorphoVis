@@ -148,7 +148,6 @@ def get_connected_sections_poly_lines(section):
         # Add the data to the list
         poly_lines.append(vmv.skeleton.PolyLine(samples=samples, color_index=0))
 
-    print(len(poly_lines))
     # Return the poly-line list
     return poly_lines
 

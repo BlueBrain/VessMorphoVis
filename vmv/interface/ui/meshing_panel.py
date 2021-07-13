@@ -650,7 +650,7 @@ class VMVExportMesh(bpy.types.Operator):
         # Export the mesh
         vmv.file.export_mesh_object(mesh_object=mesh_object,
                                     output_directory=vmv.interface.options.io.meshes_directory,
-                                    file_name='Test',
+                                    file_name=mesh_object.name,
                                     file_format=context.scene.ExportedMeshFormat)
 
         # Done

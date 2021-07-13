@@ -286,9 +286,9 @@ class DisconnectedSectionsBuilder:
         
         # Otherwise, it is a color-map
         else:
-             return vmv.utilities.create_color_map_from_color_list(
-                 self.options.morphology.color_map_colors, 
-                 number_colors=self.options.morphology.color_map_resolution)
+            return vmv.utilities.create_color_map_from_color_list(
+                    self.options.morphology.color_map_colors,
+                    number_colors=self.options.morphology.color_map_resolution)
 
     ################################################################################################
     # @build_skeleton
