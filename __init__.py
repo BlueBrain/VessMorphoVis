@@ -51,7 +51,7 @@ bl_info = {
     # This must be one of the categories as listed in Blender's add-on tab; if it's not, it will
     # create a new category for your add-on (which may be good or bad.)
     # Don't create new categories to make your add-on stand out.
-    "category": "System"
+    "category": "3D View"
 }
 
 # System imports

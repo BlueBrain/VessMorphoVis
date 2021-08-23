@@ -193,14 +193,14 @@ bpy.types.Scene.MinimumValue = bpy.props.StringProperty(
 bpy.types.Scene.MaximumValue = bpy.props.StringProperty(
     name='', description='', default='100', maxlen=10)
 
-# Reconstruction time
-bpy.types.Scene.MorphologyReconstructionTime = bpy.props.FloatProperty(
-    name="Reconstruction Time (Sec)",
-    description="The time it takes to reconstruct the vasculature morphology",
-    default=0, min=0, max=1000000)
-
 # UI color elements for the color map
 for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
     setattr(bpy.types.Scene, 'Value%d' % i, bpy.props.FloatProperty(
         name='', default=0 + (i * 100.0 / float(vmv.consts.Color.NUMBER_COLORS_UI - 1)),
         min=0.0, max=1e10, description=''))
+
+# Reconstruction time
+bpy.types.Scene.MorphologyReconstructionTime = bpy.props.FloatProperty(
+    name="Reconstruction Time (Sec)",
+    description="The time it takes to reconstruct the vasculature morphology",
+    default=0, min=0, max=1000000)

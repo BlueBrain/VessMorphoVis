@@ -83,10 +83,7 @@ def get_color_coded_section_poly_line_based_on_length(
     # Compute the average radius of the section 
     section_length = vmv.skeleton.compute_section_length(section)
 
-    # Poly-line samples 
-    samples = list()
-    
-    # Add the samples 
+    # Poly-line samples
     samples = [[(sample.point[0], sample.point[1], sample.point[2], 1), sample.radius]
                for sample in section.samples]
 

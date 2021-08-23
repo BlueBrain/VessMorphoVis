@@ -62,7 +62,7 @@ class DisconnectedSectionsBuilder:
         self.morphology_objects = list()
 
         # Context for the UI to display certain messages 
-        self.context=None
+        self.context = None
 
     ################################################################################################
     # @get_poly_lines_data_colored_with_single_color
@@ -72,11 +72,10 @@ class DisconnectedSectionsBuilder:
         # Get the poly-line data of each section
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_with_single_color(section=section) 
-                for section in self.morphology.sections_list] 
+            for section in self.morphology.sections_list]
         
         # Return the list 
         return poly_lines_data 
-
 
     ################################################################################################
     # @get_poly_lines_data_colored_with_alternating_colors
@@ -87,7 +86,7 @@ class DisconnectedSectionsBuilder:
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_with_alternating_colors(
                 section=section)
-                    for section in self.morphology.sections_list] 
+            for section in self.morphology.sections_list]
         
         # Return the list 
         return poly_lines_data 

@@ -17,7 +17,7 @@
 
 
 ####################################################################################################
-# @ColorMaps
+# @ColorCoding
 ####################################################################################################
 class ColorCoding:
     """ColorCoding enumerators
@@ -50,7 +50,7 @@ class ColorCoding:
     ################################################################################################
     # Segments color-coding items to be added to the interface list
     ################################################################################################
-    SEGMENTS_COLOR_CODING_ITEMS =[
+    SEGMENTS_COLOR_CODING_ITEMS = [
         
         # Single color for all the segments in the morphology 
         (SINGLE_COLOR,
