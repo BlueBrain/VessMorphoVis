@@ -15,26 +15,19 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import sys
-import copy
-
-# Blender imports
-import bpy
-
 # Internal imports
-import vmv
 import vmv.geometry
 import vmv.mesh
 import vmv.bmeshi
 import vmv.scene
 import vmv.skeleton
+from .base import MorphologyBuilder
 
 
 ####################################################################################################
 # @SamplesBuilder
 ####################################################################################################
-class SamplesBuilder:
+class SamplesBuilder(MorphologyBuilder):
     """Morphology builder with samples, where each sample is drawn as an independent object.
     """
 
@@ -52,19 +45,8 @@ class SamplesBuilder:
             System options.
         """
 
-        # Clone the original morphology to morphology before the pre=processing
-        self.morphology = morphology
-
-        # All the options of the project
-        self.options = options
-
-        # All the reconstructed objects of the morphology, for example, tubes, spheres, etc...
-        self.morphology_objects = []
-
-        # A list of the colors/materials of the skeleton
-        self.materials = None
-
-        self.context = None
+        # Base
+        MorphologyBuilder.__init__(self, morphology=morphology, options=options)
 
     ################################################################################################
     # @draw_section_samples_as_spheres

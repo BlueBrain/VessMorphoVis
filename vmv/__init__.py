@@ -39,7 +39,7 @@ logger = vmv.file.Logger()
 # @kill
 ####################################################################################################
 def kill(option=0):
-    """ Kill NeuroMorphoVis.
+    """ Kill VessMorphoVis.
 
     :param option:
         Optional arguments for handling the killing operation to avoid Blender crashes.

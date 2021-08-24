@@ -96,7 +96,7 @@ class VessMorphoVisOptions:
         self.morphology.reconstruct_morphology = arguments.reconstruct_morphology_skeleton
 
         # Morphology reconstruction method
-        self.morphology.reconstruction_method = vmv.enums.Morphology.ReconstructionMethod.get_enum(
+        self.morphology.builder = vmv.enums.Morphology.Builder.get_enum(
            argument=arguments.morphology_reconstruction_algorithm)
 
         # Morphology file

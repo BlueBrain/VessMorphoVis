@@ -32,6 +32,23 @@ def load_icons():
 ####################################################################################################
 # @load_morphology
 ####################################################################################################
+def load_fonts():
+    """Loads all the fonts to the add-on.
+    """
+
+    # Get all the font files in the fonts directory
+    font_files = vmv.file.get_files_in_directory(
+        directory=vmv.consts.Paths.FONTS_DIRECTORY, file_extension='ttf')
+
+    # Load fonts
+    for font_file in font_files:
+        font = '%s/%s' % (vmv.consts.Paths.FONTS_DIRECTORY, font_file)
+        bpy.data.fonts.load(font)
+
+
+####################################################################################################
+# @load_morphology
+####################################################################################################
 def unload_icons():
     """Unloads the external icons, after loading them to Blender.
     """
@@ -193,7 +210,7 @@ def render_morphology_image(panel_object,
         vmv.rendering.render(
             bounding_box=bounding_box,
             camera_view=view,
-            image_resolution=context_scene.MorphologyFrameResolution,
+            image_resolution=context_scene.VMV_MorphologyImageResolution,
             image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
             image_directory=vmv.interface.options.io.images_directory,
             keep_camera_in_scene=context_scene.KeepMeshCameras)
@@ -205,7 +222,7 @@ def render_morphology_image(panel_object,
         vmv.rendering.render_to_scale(
             bounding_box=bounding_box,
             camera_view=view,
-            image_scale_factor=context_scene.MorphologyFrameScaleFactor,
+            image_scale_factor=context_scene.VMV_MorphologyImageScaleFactor,
             image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
             image_directory=vmv.interface.options.io.images_directory,
             keep_camera_in_scene=context_scene.KeepMeshCameras)

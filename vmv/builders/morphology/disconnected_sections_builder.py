@@ -23,17 +23,17 @@ import copy
 import bpy
 
 # Internal imports
-import vmv
 import vmv.geometry
 import vmv.mesh
 import vmv.scene
 import vmv.skeleton
+from .base import MorphologyBuilder
 
 
 ####################################################################################################
 # @DisconnectedSectionsBuilder
 ####################################################################################################
-class DisconnectedSectionsBuilder:
+class DisconnectedSectionsBuilder(MorphologyBuilder):
     """The builder reconstructs a an object composed of a series of disconnected sections, where 
     each section is drawn as an independent object.
     """
@@ -44,25 +44,17 @@ class DisconnectedSectionsBuilder:
     def __init__(self,
                  morphology,
                  options):
-        """Constructor.
+        """Constructor
 
         :param morphology:
-            A given morphology to reconstruct its skeleton as a series of disconnected sections.
+            A given vascular morphology to reconstruct its skeleton as a series of disconnected
+            sections.
         :param options:
             System options.
         """
 
-        # Clone the original morphology to morphology before the pre=processing
-        self.morphology = morphology
-
-        # All the options of the project
-        self.options = options
-
-        # All the reconstructed objects of the morphology, for example, tubes, spheres, etc...
-        self.morphology_objects = list()
-
-        # Context for the UI to display certain messages 
-        self.context = None
+        # Base
+        MorphologyBuilder.__init__(self, morphology=morphology, options=options)
 
     ################################################################################################
     # @get_poly_lines_data_colored_with_single_color
@@ -109,8 +101,8 @@ class DisconnectedSectionsBuilder:
 
         # Update the interface with the minimum and maximum values for the color-mapping  
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_radius(
@@ -137,8 +129,8 @@ class DisconnectedSectionsBuilder:
 
         # Update the interface with the minimum and maximum values for the color-mapping  
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_length(
@@ -165,8 +157,8 @@ class DisconnectedSectionsBuilder:
 
         # Update the interface with the minimum and maximum values for the color-mapping  
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_surface_area(
@@ -192,8 +184,8 @@ class DisconnectedSectionsBuilder:
 
         # Update the interface with the minimum and maximum values for the color-mapping  
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_volume(
@@ -221,8 +213,8 @@ class DisconnectedSectionsBuilder:
 
         # Update the interface with the minimum and maximum values for the color-mapping  
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         poly_lines_data = [
@@ -239,11 +231,8 @@ class DisconnectedSectionsBuilder:
     ################################################################################################
     def get_sections_poly_lines_data(self):
 
-        # A list of all the poly-lines
-        poly_lines_data = list()
-        
         # Get the data based on the color-coding scheme  
-        if self.options.morphology.color_coding == vmv.enums.ColorCoding.SINGLE_COLOR:
+        if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
             return self.get_poly_lines_data_colored_with_single_color()   
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
             return self.get_poly_lines_data_colored_with_alternating_colors()
@@ -251,43 +240,14 @@ class DisconnectedSectionsBuilder:
             return self.get_poly_lines_data_colored_based_on_radius() 
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_LENGTH:
             return self.get_poly_lines_data_colored_based_on_length() 
-        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_AREA:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SURFACE_AREA:
             return self.get_poly_lines_data_colored_based_on_surface_area()
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_VOLUME:
             return self.get_poly_lines_data_colored_based_on_volume() 
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_NUMBER_SAMPLES:
             return self.get_poly_lines_data_colored_based_on_number_samples_in_section() 
         else:
-            return self.get_poly_lines_data_colored_with_single_color()   
-
-        return poly_lines_data 
-    
-    
-    ################################################################################################
-    # @create_color_map
-    ################################################################################################
-    def create_color_map(self):
-        """Creates the color map that will be assigned to the skeleton.
-
-        :return: 
-            A color-map list.
-        :rtype: 
-            List of Vector((X, Y, Z))
-        """
-
-        # Single color
-        if self.options.morphology.color_coding == vmv.enums.ColorCoding.SINGLE_COLOR:
-            return [self.options.morphology.color]
-
-        # Alternating colors
-        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
-            return [self.options.morphology.color, self.options.morphology.alternating_color]
-        
-        # Otherwise, it is a color-map
-        else:
-            return vmv.utilities.create_color_map_from_color_list(
-                    self.options.morphology.color_map_colors,
-                    number_colors=self.options.morphology.color_map_resolution)
+            return self.get_poly_lines_data_colored_with_single_color()
 
     ################################################################################################
     # @build_skeleton
@@ -298,20 +258,8 @@ class DisconnectedSectionsBuilder:
 
         vmv.logger.header('Building skeleton: DisconnectedSectionsBuilder')
 
-        # Get the context 
-        self.context = context
-
-        # Clear the scene
-        vmv.logger.info('Clearing scene')
-        vmv.scene.ops.clear_scene()
-
-        # Clear the materials
-        vmv.logger.info('Clearing assets')
-        vmv.scene.ops.clear_scene_materials()
-
-        # Create assets and color-maps 
-        vmv.logger.info('Creating assets')
-        color_map = self.create_color_map()
+        # Call the base function
+        super(DisconnectedSectionsBuilder, self).build_skeleton(context=context)
 
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
@@ -332,6 +280,29 @@ class DisconnectedSectionsBuilder:
 
         # Construct the final object and add it to the morphology
         vmv.logger.info('Drawing object')
-        return vmv.geometry.create_poly_lines_object_from_poly_lines_data(
-            poly_lines_data, material=self.options.morphology.material, color_map=color_map,
+        self.morphology_skeleton = vmv.geometry.create_poly_lines_object_from_poly_lines_data(
+            poly_lines_data, material=self.options.morphology.material, color_map=self.color_map,
             name=self.morphology.name, bevel_object=bevel_object)
+        return self.morphology_skeleton
+
+
+
+    def load_simulation_data(self):
+
+        # Add simulation data
+        for time_step in range(0, len(self.morphology.radius_simulation_data[0])):
+            for i_section, section in enumerate(self.morphology.sections_list):
+
+                # Get a reference to the polyline
+                polyline = self.morphology_skeleton.data.splines[i_section]
+
+                for i_point, point in enumerate(polyline.points):
+
+                    radius_index = section.samples[i_point].index
+
+                    # Get a reference to the radii
+                    radius_list = self.morphology.radius_simulation_data[radius_index - 1]
+
+                    point.radius += (radius_list[time_step] * 1)
+                    point.keyframe_insert('radius', frame=time_step)
+

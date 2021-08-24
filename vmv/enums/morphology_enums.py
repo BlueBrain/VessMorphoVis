@@ -74,39 +74,36 @@ class Morphology:
                 return Morphology.Style.ORIGINAL
 
     ################################################################################################
-    # @ReconstructionMethod
+    # @Builder
     ################################################################################################
-    class ReconstructionMethod:
+    class Builder:
         """The reconstruction method used to build the morphology.
         """
 
-        # Use the ConnectedSections builder
-        CONNECTED_SECTIONS = 'CONNECTED_SECTIONS_RECONSTRUCTION'
+        # Use the Sections builder
+        SECTIONS = 'SECTIONS_BUILDER'
 
-        # Use the DisconnectedSections builder
-        DISCONNECTED_SECTIONS = 'DISCONNECTED_SECTIONS_RECONSTRUCTION'
+        # Use the Segments builder
+        SEGMENTS = 'RECONSTRUCTION_METHOD_SEGMENTS_BUILDER'
 
-        # Use the DisconnectedSegments builder
-        DISCONNECTED_SEGMENTS = 'DISCONNECTED_SEGMENTS_RECONSTRUCTION'
-
-        # Use the SamplesBuilder Drawing samples only as spheres
-        SAMPLES = 'SAMPLES_RECONSTRUCTION'
+        # Use the Samples Builder Drawing samples only as spheres
+        SAMPLES = 'SAMPLES_BUILDER'
 
         # The list that will appear in the GUI
         METHOD_ITEMS = [
-            (DISCONNECTED_SEGMENTS,
-             'Disconnected Segments',
-             "Each segment is an independent object (this approach is time consuming)"),
-            (DISCONNECTED_SECTIONS,
-             'Disconnected Sections',
-             "Each section is an independent object"),
-            (CONNECTED_SECTIONS,
-             'Connected Sections',
-             "The sections of a single arbor are connected together"),
+            (SEGMENTS,
+             'Segments',
+             "Reconstruct the morphology as a set of segments, where each segment is an "
+             "independent object (this approach is time consuming!)"),
+            (SECTIONS,
+             'Sections',
+             "Reconstruct the morphology as a set of sections, where each section is an "
+             "independent object"),
             (SAMPLES,
              'Samples',
-             "The morphology is reconstructed as a list of samples")
+             "Reconstruct the morphology as a set of samples")
         ]
+
         ############################################################################################
         # @__init__
         ############################################################################################
@@ -119,25 +116,21 @@ class Morphology:
         @staticmethod
         def get_enum(argument):
 
-            # Disconnected segments
-            if argument == 'disconnected-segments':
-                return Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS
+            # Segments
+            if argument == 'segments':
+                return Morphology.Builder.SEGMENTS
 
-            # Disconnected sections
-            elif argument == 'disconnected-sections':
-                return Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
-
-            # Connected sections
-            elif argument == 'connected-sections':
-                return Morphology.ReconstructionMethod.CONNECTED_SECTIONS
+            # Sections
+            elif argument == 'sections':
+                return Morphology.Builder.SECTIONS
 
             # Samples
             elif argument == 'samples':
-                return Morphology.ReconstructionMethod.SAMPLES
+                return Morphology.Builder.SAMPLES
 
             # Default
             else:
-                return Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
+                return Morphology.Builder.SECTIONS
 
     ################################################################################################
     # @Radii

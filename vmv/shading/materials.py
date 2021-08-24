@@ -35,7 +35,7 @@ import vmv.utilities
 # @import_shader
 ####################################################################################################
 def import_shader(shader_name):
-    """Import a shader from  the NeuroMorphoVis shading library.
+    """Import a shader from  the VessMorphoVis shading library.
 
     :param shader_name:
         The name of the shader file in the library.

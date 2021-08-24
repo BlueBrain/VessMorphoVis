@@ -23,18 +23,18 @@ import bpy
 from mathutils import Vector
 
 # Internal imports
-import vmv
 import vmv.geometry
 import vmv.mesh
 import vmv.scene
 import vmv.skeleton
 import vmv.utilities
+from .base import MorphologyBuilder
 
 
 ####################################################################################################
 # @DisconnectedSegmentsBuilder
 ####################################################################################################
-class DisconnectedSegmentsBuilder:
+class DisconnectedSegmentsBuilder(MorphologyBuilder):
     """Morphology reconstruction with disconnected segments, where each segment is drawn as an
     independent object and can have a different color.
     """
@@ -48,22 +48,13 @@ class DisconnectedSegmentsBuilder:
         """Constructor.
 
         :param morphology:
-            A given morphology.
+            A given vascular morphology.
         :parm options
             System options.
         """
 
-        # Morphology
-        self.morphology = morphology
-
-        # All the options of the project
-        self.options = options
-
-        # All the reconstructed objects of the morphology, for example, tubes, spheres, etc... .
-        self.morphology_objects = list()
-
-        # UI Context 
-        self.context = None
+        # Base
+        MorphologyBuilder.__init__(self, morphology=morphology, options=options)
 
     ################################################################################################
     # @get_poly_line_data_colored_with_single_color
@@ -117,8 +108,8 @@ class DisconnectedSegmentsBuilder:
 
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
@@ -148,8 +139,8 @@ class DisconnectedSegmentsBuilder:
         
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
@@ -180,8 +171,8 @@ class DisconnectedSegmentsBuilder:
         
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
@@ -212,8 +203,8 @@ class DisconnectedSegmentsBuilder:
         
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
-            self.context.scene.MinimumValue = str(minimum)
-            self.context.scene.MaximumValue = str(maximum)
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
         for section in self.morphology.sections_list:
@@ -231,7 +222,7 @@ class DisconnectedSegmentsBuilder:
     def get_segments_poly_lines_data(self):
 
         # Get the data based on the color-coding scheme  
-        if self.options.morphology.color_coding == vmv.enums.ColorCoding.SINGLE_COLOR:
+        if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
             return self.get_poly_line_data_colored_with_single_color()   
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
             return self.get_poly_line_data_colored_with_alternating_colors()
@@ -239,7 +230,7 @@ class DisconnectedSegmentsBuilder:
             return self.get_poly_line_data_based_on_radius() 
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_LENGTH:
             return self.get_poly_line_data_based_on_length() 
-        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_AREA:
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SURFACE_AREA:
             return self.get_poly_line_data_based_on_surface_area()
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_VOLUME:
             return self.get_poly_line_data_based_on_volume() 
@@ -259,7 +250,7 @@ class DisconnectedSegmentsBuilder:
         """
 
         # Single color
-        if self.options.morphology.color_coding == vmv.enums.ColorCoding.SINGLE_COLOR:
+        if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
             return [self.options.morphology.color]
 
         # Alternating colors

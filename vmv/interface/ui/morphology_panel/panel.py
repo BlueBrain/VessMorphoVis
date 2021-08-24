@@ -35,30 +35,54 @@ import vmv.utilities
 import vmv.rendering
 import vmv.shading
 
+from .panel_ops import *
+
 
 ####################################################################################################
-# @VMVColorMapOperator
+# @VMVMorphologyPanel
 ####################################################################################################
-class VMVColorMapOperator(bpy.types.Operator):
-    """Color-map operator for interactively changing the color-map in the UI"""
+class VMVMorphologyPanel(bpy.types.Panel):
+    """Morphology reconstruction panel"""
 
     ################################################################################################
-    # Operator parameters
+    # Panel parameters
     ################################################################################################
-    bl_idname = "operator.pick_colormap"
-    bl_label = "Select ColorMap"
-    bl_options = {'REGISTER', 'INTERNAL'}
+    bl_label = 'Morphology Reconstruction'
+    bl_idname = "OBJECT_PT_VMV_MorphologyReconstruction"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = 'VessMorphoVis'
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def update_morphology_color(self,
+                                context):
+
+        # TODO: Verify if the morphology is deleted or exists in the scene, using it name!
+        if vmv.interface.ui.morphology_skeleton is not None:
+            color = context.scene.VMV_MorphologyColor
+
+            vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
+                Vector((color[0], color[1], color[2], 1.0))
+        else:
+            print('None')
 
     ################################################################################################
     # @update_ui_colors
     ################################################################################################
     def update_ui_colors(self, context):
-        colors = vmv.utilities.create_color_map_from_hex_list(
-        vmv.enums.ColorMaps.get_hex_color_list(context.scene.ColorMap),
-        vmv.consts.Color.NUMBER_COLORS_UI)
 
-        for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-            setattr(context.scene, 'Color%d' % i, colors[i])
+        # Get a list of initial colors from the selected colormap
+        colors = vmv.utilities.create_colormap_from_hex_list(
+            vmv.enums.ColorMaps.get_hex_color_list(context.scene.VMV_ColorMap),
+            vmv.consts.Color.COLORMAP_RESOLUTION)
+
+        # Invert the colormap
+        if context.scene.VMV_InvertColorMap:
+            colors.reverse()
+
+        # Update the colormap in the UI
+        for color_index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
+            setattr(context.scene, 'VMV_Color%d' % color_index, colors[color_index])
 
         if vmv.interface.ui.morphology_skeleton is not None:
 
@@ -81,100 +105,36 @@ class VMVColorMapOperator(bpy.types.Operator):
                     vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
                         Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
-    # A list of all the color maps available in VessMorphoVis
+    # The base color that will be used for all the components in the morphology
+    bpy.types.Scene.VMV_MorphologyColor = bpy.props.FloatVectorProperty(
+        name='Color',
+        subtype='COLOR', default=vmv.consts.Color.DEFAULT_BLOOD_COLOR, min=0.0, max=1.0,
+        description='The base color of the morphology',
+        update=update_morphology_color)
+
+    # A list of all the color maps available in VMV
     # Note that once a new colormap is selected, the corresponding colors will be set in the UI
-    bpy.types.Scene.ColorMap = bpy.props.EnumProperty(
-        items=vmv.ColorMaps.COLOR_MAPS,
-        name="ColorMap",
-        default=vmv.enums.ColorMaps.VIRIDIS,
+    bpy.types.Scene.VMV_ColorMap = bpy.props.EnumProperty(
+        items=vmv.enums.ColorMaps.COLOR_MAPS,
+        name='',
+        default=vmv.enums.ColorMaps.GNU_PLOT,
+        update=update_ui_colors)
+
+    bpy.types.Scene.VMV_InvertColorMap = bpy.props.BoolProperty(
+        name='Invert',
+        description='Invert the selected colormap',
+        default=False,
         update=update_ui_colors)
 
     # Create a list of colors from the selected colormap
-    colors = vmv.utilities.create_color_map_from_hex_list(
-        vmv.enums.ColorMaps.get_hex_color_list(bpy.types.Scene.ColorMap), 
-        vmv.consts.Color.NUMBER_COLORS_UI)
+    colors = vmv.utilities.create_colormap_from_hex_list(
+        vmv.enums.ColorMaps.get_hex_color_list(bpy.types.Scene.VMV_ColorMap),
+        vmv.consts.Color.COLORMAP_RESOLUTION)
 
-    # UI color elements for the color map
-    for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-        setattr(bpy.types.Scene, 'Color%d' % i, bpy.props.FloatVectorProperty(
-                name='', subtype='COLOR', default=colors[i], min=0.0, max=1.0, description=''))
-
-    ################################################################################################
-    # @poll
-    ################################################################################################
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    ################################################################################################
-    # @execute
-    ################################################################################################
-    def execute(self, context):
-        return {'FINISHED'}
-
-    ################################################################################################
-    # @invoke
-    ################################################################################################
-    def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self)
-
-    ################################################################################################
-    # @draw
-    ################################################################################################
-    def draw(self, context):
-
-        # A reference to the layout 
-        layout = self.layout
-
-        # Color map 
-        color_map = layout.row()
-        color_map.prop(context.scene, 'ColorMap')
-        
-        # Its resolution 
-        color_map_resolution = layout.row()
-        color_map_resolution.prop(context.scene, 'ColorMapResolution')
-        vmv.interface.ui.options.morphology.color_map_resolution = \
-            context.scene.ColorMapResolution - 1
-        
-        # Clear the color map passed to VMV if it is full 
-        if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
-            vmv.interface.ui.options.morphology.color_map_colors.clear()
-        
-        # UI color elements 
-        colors = layout.row()
-        for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-            
-            # Add the color to the interface 
-            colors.prop(context.scene, 'Color%d' % i)
-
-            # Get the color value 
-            color = getattr(context.scene, 'Color%d' % i)
-
-            # Send it to VMV parameters 
-            vmv.interface.ui.options.morphology.color_map_colors.append(color)
-
-
-####################################################################################################
-# @VMVMorphologyPanel
-####################################################################################################
-class VMVMorphologyPanel(bpy.types.Panel):
-    """Morphology reconstruction panel"""
-
-    ################################################################################################
-    # Panel parameters
-    ################################################################################################
-    bl_label = 'Morphology Reconstruction'
-    bl_idname = "OBJECT_PT_VMV_MorphologyReconstruction"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_category = 'VessMorphoVis'
-    bl_options = {'DEFAULT_CLOSED'}
-
-    ################################################################################################
-    # Panel options
-    ################################################################################################
-
-
+    # Update the UI color elements from the color map list
+    for index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
+        setattr(bpy.types.Scene, 'VMV_Color%d' % index, bpy.props.FloatVectorProperty(
+            name='', subtype='COLOR', default=colors[index], min=0.0, max=1.0, description=''))
 
     ################################################################################################
     # @draw_mesh_reconstruction_options
@@ -195,16 +155,16 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Morphology reconstruction techniques option
         morphology_reconstruction_row = self.layout.row()
         morphology_reconstruction_row.prop(
-            context.scene, 'ReconstructionMethod', icon='FORCE_CURVE')
-        vmv.interface.ui.options.morphology.reconstruction_method = \
-            context.scene.ReconstructionMethod
+            context.scene, 'VMV_Builder', icon='FORCE_CURVE')
+        vmv.interface.ui.options.morphology.builder = \
+            context.scene.VMV_Builder
 
         # Sections radii option
         sections_radii_row = self.layout.row()
-        sections_radii_row.prop(context.scene, 'SectionsRadii', icon='SURFACE_NCURVE')
+        sections_radii_row.prop(context.scene, 'VMV_SectionsRadii', icon='SURFACE_NCURVE')
 
         # Radii as specified in the morphology file
-        if context.scene.SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
+        if context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
 
             # Pass options from UI to system
             vmv.interface.ui.options.morphology.radii = \
@@ -214,32 +174,32 @@ class VMVMorphologyPanel(bpy.types.Panel):
             vmv.interface.ui.options.morphology.sections_radii_scale = 1.0
 
         # Fixed diameter
-        elif context.scene.SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
+        elif context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
 
             fixed_diameter_row = self.layout.row()
             fixed_diameter_row.label(text='Fixed Radius Value:')
-            fixed_diameter_row.prop(context.scene, 'FixedRadiusValue')
+            fixed_diameter_row.prop(context.scene, 'VMV_FixedRadiusValue')
 
             # Pass options from UI to system
             vmv.interface.ui.options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
             vmv.interface.ui.options.morphology.scale_sections_radii = False
             vmv.interface.ui.options.morphology.unify_sections_radii = True
             vmv.interface.ui.options.morphology.sections_fixed_radii_value = \
-                context.scene.FixedRadiusValue
+                context.scene.VMV_FixedRadiusValue
 
         # Scaled diameter
-        elif context.scene.SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
+        elif context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
 
             scaled_diameter_row = self.layout.row()
             scaled_diameter_row.label(text='Radius Scale Factor:')
-            scaled_diameter_row.prop(context.scene, 'RadiusScaleValue')
+            scaled_diameter_row.prop(context.scene, 'VMV_RadiusScaleValue')
 
             # Pass options from UI to system
             vmv.interface.ui.options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
             vmv.interface.ui.options.morphology.unify_sections_radii = False
             vmv.interface.ui.options.morphology.scale_sections_radii = True
             vmv.interface.ui.options.morphology.sections_radii_scale = \
-                context.scene.RadiusScaleValue
+                context.scene.VMV_RadiusScaleValue
 
         else:
             vmv.logger.log('ERROR')
@@ -247,8 +207,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Tube quality
         tube_quality_row = self.layout.row()
         tube_quality_row.label(text='Tube Quality:')
-        tube_quality_row.prop(context.scene, 'TubeQuality')
-        vmv.interface.ui.options.morphology.bevel_object_sides = context.scene.TubeQuality
+        tube_quality_row.prop(context.scene, 'VMV_TubeQuality')
+        vmv.interface.ui.options.morphology.bevel_object_sides = context.scene.VMV_TubeQuality
 
         # Morphology reconstruction techniques option
         # skeleton_style_row = self.layout.row()
@@ -269,7 +229,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Sections diameters option
         #sections_radii_row = self.layout.row()
-        #sections_radii_row.prop(context.scene, 'SectionsRadii', icon='SURFACE_NCURVE')
+        #sections_radii_row.prop(context.scene, 'VMV_SectionsRadii', icon='SURFACE_NCURVE')
 
     ################################################################################################
     # @draw_morphology_color_options
@@ -296,114 +256,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Morphology material
         morphology_material_row = self.layout.row()
-        morphology_material_row.prop(scene, 'MorphologyMaterial')
-        morphology_options.material = scene.MorphologyMaterial
-    
-        # If the disconnected segments is selected
-        if morphology_options.reconstruction_method == \
-            vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
+        morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
+        morphology_options.material = scene.VMV_MorphologyMaterial
 
-            # Per-segment color coding 
-            color_coding_row = layout.row()
-            color_coding_row.prop(scene, 'PerSegmentColorCodingBasis')
-            morphology_options.color_coding = scene.PerSegmentColorCodingBasis
-
-            # Single color 
-            if scene.PerSegmentColorCodingBasis == vmv.enums.ColorCoding.SINGLE_COLOR:
-
-                # Base morphology color
-                color_row = self.layout.row()
-                color_row.prop(scene, 'MorphologyColor')
-                morphology_options.color = scene.MorphologyColor
-                
-            elif scene.PerSegmentColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
-
-                # Base morphology color
-                color_row = self.layout.row()
-                color_row.prop(scene, 'MorphologyColor')
-                morphology_options.color = scene.MorphologyColor
-
-                # Alternating morphology color
-                color_row = self.layout.row()
-                color_row.prop(scene, 'MorphologyAlternatingColor')
-                morphology_options.alternating_color = scene.MorphologyAlternatingColor
-
-            else:
-
-                # Color-mapping 
-                layout = self.layout
-                layout.operator(VMVColorMapOperator.bl_idname, icon='COLOR')
-                
-                # Clear the color map passed to VMV if it is full 
-                if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
-                    vmv.interface.ui.options.morphology.color_map_colors.clear()
-
-                    # Fill the list of colors
-                    for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                        colors = layout.row()
-                        cmap = colors.column()
-                        cmap.prop(scene, 'Color%d' % i)
-                        cmap.enabled = False
-                        values = colors.column()
-                        values.prop(scene, 'Value%d' % i)
-                        values.enabled = False
-                        # Get the color value
-                        color = getattr(context.scene, 'Color%d' % i)
-                        vmv.interface.ui.options.morphology.color_map_colors.append(color)
-        
-        # Disconnected sections builder
-        elif morphology_options.reconstruction_method == \
-                vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
-
-            # Per-section color coding 
-            color_coding_row = layout.row()
-            color_coding_row.prop(context.scene, 'PerSectionColorCodingBasis')
-            morphology_options.color_coding = scene.PerSectionColorCodingBasis
-
-            # Single color 
-            if scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.SINGLE_COLOR:
-
-                # Base morphology color
-                color_row = self.layout.row()
-                color_row.prop(scene, 'MorphologyColor')
-                morphology_options.color = scene.MorphologyColor
-                
-            elif scene.PerSectionColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
-
-                # Base morphology color
-                color_row = self.layout.row()
-                color_row.prop(scene, 'MorphologyColor')
-                morphology_options.color = scene.MorphologyColor
-
-                # Alternating morphology color
-                color_row = self.layout.row()
-                color_row.prop(scene, 'MorphologyAlternatingColor')
-                morphology_options.alternating_color = scene.MorphologyAlternatingColor
-
-            else:
-
-                # Color-mapping 
-                layout = self.layout
-                layout.operator(VMVColorMapOperator.bl_idname, icon='COLOR')
-                
-                # Clear the color map passed to VMV if it is full 
-                if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
-                    vmv.interface.ui.options.morphology.color_map_colors.clear()
-
-                # Fill the list of colors
-                for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-                    colors = layout.row()
-                    cmap = colors.column()
-                    cmap.prop(scene, 'Color%d' % i)
-                    cmap.enabled = False
-                    values = colors.column()
-                    values.prop(scene, 'Value%d' % i)
-                    values.enabled = False
-                    # Get the color value 
-                    color = getattr(context.scene, 'Color%d' % i)
-                    vmv.interface.ui.options.morphology.color_map_colors.append(color)
-        else:
-            pass
+        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.ui.options)
 
     ################################################################################################
     # @draw_morphology_reconstruction_button
@@ -435,7 +291,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
             morphology_stats_row.label(text='Stats:', icon='RECOVER_LAST')
 
             loading_time_row = layout.row()
-            loading_time_row.prop(context.scene, 'MorphologyReconstructionTime')
+            loading_time_row.prop(context.scene, 'VMV_MorphologyReconstructionTime')
             loading_time_row.enabled = False
 
     ################################################################################################
@@ -459,18 +315,18 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Rendering resolution
         rendering_resolution_row = self.layout.row()
         rendering_resolution_row.label(text='Resolution:')
-        rendering_resolution_row.prop(context.scene, 'MorphologyRenderingResolution', expand=True)
+        rendering_resolution_row.prop(context.scene, 'VMV_MorphologyRenderingResolution', expand=True)
 
         # Add the frame resolution option
-        if context.scene.MorphologyRenderingResolution == \
+        if context.scene.VMV_MorphologyRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Frame resolution option (only for the close up mode)
             frame_resolution_row = self.layout.row()
             frame_resolution_row.label(text='Frame Resolution:')
-            frame_resolution_row.prop(context.scene, 'MorphologyFrameResolution')
+            frame_resolution_row.prop(context.scene, 'VMV_MorphologyImageResolution')
             vmv.interface.ui.options.morphology.resolution_basis = \
-                context.scene.MorphologyRenderingResolution
+                context.scene.VMV_MorphologyRenderingResolution
 
         # Otherwise, add the scale factor option
         else:
@@ -478,17 +334,17 @@ class VMVMorphologyPanel(bpy.types.Panel):
             # Scale factor option
             scale_factor_row = self.layout.row()
             scale_factor_row.label(text='Resolution Scale:')
-            scale_factor_row.prop(context.scene, 'MorphologyFrameScaleFactor')
+            scale_factor_row.prop(context.scene, 'VMV_MorphologyImageScaleFactor')
             vmv.interface.ui.options.morphology.resolution_scale_factor = \
-                context.scene.MorphologyFrameScaleFactor
+                context.scene.VMV_MorphologyImageScaleFactor
 
         # Rendering view column
         view_row = self.layout.column()
-        view_row.prop(context.scene, 'MorphologyRenderingViews', icon='AXIS_FRONT')
-        vmv.options.morphology.camera_view = context.scene.MorphologyRenderingViews
+        view_row.prop(context.scene, 'VMV_MorphologyRenderingViews', icon='AXIS_FRONT')
+        vmv.options.morphology.camera_view = context.scene.VMV_MorphologyRenderingViews
 
         # Rendering projection column only for a fixed resolution
-        if context.scene.MorphologyRenderingResolution == \
+        if context.scene.VMV_MorphologyRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Due to a bug in the workbench renderer in Blender, we will allow the
@@ -498,19 +354,29 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
                 # Add the projection option
                 projection_row = self.layout.column()
-                projection_row.prop(context.scene, 'MorphologyCameraProjection', icon='AXIS_FRONT')
+                projection_row.prop(context.scene, 'VMV_MorphologyCameraProjection', icon='AXIS_FRONT')
                 vmv.options.morphology.camera_projection = \
-                    context.scene.MorphologyCameraProjection
+                    context.scene.VMV_MorphologyCameraProjection
 
             # Set it by default to ORTHOGRAPHIC
             else:
                 vmv.options.morphology.camera_projection = \
                     vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
+                # Scale bar
+                scale_bar_row = layout.row()
+                scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
+                vmv.interface.ui.options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
+
         # Set it by default to ORTHOGRAPHIC
         else:
             vmv.options.morphology.camera_projection = \
                 vmv.enums.Rendering.Projection.ORTHOGRAPHIC
+
+            # Scale bar
+            scale_bar_row = layout.row()
+            scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
+            vmv.interface.ui.options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
 
         # Rendering button
         rendering_button_row = self.layout.column()
@@ -524,7 +390,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Rendering progress bar
         rendering_progress_row = self.layout.row()
-        rendering_progress_row.prop(context.scene, 'MorphologyRenderingProgress')
+        rendering_progress_row.prop(context.scene, 'VMV_MorphologyRenderingProgress')
         rendering_progress_row.enabled = False
 
     ################################################################################################
@@ -619,32 +485,26 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
         # Construct the skeleton builder
         # Disconnected segments builder
-        if vmv.interface.ui.options.morphology.reconstruction_method == \
-                vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
+        if vmv.interface.ui.options.morphology.builder == \
+                vmv.enums.Morphology.Builder.SEGMENTS:
             self.morphology_builder = vmv.builders.DisconnectedSegmentsBuilder(
                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.options)
 
         # Disconnected sections builder
-        elif vmv.interface.ui.options.morphology.reconstruction_method == \
-                vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
+        elif vmv.interface.ui.options.morphology.builder == \
+                vmv.enums.Morphology.Builder.SECTIONS:
 
             self.morphology_builder = vmv.builders.DisconnectedSectionsBuilder(
                 morphology=vmv.interface.ui.ui_morphology,
                 options=vmv.interface.ui.options)
 
         # Samples builder
-        elif vmv.interface.ui.options.morphology.reconstruction_method == \
-                vmv.enums.Morphology.ReconstructionMethod.SAMPLES:
+        elif vmv.interface.ui.options.morphology.builder == \
+                vmv.enums.Morphology.Builder.SAMPLES:
 
             self.morphology_builder = vmv.builders.SamplesBuilder(
                 morphology=vmv.interface.ui.ui_morphology,
                 options=vmv.interface.ui.options)
-
-        # Connected sections builder
-        elif vmv.interface.ui.options.morphology.reconstruction_method == \
-                vmv.enums.Morphology.ReconstructionMethod.CONNECTED_SECTIONS:
-            self.morphology_builder = vmv.builders.ConnectedSectionsBuilder(
-                morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.options)
 
         else:
             return {'FINISHED'}
@@ -654,18 +514,19 @@ class VMVReconstructMorphology(bpy.types.Operator):
         vmv.interface.ui.morphology_skeleton = self.morphology_builder.build_skeleton(context=context)
 
         # Interpolations
-        color_map_range = \
-            float(context.scene.MaximumValue) - float(context.scene.MinimumValue)
-        delta = color_map_range / float(vmv.consts.Color.NUMBER_COLORS_UI - 1)
+        scale = float(context.scene.VMV_MaximumValue) - float(context.scene.VMV_MinimumValue)
+        delta = scale / float(vmv.consts.Color.COLORMAP_RESOLUTION)
 
         # Fill the list of colors
-        for i in range(vmv.consts.Color.NUMBER_COLORS_UI):
-            value = float(context.scene.MinimumValue) + (i * delta)
-            setattr(context.scene, 'Value%d' % i, value)
+        for color_index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
+            r0_value = float(context.scene.VMV_MinimumValue) + (color_index * delta)
+            r1_value = float(context.scene.VMV_MinimumValue) + ((color_index + 1) * delta)
+            setattr(context.scene, 'VMV_R0_Value%d' % color_index, r0_value)
+            setattr(context.scene, 'VMV_R1_Value%d' % color_index, r1_value)
 
         # Reconstruction timer
         reconstruction_done = time.time()
-        context.scene.MorphologyReconstructionTime = reconstruction_done - start_reconstruction
+        context.scene.VMV_MorphologyReconstructionTime = reconstruction_done - start_reconstruction
 
         # Done, return {'FINISHED'}
         return {'FINISHED'}
@@ -727,8 +588,15 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         vmv.shading.create_material_specific_illumination(
             vmv.interface.options.morphology.material)
 
+        # Draw the morphology scale bar
+        if context.scene.VMV_RenderMorphologyScaleBar:
+            scale_bar = vmv.interface.draw_scale_bar(
+                bounding_box=bounding_box,
+                material_type=vmv.interface.ui.options.morphology.material,
+                view=vmv.options.morphology.camera_view)
+
         # Render at a specific resolution
-        if context.scene.MorphologyRenderingResolution == \
+        if context.scene.VMV_MorphologyRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Render the morphology
@@ -736,7 +604,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
                 bounding_box=rendering_bbox,
                 camera_view=vmv.options.morphology.camera_view,
                 camera_projection=vmv.options.morphology.camera_projection,
-                image_resolution=context.scene.MorphologyFrameResolution,
+                image_resolution=context.scene.VMV_MorphologyImageResolution,
                 image_name=image_name,
                 image_directory=vmv.interface.options.io.images_directory)
 
@@ -747,9 +615,13 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
             vmv.rendering.render_to_scale(
                 bounding_box=rendering_bbox,
                 camera_view=vmv.options.morphology.camera_view,
-                image_scale_factor=context.scene.MorphologyFrameScaleFactor,
+                image_scale_factor=context.scene.VMV_MorphologyImageScaleFactor,
                 image_name=image_name,
                 image_directory=vmv.interface.options.io.images_directory)
+
+        # Delete the morphology scale bar, if rendered
+        if context.scene.VMV_RenderMorphologyScaleBar:
+            vmv.scene.delete_object_in_scene(scene_object=scale_bar)
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')
@@ -813,7 +685,7 @@ class VMVRenderMorphology360(bpy.types.Operator):
                 self.output_directory, '{0:05d}'.format(self.timer_limits))
 
             # Render at a specific resolution
-            if context.scene.MorphologyRenderingResolution == \
+            if context.scene.VMV_MorphologyRenderingResolution == \
                     vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
                 # Render the image
@@ -822,7 +694,7 @@ class VMVRenderMorphology360(bpy.types.Operator):
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
-                    image_resolution=context.scene.MorphologyFrameResolution,
+                    image_resolution=context.scene.VMV_MorphologyImageResolution,
                     image_name=image_name)
 
             # Render at a specific scale factor
@@ -834,14 +706,14 @@ class VMVRenderMorphology360(bpy.types.Operator):
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
-                    image_scale_factor=context.scene.MorphologyFrameResolution,
+                    image_scale_factor=context.scene.VMV_MorphologyImageResolution,
                     image_name=image_name)
 
             # Update the progress shell
             vmv.utilities.show_progress('Rendering', self.timer_limits, 360)
 
             # Update the progress bar
-            context.scene.MorphologyRenderingProgress = int(100 * self.timer_limits / 360.0)
+            context.scene.VMV_MorphologyRenderingProgress = int(100 * self.timer_limits / 360.0)
 
             # Upgrade the timer limits
             self.timer_limits += 1
@@ -1027,9 +899,6 @@ class VMVExportMorphology(bpy.types.Operator):
 def register_panel():
     """Registers all the classes in this panel"""
 
-    # ColorMap 
-    bpy.utils.register_class(VMVColorMapOperator)
-
     # Panel
     bpy.utils.register_class(VMVMorphologyPanel)
 
@@ -1049,9 +918,6 @@ def register_panel():
 ####################################################################################################
 def unregister_panel():
     """Un-registers all the classes in this panel"""
-
-    # ColorMap 
-    bpy.utils.unregister_class(VMVColorMapOperator)
 
     # Panel
     bpy.utils.unregister_class(VMVMorphologyPanel)

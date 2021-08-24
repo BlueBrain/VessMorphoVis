@@ -195,6 +195,11 @@ class VMVLoadMorphology(bpy.types.Operator):
         vmv.logger.header('Loading morphology')
         vmv.scene.clear_scene()
 
+        # Initialize all the operations that needs to run once and for all
+        import vmv.interface
+        #if not vmv.interface.ui.Globals.nmv_initialized:
+        vmv.interface.load_fonts()
+
         # Extend the clipping planes to be able to visualize larger data sets
         vmv.scene.extend_clipping_planes()
 

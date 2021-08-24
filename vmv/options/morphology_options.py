@@ -45,7 +45,7 @@ class MorphologyOptions:
         self.label = None
 
         # The method used to build the morphology skeleton object in the scene from the raw file
-        self.reconstruction_method = vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
+        self.builder = vmv.enums.Morphology.Builder.SECTIONS
 
         # Skeleton style, ORIGINAL by default
         self.skeleton = vmv.enums.Morphology.Style.ORIGINAL
@@ -80,19 +80,22 @@ class MorphologyOptions:
         self.material = vmv.enums.Shader.LAMBERT_WARD
 
         # Color coding scheme 
-        self.color_coding = vmv.enums.ColorCoding.SINGLE_COLOR
+        self.color_coding = vmv.enums.ColorCoding.DEFAULT
+
+        # Render scale bar to the image, ONLY in case of ORTHOGRAPHIC projection
+        self.render_scale_bar = False
 
         # Morphology color-map name (this is probably loaded from the CLI)
         self.color_map = vmv.enums.ColorMaps.PLASMA
 
         # The resolution of the colormap (number of samples)
-        self.color_map_resolution = vmv.consts.Color.COLOR_MAP_RESOLUTION
+        self.color_map_resolution = vmv.consts.Color.COLORMAP_RESOLUTION
 
         # Morphology color-map colors (this is probably set from the GUI)
         self.color_map_colors = list()
 
         # Base morphology color
-        self.color = vmv.consts.Color.GRAY
+        self.color = vmv.consts.Color.DEFAULT_BLOOD_COLOR
 
         # Alternating morphology color (use for ALTERNATING_COLORS schemes)
         self.alternating_color = vmv.consts.Color.BLACK

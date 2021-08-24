@@ -58,10 +58,10 @@ def build_skeleton(cli_morphology,
         True if the morphology is reconstructed, False otherwise for the follow up operations.
     """
 
-    method = cli_options.morphology.reconstruction_method
+    method = cli_options.morphology.builder
 
     # Disconnected sections
-    if method == vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
+    if method == vmv.enums.Morphology.Builder.SECTIONS:
 
         # Create the builder and build the morphology skeleton
         builder = vmv.builders.DisconnectedSectionsBuilder(morphology=cli_morphology,
@@ -70,7 +70,7 @@ def build_skeleton(cli_morphology,
         return True
 
     # Disconnected segments
-    elif method == vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
+    elif method == vmv.enums.Morphology.Builder.SEGMENTS:
 
         # Create the builder and build the morphology skeleton
         builder = vmv.builders.DisconnectedSegmentsBuilder(morphology=cli_morphology,
@@ -79,7 +79,7 @@ def build_skeleton(cli_morphology,
         return True
 
     # Connected sections
-    elif method == vmv.enums.Morphology.ReconstructionMethod.CONNECTED_SECTIONS:
+    elif method == vmv.enums.Morphology.Builder.CONNECTED_SECTIONS:
 
         # Create the builder and build the morphology skeleton
         builder = vmv.builders.ConnectedSectionsBuilder(morphology=cli_morphology,
@@ -88,7 +88,7 @@ def build_skeleton(cli_morphology,
         return True
 
     # Samples builder
-    elif method == vmv.enums.Morphology.ReconstructionMethod.SAMPLES:
+    elif method == vmv.enums.Morphology.Builder.SAMPLES:
 
         # Create the builder and build the morphology skeleton
         builder = vmv.builders.SamplesBuilder(morphology=cli_morphology, options=cli_options)

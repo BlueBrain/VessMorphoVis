@@ -51,7 +51,7 @@ class MetaBuilder:
         :param morphology:
             A given morphology skeleton to create the mesh for.
         :param options:
-            Loaded options from NeuroMorphoVis.
+            Loaded options from VessMorphoVis.
         """
 
         # Morphology

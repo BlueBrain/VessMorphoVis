@@ -20,7 +20,10 @@
 # PolyLine
 ####################################################################################################
 class PolyLine:
-    """Blender poly-lines that are used to represent a section with some parameters.
+    """Blender polyline that is used to represent a section with some parameters.
+
+    NOTE: Depending on the usage of the polyline, it should have the same index of the section
+    or the segment.
     """
 
     ################################################################################################
@@ -29,11 +32,19 @@ class PolyLine:
     def __init__(self,
                  samples,
                  color_index):
+        """Constructor
+
+        @param samples:
+            A list of samples stored in the format [(X, Y, Z, 1), R] per element in the list
+        @param color_index:
+            The index of color or the material of the polyline that is used to apply a specific
+            color when this polyline is integrated into a single object with multiple polylines.
+        """
 
         # Poly-line samples arranged in the format [(X, Y, Z, 1), R]
         self.samples = samples
 
-        # Poly-line color index to be able to diffrentiate it in other poly-lines in 
+        # Poly-line color index to be able to differentiate it in other poly-lines in
         # the same dataset
         self.color_index = color_index
 

@@ -38,7 +38,8 @@ class Morphology:
                  morphology_file_path=None,
                  sections_list=None,
                  roots=None,
-                 bounding_box=None):
+                 bounding_box=None,
+                 radius_simulation_data=None):
         """Constructor
 
         :param morphology_file_path:
@@ -74,6 +75,22 @@ class Morphology:
         if bounding_box is None:
             self.bounding_box = self.compute_bounding_box()
 
+
+
+        self.morphology_has_simulation_data = False
+
+        self.morphology_has_radius_simulation = False
+
+        self.morphology_has_pressure_simulation = False
+
+        self.morphology_has_flow_simulation = False
+
+        self.radius_simulation_data = radius_simulation_data
+
+        self.pressure_simulation_data = None
+
+        self.flow_simulation_data = None
+
     ################################################################################################
     # @get_center
     ################################################################################################
@@ -105,6 +122,7 @@ class Morphology:
 
         for section in self.sections_list:
             for sample in section.samples:
+
                 # Points
                 x = sample.point[0]
                 y = sample.point[1]

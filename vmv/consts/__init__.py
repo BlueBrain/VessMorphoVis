@@ -18,6 +18,7 @@
 from .bevel_consts import *
 from .color_consts import *
 from .image_consts import *
+from .geometry_conts import *
 from .math_consts import *
 from .meshing_consts import *
 from .messages_consts import *

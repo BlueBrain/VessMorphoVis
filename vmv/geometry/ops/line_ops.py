@@ -132,8 +132,11 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
                    point2=Vector((1, 1, 1)),
                    point1_radius=0.0,
                    point2_radius=1.0,
-                   color=(1, 1, 1),
+                   color=(1, 1, 1, 1),
                    name='line',
+                   fill_caps=True,
+                   sides=8,
+                   bevel_object=None,
                    smoothness_factor=1):
     """Draw a cone line between two points, with different radii at the beginning and the end of
     the line.
@@ -171,7 +174,12 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
     line_data.bevel_depth = 1.0
 
     # For a thick line, the caps are always filled in contrast to the thin line
-    line_data.use_fill_caps = True
+    line_data.use_fill_caps = fill_caps
+
+    if bevel_object is None:
+        line_data.bevel_object = nmv.mesh.create_bezier_circle(radius=1.0, vertices=sides, name=name)
+    else:
+        line_data.bevel_object = bevel_object
 
     # Create a new material (color) and assign it to the line
     line_material = bpy.data.materials.new('color.%s' % name)
@@ -180,21 +188,16 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
 
     # Create a line object and link it to the scene
     line_object = bpy.data.objects.new(str(name), line_data)
-    bpy.context.scene.collection.objects.link(line_object)
+    vmv.scene.link_object_to_scene(line_object)
 
     # Add the two points to the line object and scale their radii
-    line_strip = line_data.splines.new('POLY')
+    line_strip = line_data.splines.new('NURBS')
     line_strip.points.add(1)
     line_strip.points[0].co = (point1[0], point1[1], point1[2]) + (1.0,)
     line_strip.points[1].co = (point2[0], point2[1], point2[2]) + (1.0,)
     line_strip.points[0].radius = point1_radius
     line_strip.points[1].radius = point2_radius
     line_strip.order_u = 1
-
-    # Convert the cone to a mesh object and smooth it using a given smoothness factor
-    line_object = vmv.scene.ops.convert_object_to_mesh(line_object)
-    bpy.ops.object.modifier_add(type='SUBSURF')
-    bpy.context.object.modifiers["Subsurf"].levels = smoothness_factor
 
     # Return a reference to the line object
     return line_object
