@@ -23,7 +23,6 @@ import copy
 import bpy
 
 # Internal imports
-import vmv
 import vmv.bbox
 import vmv.builders
 import vmv.consts
@@ -98,12 +97,12 @@ class VMVMeshingPanel(bpy.types.Panel):
         if not context.scene.TessellateMesh:
 
             # Use 1.0 to disable the tessellation
-            vmv.interface.options.mesh.tessellate_mesh = False
-            vmv.interface.options.mesh.tessellation_level = 1.0
+            vmv.interface.Options.mesh.tessellate_mesh = False
+            vmv.interface.Options.mesh.tessellation_level = 1.0
             tess_level_column.enabled = False
         else:
-            vmv.interface.options.mesh.tessellate_mesh = context.scene.TessellateMesh
-            vmv.interface.options.mesh.tessellation_level = context.scene.MeshTessellationLevel
+            vmv.interface.Options.mesh.tessellate_mesh = context.scene.TessellateMesh
+            vmv.interface.Options.mesh.tessellation_level = context.scene.MeshTessellationLevel
 
     ################################################################################################
     # @draw_mesh_color_options
@@ -155,7 +154,7 @@ class VMVMeshingPanel(bpy.types.Panel):
         mesh_reconstruction_row.operator('reconstruct.mesh', icon='MESH_DATA')
 
         # If the morphology is loaded only, print the performance stats.
-        if vmv.interface.ui_morphology_loaded:
+        if vmv.interface.MorphologyLoaded:
 
             # Stats
             meshing_stats_row = layout.row()
@@ -306,7 +305,7 @@ class VMVMeshingPanel(bpy.types.Panel):
         self.draw_mesh_export_options(context=context)
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
-        if vmv.interface.ui_morphology_loaded:
+        if vmv.interface.MorphologyLoaded:
             self.layout.enabled = True
         else:
             self.layout.enabled = False
@@ -344,19 +343,19 @@ class VMVReconstructMesh(bpy.types.Operator):
 
         # Meta builder
         if context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
-            builder = vmv.builders.MetaBuilder(morphology=vmv.interface.ui.ui_morphology,
-                                               options=vmv.interface.ui.options)
+            builder = vmv.builders.MetaBuilder(morphology=vmv.interface.MorphologyObject,
+                                               options=vmv.interface.Options)
 
         # Using the piece-wise
         else:
             builder = vmv.builders.PolylineBuilder(
-                morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.options)
+                morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
 
         # Build the vascular mesh
         builder.build_mesh()
 
         # Update the interface with some parameters
-        context.scene.MetaBallResolution = vmv.interface.options.mesh.meta_resolution
+        context.scene.MetaBallResolution = vmv.interface.Options.mesh.meta_resolution
 
         # Reconstruction done
         reconstruction_done = time.time()
@@ -391,17 +390,17 @@ class VMVRenderMeshImage(bpy.types.Operator):
         """
 
         # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.options.io.output_directory is None:
+        if vmv.interface.Options.io.output_directory is None:
             self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
             return {'FINISHED'}
 
-        if not vmv.file.ops.path_exists(context.scene.OutputDirectory):
+        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
             self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
             return {'FINISHED'}
 
         # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.options.io.images_directory):
-            vmv.file.ops.clean_and_create_directory(vmv.interface.options.io.images_directory)
+        if not vmv.file.ops.path_exists(vmv.interface.Options.io.images_directory):
+            vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.images_directory)
 
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Mesh ... Wait Please')
@@ -410,7 +409,7 @@ class VMVRenderMeshImage(bpy.types.Operator):
         bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
 
         # Image name
-        image_name = 'MESH_%s_%s' % (vmv.interface.options.morphology.label,
+        image_name = 'MESH_%s_%s' % (vmv.interface.Options.morphology.label,
                                      vmv.options.mesh.camera_view)
 
         # Stretch the bounding box by few microns
@@ -424,11 +423,11 @@ class VMVRenderMeshImage(bpy.types.Operator):
             # Render the morphology
             vmv.rendering.render(
                 bounding_box=rendering_bbox,
-                camera_view=vmv.interface.options.mesh.camera_view,
-                camera_projection=vmv.interface.options.mesh.camera_projection,
+                camera_view=vmv.interface.Options.mesh.camera_view,
+                camera_projection=vmv.interface.Options.mesh.camera_projection,
                 image_resolution=context.scene.MeshFrameResolution,
                 image_name=image_name,
-                image_directory=vmv.interface.options.io.images_directory)
+                image_directory=vmv.interface.Options.io.images_directory)
 
         # Render at a specific scale factor
         else:
@@ -439,7 +438,7 @@ class VMVRenderMeshImage(bpy.types.Operator):
                 camera_view=vmv.options.mesh.camera_view,
                 image_scale_factor=context.scene.MeshFrameScaleFactor,
                 image_name=image_name,
-                image_directory=vmv.interface.options.io.images_directory)
+                image_directory=vmv.interface.Options.io.images_directory)
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')
@@ -549,18 +548,18 @@ class VMVRenderMesh360(bpy.types.Operator):
         """
 
         # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.options.io.output_directory is None:
+        if vmv.interface.Options.io.output_directory is None:
             self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
             return {'FINISHED'}
 
-        if not vmv.file.ops.path_exists(context.scene.OutputDirectory):
+        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
             self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
             return {'FINISHED'}
 
         # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.options.io.sequences_directory):
+        if not vmv.file.ops.path_exists(vmv.interface.Options.io.sequences_directory):
             vmv.file.ops.clean_and_create_directory(
-                vmv.interface.options.io.sequences_directory)
+                vmv.interface.Options.io.sequences_directory)
 
         # A reference to the bounding box that will be used for the rendering
         rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_meshes()
@@ -574,8 +573,8 @@ class VMVRenderMesh360(bpy.types.Operator):
 
         # Create a specific directory for this mesh
         self.output_directory = '%s/%s_mesh_360' % (
-            vmv.interface.options.io.sequences_directory,
-            vmv.interface.ui.ui_morphology.name)
+            vmv.interface.Options.io.sequences_directory,
+            vmv.interface.MorphologyObject.name)
         vmv.file.ops.clean_and_create_directory(self.output_directory)
 
         # Use the event timer to update the UI during the soma building
@@ -631,25 +630,25 @@ class VMVExportMesh(bpy.types.Operator):
         """
 
         # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.options.io.output_directory is None:
+        if vmv.interface.Options.io.output_directory is None:
             self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
             return {'FINISHED'}
 
-        if not vmv.file.ops.path_exists(context.scene.OutputDirectory):
+        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
             self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
             return {'FINISHED'}
 
         # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.options.io.meshes_directory):
+        if not vmv.file.ops.path_exists(vmv.interface.Options.io.meshes_directory):
             vmv.file.ops.clean_and_create_directory(
-                vmv.interface.options.io.meshes_directory)
+                vmv.interface.Options.io.meshes_directory)
 
         # Select the mesh object to be exported
         mesh_object = vmv.scene.select_object_containing_string(vmv.consts.Meshing.MESH_SUFFIX)
 
         # Export the mesh
         vmv.file.export_mesh_object(mesh_object=mesh_object,
-                                    output_directory=vmv.interface.options.io.meshes_directory,
+                                    output_directory=vmv.interface.Options.io.meshes_directory,
                                     file_name=mesh_object.name,
                                     file_format=context.scene.ExportedMeshFormat)
 

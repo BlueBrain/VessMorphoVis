@@ -36,10 +36,10 @@ class MorphologyOptions:
         """
 
         # Morphology file path
-        self.morphology_file_path = None
+        self.file_path = None
 
         # Morphology file name
-        self.morphology_file_name = None
+        self.file_name = None
 
         # Morphology label, based on the morphology file name
         self.label = None

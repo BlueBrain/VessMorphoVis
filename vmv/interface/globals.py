@@ -15,12 +15,23 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .ui_data import *
-from .analysis_panel import *
-from .analysis_panel_options import *
-from .io_panel import *
-from .meshing_panel import *
-from .morphology_panel import *
-from .about_panel import *
-from .common import *
+# Internal imports
+import vmv.options
 
+# The options parsed from the user interface
+Options = vmv.options.VessMorphoVisOptions()
+
+# A reference to the morphology skeleton in a cyclic graph
+MorphologyObject = None
+
+# A reference to the reconstructed morphology polyline object
+MorphologyPolylineObject = None
+
+# A flag that is used to track if the morphology is loaded or not
+MorphologyLoaded = False
+
+# A reference to the reconstructed mesh object
+MeshObject = None
+
+# UI Icons
+Icons = None

@@ -34,8 +34,8 @@ class Morphology:
     # @__init__
     ################################################################################################
     def __init__(self,
-                 morphology_name='VESSEL',
-                 morphology_file_path=None,
+                 name='VESSEL',
+                 file_path=None,
                  sections_list=None,
                  roots=None,
                  bounding_box=None,
@@ -57,11 +57,12 @@ class Morphology:
         :param roots:
             A list of all the roots. This is ONE if the morphology is entirely connected.
         """
+
         # Morphology name
-        self.name = morphology_name
+        self.name = name
 
         # Morphology file path
-        self.morphology_file_path = morphology_file_path
+        self.file_path = file_path
 
         # A list of all the sections that were extracted from the loaded data
         self.sections_list = sections_list

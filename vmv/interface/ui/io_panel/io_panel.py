@@ -15,26 +15,24 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-
 # System imports
 import time
 
 # Blender imports
 import bpy
-from mathutils import Vector
 
 # Internal imports
-import vmv
 import vmv.builders
 import vmv.enums
-import vmv.utilities
 import vmv.scene
+import vmv.utilities
+from .io_panel_ops import *
 
 
 ####################################################################################################
-# @VMVIOPanel
+# @VMV_IOPanel
 ####################################################################################################
-class VMVIOPanel(bpy.types.Panel):
+class VMV_IOPanel(bpy.types.Panel):
     """Input and output data panel"""
 
     ################################################################################################
@@ -50,120 +48,27 @@ class VMVIOPanel(bpy.types.Panel):
     # @draw
     ################################################################################################
     def draw(self, context):
+
         """Draw the panel.
 
         :param context:
             Panel context.
         """
 
-        # A list of layout rows/columns to show and hide based on the status of the morphology
-        show_hide_elements = list()
+        # Add input data options to the panel
+        add_input_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Get a reference to the panel layout
-        layout = self.layout
+        # Add the output options to the panel
+        add_output_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Get a reference to the scene
-        scene = context.scene
+        # Only, if the morphology is loaded
+        if vmv.interface.MorphologyLoaded:
 
-        # Input data options
-        input_data_options_row = layout.row()
-        input_data_options_row.label(text='Input Data:', icon='LIBRARY_DATA_DIRECT')
+            # Add file content summary data to the panel
+            add_file_content_summary(layout=self.layout, scene=context.scene)
 
-        # Input morphology file
-        morphology_file_row = layout.row()
-        morphology_file_row.prop(scene, 'MorphologyFile')
-        vmv.interface.options.io.morphology_file_path = scene.MorphologyFile
-
-        # Get the morphology file path, name and label from the given morphology file
-        vmv.interface.options.morphology.morphology_file_path = scene.MorphologyFile
-        vmv.interface.options.morphology.morphology_file_name = \
-            vmv.file.get_file_name_from_path(scene.MorphologyFile)
-        vmv.interface.options.morphology.label = \
-            vmv.file.get_file_name_from_path(scene.MorphologyFile)
-
-        # Center the morphology at the origin
-        morphology_centering_check_box = layout.row()
-        morphology_centering_check_box.prop(scene, 'CenterMorphologyAtOrigin')
-        vmv.interface.options.io.center_morphology_at_origin = scene.CenterMorphologyAtOrigin
-
-        # Center the morphology at the origin
-        morphology_resampling_check_box = layout.row()
-        morphology_resampling_check_box.prop(scene, 'ResampleMorphology')
-        vmv.interface.options.io.resample_morphology = scene.ResampleMorphology
-
-        loading_button_row = layout.row()
-        loading_button_row .operator('load.morphology', icon='LIBRARY_DATA_DIRECT')
-
-        # Output options
-        output_data_options_row = layout.row()
-        output_data_options_row.label(text='Output Options:', icon='NEWFOLDER')
-        show_hide_elements.append(output_data_options_row)
-
-        # Output directory
-        output_directory_row = layout.row()
-        output_directory_row.prop(scene, 'OutputDirectory')
-        vmv.interface.options.io.output_directory = scene.OutputDirectory
-        show_hide_elements.append(output_directory_row)
-
-        # Default paths
-        default_paths_row = layout.row()
-        default_paths_row.prop(scene, 'DefaultArtifactsRelativePath')
-        show_hide_elements.append(default_paths_row)
-
-        # Output directories
-        output_paths_column = layout.column()
-        show_hide_elements.append(output_paths_column)
-
-        # Images path
-        output_paths_column.prop(scene, 'ImagesPath')
-        vmv.interface.options.io.images_directory = \
-            '%s/%s' % (scene.OutputDirectory, scene.ImagesPath)
-
-        # Sequences path
-        output_paths_column.prop(scene, 'SequencesPath')
-        vmv.interface.options.io.sequences_directory = \
-            '%s/%s' % (scene.OutputDirectory, scene.SequencesPath)
-
-        # Meshes path
-        output_paths_column.prop(scene, 'MeshesPath')
-        vmv.interface.options.io.meshes_directory = \
-            '%s/%s' % (scene.OutputDirectory, scene.MeshesPath)
-
-        # Morphologies path
-        output_paths_column.prop(scene, 'MorphologiesPath')
-        vmv.interface.options.io.morphologies_directory = \
-            '%s/%s' % (scene.OutputDirectory, scene.MorphologiesPath)
-
-        # Analysis path
-        output_paths_column.prop(scene, 'AnalysisPath')
-        vmv.interface.options.io.analysis_directory = \
-            '%s/%s' % (scene.OutputDirectory, scene.AnalysisPath)
-
-        if vmv.interface.ui_morphology_loaded:
-            for element in show_hide_elements:
-                element.enabled = True
-        else:
-            for element in show_hide_elements:
-                element.enabled = False
-
-        # Disable the default paths selection if the use default paths flag is set
-        if scene.DefaultArtifactsRelativePath:
-            output_paths_column.enabled = False
-
-        # If the morphology is loaded only, print the performance stats.
-        if vmv.interface.ui_morphology_loaded:
-
-            # Stats
-            morphology_stats_row = layout.row()
-            morphology_stats_row.label(text='Stats:', icon='RECOVER_LAST')
-
-            loading_time_row = layout.row()
-            loading_time_row.prop(scene, 'MorphologyLoadingTime')
-            loading_time_row.enabled = False
-
-            drawing_time_row = layout.row()
-            drawing_time_row.prop(scene, 'MorphologyDrawingTime')
-            drawing_time_row.enabled = False
+            # Add loading statistics
+            add_statistics(layout=self.layout, scene=context.scene)
 
 
 ####################################################################################################
@@ -204,19 +109,19 @@ class VMVLoadMorphology(bpy.types.Operator):
         vmv.scene.extend_clipping_planes()
 
         # Create a morphology reader object
-        morphology_reader = vmv.file.create_morphology_reader(
-            vmv.interface.options.io.morphology_file_path)
+        morphology_reader = vmv.file.create_morphology_reader(vmv.interface.Options.io.file_path)
 
         # Construct a morphology object to be used later by the entire application
         loading_start = time.time()
 
-        vmv.interface.ui.ui_morphology = morphology_reader.construct_morphology_object(
-            center_at_origin=vmv.interface.options.io.center_morphology_at_origin,
-            resample_morphology=vmv.interface.options.io.resample_morphology)
+        vmv.interface.MorphologyObject = morphology_reader.construct_morphology_object(
+            center_at_origin=vmv.interface.Options.io.center_morphology_at_origin,
+            resample_morphology=vmv.interface.Options.io.resample_morphology)
+        context.scene.VMV_MorphologyName = vmv.interface.MorphologyObject.name
 
         # Update the interface
         loading_done = time.time()
-        context.scene.MorphologyLoadingTime = loading_done - loading_start
+        context.scene.VMV_MorphologyLoadingTime = loading_done - loading_start
         vmv.logger.info('Morphology loaded in [%f] seconds' % (loading_done - loading_start))
 
         # Just draw the skeleton as a sign of complete morphology loading
@@ -224,7 +129,7 @@ class VMVLoadMorphology(bpy.types.Operator):
 
             # Construct a builder object
             builder = vmv.builders.DisconnectedSectionsBuilder(
-                 morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.options)
+                 morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
             builder.build_skeleton()
 
             # Switch to full view along some axis
@@ -235,18 +140,18 @@ class VMVLoadMorphology(bpy.types.Operator):
 
             # Show the loading time
             drawing_done = time.time()
-            context.scene.MorphologyDrawingTime = drawing_done - loading_done
+            context.scene.VMV_MorphologyDrawingTime = drawing_done - loading_done
             vmv.logger.info('Morphology drawn in [%f] seconds' % (drawing_done - loading_done))
 
             # The morphology is loaded
-            vmv.interface.ui_morphology_loaded = True
+            vmv.interface.MorphologyLoaded = True
 
             # Set back the radii of the morphology to that as specified in the loaded file
-            vmv.interface.ui.options.morphology.radii = \
+            vmv.interface.Options.morphology.radii = \
                 vmv.enums.Morphology.Radii.AS_SPECIFIED
 
             # Configure the output directory
-            vmv.interface.configure_output_directory(options=vmv.interface.ui.options,
+            vmv.interface.configure_output_directory(options=vmv.interface.Options,
                                                      context=context)
 
         # Unable to load the morphology
@@ -254,7 +159,7 @@ class VMVLoadMorphology(bpy.types.Operator):
             vmv.logger.log('ERROR: Unable to load the morphology file')
 
             # The morphology is not loaded
-            vmv.interface.ui_morphology_loaded = False
+            vmv.interface.MorphologyLoaded = False
 
         return {'FINISHED'}
 
@@ -269,7 +174,7 @@ def register_panel():
     vmv.interface.load_icons()
 
     # InputOutput data
-    bpy.utils.register_class(VMVIOPanel)
+    bpy.utils.register_class(VMV_IOPanel)
     bpy.utils.register_class(VMVLoadMorphology)
 
 
@@ -280,6 +185,6 @@ def unregister_panel():
     """Un-registers all the classes in this panel"""
 
     # InputOutput data
-    bpy.utils.unregister_class(VMVIOPanel)
+    bpy.utils.unregister_class(VMV_IOPanel)
     bpy.utils.unregister_class(VMVLoadMorphology)
 

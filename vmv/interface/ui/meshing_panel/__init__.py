@@ -15,5 +15,4 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .panel_ops import *
-from .panel import *
+from .meshing_panel import *

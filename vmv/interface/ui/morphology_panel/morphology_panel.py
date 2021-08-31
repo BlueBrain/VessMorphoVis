@@ -35,7 +35,7 @@ import vmv.utilities
 import vmv.rendering
 import vmv.shading
 
-from .panel_ops import *
+from .morphology_panel_ops import *
 
 
 ####################################################################################################
@@ -58,10 +58,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
                                 context):
 
         # TODO: Verify if the morphology is deleted or exists in the scene, using it name!
-        if vmv.interface.ui.morphology_skeleton is not None:
+        if vmv.interface.MorphologySkeleton is not None:
             color = context.scene.VMV_MorphologyColor
 
-            vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
+            vmv.interface.MorphologySkeleton.active_material.diffuse_color = \
                 Vector((color[0], color[1], color[2], 1.0))
         else:
             print('None')
@@ -84,25 +84,25 @@ class VMVMorphologyPanel(bpy.types.Panel):
         for color_index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
             setattr(context.scene, 'VMV_Color%d' % color_index, colors[color_index])
 
-        if vmv.interface.ui.morphology_skeleton is not None:
+        if vmv.interface.MorphologySkeleton is not None:
 
             # Interpolate
             colors = vmv.utilities.create_color_map_from_color_list(
-                vmv.interface.ui.options.morphology.color_map_colors,
-                number_colors=vmv.interface.ui.options.morphology.color_map_resolution)
+                vmv.interface.Options.morphology.color_map_colors,
+                number_colors=vmv.interface.Options.morphology.color_map_resolution)
 
-            for i in range(len(vmv.interface.ui.morphology_skeleton.material_slots)):
-                vmv.interface.ui.morphology_skeleton.active_material_index = i
+            for i in range(len(vmv.interface.MorphologySkeleton.material_slots)):
+                vmv.interface.MorphologySkeleton.active_material_index = i
 
                 if bpy.context.scene.render.engine == 'CYCLES':
-                    material_nodes = vmv.interface.ui.morphology_skeleton.active_material.node_tree
+                    material_nodes = vmv.interface.MorphologySkeleton.active_material.node_tree
                     color_1 = material_nodes.nodes['ColorRamp'].color_ramp.elements[0].color
                     color_2 = material_nodes.nodes['ColorRamp'].color_ramp.elements[1].color
                     for j in range(3):
                         color_1[j] = colors[i][j]
                         color_2[j] = 0.5 * colors[i][j]
                 else:
-                    vmv.interface.ui.morphology_skeleton.active_material.diffuse_color = \
+                    vmv.interface.MorphologySkeleton.active_material.diffuse_color = \
                         Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
     # The base color that will be used for all the components in the morphology
@@ -147,6 +147,15 @@ class VMVMorphologyPanel(bpy.types.Panel):
             Context.
         """
 
+        # Visualization type
+        visualization_type_row = self.layout.row()
+        visualization_type_row.label(text='Visualization')
+        visualization_type_row.prop(context.scene, 'VMV_VisualizationType')
+
+        dynamics_row = self.layout.row()
+        dynamics_row.label(text='Available Dynamics')
+        dynamics_row.prop(context.scene, 'VMV_AvailableSimulations')
+
         # Skeleton meshing options
         skeleton_meshing_options_row = self.layout.row()
         skeleton_meshing_options_row.label(
@@ -154,10 +163,8 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Morphology reconstruction techniques option
         morphology_reconstruction_row = self.layout.row()
-        morphology_reconstruction_row.prop(
-            context.scene, 'VMV_Builder', icon='FORCE_CURVE')
-        vmv.interface.ui.options.morphology.builder = \
-            context.scene.VMV_Builder
+        morphology_reconstruction_row.prop(context.scene, 'VMV_Builder', icon='FORCE_CURVE')
+        vmv.interface.Options.morphology.builder = context.scene.VMV_Builder
 
         # Sections radii option
         sections_radii_row = self.layout.row()
@@ -167,11 +174,11 @@ class VMVMorphologyPanel(bpy.types.Panel):
         if context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
 
             # Pass options from UI to system
-            vmv.interface.ui.options.morphology.radii = \
+            vmv.interface.Options.morphology.radii = \
                 vmv.enums.Morphology.Radii.AS_SPECIFIED
-            vmv.interface.ui.options.morphology.scale_sections_radii = False
-            vmv.interface.ui.options.morphology.unify_sections_radii = False
-            vmv.interface.ui.options.morphology.sections_radii_scale = 1.0
+            vmv.interface.Options.morphology.scale_sections_radii = False
+            vmv.interface.Options.morphology.unify_sections_radii = False
+            vmv.interface.Options.morphology.sections_radii_scale = 1.0
 
         # Fixed diameter
         elif context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
@@ -181,10 +188,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
             fixed_diameter_row.prop(context.scene, 'VMV_FixedRadiusValue')
 
             # Pass options from UI to system
-            vmv.interface.ui.options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
-            vmv.interface.ui.options.morphology.scale_sections_radii = False
-            vmv.interface.ui.options.morphology.unify_sections_radii = True
-            vmv.interface.ui.options.morphology.sections_fixed_radii_value = \
+            vmv.interface.Options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
+            vmv.interface.Options.morphology.scale_sections_radii = False
+            vmv.interface.Options.morphology.unify_sections_radii = True
+            vmv.interface.Options.morphology.sections_fixed_radii_value = \
                 context.scene.VMV_FixedRadiusValue
 
         # Scaled diameter
@@ -195,10 +202,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
             scaled_diameter_row.prop(context.scene, 'VMV_RadiusScaleValue')
 
             # Pass options from UI to system
-            vmv.interface.ui.options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
-            vmv.interface.ui.options.morphology.unify_sections_radii = False
-            vmv.interface.ui.options.morphology.scale_sections_radii = True
-            vmv.interface.ui.options.morphology.sections_radii_scale = \
+            vmv.interface.Options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
+            vmv.interface.Options.morphology.unify_sections_radii = False
+            vmv.interface.Options.morphology.scale_sections_radii = True
+            vmv.interface.Options.morphology.sections_radii_scale = \
                 context.scene.VMV_RadiusScaleValue
 
         else:
@@ -208,7 +215,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         tube_quality_row = self.layout.row()
         tube_quality_row.label(text='Tube Quality:')
         tube_quality_row.prop(context.scene, 'VMV_TubeQuality')
-        vmv.interface.ui.options.morphology.bevel_object_sides = context.scene.VMV_TubeQuality
+        vmv.interface.Options.morphology.bevel_object_sides = context.scene.VMV_TubeQuality
 
         # Morphology reconstruction techniques option
         # skeleton_style_row = self.layout.row()
@@ -219,7 +226,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         #branching_row = self.layout.row()
         #branching_row.label(text='Branching:')
         #branching_row.prop(context.scene, 'MorphologyBranching', expand=True)
-        #vmv.interface.ui.options.morphology.branching = context.scene.MorphologyBranching
+        #vmv.interface.Options.morphology.branching = context.scene.MorphologyBranching
 
         # Arbor quality option
         #arbor_quality_row = self.layout.row()
@@ -248,7 +255,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         scene = context.scene 
 
         # Reference to morphology options 
-        morphology_options = vmv.interface.ui.options.morphology
+        morphology_options = vmv.interface.Options.morphology
 
         # Coloring parameters
         colors_row = self.layout.row()
@@ -259,7 +266,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
         morphology_options.material = scene.VMV_MorphologyMaterial
 
-        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.ui.options)
+        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
     ################################################################################################
     # @draw_morphology_reconstruction_button
@@ -284,7 +291,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_reconstruction_row.operator('reconstruct.morphology', icon='MESH_DATA')
 
         # If the morphology is loaded only, print the performance stats.
-        if vmv.interface.ui_morphology_loaded:
+        if vmv.interface.MorphologyLoaded:
 
             # Stats
             morphology_stats_row = layout.row()
@@ -325,7 +332,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
             frame_resolution_row = self.layout.row()
             frame_resolution_row.label(text='Frame Resolution:')
             frame_resolution_row.prop(context.scene, 'VMV_MorphologyImageResolution')
-            vmv.interface.ui.options.morphology.resolution_basis = \
+            vmv.interface.Options.morphology.resolution_basis = \
                 context.scene.VMV_MorphologyRenderingResolution
 
         # Otherwise, add the scale factor option
@@ -335,7 +342,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
             scale_factor_row = self.layout.row()
             scale_factor_row.label(text='Resolution Scale:')
             scale_factor_row.prop(context.scene, 'VMV_MorphologyImageScaleFactor')
-            vmv.interface.ui.options.morphology.resolution_scale_factor = \
+            vmv.interface.Options.morphology.resolution_scale_factor = \
                 context.scene.VMV_MorphologyImageScaleFactor
 
         # Rendering view column
@@ -366,7 +373,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
                 # Scale bar
                 scale_bar_row = layout.row()
                 scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
-                vmv.interface.ui.options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
+                vmv.interface.Options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
 
         # Set it by default to ORTHOGRAPHIC
         else:
@@ -376,7 +383,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
             # Scale bar
             scale_bar_row = layout.row()
             scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
-            vmv.interface.ui.options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
+            vmv.interface.Options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
 
         # Rendering button
         rendering_button_row = self.layout.column()
@@ -439,7 +446,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         self.draw_morphology_export_options(context=context)
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
-        if vmv.interface.ui_morphology_loaded:
+        if vmv.interface.MorphologyLoaded:
             self.layout.enabled = True
         else:
             self.layout.enabled = False
@@ -480,38 +487,38 @@ class VMVReconstructMorphology(bpy.types.Operator):
         start_reconstruction = time.time()
 
         # Make sure that the morphology isn loaded and valid in memory
-        if not vmv.interface.ui_morphology_loaded:
+        if not vmv.interface.MorphologyLoaded:
             print('ERROR: Morphology is not loaded')
 
         # Construct the skeleton builder
         # Disconnected segments builder
-        if vmv.interface.ui.options.morphology.builder == \
+        if vmv.interface.Options.morphology.builder == \
                 vmv.enums.Morphology.Builder.SEGMENTS:
             self.morphology_builder = vmv.builders.DisconnectedSegmentsBuilder(
-                morphology=vmv.interface.ui.ui_morphology, options=vmv.interface.ui.options)
+                morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
 
         # Disconnected sections builder
-        elif vmv.interface.ui.options.morphology.builder == \
+        elif vmv.interface.Options.morphology.builder == \
                 vmv.enums.Morphology.Builder.SECTIONS:
 
             self.morphology_builder = vmv.builders.DisconnectedSectionsBuilder(
-                morphology=vmv.interface.ui.ui_morphology,
-                options=vmv.interface.ui.options)
+                morphology=vmv.interface.MorphologyObject,
+                options=vmv.interface.Options)
 
         # Samples builder
-        elif vmv.interface.ui.options.morphology.builder == \
+        elif vmv.interface.Options.morphology.builder == \
                 vmv.enums.Morphology.Builder.SAMPLES:
 
             self.morphology_builder = vmv.builders.SamplesBuilder(
-                morphology=vmv.interface.ui.ui_morphology,
-                options=vmv.interface.ui.options)
+                morphology=vmv.interface.MorphologyObject,
+                options=vmv.interface.Options)
 
         else:
             return {'FINISHED'}
 
         # Build the morphology skeleton directly
         # NOTE: each builder must have this function @build_skeleton() implemented in it
-        vmv.interface.ui.morphology_skeleton = self.morphology_builder.build_skeleton(context=context)
+        vmv.interface.MorphologySkeleton = self.morphology_builder.build_skeleton(context=context)
 
         # Interpolations
         scale = float(context.scene.VMV_MaximumValue) - float(context.scene.VMV_MinimumValue)
@@ -558,17 +565,17 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         import vmv
 
         # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.ui.options.io.output_directory is None:
+        if vmv.interface.Options.io.output_directory is None:
             self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
             return {'FINISHED'}
 
-        if not vmv.file.ops.path_exists(context.scene.OutputDirectory):
+        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
             self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
             return {'FINISHED'}
 
         # Create the images directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.options.io.images_directory):
-            vmv.file.ops.clean_and_create_directory(vmv.interface.options.io.images_directory)
+        if not vmv.file.ops.path_exists(vmv.interface.Options.io.images_directory):
+            vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.images_directory)
 
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Morphology ... Wait Please')
@@ -577,7 +584,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
         bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
 
         # Image name
-        image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.options.morphology.label,
+        image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.Options.morphology.label,
                                            vmv.options.morphology.camera_view)
 
         # Stretch the bounding box by few microns
@@ -586,13 +593,13 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
 
         # Adding the illumination
         vmv.shading.create_material_specific_illumination(
-            vmv.interface.options.morphology.material)
+            vmv.interface.Options.morphology.material)
 
         # Draw the morphology scale bar
         if context.scene.VMV_RenderMorphologyScaleBar:
             scale_bar = vmv.interface.draw_scale_bar(
                 bounding_box=bounding_box,
-                material_type=vmv.interface.ui.options.morphology.material,
+                material_type=vmv.interface.Options.morphology.material,
                 view=vmv.options.morphology.camera_view)
 
         # Render at a specific resolution
@@ -606,7 +613,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
                 camera_projection=vmv.options.morphology.camera_projection,
                 image_resolution=context.scene.VMV_MorphologyImageResolution,
                 image_name=image_name,
-                image_directory=vmv.interface.options.io.images_directory)
+                image_directory=vmv.interface.Options.io.images_directory)
 
         # Render at a specific scale factor
         else:
@@ -617,7 +624,7 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
                 camera_view=vmv.options.morphology.camera_view,
                 image_scale_factor=context.scene.VMV_MorphologyImageScaleFactor,
                 image_name=image_name,
-                image_directory=vmv.interface.options.io.images_directory)
+                image_directory=vmv.interface.Options.io.images_directory)
 
         # Delete the morphology scale bar, if rendered
         if context.scene.VMV_RenderMorphologyScaleBar:
@@ -732,18 +739,18 @@ class VMVRenderMorphology360(bpy.types.Operator):
         """
 
         # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.options.io.output_directory is None:
+        if vmv.interface.Options.io.output_directory is None:
             self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
             return {'FINISHED'}
 
-        if not vmv.file.ops.path_exists(context.scene.OutputDirectory):
+        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
             self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
             return {'FINISHED'}
 
         # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.options.io.sequences_directory):
+        if not vmv.file.ops.path_exists(vmv.interface.Options.io.sequences_directory):
             vmv.file.ops.clean_and_create_directory(
-                vmv.interface.options.io.sequences_directory)
+                vmv.interface.Options.io.sequences_directory)
 
         # A reference to the bounding box that will be used for the rendering
         rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_curves()
@@ -757,8 +764,8 @@ class VMVRenderMorphology360(bpy.types.Operator):
 
         # Create a specific directory for this mesh
         self.output_directory = '%s/%s_mesh_360' % (
-            vmv.interface.options.io.sequences_directory,
-            vmv.interface.options.morphology.label)
+            vmv.interface.Options.io.sequences_directory,
+            vmv.interface.Options.morphology.label)
         vmv.file.ops.clean_and_create_directory(self.output_directory)
 
         # Use the event timer to update the UI during the soma building
@@ -825,14 +832,14 @@ class VMVExportMorphology(bpy.types.Operator):
             return {'FINISHED'}
 
         # Meshing technique
-        meshing_technique = vmv.interface.options.mesh.meshing_technique
+        meshing_technique = vmv.interface.Options.mesh.meshing_technique
 
         # Piece-wise watertight meshing
         if meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
 
             # Create the mesh builder
             mesh_builder = vmv.builders.PiecewiseBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.options)
+                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
@@ -842,7 +849,7 @@ class VMVExportMorphology(bpy.types.Operator):
 
             # Create the mesh builder
             mesh_builder = vmv.builders.BridgingBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.options)
+                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
@@ -852,7 +859,7 @@ class VMVExportMorphology(bpy.types.Operator):
 
             # Create the mesh builder
             mesh_builder = vmv.builders.UnionBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.options)
+                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
@@ -862,7 +869,7 @@ class VMVExportMorphology(bpy.types.Operator):
 
             # Create the mesh builder
             mesh_builder = vmv.builders.ExtrusionBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.options)
+                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
@@ -871,7 +878,7 @@ class VMVExportMorphology(bpy.types.Operator):
 
             # Create the mesh builder
             mesh_builder = vmv.builders.SkinningBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.options)
+                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
@@ -880,7 +887,7 @@ class VMVExportMorphology(bpy.types.Operator):
 
             # Create the mesh builder
             mesh_builder = vmv.builders.MetaBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.options)
+                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
 
             # Reconstruct the mesh
             vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()

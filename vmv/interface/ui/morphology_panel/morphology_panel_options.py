@@ -43,10 +43,10 @@ bpy.types.Scene.VMV_VisualizationType = bpy.props.EnumProperty(
     items=[('Structure',
             'Structure',
             'Visualize static data showing only the structural aspects of the blood vessel'),
-           ('Simulation',
-            'Simulation',
+           ('Dynamics',
+            'Dynamics',
             'Visualize simulation data with respect to time')],
-    name='Visualization',
+    name='',
     default='Structure')
 
 # Available simulations
@@ -60,7 +60,7 @@ bpy.types.Scene.VMV_AvailableSimulations = bpy.props.EnumProperty(
            ('Pressure',
             'Pressure',
             'Visualize the pressure variations')],
-    name='Available Simulations',
+    name='',
     default='Radius')
 
 # Simulation starting frame

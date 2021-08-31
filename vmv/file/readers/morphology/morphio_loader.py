@@ -222,8 +222,8 @@ class MorphIOLoader:
 
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
-            morphology_name=morphology_name, morphology_file_path=self.morphology_file,
-            sections_list=self.sections_list, roots=self.roots)
+            name=morphology_name, file_path=self.morphology_file, sections_list=self.sections_list,
+            roots=self.roots)
 
         # Return the object
         return morphology_object

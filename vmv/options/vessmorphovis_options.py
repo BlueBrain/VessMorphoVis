@@ -103,7 +103,7 @@ class VessMorphoVisOptions:
         if arguments.input == 'file':
 
             # Update the file
-            self.morphology.morphology_file_path = arguments.morphology_file
+            self.morphology.file_path = arguments.morphology_file
 
             # Update the morphology label
             self.morphology.label = vmv.file.ops.get_file_name_from_path(arguments.morphology_file)

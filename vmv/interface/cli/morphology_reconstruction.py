@@ -152,7 +152,7 @@ def reconstruct_vascular_morphology(cli_morphology,
                 camera_view=cli_options.morphology.camera_view,
                 image_scale_factor=cli_options.morphology.resolution_scale_factor,
                 image_name='MORPHOLOGY_FRONT_%s' % cli_morphology.name,
-                image_directory=vmv.interface.options.io.images_directory)
+                image_directory=Globals.Options.io.images_directory)
 
     # Render a 360 sequence of the reconstructed morphology skeleton
     if cli_options.morphology.render_360:
@@ -196,7 +196,7 @@ if __name__ == "__main__":
 
         if not loading_flag:
             vmv.logger.log('ERROR: Cannot load the morphology file [%s]. Terminating!' %
-                           str(cli_options.morphology.morphology_file_path))
+                           str(cli_options.morphology.file_path))
             exit(0)
 
     else:

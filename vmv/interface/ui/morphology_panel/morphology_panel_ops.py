@@ -16,7 +16,6 @@
 ####################################################################################################
 
 # Internal imports
-import vmv
 import vmv.bbox
 import vmv.enums
 import vmv.file
@@ -26,6 +25,7 @@ import vmv.interface
 import vmv.utilities
 import vmv.rendering
 import vmv.shading
+from .morphology_panel_options import *
 
 
 ####################################################################################################
@@ -51,8 +51,8 @@ def add_colormap_options(layout,
     color_map_row.prop(scene, 'VMV_InvertColorMap')
 
     # Clear the color map passed to VMV if it is full
-    if len(vmv.interface.ui.options.morphology.color_map_colors) > 0:
-        vmv.interface.ui.options.morphology.color_map_colors.clear()
+    if len(vmv.interface.Options.morphology.color_map_colors) > 0:
+        vmv.interface.Options.morphology.color_map_colors.clear()
 
     # Fill the list of colors
     for i in range(vmv.consts.Color.COLORMAP_RESOLUTION):
@@ -70,7 +70,7 @@ def add_colormap_options(layout,
 
         # Get the color value from the panel
         color = getattr(scene, 'VMV_Color%d' % i)
-        vmv.interface.ui.options.morphology.color_map_colors.append(color)
+        vmv.interface.Options.morphology.color_map_colors.append(color)
 
 
 ####################################################################################################
@@ -139,7 +139,7 @@ def add_per_section_color_coding_options(layout,
     """
 
     # Set the color coding scheme
-    vmv.interface.ui.options.morphology.color_coding = scene.VMV_PerSectionColorCodingBasis
+    vmv.interface.Options.morphology.color_coding = scene.VMV_PerSectionColorCodingBasis
 
     # Default coloring scheme
     if scene.VMV_PerSectionColorCodingBasis == vmv.enums.ColorCoding.DEFAULT:
@@ -171,7 +171,7 @@ def add_per_segment_color_coding_options(layout,
     """
 
     # Color coding scheme
-    vmv.interface.ui.options.morphology.color_coding = scene.VMV_PerSegmentColorCodingBasis
+    vmv.interface.Options.morphology.color_coding = scene.VMV_PerSegmentColorCodingBasis
 
     # Single arbor color
     if scene.VMV_PerSegmentColorCodingBasis == vmv.enums.ColorCoding.DEFAULT:

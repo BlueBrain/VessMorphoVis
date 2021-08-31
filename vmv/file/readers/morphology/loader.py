@@ -134,7 +134,7 @@ def read_morphology_from_file(options):
     """
 
     # The morphology file path is available from the system options
-    morphology_file_path = options.morphology.morphology_file_path
+    morphology_file_path = options.morphology.file_path
 
     # Get the extension from the file path
     morphology_prefix, morphology_extension = os.path.splitext(morphology_file_path)

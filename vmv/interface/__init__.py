@@ -16,5 +16,6 @@
 ####################################################################################################
 
 from .common import *
+from .globals import *
 from .ui import *
 from .cli import *

@@ -21,12 +21,12 @@ import vmv.rendering
 def load_icons():
     """Loads the external icons.
     """
-    vmv.interface.ui_icons = bpy.utils.previews.new()
+    vmv.interface.Icons = bpy.utils.previews.new()
     images_path = '%s/../../../data/images' % os.path.dirname(os.path.realpath(__file__))
-    vmv.interface.ui_icons.load("github", os.path.join(images_path, "github-logo.png"), 'IMAGE')
-    vmv.interface.ui_icons.load("bbp", os.path.join(images_path, "bbp-logo.png"), 'IMAGE')
-    vmv.interface.ui_icons.load("epfl", os.path.join(images_path, "epfl-logo.png"), 'IMAGE')
-    vmv.interface.ui_icons.load("vmv", os.path.join(images_path, "vmv-logo.png"), 'IMAGE')
+    vmv.interface.Icons.load("github", os.path.join(images_path, "github-logo.png"), 'IMAGE')
+    vmv.interface.Icons.load("bbp", os.path.join(images_path, "bbp-logo.png"), 'IMAGE')
+    vmv.interface.Icons.load("epfl", os.path.join(images_path, "epfl-logo.png"), 'IMAGE')
+    vmv.interface.Icons.load("vmv", os.path.join(images_path, "vmv-logo.png"), 'IMAGE')
 
 
 ####################################################################################################
@@ -54,7 +54,7 @@ def unload_icons():
     """
 
     # Remove the icons
-    bpy.utils.previews.remove(vmv.interface.ui_icons)
+    bpy.utils.previews.remove(vmv.interface.Icons)
 
 
 ####################################################################################################
@@ -87,11 +87,11 @@ def validate_output_directory(panel_object,
     """
 
     # Ensure that there is a valid directory where the images will be written to
-    if vmv.interface.options.io.output_directory is None:
+    if Globals.Options.io.output_directory is None:
         panel_object.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
         return {'FINISHED'}
 
-    if not vmv.file.ops.path_exists(context_scene.OutputDirectory):
+    if not vmv.file.ops.path_exists(context_scene.VMV_OutputDirectory):
         panel_object.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
         return {'FINISHED'}
 
@@ -119,10 +119,10 @@ def configure_output_directory(options,
         if os.path.exists(suggested_output_folder):
 
             # Update the system options
-            vmv.interface.ui.options.io.output_directory = suggested_output_folder
+            vmv.interface.Options.io.output_directory = suggested_output_folder
 
             # Update the UI
-            context.scene.OutputDirectory = suggested_output_folder
+            context.scene.VMV_OutputDirectory = suggested_output_folder
 
         # Otherwise, create it
         else:
@@ -134,10 +134,10 @@ def configure_output_directory(options,
                 os.mkdir(suggested_output_folder)
 
                 # Update the system options
-                vmv.interface.ui.options.io.output_directory = suggested_output_folder
+                vmv.interface.Options.io.output_directory = suggested_output_folder
 
                 # Update the UI
-                context.scene.OutputDirectory = suggested_output_folder
+                context.scene.VMV_OutputDirectory = suggested_output_folder
 
             # Voila
             except ValueError:
@@ -164,8 +164,8 @@ def render_morphology_image(panel_object,
         panel_object=panel_object, context_scene=context_scene)
 
     # Create the images directory if it does not exist
-    if not vmv.file.ops.path_exists(vmv.interface.options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(vmv.interface.options.io.images_directory)
+    if not vmv.file.ops.path_exists(Globals.Options.io.images_directory):
+        vmv.file.ops.clean_and_create_directory(Globals.Options.io.images_directory)
 
     # Report the process starting in the UI
     panel_object.report({'INFO'}, 'Rendering ... Wait')
@@ -211,8 +211,8 @@ def render_morphology_image(panel_object,
             bounding_box=bounding_box,
             camera_view=view,
             image_resolution=context_scene.VMV_MorphologyImageResolution,
-            image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
-            image_directory=vmv.interface.options.io.images_directory,
+            image_name='MORPHOLOGY_%s_%s' % (view_prefix, Globals.Options.morphology.label),
+            image_directory=Globals.Options.io.images_directory,
             keep_camera_in_scene=context_scene.KeepMeshCameras)
 
     # Render at a specific scale factor
@@ -223,8 +223,8 @@ def render_morphology_image(panel_object,
             bounding_box=bounding_box,
             camera_view=view,
             image_scale_factor=context_scene.VMV_MorphologyImageScaleFactor,
-            image_name='MORPHOLOGY_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
-            image_directory=vmv.interface.options.io.images_directory,
+            image_name='MORPHOLOGY_%s_%s' % (view_prefix, Globals.Options.morphology.label),
+            image_directory=Globals.Options.io.images_directory,
             keep_camera_in_scene=context_scene.KeepMeshCameras)
 
     # Report the process termination in the UI
@@ -255,8 +255,8 @@ def render_mesh_image(panel_object,
         panel_object=panel_object, context_scene=context_scene)
 
     # Create the images directory if it does not exist
-    if not vmv.file.ops.path_exists(vmv.interface.options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(vmv.interface.options.io.images_directory)
+    if not vmv.file.ops.path_exists(Globals.Options.io.images_directory):
+        vmv.file.ops.clean_and_create_directory(Globals.Options.io.images_directory)
 
     # Report the process starting in the UI
     panel_object.report({'INFO'}, 'Rendering ... Wait')
@@ -287,8 +287,8 @@ def render_mesh_image(panel_object,
             camera_view=rendering_view,
             camera_projection=camera_projection,
             image_resolution=context_scene.MeshFrameResolution,
-            image_name='MESH_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
-            image_directory=vmv.interface.options.io.images_directory)
+            image_name='MESH_%s_%s' % (view_prefix, Globals.Options.morphology.label),
+            image_directory=Globals.Options.io.images_directory)
 
     # Render at a specific scale factor
     else:
@@ -298,8 +298,8 @@ def render_mesh_image(panel_object,
             bounding_box=bounding_box,
             camera_view=rendering_view,
             image_scale_factor=context_scene.MeshFrameScaleFactor,
-            image_name='MESH_%s_%s' % (view_prefix, vmv.interface.options.morphology.label),
-            image_directory=vmv.interface.options.io.images_directory)
+            image_name='MESH_%s_%s' % (view_prefix, Globals.Options.morphology.label),
+            image_directory=Globals.Options.io.images_directory)
 
     # Report the process termination in the UI
     panel_object.report({'INFO'}, 'Rendering Done')

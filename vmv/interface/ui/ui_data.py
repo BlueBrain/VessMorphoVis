@@ -18,16 +18,6 @@
 # Internal imports
 import vmv.options
 
-# The morphology skeleton object loaded after UI interaction.
-ui_morphology = None
+# morphology_skeleton = None
 
-morphology_skeleton = None
 
-# All the icons loaded for the UI
-ui_icons = None
-
-# The options parsed from the user interface
-options = vmv.options.VessMorphoVisOptions()
-
-# A flag to indicate if the morphology has been loaded or not to activate the core of the VMV
-ui_morphology_loaded = False
