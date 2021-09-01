@@ -75,7 +75,7 @@ class MeshOptions:
         self.material = vmv.enums.Shader.LAMBERT_WARD
 
         # Morphology color
-        self.color = vmv.consts.Color.DEFAULT_BLOOD_COLOR
+        self.color = vmv.consts.Color.LIGHT_RED_COLOR
 
         # MESH RENDERING ###########################################################################
         # Camera view

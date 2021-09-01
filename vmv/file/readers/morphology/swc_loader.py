@@ -70,6 +70,12 @@ class SWCLoader:
         # single object.
         self.roots = list()
 
+        # The number of loaded vertices or samples
+        self.number_loaded_vertices = None
+
+        # The number of loaded strands or segments
+        self.number_loaded_strands = None
+
         # The samples list parsed from the morphology file
         self.parsed_samples_list = list()
 
@@ -235,7 +241,11 @@ class SWCLoader:
     ################################################################################################
     def read_samples(self,
                      center_at_origin=False):
-        """Reads an SWC files and returns a list of all the samples in the file"""
+        """Reads an SWC files and returns a list of all the samples in the file
+
+        :param center_at_origin:
+            Center the morphology at the origin.
+        """
 
         # Open the file, read it line by line and store the result in list.
         morphology_file = open(self.morphology_file, 'r')
@@ -344,6 +354,9 @@ class SWCLoader:
         for i_sample in self.parsed_samples_list:
             self.samples_list[i_sample[0]] = i_sample
 
+        # Update the meta-data
+        self.number_loaded_vertices = len(self.samples_list)
+
     ################################################################################################
     # @get_vmv_sample_from_samples_list
     ################################################################################################
@@ -429,6 +442,7 @@ class SWCLoader:
 
             # If the types are matching
             if sample[1] == sample_type:
+
                 # Append the sample to the list
                 selected_samples_list.append(sample)
 
@@ -535,8 +549,8 @@ class SWCLoader:
         :param center_at_origin:
             A flag that indicates that the morphology will be centered at the origin.
         :param resample_morphology:
-            Re-samples the morphology skeleton to reduce the number of samples along the section and
-            remove the redundant samples.
+            Re-samples the morphology skeleton to reduce the number of samples along the
+            section and remove the redundant samples.
         :return:
             A reference to the morphology object.
         """
@@ -562,6 +576,10 @@ class SWCLoader:
         self.sections_list.extend(self.get_sections_of_specific_type(
             vmv.consts.Skeleton.SWC_AXON_SAMPLE_TYPE))
 
+        # Update the meta-data, regarding the sections
+        self.number_loaded_strands = len(self.sections_list)
+
+        # Resample the morphology skeleton, if needed
         if resample_morphology:
             for section in self.sections_list:
                 vmv.skeleton.resample_section_adaptively(section)
@@ -572,6 +590,8 @@ class SWCLoader:
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
             name=morphology_name, file_path=self.morphology_file,
+            number_samples=self.number_loaded_vertices,
+            number_sections=self.number_loaded_strands,
             sections_list=self.sections_list, roots=self.roots)
 
         # Return the object

@@ -30,6 +30,49 @@ class Morphology:
         pass
 
     ################################################################################################
+    # @Visualization
+    ################################################################################################
+    class Visualization:
+        """The kind of visualization, whether structure or dynamics
+        """
+
+        # Visualize structural aspects
+        STRUCTURE = 'MORPHOLOGY_VISUALIZATION_STRUCTURE'
+        STRUCTURE_UI_ITEM = (STRUCTURE,
+                             'Structure',
+                             'Visualize static data, showing only the structure of the vasculature')
+
+        # Visualize dynamics, simulation and functional aspects
+        DYNAMICS = 'MORPHOLOGY_VISUALIZATION_DYNAMICS'
+        DYNAMICS_UI_ITEM = (DYNAMICS,
+                            'Dynamics',
+                            'Visualize simulation data with respect to time (function dynamics)')
+
+        ############################################################################################
+        # @__init__
+        ############################################################################################
+        def __init__(self):
+            pass
+
+        ############################################################################################
+        # @get_enum
+        ############################################################################################
+        @staticmethod
+        def get_enum(argument):
+
+            # Structure
+            if argument == 'structure':
+                return Morphology.Visualization.STRUCTURE
+
+            # Dynamics
+            elif argument == 'dynamics':
+                return Morphology.Visualization.DYNAMICS
+
+            # By default, visualize structure
+            else:
+                return Morphology.Visualization.STRUCTURE
+
+    ################################################################################################
     # @Skeleton
     ################################################################################################
     class Style:
@@ -95,10 +138,12 @@ class Morphology:
              'Segments',
              "Reconstruct the morphology as a set of segments, where each segment is an "
              "independent object (this approach is time consuming!)"),
+
             (SECTIONS,
              'Sections',
              "Reconstruct the morphology as a set of sections, where each section is an "
              "independent object"),
+
             (SAMPLES,
              'Samples',
              "Reconstruct the morphology as a set of samples")

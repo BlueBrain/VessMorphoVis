@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -19,49 +19,9 @@
 import bpy
 
 # Internal imports
-import vmv.consts
+import vmv.enums
 
-# Simulation parameters ############################################################################
-# This scene parameter is used to propagate if the loaded morphology has simulation data or not
-bpy.types.Scene.VMV_MorphologyHasSimulationData = bpy.props.BoolProperty(
-    name='', description='', default=False)
 
-# Confirms if the loaded morphology has radius simulation data
-bpy.types.Scene.VMV_MorphologyHasRadiusSimulation = bpy.props.BoolProperty(
-    name='', description='', default=False)
-
-# Confirms if the loaded morphology has pressure simulation data
-bpy.types.Scene.VMV_MorphologyHasPressureSimulation = bpy.props.BoolProperty(
-    name='', description='', default=False)
-
-# Confirms if the loaded morphology has flow simulation data
-bpy.types.Scene.VMV_MorphologyHasFlowSimulation = bpy.props.BoolProperty(
-    name='', description='', default=False)
-
-# Visualization type, static structure or dynamic simulation
-bpy.types.Scene.VMV_VisualizationType = bpy.props.EnumProperty(
-    items=[('Structure',
-            'Structure',
-            'Visualize static data showing only the structural aspects of the blood vessel'),
-           ('Dynamics',
-            'Dynamics',
-            'Visualize simulation data with respect to time')],
-    name='',
-    default='Structure')
-
-# Available simulations
-bpy.types.Scene.VMV_AvailableSimulations = bpy.props.EnumProperty(
-    items=[('Radius',
-            'Radius',
-            'Visualize the radius variations'),
-           ('Flow',
-            'Flow',
-            'Visualize the flow variations'),
-           ('Pressure',
-            'Pressure',
-            'Visualize the pressure variations')],
-    name='',
-    default='Radius')
 
 # Simulation starting frame
 bpy.types.Scene.VMV_TimeFrameStart = bpy.props.IntProperty(
@@ -142,7 +102,7 @@ bpy.types.Scene.VMV_MorphologyColor1 = bpy.props.FloatVectorProperty(
 # The alternative color used to color every second object in the morphology
 bpy.types.Scene.VMV_MorphologyColor2 = bpy.props.FloatVectorProperty(
     name='Color 2',
-    subtype='COLOR', default=vmv.consts.Color.DEFAULT_BLOOD_COLOR, min=0.0, max=1.0,
+    subtype='COLOR', default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
     description='The second alternating color of the morphology')
 
 # Colormap minimum and maximum values

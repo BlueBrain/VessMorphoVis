@@ -30,6 +30,9 @@ MorphologyPolylineObject = None
 # A flag that is used to track if the morphology is loaded or not
 MorphologyLoaded = False
 
+# A flag that is used to track if VMV is initialized or not
+SystemInitialized = False
+
 # A reference to the reconstructed mesh object
 MeshObject = None
 

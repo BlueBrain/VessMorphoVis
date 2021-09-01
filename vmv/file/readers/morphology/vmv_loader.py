@@ -57,16 +57,10 @@ class VMVReader:
         # single object.
         self.roots = list()
 
-        # The number of samples when the morphology was loaded
-        self.number_samples_original = 0
-
-        # The total number of samples along the morphology after re-sampling
-        self.number_samples_after_resampling = 0
-
         # The number of loaded vertices or samples
         self.number_loaded_vertices = None
 
-        # The number of loaded strands or segments
+        # The number of loaded strands or sections
         self.number_loaded_strands = None
 
         # A list containing all the points of the morphology in a Cartesian format(X, Y, Z)
@@ -260,6 +254,12 @@ class VMVReader:
     ################################################################################################
     def parse_vertices(self,
                        data):
+        """Parses the vertices from the VMV file.
+
+        :param data:
+            Input data table that contains all the data of the morphology, where we will extract
+            the vertex information.
+        """
 
         # Read the vertices by getting the index of the $VERT_LIST_BEGIN tag
         starting_vertex_index = 0
@@ -309,11 +309,20 @@ class VMVReader:
             # Radii
             self.radii_list.append(radius)
 
+        # Update the meta-data
+        self.number_loaded_vertices = len(self.points_list)
+
     ################################################################################################
     # @parse_strands
     ################################################################################################
     def parse_strands(self,
                       data):
+        """Parses the strands or sections of the vascular morphology from the VMV file.
+
+        :param data:
+            Input data table that contains all the data of the morphology, where we will extract
+            the sections information.
+        """
 
         # Read the strands by getting the index of the STRANDS_LIST_BEGIN tag
         starting_strand_index = 0
@@ -370,6 +379,9 @@ class VMVReader:
 
             # Add the section to the sections list
             self.sections_list.append(section)
+
+        # Update the meta-data
+        self.number_loaded_strands = len(self.sections_list)
 
     ################################################################################################
     # @parse_radius_simulation_data
@@ -432,10 +444,16 @@ class VMVReader:
     ################################################################################################
     # @read_data_from_file
     ################################################################################################
-    def read_data_from_file(self, center_at_origin=False):
+    def read_data_from_file(self,
+                            center_at_origin=False):
         """Loads the data from the given file in the constructor.
+
+        :param center_at_origin:
+            Center the morphology at the center.
         """
 
+        # Make sure you get the data, otherwise, report an ERROR!
+        # TODO: Propagate this error to the interface
         try:
 
             # Load the data from the file
@@ -533,8 +551,11 @@ class VMVReader:
 
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
-            name=morphology_name, file_path=self.morphology_file, sections_list=self.sections_list,
-            roots=self.roots, radius_simulation_data=self.radius_simulation_data)
+            name=morphology_name, file_path=self.morphology_file,
+            number_samples=self.number_loaded_vertices,
+            number_sections=self.number_loaded_strands,
+            sections_list=self.sections_list, roots=self.roots,
+            radius_simulation_data=self.radius_simulation_data)
 
         # Return the object
         return morphology_object

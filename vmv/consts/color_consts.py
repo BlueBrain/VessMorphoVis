@@ -59,5 +59,8 @@ class Color:
     # Default color for blood
     DEFAULT_BLOOD_COLOR = Vector((172.0 / 256.0, 4.0 / 256.0, 4.0 / 256.0))
 
+    # Light red color
+    LIGHT_RED_COLOR = Vector((0.9, 0.1, 0.075))
+
     # NUmber of colors in the colormap
     COLORMAP_RESOLUTION = 16

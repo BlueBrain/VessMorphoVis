@@ -87,7 +87,7 @@ bpy.types.Scene.MeshMaterial = bpy.props.EnumProperty(
 # Mesh color
 bpy.types.Scene.MeshColor = bpy.props.FloatVectorProperty(
     name="Mesh Color", subtype='COLOR',
-    default=vmv.consts.Color.DEFAULT_BLOOD_COLOR, min=0.0, max=1.0,
+    default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
     description="The color of the reconstructed mesh surface")
 
 # 360 rendering progress bar

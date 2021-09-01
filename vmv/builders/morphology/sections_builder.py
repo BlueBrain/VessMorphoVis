@@ -31,9 +31,9 @@ from .base import MorphologyBuilder
 
 
 ####################################################################################################
-# @DisconnectedSectionsBuilder
+# @SectionsBuilder
 ####################################################################################################
-class DisconnectedSectionsBuilder(MorphologyBuilder):
+class SectionsBuilder(MorphologyBuilder):
     """The builder reconstructs a an object composed of a series of disconnected sections, where 
     each section is drawn as an independent object.
     """
@@ -256,10 +256,10 @@ class DisconnectedSectionsBuilder(MorphologyBuilder):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
-        vmv.logger.header('Building skeleton: DisconnectedSectionsBuilder')
+        vmv.logger.header('Building skeleton: SectionsBuilder')
 
         # Call the base function
-        super(DisconnectedSectionsBuilder, self).build_skeleton(context=context)
+        super(SectionsBuilder, self).build_skeleton(context=context)
 
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(

@@ -32,7 +32,7 @@ import vmv.utilities
 
 
 ####################################################################################################
-# @DisconnectedSectionsBuilder
+# @SectionsBuilder
 ####################################################################################################
 class MorphologyBuilder:
     """Base class, where all the morphology builders will inherit from.

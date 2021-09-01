@@ -64,7 +64,7 @@ def build_skeleton(cli_morphology,
     if method == vmv.enums.Morphology.Builder.SECTIONS:
 
         # Create the builder and build the morphology skeleton
-        builder = vmv.builders.DisconnectedSectionsBuilder(morphology=cli_morphology,
+        builder = vmv.builders.SectionsBuilder(morphology=cli_morphology,
                                                            options=cli_options)
         builder.build_skeleton()
         return True
@@ -73,7 +73,7 @@ def build_skeleton(cli_morphology,
     elif method == vmv.enums.Morphology.Builder.SEGMENTS:
 
         # Create the builder and build the morphology skeleton
-        builder = vmv.builders.DisconnectedSegmentsBuilder(morphology=cli_morphology,
+        builder = vmv.builders.SegmentsBuilder(morphology=cli_morphology,
                                                            options=cli_options)
         builder.build_skeleton()
         return True

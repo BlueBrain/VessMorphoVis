@@ -139,7 +139,7 @@ def add_output_options(layout,
 
 
 ####################################################################################################
-# @add_output_options
+# @add_file_content_summary
 ####################################################################################################
 def add_file_content_summary(layout,
                              scene):
@@ -151,58 +151,35 @@ def add_file_content_summary(layout,
         Context scene.
     """
 
-    # Stats
-    file_summary_row = layout.row()
-    file_summary_row.label(text='File Summary:', icon='RECOVER_LAST')
+    # File summary
+    row = layout.row()
+    row.label(text='File Summary:', icon='BORDERMOVE')
+
+    # Just put them all in a single column
+    column = layout.column()
 
     # File name
-    row = layout.row()
-    row.label(text='File:')
-    row = row.row()
-    row.prop(scene, 'VMV_MorphologyName')
-    row.enabled = False
+    column.prop(scene, 'VMV_MorphologyName')
 
-    # Number of samples
-    row = layout.row()
-    row.label(text='Number Samples:')
-    row = row.row()
-    row.prop(scene, 'VMV_NumberMorphologySamples')
-    row.enabled = False
+    # Total number of samples
+    column.prop(scene, 'VMV_NumberMorphologySamples')
 
-    # Number of sections
-    row = layout.row()
-    row.label(text='Number Sections:')
-    row = row.row()
-    row.prop(scene, 'VMV_NumberMorphologySections')
-    row.enabled = False
+    # Total number of sections
+    column.prop(scene, 'VMV_NumberMorphologySections')
 
-    # Radius variations (simulation)
-    row = layout.row()
-    row.label(text='Radius Variations:')
-    row = row.row()
-    row.prop(scene, 'VMV_HasRadiusVariations')
-    row.prop(scene, 'VMV_RadiusVariationsSteps')
-    row.enabled = False
+    # Number of steps for radius variations, if zero, the file doesn't have any variations
+    column.prop(scene, 'VMV_RadiusVariationsSteps')
 
-    # Flow variations (simulation)
-    row = layout.row()
-    row.label(text='Flow Variations:')
-    row = row.row()
-    row.prop(scene, 'VMV_HasFlowVariations')
-    row.prop(scene, 'VMV_FlowVariationsSteps')
-    row.enabled = False
+    # Number of steps for flow variations, if zero, the file doesn't have any variations
+    column.prop(scene, 'VMV_FlowVariationsSteps')
 
-    # Pressure variations (simulation)
-    row = layout.row()
-    row.label(text='Pressure Variations:')
-    row = row.row()
-    row.prop(scene, 'VMV_HasPressureVariations')
-    row.prop(scene, 'VMV_PressureVariationsSteps')
-    row.enabled = False
+    # Number of steps for pressure variations, if zero, the file doesn't have any variations
+    column.prop(scene, 'VMV_PressureVariationsSteps')
+    column.enabled = False
 
 
 ####################################################################################################
-# @add_output_options
+# @add_statistics
 ####################################################################################################
 def add_statistics(layout,
                    scene):

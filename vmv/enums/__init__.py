@@ -21,3 +21,4 @@ from .morphology_enums import *
 from .meshing_enums import *
 from .rendering_enums import *
 from .shading_enums import *
+from .simulation_enums import *

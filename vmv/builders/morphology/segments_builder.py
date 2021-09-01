@@ -32,9 +32,9 @@ from .base import MorphologyBuilder
 
 
 ####################################################################################################
-# @DisconnectedSegmentsBuilder
+# @SegmentsBuilder
 ####################################################################################################
-class DisconnectedSegmentsBuilder(MorphologyBuilder):
+class SegmentsBuilder(MorphologyBuilder):
     """Morphology reconstruction with disconnected segments, where each segment is drawn as an
     independent object and can have a different color.
     """
@@ -271,7 +271,7 @@ class DisconnectedSegmentsBuilder(MorphologyBuilder):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
-        vmv.logger.header('Building skeleton: DisconnectedSegmentsBuilder')
+        vmv.logger.header('Building skeleton: SegmentsBuilder')
 
         # Get the context 
         self.context = context 

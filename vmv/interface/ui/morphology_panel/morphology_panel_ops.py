@@ -31,6 +31,34 @@ from .morphology_panel_options import *
 ####################################################################################################
 # @add_colormap_options
 ####################################################################################################
+def add_visualization_type_options(layout,
+                                   scene,
+                                   options):
+
+    # Visualization type
+    visualization_type_row = layout.row()
+    visualization_type_row.label(text='Visualization')
+
+    # If there is simulation data, then add the VMV_VisualizeStructureDynamics menu
+    if vmv.interface.MorphologyObject.has_radius_simulation or  \
+       vmv.interface.MorphologyObject.has_flow_simulation or    \
+       vmv.interface.MorphologyObject.has_pressure_simulation:
+        visualization_type_row.prop(scene, 'VMV_VisualizeStructureDynamics')
+
+        # If we select the dynamics, then show the available simulations
+        if scene.VMV_VisualizeStructureDynamics == vmv.enums.Morphology.Visualization.DYNAMICS:
+            dynamics_row = layout.row()
+            dynamics_row.label(text='Available Dynamics')
+            dynamics_row.prop(scene, 'VMV_AvailableSimulations')
+
+    # Otherwise, add the structure menu (only a single item for the moment)
+    else:
+        visualization_type_row.prop(scene, 'VMV_VisualizeStructure')
+
+
+####################################################################################################
+# @add_colormap_options
+####################################################################################################
 def add_colormap_options(layout,
                          scene,
                          options):

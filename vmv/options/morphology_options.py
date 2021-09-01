@@ -95,7 +95,7 @@ class MorphologyOptions:
         self.color_map_colors = list()
 
         # Base morphology color
-        self.color = vmv.consts.Color.DEFAULT_BLOOD_COLOR
+        self.color = vmv.consts.Color.LIGHT_RED_COLOR
 
         # Alternating morphology color (use for ALTERNATING_COLORS schemes)
         self.alternating_color = vmv.consts.Color.BLACK

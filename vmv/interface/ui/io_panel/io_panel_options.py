@@ -18,12 +18,26 @@
 # Blender imports
 import bpy
 
+# Input ############################################################################################
 # Morphology file
 bpy.types.Scene.VMV_MorphologyFile = bpy.props.StringProperty(
     name='Morphology File',
     description='Select a specific vasculature morphology to load',
     default='Select File', maxlen=2048,  subtype='FILE_PATH')
 
+# Center the loaded morphology at the origin
+bpy.types.Scene.VMV_CenterMorphologyAtOrigin = bpy.props.BoolProperty(
+    name='Center At Origin',
+    description='Center the loaded morphology at the origin',
+    default=True)
+
+# Center the loaded morphology at the origin
+bpy.types.Scene.VMV_ResampleMorphology = bpy.props.BoolProperty(
+    name='Resample Morphology',
+    description='Resample the morphology to remove unwanted samples',
+    default=False)
+
+# Output ###########################################################################################
 # Output directory
 bpy.types.Scene.VMV_OutputDirectory = bpy.props.StringProperty(
     name='Output Directory',
@@ -66,39 +80,48 @@ bpy.types.Scene.VMV_AnalysisPath = bpy.props.StringProperty(
     description='Relative path where the analysis reports will be generated',
     default='analysis', maxlen=1000)
 
-# Center the loaded morphology at the origin
-bpy.types.Scene.VMV_CenterMorphologyAtOrigin = bpy.props.BoolProperty(
-    name='Center At Origin',
-    description='Center the loaded morphology at the origin',
-    default=True)
-
-# Center the loaded morphology at the origin
-bpy.types.Scene.VMV_ResampleMorphology = bpy.props.BoolProperty(
-    name='Resample Morphology',
-    description='Resample the morphology to remove unwanted samples',
-    default=False)
-
-
-# Analysis relative path
+# File summary #####################################################################################
+# File name
 bpy.types.Scene.VMV_MorphologyName = bpy.props.StringProperty(
-    name='',
+    name='File',
     description='The name of the morphology file as located on the file system',
     default='', maxlen=1000)
 
 # Number of samples in the morphology
 bpy.types.Scene.VMV_NumberMorphologySamples = bpy.props.IntProperty(
-    name='',
-    description='The total number of samples (or vertices) in the morphology',
+    name='Number of Samples',
+    description='The total number of samples (or vertices) in the loaded morphology',
     default=0, min=0, max=100000000)
 
 # Number of sections in the morphology
 bpy.types.Scene.VMV_NumberMorphologySections = bpy.props.IntProperty(
-    name='',
-    description='The total number of sections (or strands) in the morphology',
+    name='Number of Sections',
+    description='The total number of sections (or strands) in the loaded morphology',
     default=0, min=0, max=100000000)
 
+# Simulations ######################################################################################
+# Radius variations
+bpy.types.Scene.VMV_RadiusVariationsSteps = bpy.props.IntProperty(
+    name='Radius Variations',
+    description='Number of steps for radius variations. If this value is zero, this means that '
+                'the file does not contain any radius variations',
+    default=0, min=0, max=1000000)
 
+# Flow variations
+bpy.types.Scene.VMV_FlowVariationsSteps = bpy.props.IntProperty(
+    name='Flow Variations',
+    description='Number of steps for flow variations. If this value is zero, this means that '
+                'the file does not contain any flow variations or simulations',
+    default=0, min=0, max=1000000)
 
+# Pressure variations
+bpy.types.Scene.VMV_PressureVariationsSteps = bpy.props.IntProperty(
+    name='Pressure Variations',
+    description='Number of steps for pressure variations. If this value is zero, this means that '
+                'the file does not contain any pressure variations or simulations',
+    default=0, min=0, max=1000000)
+
+# Stats. ###########################################################################################
 # Loading time
 bpy.types.Scene.VMV_MorphologyLoadingTime = bpy.props.FloatProperty(
     name='Loading Morphology (Sec)',
@@ -108,39 +131,5 @@ bpy.types.Scene.VMV_MorphologyLoadingTime = bpy.props.FloatProperty(
 # Drawing time
 bpy.types.Scene.VMV_MorphologyDrawingTime = bpy.props.FloatProperty(
     name='Drawing Morphology (Sec)',
-    description='The time it takes to draw the loaded vasculature morphology',
-    default=0, min=0, max=1000000)
-
-
-# If the morphology has radius variations or not
-bpy.types.Scene.VMV_HasRadiusVariations = bpy.props.BoolProperty(
-    name='',
-    description='Whether the morphology has radius variations data with respect to time',
-    default=True)
-
-bpy.types.Scene.VMV_RadiusVariationsSteps = bpy.props.IntProperty(
-    name='',
-    description='The time it takes to draw the loaded vasculature morphology',
-    default=0, min=0, max=1000000)
-
-# If the morphology has radius variations or not
-bpy.types.Scene.VMV_HasFlowVariations = bpy.props.BoolProperty(
-    name='',
-    description='Whether the morphology has radius variations data with respect to time',
-    default=True)
-
-bpy.types.Scene.VMV_FlowVariationsSteps = bpy.props.IntProperty(
-    name='',
-    description='The time it takes to draw the loaded vasculature morphology',
-    default=0, min=0, max=1000000)
-
-# If the morphology has radius variations or not
-bpy.types.Scene.VMV_HasPressureVariations = bpy.props.BoolProperty(
-    name='',
-    description='Whether the morphology has radius variations data with respect to time',
-    default=True)
-
-bpy.types.Scene.VMV_PressureVariationsSteps = bpy.props.IntProperty(
-    name='',
     description='The time it takes to draw the loaded vasculature morphology',
     default=0, min=0, max=1000000)

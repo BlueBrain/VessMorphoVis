@@ -102,11 +102,16 @@ class VMVLoadMorphology(bpy.types.Operator):
 
         # Initialize all the operations that needs to run once and for all
         import vmv.interface
-        #if not vmv.interface.ui.Globals.nmv_initialized:
-        vmv.interface.load_fonts()
+        if not vmv.interface.SystemInitialized:
 
-        # Extend the clipping planes to be able to visualize larger data sets
-        vmv.scene.extend_clipping_planes()
+            # Load the fonts
+            vmv.interface.load_fonts()
+
+            # Extend the clipping planes to be able to visualize larger data sets
+            vmv.scene.extend_clipping_planes()
+
+            # VMV is initialized
+            vmv.interface.SystemInitialized = True
 
         # Create a morphology reader object
         morphology_reader = vmv.file.create_morphology_reader(vmv.interface.Options.io.file_path)
@@ -117,7 +122,15 @@ class VMVLoadMorphology(bpy.types.Operator):
         vmv.interface.MorphologyObject = morphology_reader.construct_morphology_object(
             center_at_origin=vmv.interface.Options.io.center_morphology_at_origin,
             resample_morphology=vmv.interface.Options.io.resample_morphology)
+
+        # Update the interface, morphology name
         context.scene.VMV_MorphologyName = vmv.interface.MorphologyObject.name
+
+        # Update the interface, number of samples
+        context.scene.VMV_NumberMorphologySamples = vmv.interface.MorphologyObject.number_samples
+
+        # Update the interface, number of sections
+        context.scene.VMV_NumberMorphologySections = vmv.interface.MorphologyObject.number_sections
 
         # Update the interface
         loading_done = time.time()
@@ -128,8 +141,8 @@ class VMVLoadMorphology(bpy.types.Operator):
         try:
 
             # Construct a builder object
-            builder = vmv.builders.DisconnectedSectionsBuilder(
-                 morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
+            builder = vmv.builders.SectionsBuilder(morphology=vmv.interface.MorphologyObject,
+                                                   options=vmv.interface.Options)
             builder.build_skeleton()
 
             # Switch to full view along some axis
@@ -147,8 +160,7 @@ class VMVLoadMorphology(bpy.types.Operator):
             vmv.interface.MorphologyLoaded = True
 
             # Set back the radii of the morphology to that as specified in the loaded file
-            vmv.interface.Options.morphology.radii = \
-                vmv.enums.Morphology.Radii.AS_SPECIFIED
+            vmv.interface.Options.morphology.radii = vmv.enums.Morphology.Radii.AS_SPECIFIED
 
             # Configure the output directory
             vmv.interface.configure_output_directory(options=vmv.interface.Options,
@@ -161,6 +173,7 @@ class VMVLoadMorphology(bpy.types.Operator):
             # The morphology is not loaded
             vmv.interface.MorphologyLoaded = False
 
+        # Done
         return {'FINISHED'}
 
 
