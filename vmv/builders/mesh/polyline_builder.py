@@ -34,10 +34,11 @@ import vmv.scene
 
 
 ####################################################################################################
-# @MetaBuilder
+# @PolylineBuilder
 ####################################################################################################
 class PolylineBuilder:
-    """Mesh builder that creates piecewise watertight sub-meshes for the connected sections."""
+    """Mesh builder that creates piecewise watertight meshes for the different sections in the
+    morphology."""
 
     ################################################################################################
     # @__init__
@@ -92,7 +93,7 @@ class PolylineBuilder:
         """
 
         # A list of the created materials
-        materials_list = []
+        materials_list = list()
 
         for i in range(2):
 
@@ -114,12 +115,13 @@ class PolylineBuilder:
         """Create the materials of the skeleton.
         """
 
+        # Clear the material
         for material in bpy.data.materials:
             if 'mesh_material' in material.name:
                 material.user_clear()
                 bpy.data.materials.remove(material)
 
-        # Soma
+        # Create the material
         self.materials = self.create_materials(
             name='mesh_material', color=self.options.mesh.color)
 
@@ -163,7 +165,7 @@ class PolylineBuilder:
         self.center = self.morphology.bounding_box.center
 
         # Create an instance of the morphology builder
-        morphology_builder = vmv.builders.ConnectedSectionsBuilder(self.morphology, self.options)
+        morphology_builder = vmv.builders.SectionsBuilder(self.morphology, self.options)
 
         # Build the skeleton and return a reference to it
         morphology_skeleton = morphology_builder.build_skeleton()

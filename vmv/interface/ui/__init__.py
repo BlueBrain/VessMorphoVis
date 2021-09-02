@@ -15,7 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .ui_data import *
 from .analysis_panel import *
 from .analysis_panel_options import *
 from .io_panel import *

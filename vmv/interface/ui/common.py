@@ -278,7 +278,7 @@ def render_mesh_image(panel_object,
         bounding_box=bounding_box, camera_view=vmv.options.mesh.camera_view)
 
     # Render at a specific resolution
-    if context_scene.MeshRenderingResolution == \
+    if context_scene.VMV_MeshRenderingResolution == \
             vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
         # Render the image
@@ -286,7 +286,7 @@ def render_mesh_image(panel_object,
             bounding_box=bounding_box,
             camera_view=rendering_view,
             camera_projection=camera_projection,
-            image_resolution=context_scene.MeshFrameResolution,
+            image_resolution=context_scene.VMV_MeshFrameResolution,
             image_name='MESH_%s_%s' % (view_prefix, Globals.Options.morphology.label),
             image_directory=Globals.Options.io.images_directory)
 
@@ -297,7 +297,7 @@ def render_mesh_image(panel_object,
         vmv.rendering.render_to_scale(
             bounding_box=bounding_box,
             camera_view=rendering_view,
-            image_scale_factor=context_scene.MeshFrameScaleFactor,
+            image_scale_factor=context_scene.VMV_MeshFrameScaleFactor,
             image_name='MESH_%s_%s' % (view_prefix, Globals.Options.morphology.label),
             image_directory=Globals.Options.io.images_directory)
 

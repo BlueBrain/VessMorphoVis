@@ -32,6 +32,7 @@ import vmv.skeleton
 import vmv.interface
 import vmv.utilities
 import vmv.rendering
+from .meshing_panel_ops import *
 
 
 ####################################################################################################
@@ -66,70 +67,43 @@ class VMVMeshingPanel(bpy.types.Panel):
 
         # Which meshing technique to use
         meshing_method_row = self.layout.row()
-        meshing_method_row.prop(context.scene, 'MeshingTechnique', icon='OUTLINER_OB_EMPTY')
+        meshing_method_row.prop(context.scene, 'VMV_MeshingTechnique', icon='OUTLINER_OB_EMPTY')
 
         # Options only for the Meta-balls algorithm
-        if context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
+        if context.scene.VMV_MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
 
             # Auto meta-ball resolution
             meta_auto_resolution_row = self.layout.row()
-            meta_auto_resolution_row.prop(context.scene, 'MetaBallAutoResolution',
+            meta_auto_resolution_row.prop(context.scene, 'VMV_MetaBallAutoResolution',
                                           icon='OUTLINER_OB_EMPTY')
-            vmv.options.mesh.meta_auto_resolution = context.scene.MetaBallAutoResolution
+            vmv.interface.Options.mesh.meta_auto_resolution = context.scene.VMV_MetaBallAutoResolution
 
             # Meta-ball resolution
             meta_resolution_row = self.layout.row()
-            meta_resolution_row.prop(context.scene, 'MetaBallResolution', icon='OUTLINER_OB_EMPTY')
-            vmv.options.mesh.meta_resolution = context.scene.MetaBallResolution
+            meta_resolution_row.prop(context.scene, 'VMV_MetaBallResolution', icon='OUTLINER_OB_EMPTY')
+            vmv.interface.Options.mesh.meta_resolution = context.scene.VMV_MetaBallResolution
 
             # Disable the resolution box if the auto resolution is set on
-            if context.scene.MetaBallAutoResolution:
+            if context.scene.VMV_MetaBallAutoResolution:
                 meta_resolution_row.enabled = False
             else:
                 meta_resolution_row.enabled = True
 
         # Tessellation parameters
         tess_level_row = self.layout.row()
-        tess_level_row.prop(context.scene, 'TessellateMesh')
+        tess_level_row.prop(context.scene, 'VMV_TessellateMesh')
         tess_level_column = tess_level_row.column()
-        tess_level_column.prop(context.scene, 'MeshTessellationLevel')
+        tess_level_column.prop(context.scene, 'VMV_MeshTessellationLevel')
 
-        if not context.scene.TessellateMesh:
+        if not context.scene.VMV_TessellateMesh:
 
             # Use 1.0 to disable the tessellation
             vmv.interface.Options.mesh.tessellate_mesh = False
             vmv.interface.Options.mesh.tessellation_level = 1.0
             tess_level_column.enabled = False
         else:
-            vmv.interface.Options.mesh.tessellate_mesh = context.scene.TessellateMesh
-            vmv.interface.Options.mesh.tessellation_level = context.scene.MeshTessellationLevel
-
-    ################################################################################################
-    # @draw_mesh_color_options
-    ################################################################################################
-    def draw_mesh_color_options(self, context):
-        """Draw the coloring options on the meshing panel.
-
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Coloring parameters
-        colors_row = layout.row()
-        colors_row.label(text='Colors & Materials:', icon='COLOR')
-
-        # Mesh material
-        mesh_material_row = layout.row()
-        mesh_material_row.prop(context.scene, 'MeshMaterial')
-        vmv.options.mesh.material = context.scene.MeshMaterial
-
-        # Homogeneous mesh coloring
-        homogeneous_color_row = layout.row()
-        homogeneous_color_row.prop(context.scene, 'MeshColor')
-        vmv.options.mesh.color = context.scene.MeshColor
+            vmv.interface.Options.mesh.tessellate_mesh = context.scene.VMV_TessellateMesh
+            vmv.interface.Options.mesh.tessellation_level = context.scene.VMV_MeshTessellationLevel
 
     ################################################################################################
     # @draw_mesh_reconstruction_button
@@ -161,7 +135,7 @@ class VMVMeshingPanel(bpy.types.Panel):
             meshing_stats_row.label(text='Stats:', icon='RECOVER_LAST')
 
             reconstruction_time_row = layout.row()
-            reconstruction_time_row.prop(context.scene, 'MeshReconstructionTime')
+            reconstruction_time_row.prop(context.scene, 'VMV_MeshReconstructionTime')
             reconstruction_time_row.enabled = False
 
     ################################################################################################
@@ -185,16 +159,16 @@ class VMVMeshingPanel(bpy.types.Panel):
         # Rendering resolution
         rendering_resolution_row = layout.row()
         rendering_resolution_row.label(text='Resolution:')
-        rendering_resolution_row.prop(context.scene, 'MeshRenderingResolution', expand=True)
+        rendering_resolution_row.prop(context.scene, 'VMV_MeshRenderingResolution', expand=True)
 
         # Add the frame resolution option
-        if context.scene.MeshRenderingResolution == \
+        if context.scene.VMV_MeshRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Frame resolution option (only for the close up mode)
             frame_resolution_row = layout.row()
             frame_resolution_row.label(text='Frame Resolution:')
-            frame_resolution_row.prop(context.scene, 'MeshFrameResolution')
+            frame_resolution_row.prop(context.scene, 'VMV_MeshFrameResolution')
             frame_resolution_row.enabled = True
 
         # Otherwise, add the scale factor option
@@ -203,37 +177,37 @@ class VMVMeshingPanel(bpy.types.Panel):
             # Scale factor option
             scale_factor_row = layout.row()
             scale_factor_row.label(text='Resolution Scale:')
-            scale_factor_row.prop(context.scene, 'MeshFrameScaleFactor')
+            scale_factor_row.prop(context.scene, 'VMV_MeshFrameScaleFactor')
             scale_factor_row.enabled = True
 
         # Rendering view column
         view_row = layout.column()
-        view_row.prop(context.scene, 'MeshRenderingView', icon='AXIS_FRONT')
-        vmv.options.mesh.camera_view = context.scene.MeshRenderingView
+        view_row.prop(context.scene, 'VMV_MeshRenderingView', icon='AXIS_FRONT')
+        vmv.interface.Options.mesh.camera_view = context.scene.VMV_MeshRenderingView
 
         # Rendering projection column only for a fixed resolution
-        if context.scene.MeshRenderingResolution == \
+        if context.scene.VMV_MeshRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Due to a bug in the workbench renderer in Blender, we will allow the
             # perspective projection for all the materials that use cycles and have high number of
             # samples per pixel, mainly the artistic rendering.
-            if vmv.options.mesh.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
+            if vmv.interface.Options.mesh.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
 
                 # Add the projection option
                 projection_row = self.layout.column()
-                projection_row.prop(context.scene, 'MeshCameraProjection', icon='AXIS_FRONT')
-                vmv.options.mesh.camera_projection = \
-                    context.scene.MeshCameraProjection
+                projection_row.prop(context.scene, 'VMV_MeshCameraProjection ', icon='AXIS_FRONT')
+                vmv.interface.Options.mesh.camera_projection = \
+                    context.scene.VMV_MeshCameraProjection 
 
             # Set it by default to ORTHOGRAPHIC
             else:
-                vmv.options.mesh.camera_projection = \
+                vmv.interface.Options.mesh.camera_projection = \
                     vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
         # Set it by default to ORTHOGRAPHIC
         else:
-            vmv.options.mesh.camera_projection = \
+            vmv.interface.Options.mesh.camera_projection = \
                 vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
         # Render still images button
@@ -249,7 +223,7 @@ class VMVMeshingPanel(bpy.types.Panel):
 
         # Rendering progress bar
         neuron_mesh_rendering_progress_row = layout.row()
-        neuron_mesh_rendering_progress_row.prop(context.scene, 'MeshRenderingProgress')
+        neuron_mesh_rendering_progress_row.prop(context.scene, 'VMV_MeshRenderingProgress')
         neuron_mesh_rendering_progress_row.enabled = False
 
     ################################################################################################
@@ -272,7 +246,7 @@ class VMVMeshingPanel(bpy.types.Panel):
 
         # Exported format column
         format_column = layout.column()
-        format_column.prop(context.scene, 'ExportedMeshFormat', icon='GROUP_VERTEX')
+        format_column.prop(context.scene, 'VMV_ExportedMeshFormat', icon='GROUP_VERTEX')
         format_column.operator('export.mesh', icon='MESH_DATA')
 
     ################################################################################################
@@ -292,8 +266,8 @@ class VMVMeshingPanel(bpy.types.Panel):
         # Draw the mesh reconstruction options
         self.draw_mesh_reconstruction_options(context=context)
 
-        # Draw the mesh coloring options
-        self.draw_mesh_color_options(context=context)
+        # Add the color options to the interface
+        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
         # Draw the mesh reconstruction button
         self.draw_mesh_reconstruction_button(context=context)
@@ -342,7 +316,7 @@ class VMVReconstructMesh(bpy.types.Operator):
         start_reconstruction = time.time()
 
         # Meta builder
-        if context.scene.MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
+        if context.scene.VMV_MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
             builder = vmv.builders.MetaBuilder(morphology=vmv.interface.MorphologyObject,
                                                options=vmv.interface.Options)
 
@@ -355,11 +329,11 @@ class VMVReconstructMesh(bpy.types.Operator):
         builder.build_mesh()
 
         # Update the interface with some parameters
-        context.scene.MetaBallResolution = vmv.interface.Options.mesh.meta_resolution
+        context.scene.VMV_MetaBallResolution = vmv.interface.Options.mesh.meta_resolution
 
         # Reconstruction done
         reconstruction_done = time.time()
-        context.scene.MeshReconstructionTime = reconstruction_done - start_reconstruction
+        context.scene.VMV_MeshReconstructionTime = reconstruction_done - start_reconstruction
 
         # Done
         return {'FINISHED'}
@@ -410,14 +384,14 @@ class VMVRenderMeshImage(bpy.types.Operator):
 
         # Image name
         image_name = 'MESH_%s_%s' % (vmv.interface.Options.morphology.label,
-                                     vmv.options.mesh.camera_view)
+                                     vmv.interface.Options.mesh.camera_view)
 
         # Stretch the bounding box by few microns
         rendering_bbox = copy.deepcopy(bounding_box)
         rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
         # Render at a specific resolution
-        if context.scene.MeshRenderingResolution == \
+        if context.scene.VMV_MeshRenderingResolution == \
                 vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
             # Render the morphology
@@ -425,7 +399,7 @@ class VMVRenderMeshImage(bpy.types.Operator):
                 bounding_box=rendering_bbox,
                 camera_view=vmv.interface.Options.mesh.camera_view,
                 camera_projection=vmv.interface.Options.mesh.camera_projection,
-                image_resolution=context.scene.MeshFrameResolution,
+                image_resolution=context.scene.VMV_MeshFrameResolution,
                 image_name=image_name,
                 image_directory=vmv.interface.Options.io.images_directory)
 
@@ -435,8 +409,8 @@ class VMVRenderMeshImage(bpy.types.Operator):
             # Render the morphology
             vmv.rendering.render_to_scale(
                 bounding_box=rendering_bbox,
-                camera_view=vmv.options.mesh.camera_view,
-                image_scale_factor=context.scene.MeshFrameScaleFactor,
+                camera_view=vmv.interface.Options.mesh.camera_view,
+                image_scale_factor=context.scene.VMV_MeshFrameScaleFactor,
                 image_name=image_name,
                 image_directory=vmv.interface.Options.io.images_directory)
 
@@ -501,7 +475,7 @@ class VMVRenderMesh360(bpy.types.Operator):
                 self.output_directory, '{0:05d}'.format(self.timer_limits))
 
             # Render at a specific resolution
-            if context.scene.MeshRenderingResolution == \
+            if context.scene.VMV_MeshRenderingResolution == \
                     vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
                 # Render the image
@@ -510,7 +484,7 @@ class VMVRenderMesh360(bpy.types.Operator):
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
-                    image_resolution=context.scene.MeshFrameResolution,
+                    image_resolution=context.scene.VMV_MeshFrameResolution,
                     image_name=image_name)
 
             # Render at a specific scale factor
@@ -522,14 +496,14 @@ class VMVRenderMesh360(bpy.types.Operator):
                     angle=self.timer_limits,
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
-                    image_scale_factor=context.scene.MeshFrameScaleFactor,
+                    image_scale_factor=context.scene.VMV_MeshFrameScaleFactor,
                     image_name=image_name)
 
             # Update the progress shell
             vmv.utilities.show_progress('Rendering', self.timer_limits, 360)
 
             # Update the progress bar
-            context.scene.MeshRenderingProgress = int(100 * self.timer_limits / 360.0)
+            context.scene.VMV_MeshRenderingProgress = int(100 * self.timer_limits / 360.0)
 
             # Upgrade the timer limits
             self.timer_limits += 1
@@ -650,7 +624,7 @@ class VMVExportMesh(bpy.types.Operator):
         vmv.file.export_mesh_object(mesh_object=mesh_object,
                                     output_directory=vmv.interface.Options.io.meshes_directory,
                                     file_name=mesh_object.name,
-                                    file_format=context.scene.ExportedMeshFormat)
+                                    file_format=context.scene.VMV_ExportedMeshFormat)
 
         # Done
         return {'FINISHED'}

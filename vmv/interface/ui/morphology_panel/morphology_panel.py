@@ -150,19 +150,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
                     vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
                         Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
-    # Available simulations, the default ones just to register the option
-    bpy.types.Scene.VMV_AvailableSimulations = bpy.props.EnumProperty(
-        items=[vmv.enums.Simulation.Dynamics.RADIUS_UI_ITEM],
-        name='',
-        default=vmv.enums.Simulation.Dynamics.RADIUS)
-
-    # Visualization type, only the structure, when the morphology does not have simulation data
-    bpy.types.Scene.VMV_VisualizeStructure = bpy.props.EnumProperty(
-        items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM],
-        name='',
-        default=vmv.enums.Morphology.Visualization.STRUCTURE,
-        update=update_ui_with_available_simulations)
-
     # Options that require an @update function #####################################################
     # Visualization type, static structure or dynamics (simulation) when the data exists
     bpy.types.Scene.VMV_VisualizeStructureDynamics = bpy.props.EnumProperty(
@@ -203,100 +190,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         setattr(bpy.types.Scene, 'VMV_Color%d' % index, bpy.props.FloatVectorProperty(
             name='', subtype='COLOR', default=colors[index], min=0.0, max=1.0, description=''))
 
-    ################################################################################################
-    # @draw_mesh_reconstruction_options
-    ################################################################################################
-    def draw_morphology_reconstruction_options(self,
-                                               context):
-        """Draws the morphology reconstruction options.
 
-        :param context:
-            Context.
-        """
-
-        add_visualization_type_options(self.layout, context.scene, vmv.interface.Options)
-
-        # Skeleton meshing options
-        skeleton_meshing_options_row = self.layout.row()
-        skeleton_meshing_options_row.label(
-            text='Morphology Reconstruction Options:', icon='SURFACE_DATA')
-
-        # Morphology reconstruction techniques option
-        morphology_reconstruction_row = self.layout.row()
-        morphology_reconstruction_row.prop(context.scene, 'VMV_Builder', icon='FORCE_CURVE')
-        vmv.interface.Options.morphology.builder = context.scene.VMV_Builder
-
-        # Sections radii option
-        sections_radii_row = self.layout.row()
-        sections_radii_row.prop(context.scene, 'VMV_SectionsRadii', icon='SURFACE_NCURVE')
-
-        # Radii as specified in the morphology file
-        if context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
-
-            # Pass options from UI to system
-            vmv.interface.Options.morphology.radii = \
-                vmv.enums.Morphology.Radii.AS_SPECIFIED
-            vmv.interface.Options.morphology.scale_sections_radii = False
-            vmv.interface.Options.morphology.unify_sections_radii = False
-            vmv.interface.Options.morphology.sections_radii_scale = 1.0
-
-        # Fixed diameter
-        elif context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
-
-            fixed_diameter_row = self.layout.row()
-            fixed_diameter_row.label(text='Fixed Radius Value:')
-            fixed_diameter_row.prop(context.scene, 'VMV_FixedRadiusValue')
-
-            # Pass options from UI to system
-            vmv.interface.Options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
-            vmv.interface.Options.morphology.scale_sections_radii = False
-            vmv.interface.Options.morphology.unify_sections_radii = True
-            vmv.interface.Options.morphology.sections_fixed_radii_value = \
-                context.scene.VMV_FixedRadiusValue
-
-        # Scaled diameter
-        elif context.scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
-
-            scaled_diameter_row = self.layout.row()
-            scaled_diameter_row.label(text='Radius Scale Factor:')
-            scaled_diameter_row.prop(context.scene, 'VMV_RadiusScaleValue')
-
-            # Pass options from UI to system
-            vmv.interface.Options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
-            vmv.interface.Options.morphology.unify_sections_radii = False
-            vmv.interface.Options.morphology.scale_sections_radii = True
-            vmv.interface.Options.morphology.sections_radii_scale = \
-                context.scene.VMV_RadiusScaleValue
-
-        else:
-            vmv.logger.log('ERROR')
-
-        # Tube quality
-        tube_quality_row = self.layout.row()
-        tube_quality_row.label(text='Tube Quality:')
-        tube_quality_row.prop(context.scene, 'VMV_TubeQuality')
-        vmv.interface.Options.morphology.bevel_object_sides = context.scene.VMV_TubeQuality
-
-        # Morphology reconstruction techniques option
-        # skeleton_style_row = self.layout.row()
-        # skeleton_style_row.prop(context.scene, 'ArborsStyle', icon='WPAINT_HLT')
-
-
-        # Morphology branching
-        #branching_row = self.layout.row()
-        #branching_row.label(text='Branching:')
-        #branching_row.prop(context.scene, 'MorphologyBranching', expand=True)
-        #vmv.interface.Options.morphology.branching = context.scene.MorphologyBranching
-
-        # Arbor quality option
-        #arbor_quality_row = self.layout.row()
-        #arbor_quality_row.label(text='Arbor Quality:')
-        #arbor_quality_row.prop(context.scene, 'ArborQuality')
-
-
-        # Sections diameters option
-        #sections_radii_row = self.layout.row()
-        #sections_radii_row.prop(context.scene, 'VMV_SectionsRadii', icon='SURFACE_NCURVE')
 
     ################################################################################################
     # @draw_morphology_color_options
@@ -311,10 +205,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Get a reference to the layout of the panel
         layout = self.layout
 
-        # Get a reference to the scene 
-        scene = context.scene 
+        # Get a reference to the scene
+        scene = context.scene
 
-        # Reference to morphology options 
+        # Reference to morphology options
         morphology_options = vmv.interface.Options.morphology
 
         # Coloring parameters
@@ -326,7 +220,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
         morphology_options.material = scene.VMV_MorphologyMaterial
 
-        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
     ################################################################################################
     # @draw_morphology_reconstruction_button
@@ -490,11 +383,12 @@ class VMVMorphologyPanel(bpy.types.Panel):
             Panel context.
         """
 
-        # Draw the morphology reconstruction options
-        self.draw_morphology_reconstruction_options(context=context)
+        # Morphology reconstruction options
+        add_morphology_reconstruction_options(layout=self.layout, scene=context.scene,
+                                              options=vmv.interface.Options)
 
-        # Draw the morphology color options
-        self.draw_morphology_color_options(context=context)
+        # Color options
+        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
         # Draw the morphology reconstruction button
         self.draw_morphology_reconstruction_button(context=context)
@@ -504,6 +398,11 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
         # Draw the morphology export options
         # self.draw_morphology_export_options(context=context)
+
+        time_frame_row = self.layout.row()
+        time_frame_row.prop(context.scene, 'VMV_FirstFrame')
+        time_frame_row.prop(context.scene, 'VMV_CurrentFrame')
+        time_frame_row.prop(context.scene, 'VMV_LastFrame')
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
         if vmv.interface.MorphologyLoaded:

@@ -30,7 +30,7 @@ class Image:
         pass
 
     # Minimum image resolution (for sliders)
-    MIN_RESOLUTION = 256
+    MIN_RESOLUTION = 512
 
     # Maximum image resolution (for sliders)
     MAX_RESOLUTION = 10240

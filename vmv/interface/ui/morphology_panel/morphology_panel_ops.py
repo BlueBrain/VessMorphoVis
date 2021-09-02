@@ -79,8 +79,8 @@ def add_colormap_options(layout,
     color_map_row.prop(scene, 'VMV_InvertColorMap')
 
     # Clear the color map passed to VMV if it is full
-    if len(vmv.interface.Options.morphology.color_map_colors) > 0:
-        vmv.interface.Options.morphology.color_map_colors.clear()
+    if len(options.morphology.color_map_colors) > 0:
+        options.morphology.color_map_colors.clear()
 
     # Fill the list of colors
     for i in range(vmv.consts.Color.COLORMAP_RESOLUTION):
@@ -98,7 +98,7 @@ def add_colormap_options(layout,
 
         # Get the color value from the panel
         color = getattr(scene, 'VMV_Color%d' % i)
-        vmv.interface.Options.morphology.color_map_colors.append(color)
+        options.morphology.color_map_colors.append(color)
 
 
 ####################################################################################################
@@ -167,7 +167,7 @@ def add_per_section_color_coding_options(layout,
     """
 
     # Set the color coding scheme
-    vmv.interface.Options.morphology.color_coding = scene.VMV_PerSectionColorCodingBasis
+    options.morphology.color_coding = scene.VMV_PerSectionColorCodingBasis
 
     # Default coloring scheme
     if scene.VMV_PerSectionColorCodingBasis == vmv.enums.ColorCoding.DEFAULT:
@@ -199,7 +199,7 @@ def add_per_segment_color_coding_options(layout,
     """
 
     # Color coding scheme
-    vmv.interface.Options.morphology.color_coding = scene.VMV_PerSegmentColorCodingBasis
+    options.morphology.color_coding = scene.VMV_PerSegmentColorCodingBasis
 
     # Single arbor color
     if scene.VMV_PerSegmentColorCodingBasis == vmv.enums.ColorCoding.DEFAULT:
@@ -238,7 +238,7 @@ def add_color_options(layout,
     morphology_material_row = layout.row()
     morphology_material_row.label(text='Shading:')
     morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
-    options.morphology_material = scene.VMV_MorphologyMaterial
+    options.morphology.material = scene.VMV_MorphologyMaterial
 
     # Per-section color coding
     color_coding_row = layout.row()
@@ -258,3 +258,81 @@ def add_color_options(layout,
     # Otherwise, use the default coloring scheme
     else:
         add_default_coloring_option(layout=layout, scene=scene, options=options)
+
+
+####################################################################################################
+# @add_morphology_reconstruction_options
+####################################################################################################
+def add_morphology_reconstruction_options(layout,
+                                          scene,
+                                          options):
+    """Draws the morphology reconstruction options.
+
+    :param layout:
+        Panel layout.
+    :param scene:
+        Context scene.
+    :param options:
+        System options.
+    """
+
+    add_visualization_type_options(layout, scene, options)
+
+    # Skeleton meshing options
+    skeleton_meshing_options_row = layout.row()
+    skeleton_meshing_options_row.label(
+        text='Morphology Reconstruction Options:', icon='SURFACE_DATA')
+
+    # Morphology reconstruction techniques option
+    morphology_reconstruction_row = layout.row()
+    morphology_reconstruction_row.prop(scene, 'VMV_Builder', icon='FORCE_CURVE')
+    options.morphology.builder = scene.VMV_Builder
+
+    # Sections radii option
+    sections_radii_row = layout.row()
+    sections_radii_row.prop(scene, 'VMV_SectionsRadii', icon='SURFACE_NCURVE')
+
+    # Radii as specified in the morphology file
+    if scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
+
+        # Pass options from UI to system
+        options.morphology.radii = \
+            vmv.enums.Morphology.Radii.AS_SPECIFIED
+        options.morphology.scale_sections_radii = False
+        options.morphology.unify_sections_radii = False
+        options.morphology.sections_radii_scale = 1.0
+
+    # Fixed diameter
+    elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
+
+        fixed_diameter_row = layout.row()
+        fixed_diameter_row.label(text='Fixed Radius Value:')
+        fixed_diameter_row.prop(scene, 'VMV_FixedRadiusValue')
+
+        # Pass options from UI to system
+        options.morphology.radii = vmv.enums.Morphology.Radii.FIXED
+        options.morphology.scale_sections_radii = False
+        options.morphology.unify_sections_radii = True
+        options.morphology.sections_fixed_radii_value = scene.VMV_FixedRadiusValue
+
+    # Scaled diameter
+    elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
+
+        scaled_diameter_row = layout.row()
+        scaled_diameter_row.label(text='Radius Scale Factor:')
+        scaled_diameter_row.prop(scene, 'VMV_RadiusScaleValue')
+
+        # Pass options from UI to system
+        options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
+        options.morphology.scale_sections_radii = True
+        options.morphology.unify_sections_radii = False
+        options.morphology.sections_radii_scale = scene.VMV_RadiusScaleValue
+
+    else:
+        vmv.logger.log('ERROR')
+
+    # Tube quality
+    tube_quality_row = layout.row()
+    tube_quality_row.label(text='Tube Quality:')
+    tube_quality_row.prop(scene, 'VMV_TubeQuality')
+    options.morphology.bevel_object_sides = scene.VMV_TubeQuality

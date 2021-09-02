@@ -196,6 +196,21 @@ class Morphology:
         # Minimum threshold
         MINIMUM = 'VESSELS_RADII_MINIMUM_THRESHOLD'
 
+        # Radii items that will appear in the user interface
+        RADII_UI_ITEMS = [
+            (AS_SPECIFIED,
+             'As Specified in Morphology',
+             'Use the cross-sectional radii as reported in the morphology file'),
+
+            (FIXED,
+             'At a Fixed Radii',
+             'Set all the tubes to a fixed radius for enhanced visualization'),
+
+            (SCALED,
+             'With Scale Factor',
+             'Scale all the tubes using a specified scale factor')
+        ]
+
         ############################################################################################
         # @__init__
         ############################################################################################

@@ -105,7 +105,7 @@ class Camera:
         """Rotate the camera in the direction of the typical side view.
         """
 
-        # Adjust the orientationMeshRenderingResolution
+        # Adjust the orientationVMV_MeshRenderingResolution
         self.camera.rotation_euler[0] = 0
         self.camera.rotation_euler[1] = 1.5708
         self.camera.rotation_euler[2] = 0

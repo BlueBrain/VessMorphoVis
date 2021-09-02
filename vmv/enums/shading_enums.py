@@ -116,7 +116,7 @@ class Shader:
     ################################################################################################
     # A list of all the available materials in VessMorphoVis
     ################################################################################################
-    MATERIAL_ITEMS = [
+    SHADER_ITEMS = [
         (LAMBERT_WARD,
          'Default',
          "Use the default Lambert Ward shader. This shader is used to create high resolution "

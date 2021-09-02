@@ -21,7 +21,18 @@ import bpy
 # Internal imports
 import vmv.enums
 
+# Simulation options that do not require any @update function ######################################
+# Available simulations, the default ones just to register the option
+bpy.types.Scene.VMV_AvailableSimulations = bpy.props.EnumProperty(
+    items=[vmv.enums.Simulation.Dynamics.RADIUS_UI_ITEM],
+    name='',
+    default=vmv.enums.Simulation.Dynamics.RADIUS)
 
+# Visualization type, only the structure, when the morphology does not have simulation data
+bpy.types.Scene.VMV_VisualizeStructure = bpy.props.EnumProperty(
+    items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM],
+    name='',
+    default=vmv.enums.Morphology.Visualization.STRUCTURE)
 
 # Simulation starting frame
 bpy.types.Scene.VMV_TimeFrameStart = bpy.props.IntProperty(
@@ -50,15 +61,7 @@ bpy.types.Scene.VMV_TubeQuality = bpy.props.IntProperty(
 
 # Section radius
 bpy.types.Scene.VMV_SectionsRadii = bpy.props.EnumProperty(
-    items=[(vmv.enums.Morphology.Radii.AS_SPECIFIED,
-            'As Specified in Morphology',
-            'Use the cross-sectional radii as reported in the morphology file'),
-           (vmv.enums.Morphology.Radii.FIXED,
-            'At a Fixed Radii',
-            'Set all the tubes to a fixed radius'),
-           (vmv.enums.Morphology.Radii.SCALED,
-            'With Scale Factor',
-            'Scale all the tubes using a specified scale factor')],
+    items=vmv.enums.Morphology.Radii.RADII_UI_ITEMS,
     name='Radii',
     default=vmv.enums.Morphology.Radii.AS_SPECIFIED)
 
@@ -77,7 +80,7 @@ bpy.types.Scene.VMV_RadiusScaleValue = bpy.props.FloatProperty(
 # Shading parameters ###############################################################################
 # Material
 bpy.types.Scene.VMV_MorphologyMaterial = bpy.props.EnumProperty(
-    items=vmv.enums.Shader.MATERIAL_ITEMS,
+    items=vmv.enums.Shader.SHADER_ITEMS,
     name='',
     default=vmv.enums.Shader.LAMBERT_WARD)
 
@@ -173,3 +176,21 @@ bpy.types.Scene.VMV_MorphologyReconstructionTime = bpy.props.FloatProperty(
     name='Reconstruction Time (Sec)',
     description='The time it takes to reconstruct the vasculature morphology',
     default=0, min=0, max=1000000)
+
+
+
+
+
+
+
+bpy.types.Scene.VMV_FirstFrame = bpy.props.IntProperty(
+    name='',
+    default=0, min=0, max=100)
+
+bpy.types.Scene.VMV_LastFrame = bpy.props.IntProperty(
+    name='',
+    default=100, min=0, max=100)
+
+bpy.types.Scene.VMV_CurrentFrame = bpy.props.IntProperty(
+    name='',
+    default=50, min=0, max=100)
