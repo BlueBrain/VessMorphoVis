@@ -1,6 +1,7 @@
 
 # System imports
 import os
+import copy
 
 # Blender imports
 import bpy
@@ -66,7 +67,7 @@ def enable_or_disable_layout(layout):
     :param layout:
         A given layout to enable or disable.
     """
-    if vmv.interface.ui_morphology is None:
+    if vmv.interface.MorphologyObject is None:
         layout.enabled = False
     else:
         layout.enabled = True
@@ -75,25 +76,80 @@ def enable_or_disable_layout(layout):
 ####################################################################################################
 # @validate_output_directory
 ####################################################################################################
-def validate_output_directory(panel_object,
-                              context_scene):
+def validate_output_directory(panel):
     """Validates the existence of the output directory.
 
-    :param panel_object:
+    :param panel:
         An object of a UI panel.
-
-    :param context_scene:
-        Current scene in the rendering context.
     """
 
     # Ensure that there is a valid directory where the images will be written to
-    if Globals.Options.io.output_directory is None:
-        panel_object.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
+    if vmv.interface.Options.io.output_directory is None:
+        panel.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
         return {'FINISHED'}
 
-    if not vmv.file.ops.path_exists(context_scene.VMV_OutputDirectory):
-        panel_object.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
+    # At first, try to create it
+    if not vmv.file.ops.path_exists(vmv.interface.Options.io.output_directory):
+        vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.output_directory)
+
+    # Then, check if it exists or not
+    if not vmv.file.ops.path_exists(vmv.interface.Options.io.output_directory):
+        panel.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
         return {'FINISHED'}
+
+
+####################################################################################################
+# @verify_images_directory
+####################################################################################################
+def verify_images_directory(panel):
+    """Validates the existence of the images directory, before rendering.
+
+    :param panel:
+        An object of a UI panel.
+    """
+
+    # Validate the output directory in advance
+    validate_output_directory(panel=panel)
+
+    # Create the images directory if it does not exist
+    if not vmv.file.ops.path_exists(vmv.interface.Options.io.images_directory):
+        vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.images_directory)
+
+
+####################################################################################################
+# @verify_sequences_directory
+####################################################################################################
+def verify_sequences_directory(panel):
+    """Validates the existence of the sequences directory, before rendering.
+
+    :param panel:
+        An object of a UI panel.
+    """
+
+    # Validate the output directory in advance
+    validate_output_directory(panel=panel)
+
+    # Create the images directory if it does not exist
+    if not vmv.file.ops.path_exists(vmv.interface.Options.io.sequences_directory):
+        vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.sequences_directory)
+
+
+####################################################################################################
+# @verify_meshes_directory
+####################################################################################################
+def verify_meshes_directory(panel):
+    """Validates the existence of the meshes directory, before exporting.
+
+    :param panel:
+        An object of a UI panel.
+    """
+
+    # Validate the output directory in advance
+    validate_output_directory(panel=panel)
+
+    # Create the images directory if it does not exist
+    if not vmv.file.ops.path_exists(vmv.interface.Options.io.meshes_directory):
+        vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.meshes_directory)
 
 
 ####################################################################################################
@@ -143,17 +199,18 @@ def configure_output_directory(options,
             except ValueError:
                 pass
 
+
 ####################################################################################################
-# @render_mesh_image
+# @render_morphology_image
 ####################################################################################################
-def render_morphology_image(panel_object,
-                            context_scene,
+def render_morphology_image(panel,
+                            scene,
                             view):
     """Renders an image of the morphology reconstructed in the scene.
 
-    :param panel_object:
+    :param panel:
         UI Panel.
-    :param context_scene:
+    :param scene:
         A reference to the Blender scene.
     :param view:
         Rendering view.
@@ -161,25 +218,25 @@ def render_morphology_image(panel_object,
 
     # Validate the output directory
     vmv.interface.ui.validate_output_directory(
-        panel_object=panel_object, context_scene=context_scene)
+        panel=panel, scene=scene)
 
     # Create the images directory if it does not exist
     if not vmv.file.ops.path_exists(Globals.Options.io.images_directory):
         vmv.file.ops.clean_and_create_directory(Globals.Options.io.images_directory)
 
     # Report the process starting in the UI
-    panel_object.report({'INFO'}, 'Rendering ... Wait')
+    panel.report({'INFO'}, 'Rendering ... Wait')
 
     # Compute the bounding box for a close up view
-    if context_scene.MorphologyRenderingView == \
+    if scene.MorphologyRenderingView == \
             vmv.enums.Rendering.View.CLOSE_UP_VIEW:
 
         # Compute the bounding box for a close up view
         bounding_box = vmv.bbox.compute_unified_extent_bounding_box(
-            extent=context_scene.MeshCloseUpSize)
+            extent=scene.MeshCloseUpSize)
 
     # Compute the bounding box for a mid shot view
-    elif context_scene.MorphologyRenderingView == \
+    elif scene.MorphologyRenderingView == \
             vmv.enums.Rendering.View.MID_SHOT_VIEW:
 
         # Compute the bounding box for the available meshes only
@@ -203,17 +260,17 @@ def render_morphology_image(panel_object,
         view_prefix = ''
 
     # Render at a specific resolution
-    if context_scene.RenderingType == \
+    if scene.RenderingType == \
             vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
         # Render the image
         vmv.rendering.render(
             bounding_box=bounding_box,
             camera_view=view,
-            image_resolution=context_scene.VMV_MorphologyImageResolution,
+            image_resolution=scene.VMV_MorphologyImageResolution,
             image_name='MORPHOLOGY_%s_%s' % (view_prefix, Globals.Options.morphology.label),
             image_directory=Globals.Options.io.images_directory,
-            keep_camera_in_scene=context_scene.KeepMeshCameras)
+            keep_camera_in_scene=scene.KeepMeshCameras)
 
     # Render at a specific scale factor
     else:
@@ -222,27 +279,26 @@ def render_morphology_image(panel_object,
         vmv.rendering.render_to_scale(
             bounding_box=bounding_box,
             camera_view=view,
-            image_scale_factor=context_scene.VMV_MorphologyImageScaleFactor,
+            image_scale_factor=scene.VMV_MorphologyImageScaleFactor,
             image_name='MORPHOLOGY_%s_%s' % (view_prefix, Globals.Options.morphology.label),
-            image_directory=Globals.Options.io.images_directory,
-            keep_camera_in_scene=context_scene.KeepMeshCameras)
+            image_directory=Globals.Options.io.images_directory)
 
     # Report the process termination in the UI
-    panel_object.report({'INFO'}, 'Rendering Done')
+    panel.report({'INFO'}, 'Rendering Done')
 
 
 ####################################################################################################
 # @render_mesh_image
 ####################################################################################################
-def render_mesh_image(panel_object,
-                      context_scene,
+def render_mesh_image(panel,
+                      scene,
                       rendering_view,
                       camera_projection):
     """Renders an image of  mesh in the scene.
 
-    :param panel_object:
+    :param panel:
         UI Panel.
-    :param context_scene:
+    :param scene:
         A reference to the Blender scene.
     :param rendering_view:
         Rendering view.
@@ -250,56 +306,45 @@ def render_mesh_image(panel_object,
         The projection of the camera.
     """
 
-    # Validate the output directory
-    vmv.interface.ui.validate_output_directory(
-        panel_object=panel_object, context_scene=context_scene)
+    # Verify the presence of the images directory
+    vmv.interface.verify_images_directory(panel=panel)
 
-    # Create the images directory if it does not exist
-    if not vmv.file.ops.path_exists(Globals.Options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(Globals.Options.io.images_directory)
-
-    # Report the process starting in the UI
-    panel_object.report({'INFO'}, 'Rendering ... Wait')
-
-    # Get the view prefix
-    if rendering_view == vmv.enums.Rendering.View.FRONT:
-        view_prefix = 'FRONT'
-    elif rendering_view == vmv.enums.Rendering.View.SIDE:
-        view_prefix = 'SIDE'
-    elif rendering_view == vmv.enums.Rendering.View.TOP:
-        view_prefix = 'TOP'
-    else:
-        view_prefix = 'FRONT'
-
+    # Compute the bounding box for the available meshes only
     bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
 
-    # If background plane is required
-    background_plane = vmv.rendering.add_background_plane(
-        bounding_box=bounding_box, camera_view=vmv.options.mesh.camera_view)
+    # Image name
+    image_name = 'MESH_%s_%s' % (vmv.interface.Options.morphology.label, rendering_view)
 
-    # Render at a specific resolution
-    if context_scene.VMV_MeshRenderingResolution == \
-            vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+    # Stretch the bounding box by few microns
+    rendering_bbox = copy.deepcopy(bounding_box)
+    rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
 
-        # Render the image
+    # Draw the scale bar
+    if scene.VMV_RenderMeshScaleBar:
+        scale_bar = vmv.interface.draw_scale_bar(
+            bounding_box=rendering_bbox,
+            material_type=vmv.interface.Options.mesh.material,
+            view=vmv.Options.mesh.camera_view)
+
+    # Render at a specific RESOLUTION
+    if scene.VMV_MeshRenderingResolution == vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
         vmv.rendering.render(
-            bounding_box=bounding_box,
+            bounding_box=rendering_bbox,
             camera_view=rendering_view,
             camera_projection=camera_projection,
-            image_resolution=context_scene.VMV_MeshFrameResolution,
-            image_name='MESH_%s_%s' % (view_prefix, Globals.Options.morphology.label),
-            image_directory=Globals.Options.io.images_directory)
+            image_resolution=scene.VMV_MeshFrameResolution,
+            image_name=image_name,
+            image_directory=vmv.interface.Options.io.images_directory)
 
-    # Render at a specific scale factor
+    # Render at a specific SCALE FACTOR
     else:
-
-        # Render the image
         vmv.rendering.render_to_scale(
-            bounding_box=bounding_box,
+            bounding_box=rendering_bbox,
             camera_view=rendering_view,
-            image_scale_factor=context_scene.VMV_MeshFrameScaleFactor,
-            image_name='MESH_%s_%s' % (view_prefix, Globals.Options.morphology.label),
-            image_directory=Globals.Options.io.images_directory)
+            image_scale_factor=scene.VMV_MeshFrameScaleFactor,
+            image_name=image_name,
+            image_directory=vmv.interface.Options.io.images_directory)
 
-    # Report the process termination in the UI
-    panel_object.report({'INFO'}, 'Rendering Done')
+    # Delete the scale bar, if rendered
+    if scene.VMV_RenderMeshScaleBar:
+        vmv.scene.delete_object_in_scene(scene_object=scale_bar)

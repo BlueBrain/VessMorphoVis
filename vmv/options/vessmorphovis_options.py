@@ -167,11 +167,8 @@ class VessMorphoVisOptions:
         # Reconstruct vascular mesh for exporting
         self.mesh.reconstruct_vascular_mesh = arguments.reconstruct_vascular_mesh
 
-        # Tessellation level (between 0.1 and 1.0)
-        self.mesh.tessellation_level = float(arguments.tessellation_level)
-
-        # Tessellate the mesh after the reconstruction if requested
-        self.mesh.tessellate_mesh = True if 0.1 < self.mesh.tessellation_level < 1.0 else False
+        # Tessellation level (between 0.01 and 1.0)
+        self.mesh.tessellation_ratio = float(arguments.tessellation_ratio)
 
         # Meshing technique
         self.mesh.meshing_technique = vmv.enums.Meshing.Technique.get_enum(

@@ -25,7 +25,8 @@ import vmv.utilities
 # Meshing technique
 bpy.types.Scene.VMV_MeshingTechnique = bpy.props.EnumProperty(
     items=vmv.enums.Meshing.Technique.MESHING_TECHNIQUES_ITEMS,
-    name='Method', default=vmv.enums.Meshing.Technique.META_BALLS)
+    name='Technique',
+    default=vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT)
 
 # Mesh tessellation flag
 bpy.types.Scene.VMV_TessellateMesh = bpy.props.BoolProperty(
@@ -34,14 +35,14 @@ bpy.types.Scene.VMV_TessellateMesh = bpy.props.BoolProperty(
     default=False)
 
 # Mesh tessellation level
-bpy.types.Scene.VMV_MeshTessellationLevel = bpy.props.FloatProperty(
-    name='Factor',
-    description='Mesh tessellation level (between 0.1 and 1.0)',
-    default=1.0, min=0.05, max=1.0)
+bpy.types.Scene.VMV_MeshTessellationRatio = bpy.props.FloatProperty(
+    name='Ratio',
+    description='Mesh tessellation ratio (between 0.01 and 1.0)',
+    default=1.0, min=0.01, max=1.0)
 
 # Auto-detected meta balls resolution
 bpy.types.Scene.VMV_MetaBallAutoResolution = bpy.props.BoolProperty(
-    name='Auto Detected Resolution',
+    name='Auto',
     description='Detects the resolution of the meta balls object based on the radius of the '
                 'smallest sample in the morphology. You can disable this option and set a '
                 'user-specific resolution below',
@@ -49,7 +50,7 @@ bpy.types.Scene.VMV_MetaBallAutoResolution = bpy.props.BoolProperty(
 
 # Mesh color
 bpy.types.Scene.VMV_MetaBallResolution = bpy.props.FloatProperty(
-    name='Resolution',
+    name='',
     default=vmv.consts.Meshing.META_RESOLUTION,
     min=vmv.consts.Meshing.MIN_META_BALL_RESOLUTION,
     max=vmv.consts.Meshing.MAX_META_BALL_RESOLUTION,
@@ -100,6 +101,12 @@ bpy.types.Scene.VMV_MeshRenderingView = bpy.props.EnumProperty(
 bpy.types.Scene.VMV_MeshCameraProjection = bpy.props.EnumProperty(
     items=vmv.enums.Rendering.Projection.PROJECTION_ITEMS,
     name='Projection', default=vmv.enums.Rendering.Projection.ORTHOGRAPHIC)
+
+# Render the corresponding scale bar on the resulting image
+bpy.types.Scene.VMV_RenderMeshScaleBar = bpy.props.BoolProperty(
+    name='Add Scale Bar',
+    description='Add a scale bar overlaid on the resulting image automatically',
+    default=False)
 
 # Exported mesh file formats
 bpy.types.Scene.VMV_ExportedMeshFormat = bpy.props.EnumProperty(

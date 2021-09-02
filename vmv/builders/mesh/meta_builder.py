@@ -368,6 +368,7 @@ class MetaBuilder:
         # Convert it to a mesh from meta-balls
         bpy.ops.object.convert(target='MESH')
 
+        # Update its name with the mesh suffix to be able to locate it
         self.meta_mesh = bpy.context.scene.objects[self.morphology.name + '.001']
         self.meta_mesh.name = self.morphology.name + vmv.consts.Meshing.MESH_SUFFIX
 
@@ -412,12 +413,12 @@ class MetaBuilder:
     def tessellate_mesh(self):
 
         # Ensure that the tessellation level is within range
-        if 0.01 < self.options.mesh.tessellation_level < 1.0:
+        if 0.01 < self.options.mesh.tessellation_ratio < 1.0:
 
             # Decimate each mesh object
             vmv.mesh.ops.decimate_mesh_object(
                 mesh_object=self.meta_mesh,
-                decimation_ratio=self.options.mesh.tessellation_level)
+                decimation_ratio=self.options.mesh.tessellation_ratio)
 
             # Adjust the texture mapping
             vmv.shading.adjust_material_uv(mesh_object=self.meta_mesh)

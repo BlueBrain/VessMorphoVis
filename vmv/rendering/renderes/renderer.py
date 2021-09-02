@@ -31,7 +31,7 @@ def render(bounding_box,
            image_resolution=vmv.consts.Image.DEFAULT_RESOLUTION,
            image_name='image',
            image_directory=None,
-           keep_camera_in_scene=True):
+           keep_camera_in_scene=False):
     """Render the reconstructed mesh to a .PNG image.
 
     :param bounding_box:
@@ -75,7 +75,7 @@ def render_to_scale(bounding_box,
                     image_scale_factor=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
                     image_name='image',
                     image_directory=None,
-                    keep_camera_in_scene=True):
+                    keep_camera_in_scene=False):
     """Render the reconstructed mesh to scale to a .PNG image.
 
     :param bounding_box:
@@ -115,7 +115,7 @@ def render_at_angle(scene_objects,
                     angle,
                     bounding_box,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
-                    image_resolution=512,
+                    image_resolution=vmv.consts.Image.DEFAULT_RESOLUTION,
                     image_name='image',
                     image_directory=None):
     """Render the mesh to a .PNG image at a specific angle.

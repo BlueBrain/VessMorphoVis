@@ -40,11 +40,8 @@ class MeshOptions:
         self.reconstruct_neuron_mesh = False
 
         # MESHING OPTIONS ##########################################################################
-        # Tessellate the mesh after the reconstruction
-        self.tessellate_mesh = False
-
-        # Tessellation level (between 0.1 and 1.0)
-        self.tessellation_level = vmv.consts.Meshing.MAX_TESSELLATION_LEVEL
+        # Tessellation level (between 0.01 and 1.0)
+        self.tessellation_ratio = vmv.consts.Meshing.MAX_TESSELLATION_LEVEL
 
         # Fixing morphology artifacts
         self.fix_morphology_artifacts = True
@@ -86,6 +83,9 @@ class MeshOptions:
 
         # Image resolution is based on scale or to a fixed resolution
         self.resolution_basis = vmv.enums.Rendering.Resolution.FIXED_RESOLUTION
+
+        # Render scale bar on the image
+        self.render_scale_bar = False
 
         # Render a static frame of the mesh
         self.render = False

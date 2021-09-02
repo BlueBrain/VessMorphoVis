@@ -164,7 +164,7 @@ class PolylineBuilder:
 
         self.center = self.morphology.bounding_box.center
 
-        # Create an instance of the morphology builder
+        # Create an instance of the SectionBuilder to build the morphology in advance
         morphology_builder = vmv.builders.SectionsBuilder(self.morphology, self.options)
 
         # Build the skeleton and return a reference to it
@@ -172,6 +172,9 @@ class PolylineBuilder:
 
         # Convert it to a mesh
         self.mesh = vmv.scene.convert_object_to_mesh(morphology_skeleton)
+
+        # Update its name with the mesh suffix to be able to locate it
+        self.mesh.name = self.morphology.name + vmv.consts.Meshing.MESH_SUFFIX
 
         # We can here create the materials at the end to avoid any issues
         self.create_skeleton_materials()

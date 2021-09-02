@@ -52,204 +52,6 @@ class VMVMeshingPanel(bpy.types.Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     ################################################################################################
-    # @draw_mesh_reconstruction_options
-    ################################################################################################
-    def draw_mesh_reconstruction_options(self,
-                                         context):
-        """Draws the mesh reconstruction options on the meshing panel.
-
-        :param context:
-            Context.
-        """
-        # Skeleton meshing options
-        skeleton_meshing_options_row = self.layout.row()
-        skeleton_meshing_options_row.label(text='Meshing Options:', icon='SURFACE_DATA')
-
-        # Which meshing technique to use
-        meshing_method_row = self.layout.row()
-        meshing_method_row.prop(context.scene, 'VMV_MeshingTechnique', icon='OUTLINER_OB_EMPTY')
-
-        # Options only for the Meta-balls algorithm
-        if context.scene.VMV_MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
-
-            # Auto meta-ball resolution
-            meta_auto_resolution_row = self.layout.row()
-            meta_auto_resolution_row.prop(context.scene, 'VMV_MetaBallAutoResolution',
-                                          icon='OUTLINER_OB_EMPTY')
-            vmv.interface.Options.mesh.meta_auto_resolution = context.scene.VMV_MetaBallAutoResolution
-
-            # Meta-ball resolution
-            meta_resolution_row = self.layout.row()
-            meta_resolution_row.prop(context.scene, 'VMV_MetaBallResolution', icon='OUTLINER_OB_EMPTY')
-            vmv.interface.Options.mesh.meta_resolution = context.scene.VMV_MetaBallResolution
-
-            # Disable the resolution box if the auto resolution is set on
-            if context.scene.VMV_MetaBallAutoResolution:
-                meta_resolution_row.enabled = False
-            else:
-                meta_resolution_row.enabled = True
-
-        # Tessellation parameters
-        tess_level_row = self.layout.row()
-        tess_level_row.prop(context.scene, 'VMV_TessellateMesh')
-        tess_level_column = tess_level_row.column()
-        tess_level_column.prop(context.scene, 'VMV_MeshTessellationLevel')
-
-        if not context.scene.VMV_TessellateMesh:
-
-            # Use 1.0 to disable the tessellation
-            vmv.interface.Options.mesh.tessellate_mesh = False
-            vmv.interface.Options.mesh.tessellation_level = 1.0
-            tess_level_column.enabled = False
-        else:
-            vmv.interface.Options.mesh.tessellate_mesh = context.scene.VMV_TessellateMesh
-            vmv.interface.Options.mesh.tessellation_level = context.scene.VMV_MeshTessellationLevel
-
-    ################################################################################################
-    # @draw_mesh_reconstruction_button
-    ################################################################################################
-    def draw_mesh_reconstruction_button(self,
-                                        context):
-        """Draw the mesh reconstruction button on the meshing panel.
-
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Mesh quick reconstruction options
-        quick_reconstruction_row = layout.row()
-        quick_reconstruction_row.label(text='Mesh Reconstruction:', icon='PARTICLE_POINT')
-
-        # Mesh reconstruction options
-        mesh_reconstruction_row = layout.row()
-        mesh_reconstruction_row.operator('reconstruct.mesh', icon='MESH_DATA')
-
-        # If the morphology is loaded only, print the performance stats.
-        if vmv.interface.MorphologyLoaded:
-
-            # Stats
-            meshing_stats_row = layout.row()
-            meshing_stats_row.label(text='Stats:', icon='RECOVER_LAST')
-
-            reconstruction_time_row = layout.row()
-            reconstruction_time_row.prop(context.scene, 'VMV_MeshReconstructionTime')
-            reconstruction_time_row.enabled = False
-
-    ################################################################################################
-    # @draw_mesh_rendering_options
-    ################################################################################################
-    def draw_mesh_rendering_options(self,
-                                    context):
-        """Draw the rendering options.
-
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Rendering options
-        rendering_row = layout.row()
-        rendering_row.label(text='Rendering Options:', icon='RENDER_STILL')
-
-        # Rendering resolution
-        rendering_resolution_row = layout.row()
-        rendering_resolution_row.label(text='Resolution:')
-        rendering_resolution_row.prop(context.scene, 'VMV_MeshRenderingResolution', expand=True)
-
-        # Add the frame resolution option
-        if context.scene.VMV_MeshRenderingResolution == \
-                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Frame resolution option (only for the close up mode)
-            frame_resolution_row = layout.row()
-            frame_resolution_row.label(text='Frame Resolution:')
-            frame_resolution_row.prop(context.scene, 'VMV_MeshFrameResolution')
-            frame_resolution_row.enabled = True
-
-        # Otherwise, add the scale factor option
-        else:
-
-            # Scale factor option
-            scale_factor_row = layout.row()
-            scale_factor_row.label(text='Resolution Scale:')
-            scale_factor_row.prop(context.scene, 'VMV_MeshFrameScaleFactor')
-            scale_factor_row.enabled = True
-
-        # Rendering view column
-        view_row = layout.column()
-        view_row.prop(context.scene, 'VMV_MeshRenderingView', icon='AXIS_FRONT')
-        vmv.interface.Options.mesh.camera_view = context.scene.VMV_MeshRenderingView
-
-        # Rendering projection column only for a fixed resolution
-        if context.scene.VMV_MeshRenderingResolution == \
-                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Due to a bug in the workbench renderer in Blender, we will allow the
-            # perspective projection for all the materials that use cycles and have high number of
-            # samples per pixel, mainly the artistic rendering.
-            if vmv.interface.Options.mesh.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
-
-                # Add the projection option
-                projection_row = self.layout.column()
-                projection_row.prop(context.scene, 'VMV_MeshCameraProjection ', icon='AXIS_FRONT')
-                vmv.interface.Options.mesh.camera_projection = \
-                    context.scene.VMV_MeshCameraProjection 
-
-            # Set it by default to ORTHOGRAPHIC
-            else:
-                vmv.interface.Options.mesh.camera_projection = \
-                    vmv.enums.Rendering.Projection.ORTHOGRAPHIC
-
-        # Set it by default to ORTHOGRAPHIC
-        else:
-            vmv.interface.Options.mesh.camera_projection = \
-                vmv.enums.Rendering.Projection.ORTHOGRAPHIC
-
-        # Render still images button
-        mesh_still_image_rendering = layout.row()
-        mesh_still_image_rendering.operator('render_mesh.image', icon='MESH_DATA')
-
-        # Render animation row
-        render_animation_row = layout.row()
-        render_animation_row.label(text='Render Animation:', icon='CAMERA_DATA')
-        render_animations_buttons_row = layout.row(align=True)
-        render_animations_buttons_row.operator('render_mesh.360', icon='FORCE_MAGNETIC')
-        render_animations_buttons_row.enabled = True
-
-        # Rendering progress bar
-        neuron_mesh_rendering_progress_row = layout.row()
-        neuron_mesh_rendering_progress_row.prop(context.scene, 'VMV_MeshRenderingProgress')
-        neuron_mesh_rendering_progress_row.enabled = False
-
-    ################################################################################################
-    # @draw_mesh_export_options
-    ################################################################################################
-    def draw_mesh_export_options(self,
-                                 context):
-        """Draw the mesh export button.
-
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Saving meshes parameters
-        save_mesh_row = layout.row()
-        save_mesh_row.label(text='Export Mesh As:', icon='MESH_UVSPHERE')
-
-        # Exported format column
-        format_column = layout.column()
-        format_column.prop(context.scene, 'VMV_ExportedMeshFormat', icon='GROUP_VERTEX')
-        format_column.operator('export.mesh', icon='MESH_DATA')
-
-    ################################################################################################
     # @draw
     ################################################################################################
     def draw(self,
@@ -260,23 +62,21 @@ class VMVMeshingPanel(bpy.types.Panel):
             Panel context.
         """
 
-        # Get a reference to the layout of the panel
-        layout = self.layout
+        # Add the mesh reconstruction options to the panel
+        add_meshing_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Draw the mesh reconstruction options
-        self.draw_mesh_reconstruction_options(context=context)
-
-        # Add the color options to the interface
+        # Add the color options to the panel
         add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Draw the mesh reconstruction button
-        self.draw_mesh_reconstruction_button(context=context)
+        # Add the mesh reconstruction button to the panel
+        add_mesh_reconstruction_button(layout=self.layout, scene=context.scene)
 
         # Draw the mesh rendering options
-        self.draw_mesh_rendering_options(context=context)
+        add_rendering_options(layout=self.layout, scene=context.scene,
+                              options=vmv.interface.Options)
 
         # Draw the mesh export options
-        self.draw_mesh_export_options(context=context)
+        add_mesh_export_options(layout=self.layout, scene=context.scene)
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
         if vmv.interface.MorphologyLoaded:
@@ -363,59 +163,16 @@ class VMVRenderMeshImage(bpy.types.Operator):
             {'FINISHED'}
         """
 
-        # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.Options.io.output_directory is None:
-            self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
-            return {'FINISHED'}
-
-        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
-            self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
-            return {'FINISHED'}
-
-        # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.Options.io.images_directory):
-            vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.images_directory)
-
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Mesh ... Wait Please')
 
-        # Compute the bounding box for the available meshes only
-        bounding_box = vmv.bbox.compute_scene_bounding_box_for_meshes()
-
-        # Image name
-        image_name = 'MESH_%s_%s' % (vmv.interface.Options.morphology.label,
-                                     vmv.interface.Options.mesh.camera_view)
-
-        # Stretch the bounding box by few microns
-        rendering_bbox = copy.deepcopy(bounding_box)
-        rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
-
-        # Render at a specific resolution
-        if context.scene.VMV_MeshRenderingResolution == \
-                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Render the morphology
-            vmv.rendering.render(
-                bounding_box=rendering_bbox,
-                camera_view=vmv.interface.Options.mesh.camera_view,
-                camera_projection=vmv.interface.Options.mesh.camera_projection,
-                image_resolution=context.scene.VMV_MeshFrameResolution,
-                image_name=image_name,
-                image_directory=vmv.interface.Options.io.images_directory)
-
-        # Render at a specific scale factor
-        else:
-
-            # Render the morphology
-            vmv.rendering.render_to_scale(
-                bounding_box=rendering_bbox,
-                camera_view=vmv.interface.Options.mesh.camera_view,
-                image_scale_factor=context.scene.VMV_MeshFrameScaleFactor,
-                image_name=image_name,
-                image_directory=vmv.interface.Options.io.images_directory)
+        # Render the mesh image
+        vmv.render_mesh_image(panel=self, scene=context.scene,
+                              rendering_view=vmv.interface.Options.mesh.camera_view,
+                              camera_projection=vmv.interface.Options.mesh.camera_projection)
 
         # Report the process termination in the UI
-        self.report({'INFO'}, 'Rendering Morphology Done')
+        self.report({'INFO'}, 'Rendering Mesh Done')
 
         # Done
         return {'FINISHED'}
@@ -444,12 +201,15 @@ class VMVRenderMesh360(bpy.types.Operator):
     ################################################################################################
     # @modal
     ################################################################################################
-    def modal(self, context, event):
-        """
-        Threading and non-blocking handling.
+    def modal(self,
+              context,
+              event):
+        """Threading and non-blocking handling.
 
-        :param context: Panel context.
-        :param event: A given event for the panel.
+        :param context:
+            Panel context.
+        :param event:
+            A given event for the panel.
         """
 
         # Get a reference to the scene
@@ -514,26 +274,16 @@ class VMVRenderMesh360(bpy.types.Operator):
     ################################################################################################
     # @execute
     ################################################################################################
-    def execute(self, context):
+    def execute(self,
+                context):
         """Execute the operator
 
         :param context:
             Panel context.
         """
 
-        # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.Options.io.output_directory is None:
-            self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
-            return {'FINISHED'}
-
-        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
-            self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
-            return {'FINISHED'}
-
-        # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.Options.io.sequences_directory):
-            vmv.file.ops.clean_and_create_directory(
-                vmv.interface.Options.io.sequences_directory)
+        # Verify the presence of the sequences directory before rendering
+        vmv.interface.verify_sequences_directory(panel=self)
 
         # A reference to the bounding box that will be used for the rendering
         rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_meshes()
@@ -565,7 +315,8 @@ class VMVRenderMesh360(bpy.types.Operator):
     def cancel(self, context):
         """Cancel the panel processing and return to the interaction mode.
 
-        :param context: Panel context.
+        :param context:
+            Panel context.
         """
 
         # Multi-threading
@@ -603,19 +354,8 @@ class VMVExportMesh(bpy.types.Operator):
             {'FINISHED'}
         """
 
-        # Ensure that there is a valid directory where the images will be written to
-        if vmv.interface.Options.io.output_directory is None:
-            self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
-            return {'FINISHED'}
-
-        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
-            self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
-            return {'FINISHED'}
-
-        # Create the sequences directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.Options.io.meshes_directory):
-            vmv.file.ops.clean_and_create_directory(
-                vmv.interface.Options.io.meshes_directory)
+        # Verify the presence of the meshes directory before exporting
+        vmv.interface.verify_meshes_directory(panel=self)
 
         # Select the mesh object to be exported
         mesh_object = vmv.scene.select_object_containing_string(vmv.consts.Meshing.MESH_SUFFIX)
