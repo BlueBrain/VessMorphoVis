@@ -36,17 +36,28 @@ class Morphology:
         """The kind of visualization, whether structure or dynamics
         """
 
-        # Visualize structural aspects
+        # Visualize static structural aspects
         STRUCTURE = 'MORPHOLOGY_VISUALIZATION_STRUCTURE'
-        STRUCTURE_UI_ITEM = (STRUCTURE,
-                             'Structure',
-                             'Visualize static data, showing only the structure of the vasculature')
+        STRUCTURE_UI_ITEM = (
+            STRUCTURE,
+            'Structure',
+            'Visualize static data, showing only the structure of the vasculature without any '
+            'variations with respect to time')
 
         # Visualize dynamics, simulation and functional aspects
-        DYNAMICS = 'MORPHOLOGY_VISUALIZATION_DYNAMICS'
-        DYNAMICS_UI_ITEM = (DYNAMICS,
-                            'Dynamics',
-                            'Visualize simulation data with respect to time (function dynamics)')
+        STRUCTURAL_DYNAMICS = 'MORPHOLOGY_VISUALIZATION_STRUCTURAL_DYNAMICS'
+        STRUCTURAL_DYNAMICS_UI_ITEM = (
+            STRUCTURAL_DYNAMICS,
+            'Structural Dynamics',
+            'Visualize structural dynamics with respect to time, such as changing radii with '
+            'respect to time')
+
+        # Visualize dynamics, simulation and functional aspects
+        FUNCTIONAL_DYNAMICS = 'MORPHOLOGY_VISUALIZATION_DYNAMICS'
+        FUNCTIONAL_DYNAMICS_UI_ITEM = (
+            FUNCTIONAL_DYNAMICS,
+            'Functional Dynamics',
+            'Visualize simulation data with respect to time (function dynamics)')
 
         ############################################################################################
         # @__init__
@@ -64,9 +75,13 @@ class Morphology:
             if argument == 'structure':
                 return Morphology.Visualization.STRUCTURE
 
-            # Dynamics
-            elif argument == 'dynamics':
-                return Morphology.Visualization.DYNAMICS
+            # Functional dynamics
+            elif argument == 'structural-dynamics':
+                return Morphology.Visualization.STRUCTURAL_DYNAMICS
+
+            # Functional dynamics
+            elif argument == 'functional-dynamics':
+                return Morphology.Visualization.FUNCTIONAL_DYNAMICS
 
             # By default, visualize structure
             else:

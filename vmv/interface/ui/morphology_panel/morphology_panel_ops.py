@@ -46,7 +46,7 @@ def add_visualization_type_options(layout,
         visualization_type_row.prop(scene, 'VMV_VisualizeStructureDynamics')
 
         # If we select the dynamics, then show the available simulations
-        if scene.VMV_VisualizeStructureDynamics == vmv.enums.Morphology.Visualization.DYNAMICS:
+        if scene.VMV_VisualizeStructureDynamics == vmv.enums.Morphology.Visualization.FUNCTIONAL_DYNAMICS:
             dynamics_row = layout.row()
             dynamics_row.label(text='Available Dynamics')
             dynamics_row.prop(scene, 'VMV_AvailableSimulations')
@@ -74,7 +74,7 @@ def add_colormap_options(layout,
 
     # Color map
     color_map_row = layout.row()
-    color_map_row.label(text='Color Map:')
+    color_map_row.label(text='Color Map')
     color_map_row.prop(scene, 'VMV_ColorMap')
     color_map_row.prop(scene, 'VMV_InvertColorMap')
 
@@ -232,11 +232,11 @@ def add_color_options(layout,
 
     # Color parameters
     arbors_colors_row = layout.row()
-    arbors_colors_row.label(text='Morphology Colors:', icon='COLOR')
+    arbors_colors_row.label(text='Morphology Colors', icon='COLOR')
 
     # Morphology material
     morphology_material_row = layout.row()
-    morphology_material_row.label(text='Shading:')
+    morphology_material_row.label(text='Shading')
     morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
     options.morphology.material = scene.VMV_MorphologyMaterial
 
@@ -245,13 +245,13 @@ def add_color_options(layout,
 
     # Sections
     if options.morphology.builder == vmv.enums.Morphology.Builder.SECTIONS:
-        color_coding_row.label(text='Color Coding:')
+        color_coding_row.label(text='Color Coding')
         color_coding_row.prop(scene, 'VMV_PerSectionColorCodingBasis')
         add_per_section_color_coding_options(layout, scene, options)
 
     # Segments
     elif options.morphology.builder == vmv.enums.Morphology.Builder.SEGMENTS:
-        color_coding_row.label(text='Color Coding:')
+        color_coding_row.label(text='Color Coding')
         color_coding_row.prop(scene, 'VMV_PerSegmentColorCodingBasis')
         add_per_segment_color_coding_options(layout, scene, options)
 
@@ -281,7 +281,7 @@ def add_morphology_reconstruction_options(layout,
     # Skeleton meshing options
     skeleton_meshing_options_row = layout.row()
     skeleton_meshing_options_row.label(
-        text='Morphology Reconstruction Options:', icon='SURFACE_DATA')
+        text='Morphology Reconstruction Options', icon='SURFACE_DATA')
 
     # Morphology reconstruction techniques option
     morphology_reconstruction_row = layout.row()
@@ -306,7 +306,7 @@ def add_morphology_reconstruction_options(layout,
     elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
 
         fixed_diameter_row = layout.row()
-        fixed_diameter_row.label(text='Fixed Radius Value:')
+        fixed_diameter_row.label(text='Fixed Radius Value')
         fixed_diameter_row.prop(scene, 'VMV_FixedRadiusValue')
 
         # Pass options from UI to system
@@ -319,7 +319,7 @@ def add_morphology_reconstruction_options(layout,
     elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
 
         scaled_diameter_row = layout.row()
-        scaled_diameter_row.label(text='Radius Scale Factor:')
+        scaled_diameter_row.label(text='Radius Scale Factor')
         scaled_diameter_row.prop(scene, 'VMV_RadiusScaleValue')
 
         # Pass options from UI to system
@@ -333,6 +333,88 @@ def add_morphology_reconstruction_options(layout,
 
     # Tube quality
     tube_quality_row = layout.row()
-    tube_quality_row.label(text='Tube Quality:')
+    tube_quality_row.label(text='Tube Quality')
     tube_quality_row.prop(scene, 'VMV_TubeQuality')
     options.morphology.bevel_object_sides = scene.VMV_TubeQuality
+
+
+################################################################################################
+# @add_morphology_reconstruction_button
+################################################################################################
+def add_morphology_reconstruction_button(layout,
+                                         scene):
+    """Adds the morphology reconstruction button to the panel.
+
+    :param layout:
+        Panel layout.
+    :param scene:
+        Context scene.
+    """
+
+    # Title
+    layout.row().label(text='Morphology Reconstruction', icon='PARTICLE_POINT')
+
+    # Button
+    layout.row().operator('reconstruct.morphology', icon='MESH_DATA')
+
+    # If the morphology is loaded only, print the performance stats.
+    if vmv.interface.MorphologyLoaded:
+
+        # Stats
+        layout.row().label(text='Stats', icon='RECOVER_LAST')
+
+        row = layout.row()
+        row.prop(scene, 'VMV_MorphologyReconstructionTime')
+        row.enabled = False
+
+
+def add_simulation_visualization_options(layout,
+                                         scene,
+                                         options):
+    # Title
+    layout.row().label(text='Simulation Visualization', icon='PARTICLE_POINT')
+
+    # add some simulation data
+    # Starting frame just a single frame
+    # Current
+    # End frame 'VMV_FirstFrame')
+    #layout.row().prop(scene, 'VMV_LastFrame')
+
+    #layout.row().prop(scene, 'VMV_CurrentFrame')
+
+    # Start Simulation
+    # Stop Simulation
+    # Frame rate
+
+    row = layout.row()
+    row.label(text='Dynamics')
+    row.prop(scene, 'VMV_AvailableSimulations')
+
+    row = layout.row()
+    column = row.column()
+    column.label(text='Range')
+
+    column = row.column()
+    row = column.row(align=True)
+    row.prop(scene, 'VMV_FirstLoadedFrame')
+    row.prop(scene, 'VMV_LastLoadedFrame')
+    row.enabled = False
+
+    layout.row().operator('load.simulation', icon='FORCE_TURBULENCE')
+
+    column.label(text='Play Simulation')
+
+    control = layout.row(align=True)
+
+    control.operator('play_first_frame.simulation', icon='REW')
+    control.operator('play_previous_frame.simulation', icon='PREV_KEYFRAME')
+    control.operator('play.simulation', icon='PLAY')
+    control.operator('play_next_frame.simulation', icon='NEXT_KEYFRAME')
+    control.operator('play_last_frame.simulation', icon='FF')
+    control.prop(scene, 'VMV_CurrentFrame')
+
+    progress = layout.row()
+    progress.prop(scene, 'VMV_SimulationProgressBar')
+    progress.enabled = False
+
+

@@ -177,20 +177,43 @@ bpy.types.Scene.VMV_MorphologyReconstructionTime = bpy.props.FloatProperty(
     description='The time it takes to reconstruct the vasculature morphology',
     default=0, min=0, max=1000000)
 
+####################################################################################################
+# The first time frame loaded from the file
+bpy.types.Scene.VMV_FirstLoadedFrame = bpy.props.IntProperty(
+    name='',
+    description='The first time step as loaded from the morphology file. '
+                'This is the typical initial time-step with which the simulation will start '
+                'off from',
+    default=0, min=0, max=1000000)
 
-
+# The last time frame loaded from the file
+bpy.types.Scene.VMV_LastLoadedFrame = bpy.props.IntProperty(
+    name='',
+    description='The first time step as loaded from the morphology file. '
+                'This is the typical final time-step with which the simulation will end at',
+    default=0, min=0, max=1000000)
 
 
 
 
 bpy.types.Scene.VMV_FirstFrame = bpy.props.IntProperty(
-    name='',
-    default=0, min=0, max=100)
+    name='First Time Frame',
+    default=0, min=0, max=1000000)
 
 bpy.types.Scene.VMV_LastFrame = bpy.props.IntProperty(
-    name='',
-    default=100, min=0, max=100)
+    name='Last Time Frame',
+    default=100, min=0, max=1000000)
 
+
+
+
+# Simulation progress bar
+bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.FloatProperty(
+    name='',
+    description='The time it takes to reconstruct the vasculature mesh',
+    default=0, min=0, max=1000000)
+
+# Simulation current frame value
 bpy.types.Scene.VMV_CurrentFrame = bpy.props.IntProperty(
     name='',
-    default=50, min=0, max=100)
+    default=0, min=0, max=1000000)

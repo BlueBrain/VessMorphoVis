@@ -34,8 +34,8 @@ import vmv.interface
 import vmv.utilities
 import vmv.rendering
 import vmv.shading
-
 from .morphology_panel_ops import *
+from .morphology_panel_simulation import *
 
 
 ####################################################################################################
@@ -47,10 +47,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
     ################################################################################################
     # Panel parameters
     ################################################################################################
-    bl_label = 'Morphology Reconstruction'
-    bl_idname = "OBJECT_PT_VMV_MorphologyReconstruction"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
+    bl_label = 'Morphology Visualization'
+    bl_idname = 'OBJECT_PT_VMV_MorphologyReconstruction'
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
     bl_category = 'VessMorphoVis'
     bl_options = {'DEFAULT_CLOSED'}
 
@@ -154,7 +154,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
     # Visualization type, static structure or dynamics (simulation) when the data exists
     bpy.types.Scene.VMV_VisualizeStructureDynamics = bpy.props.EnumProperty(
         items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM,
-               vmv.enums.Morphology.Visualization.DYNAMICS_UI_ITEM],
+               vmv.enums.Morphology.Visualization.FUNCTIONAL_DYNAMICS_UI_ITEM],
         name='',
         default=vmv.enums.Morphology.Visualization.STRUCTURE,
         update=update_ui_with_available_simulations)
@@ -222,37 +222,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
 
 
     ################################################################################################
-    # @draw_morphology_reconstruction_button
-    ################################################################################################
-    def draw_morphology_reconstruction_button(self,
-                                              context):
-        """Draw the morphology reconstruction button.
 
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Mesh quick reconstruction options
-        reconstruction_row = self.layout.row()
-        reconstruction_row.label(text='Morphology Reconstruction:', icon='PARTICLE_POINT')
-
-        # Morphology reconstruction options
-        morphology_reconstruction_row = self.layout.row()
-        morphology_reconstruction_row.operator('reconstruct.morphology', icon='MESH_DATA')
-
-        # If the morphology is loaded only, print the performance stats.
-        if vmv.interface.MorphologyLoaded:
-
-            # Stats
-            morphology_stats_row = layout.row()
-            morphology_stats_row.label(text='Stats:', icon='RECOVER_LAST')
-
-            loading_time_row = layout.row()
-            loading_time_row.prop(context.scene, 'VMV_MorphologyReconstructionTime')
-            loading_time_row.enabled = False
 
     ################################################################################################
     # @draw_morphology_rendering_options
@@ -390,19 +360,16 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Color options
         add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Draw the morphology reconstruction button
-        self.draw_morphology_reconstruction_button(context=context)
+        # Add the morphology reconstruction button
+        add_morphology_reconstruction_button(layout=self.layout, scene=context.scene)
+
+        add_simulation_visualization_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
         # Draw the morphology rendering options
         self.draw_morphology_rendering_options(context=context)
 
         # Draw the morphology export options
         # self.draw_morphology_export_options(context=context)
-
-        time_frame_row = self.layout.row()
-        time_frame_row.prop(context.scene, 'VMV_FirstFrame')
-        time_frame_row.prop(context.scene, 'VMV_CurrentFrame')
-        time_frame_row.prop(context.scene, 'VMV_LastFrame')
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
         if vmv.interface.MorphologyLoaded:
@@ -418,8 +385,8 @@ class VMVReconstructMorphology(bpy.types.Operator):
     """Reconstructs the mesh of the vasculature"""
 
     # Operator parameters
-    bl_idname = "reconstruct.morphology"
-    bl_label = "Reconstruct Morphology"
+    bl_idname = 'reconstruct.morphology'
+    bl_label = 'Reconstruct Morphology'
     bl_options = {'REGISTER'}
 
     # The builder that will be used to build the morphology
@@ -498,6 +465,20 @@ class VMVReconstructMorphology(bpy.types.Operator):
         return {'FINISHED'}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ####################################################################################################
 # @VMVRenderMorphologyImage
 ####################################################################################################
@@ -505,8 +486,8 @@ class VMVRenderMorphologyImage(bpy.types.Operator):
     """Renders an image of the morphology of the vasculature"""
 
     # Operator parameters
-    bl_idname = "render_morphology.image"
-    bl_label = "Render Image"
+    bl_idname = 'render_morphology.image'
+    bl_label = 'Render Image'
 
     ################################################################################################
     # @execute
@@ -602,8 +583,8 @@ class VMVRenderMorphology360(bpy.types.Operator):
     """Render a 360 view of the reconstructed mesh"""
 
     # Operator parameters
-    bl_idname = "render_morphology.360"
-    bl_label = "Render 360"
+    bl_idname = 'render_morphology.360'
+    bl_label = 'Render 360'
 
     # Timer parameters
     event_timer = None
@@ -763,8 +744,8 @@ class VMVExportMorphology(bpy.types.Operator):
     """Export the reconstructed mesh to a file"""
 
     # Operator parameters
-    bl_idname = "export.morphology"
-    bl_label = "Export"
+    bl_idname = 'export.morphology'
+    bl_label = 'Export'
 
     ################################################################################################
     # @execute
@@ -868,14 +849,22 @@ def register_panel():
     # Panel
     bpy.utils.register_class(VMVMorphologyPanel)
 
-    # Mesh reconstruction button
+    # Morphology reconstruction button
     bpy.utils.register_class(VMVReconstructMorphology)
 
-    # Mesh rendering buttons
+    # Simulation buttons
+    bpy.utils.register_class(VMV_LoadSimulation)
+    bpy.utils.register_class(VMV_PlaySimulation)
+    bpy.utils.register_class(VMV_SimulationPreviousFrame)
+    bpy.utils.register_class(VMV_SimulationNextFrame)
+    bpy.utils.register_class(VMV_SimulationFirstFrame)
+    bpy.utils.register_class(VMV_SimulationLastFrame)
+
+    # Morphology rendering buttons
     bpy.utils.register_class(VMVRenderMorphologyImage)
     bpy.utils.register_class(VMVRenderMorphology360)
 
-    # Mesh export button
+    # Morphology export button
     bpy.utils.register_class(VMVExportMorphology)
 
 
@@ -888,12 +877,20 @@ def unregister_panel():
     # Panel
     bpy.utils.unregister_class(VMVMorphologyPanel)
 
-    # Mesh reconstruction button
+    # Morphology reconstruction button
     bpy.utils.unregister_class(VMVReconstructMorphology)
 
-    # Mesh rendering buttons
+    # Simulation buttons
+    bpy.utils.unregister_class(VMV_LoadSimulation)
+    bpy.utils.unregister_class(VMV_PlaySimulation)
+    bpy.utils.unregister_class(VMV_SimulationPreviousFrame)
+    bpy.utils.unregister_class(VMV_SimulationNextFrame)
+    bpy.utils.unregister_class(VMV_SimulationFirstFrame)
+    bpy.utils.unregister_class(VMV_SimulationLastFrame)
+
+    # Morphology rendering buttons
     bpy.utils.unregister_class(VMVRenderMorphologyImage)
     bpy.utils.unregister_class(VMVRenderMorphology360)
 
-    # Mesh export button
+    # Morphology export button
     bpy.utils.unregister_class(VMVExportMorphology)
