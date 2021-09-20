@@ -40,7 +40,7 @@ class Morphology:
         STRUCTURE = 'MORPHOLOGY_VISUALIZATION_STRUCTURE'
         STRUCTURE_UI_ITEM = (
             STRUCTURE,
-            'Structure',
+            'Static Structure',
             'Visualize static data, showing only the structure of the vasculature without any '
             'variations with respect to time')
 
@@ -170,29 +170,26 @@ class Morphology:
 
         # Use the Sections builder
         SECTIONS = 'SECTIONS_BUILDER'
+        SECTIONS_UI_ITEM = (
+            SECTIONS,
+            'Sections',
+            'Build the morphology as a set of sections, where each section is an independent '
+            'object')
 
         # Use the Segments builder
         SEGMENTS = 'RECONSTRUCTION_METHOD_SEGMENTS_BUILDER'
+        SEGMENTS_UI_ITEM = (
+            SEGMENTS,
+            'Segments',
+            'Reconstruct the morphology as a set of segments, where each segment is an '
+            'independent object (this approach is time consuming!)')
 
         # Use the Samples Builder Drawing samples only as spheres
         SAMPLES = 'SAMPLES_BUILDER'
-
-        # The list that will appear in the GUI
-        METHOD_ITEMS = [
-            (SEGMENTS,
-             'Segments',
-             "Reconstruct the morphology as a set of segments, where each segment is an "
-             "independent object (this approach is time consuming!)"),
-
-            (SECTIONS,
-             'Sections',
-             "Reconstruct the morphology as a set of sections, where each section is an "
-             "independent object"),
-
-            (SAMPLES,
-             'Samples',
-             "Reconstruct the morphology as a set of samples")
-        ]
+        SAMPLES_UI_ITEM = (
+            SAMPLES,
+            'Samples',
+            'Reconstruct the morphology as a set of samples')
 
         ############################################################################################
         # @__init__

@@ -16,3 +16,4 @@
 ####################################################################################################
 
 from .morphology_panel import *
+from .morphology_panel_simulation import *

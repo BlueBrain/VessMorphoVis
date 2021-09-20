@@ -18,6 +18,11 @@
 # Blender imports
 import bpy
 
+# Internal imports
+import vmv.builders
+
+import vmv.interface
+
 
 ####################################################################################################
 # @VMV_LoadSimulation
@@ -28,6 +33,56 @@ class VMV_LoadSimulation(bpy.types.Operator):
     # Operator parameters
     bl_idname = 'load.simulation'
     bl_label = 'Load Simulation'
+
+    # Timer parameters
+    event_timer = None
+    timer_limits = 0
+
+    morphology_builder = None
+    morphology_object_polyline = None
+
+    ################################################################################################
+    # @modal
+    ################################################################################################
+    def modal(self, context, event):
+        """Threading and non-blocking handling.
+
+        :param context:
+            Panel context.
+        :param event:
+            A given event for the panel.
+        """
+
+        # Get a reference to the scene
+        scene = context.scene
+
+        # Cancelling event, if using right click or exceeding the time limit of the simulation
+        if event.type in {'RIGHTMOUSE', 'ESC'} or self.timer_limits >= context.scene.VMV_LastLoadedFrame - 1:
+
+            # Reset the timer limits
+            self.timer_limits = 0
+
+            # Refresh the panel context
+            self.cancel(context)
+
+            # Done
+            return {'FINISHED'}
+
+        # Timer event, where the function is executed here on a per-frame basis
+        if event.type == 'TIMER':
+
+            self.morphology_builder.load_radius_simulation_data_at_step(self.timer_limits)
+
+            # Update the progress bar
+            context.scene.VMV_SimulationProgressBar = int(100.0 * self.timer_limits / context.scene.VMV_LastLoadedFrame)
+
+            context.scene.VMV_CurrentFrame = self.timer_limits
+
+            # Upgrade the timer limits
+            self.timer_limits += 1
+
+        # Next frame
+        return {'PASS_THROUGH'}
 
     ################################################################################################
     # @execute
@@ -43,7 +98,44 @@ class VMV_LoadSimulation(bpy.types.Operator):
             {'FINISHED'}
         """
 
-        # Done, return {'FINISHED'}
+        import vmv.interface
+        self.morphology_builder = vmv.builders.SectionsBuilder(
+            morphology=vmv.interface.MorphologyObject,
+            options=vmv.interface.Options)
+
+        self.morphology_object_polyline = self.morphology_builder.build_skeleton(
+            context=context)
+
+        # Use the event timer to update the UI during the soma building
+        wm = context.window_manager
+        self.event_timer = wm.event_timer_add(time_step=0.001, window=context.window)
+        wm.modal_handler_add(self)
+
+        if vmv.interface.MorphologyObject.has_radius_simulation:
+            context.scene.VMV_LastLoadedFrame = len(vmv.interface.MorphologyObject.radius_simulation_data[0])
+
+        # Done
+        return {'RUNNING_MODAL'}
+
+    ################################################################################################
+    # @cancel
+    ################################################################################################
+    def cancel(self, context):
+        """
+        Cancel the panel processing and return to the interaction mode.
+
+        :param context:
+            Panel context.
+        """
+
+        # Multi-threading
+        wm = context.window_manager
+        wm.event_timer_remove(self.event_timer)
+
+        # Report the process termination in the UI
+        self.report({'INFO'}, 'Simulation Loading Done')
+
+        # Confirm operation done
         return {'FINISHED'}
 
 
@@ -113,6 +205,46 @@ class VMV_SimulationPreviousFrame(bpy.types.Operator):
     bl_idname = 'play_previous_frame.simulation'
     bl_label = ''
 
+    # Timer parameters
+    event_timer = None
+    timer_limits = 0
+
+    ################################################################################################
+    # @modal
+    ################################################################################################
+    def modal(self, context, event):
+        """
+        Threading and non-blocking handling.
+
+        :param context:
+            Panel context.
+        :param event:
+            A given event for the panel.
+        """
+
+        # Get a reference to the scene
+        scene = context.scene
+
+        # Cancelling event, if using right click or exceeding the time limit of the simulation
+        if event.type in {'RIGHTMOUSE', 'ESC'} or self.timer_limits > 360:
+            # Reset the timer limits
+            self.timer_limits = 0
+
+            # Refresh the panel context
+            self.cancel(context)
+
+            # Done
+            return {'FINISHED'}
+
+        # Timer event, where the function is executed here on a per-frame basis
+        if event.type == 'TIMER':
+
+            # Upgrade the timer limits
+            self.timer_limits += 1
+
+        # Next frame
+        return {'PASS_THROUGH'}
+
     ################################################################################################
     # @execute
     ################################################################################################
@@ -127,7 +259,34 @@ class VMV_SimulationPreviousFrame(bpy.types.Operator):
             {'FINISHED'}
         """
 
-        # Done, return {'FINISHED'}
+        # Use the event timer to update the UI during the soma building
+        wm = context.window_manager
+        self.event_timer = wm.event_timer_add(time_step=0.01, window=context.window)
+        wm.modal_handler_add(self)
+
+
+        # Done
+        return {'RUNNING_MODAL'}
+
+    ################################################################################################
+    # @cancel
+    ################################################################################################
+    def cancel(self, context):
+        """
+        Cancel the panel processing and return to the interaction mode.
+
+        :param context:
+            Panel context.
+        """
+
+        # Multi-threading
+        wm = context.window_manager
+        wm.event_timer_remove(self.event_timer)
+
+        # Report the process termination in the UI
+        self.report({'INFO'}, 'Simulation Loading Done')
+
+        # Confirm operation done
         return {'FINISHED'}
 
 

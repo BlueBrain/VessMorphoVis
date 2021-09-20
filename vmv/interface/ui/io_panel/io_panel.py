@@ -173,6 +173,9 @@ class VMVLoadMorphology(bpy.types.Operator):
             # The morphology is not loaded
             vmv.interface.MorphologyLoaded = False
 
+        # Once loaded, define the options based on the content of the morphology file
+        vmv.interface.define_morphology_visualization_type_items()
+
         # Done
         return {'FINISHED'}
 

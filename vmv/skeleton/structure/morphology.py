@@ -100,13 +100,17 @@ class Morphology:
         if radius_simulation_data is not None and len(radius_simulation_data) > 0:
             self.has_radius_simulation = True
 
+        # self.has_radius_simulation = True
+
         # A list of the flow simulation data
         self.flow_simulation_data = flow_simulation_data
 
         # If the morphology has blood flow simulations (or variations w.r.t time)
         self.has_flow_simulation = False
         if flow_simulation_data is not None and len(flow_simulation_data) > 0:
-            self.has_flow_simulation = False
+            self.has_flow_simulation = True
+
+        # self.has_flow_simulation = True
 
         # A list of the pressure simulation data
         self.pressure_simulation_data = pressure_simulation_data
@@ -115,6 +119,33 @@ class Morphology:
         self.has_pressure_simulation = False
         if pressure_simulation_data is not None and len(pressure_simulation_data) > 0:
             self.has_pressure_simulation = True
+
+        # self.has_pressure_simulation = True
+
+    ################################################################################################
+    # @has_simulation_data
+    ################################################################################################
+    def has_simulation_data(self):
+        """Checks if the morphology has any simulation data
+
+        :return:
+            True if the morphology has any simulation data or False otherwise.
+        """
+
+        # Radius
+        if self.has_radius_simulation:
+            return True
+
+        # Flow
+        if self.has_flow_simulation:
+            return True
+
+        # Pressure
+        if self.has_pressure_simulation:
+            return True
+
+        # Otherwise false
+        return False
 
     ################################################################################################
     # @get_center

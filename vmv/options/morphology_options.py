@@ -44,6 +44,9 @@ class MorphologyOptions:
         # Morphology label, based on the morphology file name
         self.label = None
 
+        # The visualization type requested by the user
+        self.visualization_type = vmv.enums.Morphology.Visualization.STRUCTURE
+
         # The method used to build the morphology skeleton object in the scene from the raw file
         self.builder = vmv.enums.Morphology.Builder.SECTIONS
 

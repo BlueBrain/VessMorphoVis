@@ -15,6 +15,9 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# Blender imports
+import bpy
+
 # Internal imports
 import vmv.bbox
 import vmv.enums
@@ -29,6 +32,49 @@ from .morphology_panel_options import *
 
 
 ####################################################################################################
+# @define_morphology_visualization_type_items
+####################################################################################################
+def define_morphology_visualization_type_items():
+
+    # If the morphology object is None, or not loaded, simply use the structure
+    if vmv.interface.MorphologyObject is None:
+        bpy.types.Scene.VMV_VisualizationType = bpy.props.EnumProperty(
+            items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM],
+            name='Visualization',
+            default=vmv.enums.Morphology.Visualization.STRUCTURE)
+
+    # Otherwise, define the items based on the content of the morphology file
+    else:
+
+        # A list of items that is dependent on the input morphology contents
+        items = list()
+
+        # Basically, add the structure
+        items.append(vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM)
+
+        # Radius variations
+        if vmv.interface.MorphologyObject.has_radius_simulation:
+            items.append(
+                vmv.enums.Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS_UI_ITEM)
+            items.append(vmv.enums.Morphology.Visualization.RADII_COLORMAP_DYNAMICS_UI_ITEM)
+
+        # Flow variations
+        if vmv.interface.MorphologyObject.has_flow_simulation:
+            items.append(vmv.enums.Morphology.Visualization.FLOW_COLORMAP_DYNAMICS_UI_ITEM)
+
+        # Pressure variations
+        if vmv.interface.MorphologyObject.has_pressure_simulation:
+            items.append(
+                vmv.enums.Morphology.Visualization.PRESSURE_COLORMAP_DYNAMICS_UI_ITEM)
+
+        # Visualization type, only the structure, when the morphology does not have simulation data
+        bpy.types.Scene.VMV_VisualizationType = bpy.props.EnumProperty(
+            items=items,
+            name='Visualization',
+            default=vmv.enums.Morphology.Visualization.STRUCTURE)
+
+
+####################################################################################################
 # @add_colormap_options
 ####################################################################################################
 def add_visualization_type_options(layout,
@@ -37,31 +83,8 @@ def add_visualization_type_options(layout,
 
     # Visualization type
     visualization_type_row = layout.row()
-    visualization_type_row.label(text='Visualization')
-
-    # Use all visualization types in case we visualize structure
-
-
-
-
-
-    """
-    # If there is simulation data, then add the VMV_VisualizeStructureDynamics menu
-    if vmv.interface.MorphologyObject.has_radius_simulation or  \
-       vmv.interface.MorphologyObject.has_flow_simulation or    \
-       vmv.interface.MorphologyObject.has_pressure_simulation:
-        visualization_type_row.prop(scene, 'VMV_VisualizeStructureDynamics')
-
-        # If we select the dynamics, then show the available simulations
-        if scene.VMV_VisualizeStructureDynamics == vmv.enums.Morphology.Visualization.FUNCTIONAL_DYNAMICS:
-            dynamics_row = layout.row()
-            dynamics_row.label(text='Available Dynamics')
-            dynamics_row.prop(scene, 'VMV_AvailableSimulations')
-
-    # Otherwise, add the structure menu (only a single item for the moment)
-    else:
-        visualization_type_row.prop(scene, 'VMV_VisualizeStructure')
-    """
+    visualization_type_row.prop(scene, 'VMV_VisualizationType')
+    options.morphology.visualization_type = scene.VMV_VisualizationType
 
 
 ####################################################################################################
@@ -91,21 +114,21 @@ def add_colormap_options(layout,
         options.morphology.color_map_colors.clear()
 
     # Fill the list of colors
-    for i in range(vmv.consts.Color.COLORMAP_RESOLUTION):
+    for i_color in range(vmv.consts.Color.COLORMAP_RESOLUTION):
 
         # Add the colormap element to the UI
         colors = layout.row()
         colormap_element = colors.column()
-        colormap_element.prop(scene, 'VMV_Color%d' % i)
+        colormap_element.prop(scene, 'VMV_Color%d' % i_color)
 
         # Colormap range values
         values = colors.row()
-        values.prop(scene, 'VMV_R0_Value%d' % i)
-        values.prop(scene, 'VMV_R1_Value%d' % i)
+        values.prop(scene, 'VMV_R0_Value%d' % i_color)
+        values.prop(scene, 'VMV_R1_Value%d' % i_color)
         values.enabled = False
 
         # Get the color value from the panel
-        color = getattr(scene, 'VMV_Color%d' % i)
+        color = getattr(scene, 'VMV_Color%d' % i_color)
         options.morphology.color_map_colors.append(color)
 
 
@@ -269,32 +292,11 @@ def add_color_options(layout,
 
 
 ####################################################################################################
-# @add_morphology_reconstruction_options
+# @add_radii_options
 ####################################################################################################
-def add_morphology_reconstruction_options(layout,
-                                          scene,
-                                          options):
-    """Draws the morphology reconstruction options.
-
-    :param layout:
-        Panel layout.
-    :param scene:
-        Context scene.
-    :param options:
-        System options.
-    """
-
-    add_visualization_type_options(layout, scene, options)
-
-    # Skeleton meshing options
-    skeleton_meshing_options_row = layout.row()
-    skeleton_meshing_options_row.label(
-        text='Morphology Reconstruction Options', icon='SURFACE_DATA')
-
-    # Morphology reconstruction techniques option
-    morphology_reconstruction_row = layout.row()
-    morphology_reconstruction_row.prop(scene, 'VMV_Builder', icon='FORCE_CURVE')
-    options.morphology.builder = scene.VMV_Builder
+def add_radii_options(layout,
+                      scene,
+                      options):
 
     # Sections radii option
     sections_radii_row = layout.row()
@@ -302,17 +304,13 @@ def add_morphology_reconstruction_options(layout,
 
     # Radii as specified in the morphology file
     if scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.AS_SPECIFIED:
-
-        # Pass options from UI to system
-        options.morphology.radii = \
-            vmv.enums.Morphology.Radii.AS_SPECIFIED
+        options.morphology.radii = vmv.enums.Morphology.Radii.AS_SPECIFIED
         options.morphology.scale_sections_radii = False
         options.morphology.unify_sections_radii = False
         options.morphology.sections_radii_scale = 1.0
 
-    # Fixed diameter
+    # Fixed radius
     elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.FIXED:
-
         fixed_diameter_row = layout.row()
         fixed_diameter_row.label(text='Fixed Radius Value')
         fixed_diameter_row.prop(scene, 'VMV_FixedRadiusValue')
@@ -325,7 +323,6 @@ def add_morphology_reconstruction_options(layout,
 
     # Scaled diameter
     elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
-
         scaled_diameter_row = layout.row()
         scaled_diameter_row.label(text='Radius Scale Factor')
         scaled_diameter_row.prop(scene, 'VMV_RadiusScaleValue')
@@ -339,11 +336,100 @@ def add_morphology_reconstruction_options(layout,
     else:
         vmv.logger.log('ERROR')
 
+
+####################################################################################################
+# @add_radii_options
+####################################################################################################
+def add_tube_quality_options(layout,
+                             scene,
+                             options):
     # Tube quality
     tube_quality_row = layout.row()
     tube_quality_row.label(text='Tube Quality')
     tube_quality_row.prop(scene, 'VMV_TubeQuality')
     options.morphology.bevel_object_sides = scene.VMV_TubeQuality
+
+
+####################################################################################################
+# @add_static_morphology_visualization_options
+####################################################################################################
+def add_static_morphology_visualization_options(layout,
+                                                scene,
+                                                options):
+    """Draws the morphology reconstruction options.
+
+    :param layout:
+        Panel layout.
+    :param scene:
+        Context scene.
+    :param options:
+        System options.
+    """
+
+    # Skeleton meshing options
+    skeleton_meshing_options_row = layout.row()
+    skeleton_meshing_options_row.label(
+        text='Morphology Options', icon='SURFACE_DATA')
+
+    # Builder
+    builder_row = layout.row()
+    builder_row.prop(scene, 'VMV_StaticStructureBuilders', icon='FORCE_CURVE')
+    options.morphology.builder = scene.VMV_StaticStructureBuilders
+
+    # Radii options are common
+    add_radii_options(layout=layout, scene=scene, options=options)
+
+    # The samples builder does not have any specific options for the moment
+    if options.morphology.builder == vmv.enums.Morphology.Builder.SAMPLES:
+        pass
+    else:
+        # Tube quality only for the sections and segments, to improve the performance
+        add_tube_quality_options(layout=layout, scene=scene, options=options)
+
+    # Color options
+    add_color_options(layout=layout, scene=scene, options=options)
+
+    # Add the morphology reconstruction button
+    add_morphology_reconstruction_button(layout=layout, scene=scene)
+
+
+####################################################################################################
+# @add_static_morphology_visualization_options
+####################################################################################################
+def add_structural_dynamics_visualization_options(layout,
+                                                  scene,
+                                                  options):
+    # Builder
+    builder_row = layout.row()
+    builder_row.prop(scene, 'VMV_DynamicStructureBuilders', icon='FORCE_CURVE')
+    options.morphology.builder = scene.VMV_DynamicStructureBuilders
+
+    # Tube quality only for the sections and segments, to improve the performance
+    add_tube_quality_options(layout=layout, scene=scene, options=options)
+
+    # Simulation visualization
+    add_simulation_visualization_options(layout=layout, scene=scene, options=options)
+
+
+####################################################################################################
+# @add_static_morphology_visualization_options
+####################################################################################################
+def add_colormap_dynamics_visualization_options(layout,
+                                                scene,
+                                                options):
+    builder_row = layout.row()
+    builder_row.prop(scene, 'VMV_DynamicFunctionBuilders', icon='FORCE_CURVE')
+    options.morphology.builder = scene.VMV_DynamicFunctionBuilders
+
+    # Tube quality only for the sections and segments, to improve the performance
+    add_tube_quality_options(layout=layout, scene=scene, options=options)
+
+    # Simulation visualization
+
+    add_simulation_visualization_options(layout=layout, scene=scene, options=options)
+
+    # Color-coding (per-segment)
+    add_colormap_options(layout=layout, scene=scene, options=options)
 
 
 ################################################################################################
@@ -376,44 +462,32 @@ def add_morphology_reconstruction_button(layout,
         row.enabled = False
 
 
+################################################################################################
+# @add_morphology_reconstruction_button
+################################################################################################
 def add_simulation_visualization_options(layout,
                                          scene,
                                          options):
     # Title
     layout.row().label(text='Simulation Visualization', icon='PARTICLE_POINT')
 
-    # add some simulation data
-    # Starting frame just a single frame
-    # Current
-    # End frame 'VMV_FirstFrame')
-    #layout.row().prop(scene, 'VMV_LastFrame')
+    # Adding the simulation loading button, if the simulation is not loaded
+    layout.row().operator('load.simulation', icon='FORCE_TURBULENCE')
 
-    #layout.row().prop(scene, 'VMV_CurrentFrame')
-
-    # Start Simulation
-    # Stop Simulation
-    # Frame rate
-
-    row = layout.row()
-    row.label(text='Dynamics')
-    row.prop(scene, 'VMV_AvailableSimulations')
-
+    # Simulation range
     row = layout.row()
     column = row.column()
     column.label(text='Range')
-
     column = row.column()
     row = column.row(align=True)
     row.prop(scene, 'VMV_FirstLoadedFrame')
     row.prop(scene, 'VMV_LastLoadedFrame')
     row.enabled = False
 
-    layout.row().operator('load.simulation', icon='FORCE_TURBULENCE')
 
-    column.label(text='Play Simulation')
 
+    # Otherwise, just load the simulation control buttons
     control = layout.row(align=True)
-
     control.operator('play_first_frame.simulation', icon='REW')
     control.operator('play_previous_frame.simulation', icon='PREV_KEYFRAME')
     control.operator('play.simulation', icon='PLAY')

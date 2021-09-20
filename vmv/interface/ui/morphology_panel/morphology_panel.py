@@ -35,7 +35,7 @@ import vmv.utilities
 import vmv.rendering
 import vmv.shading
 from .morphology_panel_ops import *
-from .morphology_panel_simulation import *
+#from .morphology_panel_simulation import *
 
 
 ####################################################################################################
@@ -55,36 +55,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     ################################################################################################
-    # @update_ui_with_available_simulations
-    ################################################################################################
-    def update_ui_with_available_simulations(self,
-                                             context):
-        """Updates the UI available simulation list depending on the data available in the file.
-
-        :param context:
-            Blender context.
-        """
-
-        # Simulation items to appear in the UI, depends on the data availability in the morphology
-        simulation_items = list()
-
-        # Does the data have any radius simulations?
-        if vmv.interface.MorphologyObject.has_radius_simulation:
-            simulation_items.append(vmv.Simulation.Dynamics.RADIUS_UI_ITEM)
-
-        # Does the data have any flow simulations?
-        if vmv.interface.MorphologyObject.has_flow_simulation:
-            simulation_items.append(vmv.Simulation.Dynamics.FLOW_UI_ITEM)
-
-        # Does the data have any pressure simulations?
-        if vmv.interface.MorphologyObject.has_pressure_simulation:
-            simulation_items.append(vmv.Simulation.Dynamics.PRESSURE_UI_ITEM)
-
-        # Re-define, and re-register the available simulations element in the UI
-        bpy.types.Scene.VMV_AvailableSimulations = bpy.props.EnumProperty(
-            items=simulation_items, name='', default=simulation_items[0][0])
-
-    ################################################################################################
     # @update_morphology_color
     ################################################################################################
     def update_morphology_color(self,
@@ -95,14 +65,14 @@ class VMVMorphologyPanel(bpy.types.Panel):
             Blender context.
         """
 
-        # TODO: Verify if the morphology is deleted or exists in the scene, using it name!
+        # TODO: Verify if the morphology is deleted or exists in the scene, using its name!
         if vmv.interface.MorphologyPolylineObject is not None:
             color = context.scene.VMV_MorphologyColor
 
             vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
                 Vector((color[0], color[1], color[2], 1.0))
         else:
-            print('None')
+            pass
 
     ################################################################################################
     # @update_ui_colors
@@ -151,14 +121,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
                         Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
     # Options that require an @update function #####################################################
-    # Visualization type, static structure or dynamics (simulation) when the data exists
-    bpy.types.Scene.VMV_VisualizeStructureDynamics = bpy.props.EnumProperty(
-        items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM,
-               vmv.enums.Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS_UI_ITEM],
-        name='',
-        default=vmv.enums.Morphology.Visualization.STRUCTURE,
-        update=update_ui_with_available_simulations)
-
     # The base color that will be used for all the components in the morphology
     bpy.types.Scene.VMV_MorphologyColor = bpy.props.FloatVectorProperty(
         name='Color',
@@ -190,8 +152,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         setattr(bpy.types.Scene, 'VMV_Color%d' % index, bpy.props.FloatVectorProperty(
             name='', subtype='COLOR', default=colors[index], min=0.0, max=1.0, description=''))
 
-
-
     ################################################################################################
     # @draw_morphology_color_options
     ################################################################################################
@@ -219,7 +179,6 @@ class VMVMorphologyPanel(bpy.types.Panel):
         morphology_material_row = self.layout.row()
         morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
         morphology_options.material = scene.VMV_MorphologyMateria
-
 
     ################################################################################################
     # @draw_morphology_rendering_options
@@ -354,17 +313,25 @@ class VMVMorphologyPanel(bpy.types.Panel):
             Panel context.
         """
 
-        # Morphology reconstruction options
-        add_morphology_reconstruction_options(layout=self.layout, scene=context.scene,
-                                              options=vmv.interface.Options)
+        # Visualization type options
+        add_visualization_type_options(
+            layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Color options
-        add_color_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
+        # Static structure options
+        visualization_type = vmv.interface.Options.morphology.visualization_type
+        if visualization_type == vmv.enums.Morphology.Visualization.STRUCTURE:
+            add_static_morphology_visualization_options(
+                layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        # Add the morphology reconstruction button
-        add_morphology_reconstruction_button(layout=self.layout, scene=context.scene)
+        # Dynamic structure
+        elif visualization_type == vmv.enums.Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS:
+            add_structural_dynamics_visualization_options(
+                layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
-        add_simulation_visualization_options(layout=self.layout, scene=context.scene, options=vmv.interface.Options)
+        # Dynamic function (with colormap)
+        else:
+            add_colormap_dynamics_visualization_options(
+                layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
         # Draw the morphology rendering options
         self.draw_morphology_rendering_options(context=context)
@@ -445,7 +412,8 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
         # Build the morphology skeleton directly
         # NOTE: each builder must have this function @build_skeleton() implemented in it
-        vmv.interface.MorphologyPolylineObject = self.morphology_builder.build_skeleton(context=context)
+        vmv.interface.MorphologyPolylineObject = self.morphology_builder.build_skeleton(
+            context=context)
 
         # Interpolations
         scale = float(context.scene.VMV_MaximumValue) - float(context.scene.VMV_MinimumValue)
@@ -854,13 +822,13 @@ def register_panel():
     bpy.utils.register_class(VMVReconstructMorphology)
 
     # Simulation buttons
-    bpy.utils.register_class(VMV_LoadSimulation)
-    bpy.utils.register_class(VMV_PlaySimulation)
-    bpy.utils.register_class(VMV_SimulationPreviousFrame)
-    bpy.utils.register_class(VMV_SimulationNextFrame)
-    bpy.utils.register_class(VMV_SimulationFirstFrame)
-    bpy.utils.register_class(VMV_SimulationLastFrame)
-    bpy.utils.register_class(VMV_RenderSimulation)
+    bpy.utils.register_class(vmv.interface.VMV_LoadSimulation)
+    bpy.utils.register_class(vmv.interface.VMV_PlaySimulation)
+    bpy.utils.register_class(vmv.interface.VMV_SimulationPreviousFrame)
+    bpy.utils.register_class(vmv.interface.VMV_SimulationNextFrame)
+    bpy.utils.register_class(vmv.interface.VMV_SimulationFirstFrame)
+    bpy.utils.register_class(vmv.interface.VMV_SimulationLastFrame)
+    bpy.utils.register_class(vmv.interface.VMV_RenderSimulation)
 
     # Morphology rendering buttons
     bpy.utils.register_class(VMVRenderMorphologyImage)
@@ -883,13 +851,13 @@ def unregister_panel():
     bpy.utils.unregister_class(VMVReconstructMorphology)
 
     # Simulation buttons
-    bpy.utils.unregister_class(VMV_LoadSimulation)
-    bpy.utils.unregister_class(VMV_PlaySimulation)
-    bpy.utils.unregister_class(VMV_SimulationPreviousFrame)
-    bpy.utils.unregister_class(VMV_SimulationNextFrame)
-    bpy.utils.unregister_class(VMV_SimulationFirstFrame)
-    bpy.utils.unregister_class(VMV_SimulationLastFrame)
-    bpy.utils.unregister_class(VMV_RenderSimulation)
+    bpy.utils.unregister_class(vmv.interface.VMV_LoadSimulation)
+    bpy.utils.unregister_class(vmv.interface.VMV_PlaySimulation)
+    bpy.utils.unregister_class(vmv.interface.VMV_SimulationPreviousFrame)
+    bpy.utils.unregister_class(vmv.interface.VMV_SimulationNextFrame)
+    bpy.utils.unregister_class(vmv.interface.VMV_SimulationFirstFrame)
+    bpy.utils.unregister_class(vmv.interface.VMV_SimulationLastFrame)
+    bpy.utils.unregister_class(vmv.interface.VMV_RenderSimulation)
 
     # Morphology rendering buttons
     bpy.utils.unregister_class(VMVRenderMorphologyImage)

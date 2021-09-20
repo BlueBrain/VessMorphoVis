@@ -21,18 +21,37 @@ import bpy
 # Internal imports
 import vmv.enums
 
-# Simulation options that do not require any @update function ######################################
-# Available simulations, the default ones just to register the option
-bpy.types.Scene.VMV_AvailableSimulations = bpy.props.EnumProperty(
-    items=[vmv.enums.Simulation.Dynamics.RADIUS_UI_ITEM],
-    name='',
-    default=vmv.enums.Simulation.Dynamics.RADIUS)
 
-# Visualization type, only the structure, when the morphology does not have simulation data
-bpy.types.Scene.VMV_VisualizeStructure = bpy.props.EnumProperty(
-    items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM],
-    name='',
-    default=vmv.enums.Morphology.Visualization.STRUCTURE)
+####################################################################################################
+# @define_visualization_methods_menus
+####################################################################################################
+def define_visualization_methods_menus():
+
+    # Morphology builders available when visualizing STATIC structure only
+    bpy.types.Scene.VMV_StaticStructureBuilders = bpy.props.EnumProperty(
+        items=[vmv.enums.Morphology.Builder.SECTIONS_UI_ITEM,
+               vmv.enums.Morphology.Builder.SEGMENTS_UI_ITEM,
+               vmv.enums.Morphology.Builder.SAMPLES_UI_ITEM],
+        name='Method',
+        default=vmv.enums.Morphology.Builder.SECTIONS)
+
+    # Morphology builders available when visualizing DYNAMIC structure only
+    bpy.types.Scene.VMV_DynamicStructureBuilders = bpy.props.EnumProperty(
+        items=[vmv.enums.Morphology.Builder.SECTIONS_UI_ITEM],
+        name='Method',
+        default=vmv.enums.Morphology.Builder.SECTIONS)
+
+    # Morphology builders available when visualizing DYNAMIC function with colormap
+    bpy.types.Scene.VMV_DynamicFunctionBuilders = bpy.props.EnumProperty(
+        items=[vmv.enums.Morphology.Builder.SEGMENTS_UI_ITEM],
+        name='Method',
+        default=vmv.enums.Morphology.Builder.SEGMENTS)
+
+
+# Morphology visualization #########################################################################
+# Visualization methods
+define_visualization_methods_menus()
+
 
 # Simulation starting frame
 bpy.types.Scene.VMV_TimeFrameStart = bpy.props.IntProperty(
@@ -44,12 +63,6 @@ bpy.types.Scene.VMV_TimeFrameEnd = bpy.props.IntProperty(
     name='End (t0)',
     default=0, min=0, max=100)
 
-# Reconstruction parameters ########################################################################
-# Morphology builder
-bpy.types.Scene.VMV_Builder = bpy.props.EnumProperty(
-    items=vmv.enums.Morphology.Builder.METHOD_ITEMS,
-    name='Method',
-    default=vmv.enums.Morphology.Builder.SECTIONS)
 
 # Tube quality
 bpy.types.Scene.VMV_TubeQuality = bpy.props.IntProperty(
@@ -208,10 +221,10 @@ bpy.types.Scene.VMV_LastFrame = bpy.props.IntProperty(
 
 
 # Simulation progress bar
-bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.FloatProperty(
+bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.IntProperty(
     name='',
     description='The time it takes to reconstruct the vasculature mesh',
-    default=0, min=0, max=1000000)
+    default=0, min=0, max=100, subtype='PERCENTAGE')
 
 # Simulation current frame value
 bpy.types.Scene.VMV_CurrentFrame = bpy.props.IntProperty(

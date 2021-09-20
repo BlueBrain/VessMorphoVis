@@ -16,6 +16,7 @@
 ####################################################################################################
 
 # Blender imports
+import bpy
 from mathutils import Vector
 
 # Internal imports
@@ -440,6 +441,8 @@ class VMVReader:
 
                 # Add the list to the simulation table
                 self.radius_simulation_data.append(vertex_entry)
+
+            bpy.context.scene.VMV_RadiusVariationsSteps = len(self.radius_simulation_data[0])
 
     ################################################################################################
     # @read_data_from_file

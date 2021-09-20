@@ -285,8 +285,47 @@ class SectionsBuilder(MorphologyBuilder):
             name=self.morphology.name, bevel_object=bevel_object)
         return self.morphology_skeleton
 
+    ################################################################################################
+    # @load_radius_simulation_data_at_step
+    ################################################################################################
+    def load_radius_simulation_data_at_step(self,
+                                            time_step):
+        """
 
+        :param time_step:
+        :return:
+        """
 
+        for i_section, section in enumerate(self.morphology.sections_list):
+
+            # Get a reference to the polyline
+            polyline = self.morphology_skeleton.data.splines[i_section]
+
+            for i_point, point in enumerate(polyline.points):
+                radius_index = section.samples[i_point].index
+
+                # Get a reference to the radii
+                radius_list = self.morphology.radius_simulation_data[radius_index - 1]
+
+                point.radius += (radius_list[time_step] * 1)
+                point.keyframe_insert('radius', frame=time_step)
+
+    ################################################################################################
+    # @load_radius_simulation_data
+    ################################################################################################
+    def load_radius_simulation_data(self):
+        """
+
+        :return:
+        """
+
+        # Add simulation data
+        for time_step in range(0, len(self.morphology.radius_simulation_data[0])):
+            self.load_radius_simulation_data_at_step(time_step=time_step)
+
+    ################################################################################################
+    # @load_radius_simulation_data
+    ################################################################################################
     def load_simulation_data(self):
 
         # Add simulation data
