@@ -23,9 +23,9 @@ class Morphology:
     """Morphology enumerators
     """
 
-    ############################################################################################
+    ################################################################################################
     # @__init__
-    ############################################################################################
+    ################################################################################################
     def __init__(self):
         pass
 
@@ -44,20 +44,42 @@ class Morphology:
             'Visualize static data, showing only the structure of the vasculature without any '
             'variations with respect to time')
 
-        # Visualize dynamics, simulation and functional aspects
-        STRUCTURAL_DYNAMICS = 'MORPHOLOGY_VISUALIZATION_STRUCTURAL_DYNAMICS'
-        STRUCTURAL_DYNAMICS_UI_ITEM = (
-            STRUCTURAL_DYNAMICS,
-            'Structural Dynamics',
-            'Visualize structural dynamics with respect to time, such as changing radii with '
-            'respect to time')
+        # Visualize radius dynamics using structural variations with respect to time
+        RADII_STRUCTURAL_DYNAMICS = 'MORPHOLOGY_VISUALIZATION_RADII_STRUCTURAL_DYNAMICS'
+        RADII_STRUCTURAL_DYNAMICS_UI_ITEM = (
+            RADII_STRUCTURAL_DYNAMICS,
+            'Radii Dynamics',
+            'Visualize structural dynamics with respect to time showing the variations in radii '
+            'along the structure of the morphology with respect to time, without any color-mapping.'
+            'This approach uses the Section-based builder only, showing the morphology skeleton as '
+            'a set of sections')
 
-        # Visualize dynamics, simulation and functional aspects
-        FUNCTIONAL_DYNAMICS = 'MORPHOLOGY_VISUALIZATION_DYNAMICS'
-        FUNCTIONAL_DYNAMICS_UI_ITEM = (
-            FUNCTIONAL_DYNAMICS,
-            'Functional Dynamics',
-            'Visualize simulation data with respect to time (function dynamics)')
+        # Visualize radius dynamics using a color-map
+        RADII_COLORMAP = 'MORPHOLOGY_VISUALIZATION_RADII_COLORMAP'
+        RADII_COLORMAP_DYNAMICS_UI_ITEM = (
+            RADII_COLORMAP,
+            'Radii (Color Map)',
+            'Visualize the variations of the radii along the morphology with respect to time '
+            'using a color-map. This approach uses the Segment-based builder only, showing the '
+            'morphology as a set of segments')
+
+        # Visualize blood flow dynamics
+        FLOW_COLORMAP = 'MORPHOLOGY_VISUALIZATION_FLOW_COLORMAP'
+        FLOW_COLORMAP_DYNAMICS_UI_ITEM = (
+            FLOW_COLORMAP,
+            'Blood Flow (Color Map)',
+            'Visualize the variations of the blood flow along the morphology with respect to time '
+            'using a color-map. This approach uses the Segment-based builder only, showing the '
+            'morphology as a set of segments')
+
+        # Visualize blood pressure dynamics
+        PRESSURE_COLORMAP = 'MORPHOLOGY_VISUALIZATION_PRESSURE_COLORMAP'
+        PRESSURE_COLORMAP_DYNAMICS_UI_ITEM = (
+            PRESSURE_COLORMAP,
+            'Blood Pressure (Color Map)',
+            'Visualize the variations of the blood pressure along the morphology with respect to '
+            'time using a color-map. This approach uses the Segment-based builder only, showing '
+            'the morphology as a set of segments')
 
         ############################################################################################
         # @__init__
@@ -75,13 +97,21 @@ class Morphology:
             if argument == 'structure':
                 return Morphology.Visualization.STRUCTURE
 
-            # Functional dynamics
-            elif argument == 'structural-dynamics':
-                return Morphology.Visualization.STRUCTURAL_DYNAMICS
+            # Radii structural variations
+            elif argument == 'radii-structural':
+                return Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS
 
-            # Functional dynamics
-            elif argument == 'functional-dynamics':
-                return Morphology.Visualization.FUNCTIONAL_DYNAMICS
+            # Radii (with color map)
+            elif argument == 'radii':
+                return Morphology.Visualization.RADII_COLORMAP
+
+            # Blood flow (with color map)
+            elif argument == 'flow':
+                return Morphology.Visualization.FLOW_COLORMAP
+
+            # Blood pressure (with color map)
+            elif argument == 'pressure':
+                return Morphology.Visualization.PRESSURE_COLORMAP
 
             # By default, visualize structure
             else:

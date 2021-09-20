@@ -154,7 +154,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
     # Visualization type, static structure or dynamics (simulation) when the data exists
     bpy.types.Scene.VMV_VisualizeStructureDynamics = bpy.props.EnumProperty(
         items=[vmv.enums.Morphology.Visualization.STRUCTURE_UI_ITEM,
-               vmv.enums.Morphology.Visualization.FUNCTIONAL_DYNAMICS_UI_ITEM],
+               vmv.enums.Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS_UI_ITEM],
         name='',
         default=vmv.enums.Morphology.Visualization.STRUCTURE,
         update=update_ui_with_available_simulations)
@@ -218,10 +218,7 @@ class VMVMorphologyPanel(bpy.types.Panel):
         # Morphology material
         morphology_material_row = self.layout.row()
         morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
-        morphology_options.material = scene.VMV_MorphologyMaterial
-
-
-    ################################################################################################
+        morphology_options.material = scene.VMV_MorphologyMateria
 
 
     ################################################################################################
@@ -317,6 +314,10 @@ class VMVMorphologyPanel(bpy.types.Panel):
         render_animation_row.label(text='Render Animation:', icon='CAMERA_DATA')
         render_animations_buttons_row = self.layout.row(align=True)
         render_animations_buttons_row.operator('render_morphology.360', icon='FORCE_MAGNETIC')
+
+        # Render simulation
+        rendering_simulation_button_row = self.layout.column()
+        rendering_simulation_button_row.operator('render.simulation', icon='MESH_DATA')
 
         # Rendering progress bar
         rendering_progress_row = self.layout.row()
@@ -859,6 +860,7 @@ def register_panel():
     bpy.utils.register_class(VMV_SimulationNextFrame)
     bpy.utils.register_class(VMV_SimulationFirstFrame)
     bpy.utils.register_class(VMV_SimulationLastFrame)
+    bpy.utils.register_class(VMV_RenderSimulation)
 
     # Morphology rendering buttons
     bpy.utils.register_class(VMVRenderMorphologyImage)
@@ -887,6 +889,7 @@ def unregister_panel():
     bpy.utils.unregister_class(VMV_SimulationNextFrame)
     bpy.utils.unregister_class(VMV_SimulationFirstFrame)
     bpy.utils.unregister_class(VMV_SimulationLastFrame)
+    bpy.utils.unregister_class(VMV_RenderSimulation)
 
     # Morphology rendering buttons
     bpy.utils.unregister_class(VMVRenderMorphologyImage)

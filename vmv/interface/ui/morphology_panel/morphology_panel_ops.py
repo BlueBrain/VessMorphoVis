@@ -39,6 +39,13 @@ def add_visualization_type_options(layout,
     visualization_type_row = layout.row()
     visualization_type_row.label(text='Visualization')
 
+    # Use all visualization types in case we visualize structure
+
+
+
+
+
+    """
     # If there is simulation data, then add the VMV_VisualizeStructureDynamics menu
     if vmv.interface.MorphologyObject.has_radius_simulation or  \
        vmv.interface.MorphologyObject.has_flow_simulation or    \
@@ -54,6 +61,7 @@ def add_visualization_type_options(layout,
     # Otherwise, add the structure menu (only a single item for the moment)
     else:
         visualization_type_row.prop(scene, 'VMV_VisualizeStructure')
+    """
 
 
 ####################################################################################################
