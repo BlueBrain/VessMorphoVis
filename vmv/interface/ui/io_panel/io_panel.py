@@ -72,9 +72,9 @@ class VMV_IOPanel(bpy.types.Panel):
 
 
 ####################################################################################################
-# @VMVLoadMorphology
+# @VMV_LoadMorphology
 ####################################################################################################
-class VMVLoadMorphology(bpy.types.Operator):
+class VMV_LoadMorphology(bpy.types.Operator):
     """Load the morphology"""
 
     # Operator parameters
@@ -176,6 +176,9 @@ class VMVLoadMorphology(bpy.types.Operator):
         # Once loaded, define the options based on the content of the morphology file
         vmv.interface.define_morphology_visualization_type_items()
 
+        # Resetting the simulation loaded flag
+        vmv.interface.SimulationLoaded = False
+
         # Done
         return {'FINISHED'}
 
@@ -191,7 +194,7 @@ def register_panel():
 
     # InputOutput data
     bpy.utils.register_class(VMV_IOPanel)
-    bpy.utils.register_class(VMVLoadMorphology)
+    bpy.utils.register_class(VMV_LoadMorphology)
 
 
 ####################################################################################################
@@ -202,5 +205,5 @@ def unregister_panel():
 
     # InputOutput data
     bpy.utils.unregister_class(VMV_IOPanel)
-    bpy.utils.unregister_class(VMVLoadMorphology)
+    bpy.utils.unregister_class(VMV_LoadMorphology)
 

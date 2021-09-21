@@ -36,9 +36,9 @@ from .meshing_panel_ops import *
 
 
 ####################################################################################################
-# @VMVMeshingPanel
+# @VMV_MeshingPanel
 ####################################################################################################
-class VMVMeshingPanel(bpy.types.Panel):
+class VMV_MeshingPanel(bpy.types.Panel):
     """The meshing panel of VMV"""
 
     ################################################################################################
@@ -86,9 +86,9 @@ class VMVMeshingPanel(bpy.types.Panel):
 
 
 ####################################################################################################
-# @VMVReconstructMesh
+# @VMV_ReconstructMesh
 ####################################################################################################
-class VMVReconstructMesh(bpy.types.Operator):
+class VMV_ReconstructMesh(bpy.types.Operator):
     """Reconstructs the mesh of the vasculature"""
 
     # Operator parameters
@@ -140,9 +140,9 @@ class VMVReconstructMesh(bpy.types.Operator):
 
 
 ####################################################################################################
-# @VMVRenderMeshImage
+# @VMV_RenderMeshImage
 ####################################################################################################
-class VMVRenderMeshImage(bpy.types.Operator):
+class VMV_RenderMeshImage(bpy.types.Operator):
     """Renders the mesh of the vasculature"""
 
     # Operator parameters
@@ -179,9 +179,9 @@ class VMVRenderMeshImage(bpy.types.Operator):
 
 
 ####################################################################################################
-# @VMVRenderMesh360
+# @VMV_RenderMesh360
 ####################################################################################################
-class VMVRenderMesh360(bpy.types.Operator):
+class VMV_RenderMesh360(bpy.types.Operator):
     """Render a 360 view of the reconstructed mesh"""
 
     # Operator parameters
@@ -331,9 +331,9 @@ class VMVRenderMesh360(bpy.types.Operator):
 
 
 ####################################################################################################
-# @VMVReconstructMesh
+# @VMV_ReconstructMesh
 ####################################################################################################
-class VMVExportMesh(bpy.types.Operator):
+class VMV_ExportMesh(bpy.types.Operator):
     """Export the reconstructed mesh to a file"""
 
     # Operator parameters
@@ -377,17 +377,17 @@ def register_panel():
     """Registers all the classes in this panel"""
 
     # Panel
-    bpy.utils.register_class(VMVMeshingPanel)
+    bpy.utils.register_class(VMV_MeshingPanel)
 
     # Mesh reconstruction button
-    bpy.utils.register_class(VMVReconstructMesh)
+    bpy.utils.register_class(VMV_ReconstructMesh)
 
     # Mesh rendering buttons
-    bpy.utils.register_class(VMVRenderMeshImage)
-    bpy.utils.register_class(VMVRenderMesh360)
+    bpy.utils.register_class(VMV_RenderMeshImage)
+    bpy.utils.register_class(VMV_RenderMesh360)
 
     # Mesh export button
-    bpy.utils.register_class(VMVExportMesh)
+    bpy.utils.register_class(VMV_ExportMesh)
 
 
 ####################################################################################################
@@ -397,14 +397,14 @@ def unregister_panel():
     """Un-registers all the classes in this panel"""
 
     # Panel
-    bpy.utils.unregister_class(VMVMeshingPanel)
+    bpy.utils.unregister_class(VMV_MeshingPanel)
 
     # Mesh reconstruction button
-    bpy.utils.unregister_class(VMVReconstructMesh)
+    bpy.utils.unregister_class(VMV_ReconstructMesh)
 
     # Mesh rendering buttons
-    bpy.utils.unregister_class(VMVRenderMeshImage)
-    bpy.utils.unregister_class(VMVRenderMesh360)
+    bpy.utils.unregister_class(VMV_RenderMeshImage)
+    bpy.utils.unregister_class(VMV_RenderMesh360)
 
     # Mesh export button
-    bpy.utils.unregister_class(VMVExportMesh)
+    bpy.utils.unregister_class(VMV_ExportMesh)

@@ -36,7 +36,7 @@ vmv_icons = None
 ####################################################################################################
 # @IOPanel
 ####################################################################################################
-class AboutPanel(bpy.types.Panel):
+class VMV_AboutPanel(bpy.types.Panel):
     """VMV About Us panel"""
 
     ################################################################################################
@@ -103,9 +103,9 @@ class AboutPanel(bpy.types.Panel):
 
 
 ####################################################################################################
-# @OpenDocumentation
+# @VMV_OpenDocumentation
 ####################################################################################################
-class OpenDocumentation(bpy.types.Operator):
+class VMV_OpenDocumentation(bpy.types.Operator):
     """Open the Github repository page"""
 
     # Operator parameters
@@ -131,9 +131,9 @@ class OpenDocumentation(bpy.types.Operator):
 
 
 ####################################################################################################
-# @OpenRepository
+# @VMV_OpenRepository
 ####################################################################################################
-class OpenRepository(bpy.types.Operator):
+class VMV_OpenRepository(bpy.types.Operator):
     """Open the Github repository page"""
 
     # Operator parameters
@@ -159,9 +159,9 @@ class OpenRepository(bpy.types.Operator):
 
 
 ####################################################################################################
-# @UpdateVessMorphoVis
+# @VMV_UpdateVessMorphoVis
 ####################################################################################################
-class UpdateVessMorphoVis(bpy.types.Operator):
+class VMV_UpdateVessMorphoVis(bpy.types.Operator):
     """Update VessMorphoVis"""
 
     # Operator parameters
@@ -216,12 +216,12 @@ def register_panel():
     """Registers all the classes in this panel"""
 
     # Panel
-    bpy.utils.register_class(AboutPanel)
+    bpy.utils.register_class(VMV_AboutPanel)
 
     # Buttons
-    bpy.utils.register_class(UpdateVessMorphoVis)
-    bpy.utils.register_class(OpenRepository)
-    bpy.utils.register_class(OpenDocumentation)
+    bpy.utils.register_class(VMV_UpdateVessMorphoVis)
+    bpy.utils.register_class(VMV_OpenRepository)
+    bpy.utils.register_class(VMV_OpenDocumentation)
 
 
 ####################################################################################################
@@ -231,9 +231,9 @@ def unregister_panel():
     """Un-registers all the classes in this panel"""
 
     # Panel
-    bpy.utils.unregister_class(AboutPanel)
+    bpy.utils.unregister_class(VMV_AboutPanel)
 
     # Buttons
-    bpy.utils.unregister_class(UpdateVessMorphoVis)
-    bpy.utils.unregister_class(OpenRepository)
-    bpy.utils.unregister_class(OpenDocumentation)
+    bpy.utils.unregister_class(VMV_UpdateVessMorphoVis)
+    bpy.utils.unregister_class(VMV_OpenRepository)
+    bpy.utils.unregister_class(VMV_OpenDocumentation)

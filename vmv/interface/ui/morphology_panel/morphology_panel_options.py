@@ -182,9 +182,6 @@ bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.IntProperty(
 # The icon that will be displayed on the Play/Pause button
 bpy.types.Scene.VMV_PlayPauseButtonIcon = 'PLAY'
 
-# A flag that captures the state of the simulation, whether it is running or not
-bpy.types.Scene.VMV_IsSimulationRunning = False
-
 # Other parameters #################################################################################
 # The minimum value associated with the color map
 bpy.types.Scene.VMV_MinimumValue = bpy.props.StringProperty(

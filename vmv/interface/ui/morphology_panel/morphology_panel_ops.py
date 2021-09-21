@@ -474,9 +474,10 @@ def add_simulation_visualization_options(layout,
     # Adding the simulation loading button, if the simulation is not loaded
     layout.row().operator('load.simulation', icon='FORCE_TURBULENCE')
 
+    # If the simulation is loaded add the simulation controls
     if vmv.interface.SimulationLoaded:
 
-        # Simulation range
+        # Simulation range as loaded from the morphology file
         row = layout.row()
         column = row.column()
         column.label(text='Range')
@@ -486,7 +487,7 @@ def add_simulation_visualization_options(layout,
         row.prop(scene, 'VMV_LastSimulationFrame')
         row.enabled = False
 
-        # Otherwise, just load the simulation control buttons
+        # Simulation controls
         control = layout.row(align=True)
         first_frame_button = control.column()
         first_frame_button.operator('play_first_frame.simulation', icon='REW')
@@ -501,7 +502,7 @@ def add_simulation_visualization_options(layout,
         control.prop(scene, 'VMV_CurrentSimulationFrame')
 
         # If the simulation is running, disable all the other buttons to avoid conflicts
-        if scene.VMV_IsSimulationRunning:
+        if vmv.interface.SimulationRunning:
             first_frame_button.enabled = False
             previous_frame_button.enabled = False
             next_frame_button.enabled = False
@@ -512,6 +513,7 @@ def add_simulation_visualization_options(layout,
             next_frame_button.enabled = True
             last_frame_button.enabled = True
 
+    # Simulation progress bar
     progress = layout.row()
     progress.prop(scene, 'VMV_SimulationProgressBar')
     progress.enabled = False

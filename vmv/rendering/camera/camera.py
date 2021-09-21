@@ -105,9 +105,9 @@ class Camera:
         """Rotate the camera in the direction of the typical side view.
         """
 
-        # Adjust the orientationVMV_MeshRenderingResolution
+        # Adjust the orientation
         self.camera.rotation_euler[0] = 0
-        self.camera.rotation_euler[1] = 1.5708
+        self.camera.rotation_euler[1] = -1.5708
         self.camera.rotation_euler[2] = 0
 
     ################################################################################################
@@ -118,8 +118,8 @@ class Camera:
         """
 
         # Adjust the orientation
-        self.camera.rotation_euler[0] = -1.5708
-        self.camera.rotation_euler[1] = 3.14
+        self.camera.rotation_euler[0] = 1.5708
+        self.camera.rotation_euler[1] = 0
         self.camera.rotation_euler[2] = 0
 
     ################################################################################################
@@ -158,7 +158,6 @@ class Camera:
     @staticmethod
     def get_camera_positions(bounding_box):
         """Computes the camera position for an orthographic projection
-
         :param bounding_box:
             Scene bounding box.
         :return:
@@ -172,8 +171,8 @@ class Camera:
         camera_z = bounding_box.p_max[2] + bounding_box.bounds[2]
 
         # Camera location
-        camera_location_x = Vector((camera_x, center.y, center.z))
-        camera_location_y = Vector((center.x, camera_y, center.z))
+        camera_location_x = Vector((-camera_x, center.y, center.z))
+        camera_location_y = Vector((center.x, -camera_y, center.z))
         camera_location_z = Vector((center.x, center.y, camera_z))
 
         # Return a vector for the camera position for XYZ locations

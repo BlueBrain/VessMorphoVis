@@ -33,6 +33,9 @@ MorphologyLoaded = False
 # A flag that is used to track the simulation loading
 SimulationLoaded = False
 
+# A flag that captures the state of the simulation, whether it is running or not
+SimulationRunning = False
+
 # A flag that is used to track if VMV is initialized or not
 SystemInitialized = False
 

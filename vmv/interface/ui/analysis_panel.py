@@ -26,9 +26,9 @@ import vmv.analysis
 
 
 ####################################################################################################
-# @VMVAnalysisPanel
+# @VMV_AnalysisPanel
 ####################################################################################################
-class VMVAnalysisPanel(bpy.types.Panel):
+class VMV_AnalysisPanel(bpy.types.Panel):
     """Analysis panel"""
 
     ################################################################################################
@@ -185,9 +185,9 @@ class VMVAnalysisPanel(bpy.types.Panel):
 
 
 ####################################################################################################
-# @VMVAnalyzeMorphology
+# @VMV_AnalyzeMorphology
 ####################################################################################################
-class VMVAnalyzeMorphology(bpy.types.Operator):
+class VMV_AnalyzeMorphology(bpy.types.Operator):
     """Analyze the morphology skeleton"""
 
     # Operator parameters
@@ -316,10 +316,10 @@ def register_panel():
     """Registers all the classes in this panel"""
 
     # InputOutput data
-    bpy.utils.register_class(VMVAnalysisPanel)
+    bpy.utils.register_class(VMV_AnalysisPanel)
 
     # Analysis button
-    bpy.utils.register_class(VMVAnalyzeMorphology)
+    bpy.utils.register_class(VMV_AnalyzeMorphology)
 
 
 ####################################################################################################
@@ -329,7 +329,7 @@ def unregister_panel():
     """Un-registers all the classes in this panel"""
 
     # InputOutput data
-    bpy.utils.unregister_class(VMVAnalysisPanel)
+    bpy.utils.unregister_class(VMV_AnalysisPanel)
 
     # Analysis button
-    bpy.utils.unregister_class(VMVAnalyzeMorphology)
+    bpy.utils.unregister_class(VMV_AnalyzeMorphology)
