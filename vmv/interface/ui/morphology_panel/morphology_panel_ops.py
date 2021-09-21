@@ -474,26 +474,43 @@ def add_simulation_visualization_options(layout,
     # Adding the simulation loading button, if the simulation is not loaded
     layout.row().operator('load.simulation', icon='FORCE_TURBULENCE')
 
-    # Simulation range
-    row = layout.row()
-    column = row.column()
-    column.label(text='Range')
-    column = row.column()
-    row = column.row(align=True)
-    row.prop(scene, 'VMV_FirstLoadedFrame')
-    row.prop(scene, 'VMV_LastLoadedFrame')
-    row.enabled = False
+    if vmv.interface.SimulationLoaded:
 
+        # Simulation range
+        row = layout.row()
+        column = row.column()
+        column.label(text='Range')
+        column = row.column()
+        row = column.row(align=True)
+        row.prop(scene, 'VMV_FirstSimulationFrame')
+        row.prop(scene, 'VMV_LastSimulationFrame')
+        row.enabled = False
 
+        # Otherwise, just load the simulation control buttons
+        control = layout.row(align=True)
+        first_frame_button = control.column()
+        first_frame_button.operator('play_first_frame.simulation', icon='REW')
+        previous_frame_button = control.column()
+        previous_frame_button.operator('play_previous_frame.simulation', icon='PREV_KEYFRAME')
+        play_pause_button = control.column()
+        play_pause_button.operator('play.simulation', icon=bpy.types.Scene.VMV_PlayPauseButtonIcon)
+        next_frame_button = control.column()
+        next_frame_button.operator('play_next_frame.simulation', icon='NEXT_KEYFRAME')
+        last_frame_button = control.column()
+        last_frame_button.operator('play_last_frame.simulation', icon='FF')
+        control.prop(scene, 'VMV_CurrentSimulationFrame')
 
-    # Otherwise, just load the simulation control buttons
-    control = layout.row(align=True)
-    control.operator('play_first_frame.simulation', icon='REW')
-    control.operator('play_previous_frame.simulation', icon='PREV_KEYFRAME')
-    control.operator('play.simulation', icon='PLAY')
-    control.operator('play_next_frame.simulation', icon='NEXT_KEYFRAME')
-    control.operator('play_last_frame.simulation', icon='FF')
-    control.prop(scene, 'VMV_CurrentFrame')
+        # If the simulation is running, disable all the other buttons to avoid conflicts
+        if scene.VMV_IsSimulationRunning:
+            first_frame_button.enabled = False
+            previous_frame_button.enabled = False
+            next_frame_button.enabled = False
+            last_frame_button.enabled = False
+        else:
+            first_frame_button.enabled = True
+            previous_frame_button.enabled = True
+            next_frame_button.enabled = True
+            last_frame_button.enabled = True
 
     progress = layout.row()
     progress.prop(scene, 'VMV_SimulationProgressBar')

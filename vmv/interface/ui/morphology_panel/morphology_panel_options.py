@@ -52,18 +52,6 @@ def define_visualization_methods_menus():
 # Visualization methods
 define_visualization_methods_menus()
 
-
-# Simulation starting frame
-bpy.types.Scene.VMV_TimeFrameStart = bpy.props.IntProperty(
-    name='Start (t0)',
-    default=0, min=0, max=100)
-
-# Simulation end frame
-bpy.types.Scene.VMV_TimeFrameEnd = bpy.props.IntProperty(
-    name='End (t0)',
-    default=0, min=0, max=100)
-
-
 # Tube quality
 bpy.types.Scene.VMV_TubeQuality = bpy.props.IntProperty(
     name='Sides',
@@ -131,11 +119,6 @@ for i in range(vmv.consts.Color.COLORMAP_RESOLUTION):
         name='', default=(i + 1) * delta,
         min=0.0, max=1e10, description=''))
 
-# Frame scale factor 'for rendering to scale option '
-bpy.types.Scene.VMV_ColorMapResolution = bpy.props.IntProperty(
-    name='Resolution', default=vmv.consts.Color.COLORMAP_RESOLUTION, min=4, max=128,
-    description='The resolution of the color-map. Range [4 - 128] samples.')
-
 # Rendering parameters #############################################################################
 # Rendering resolution
 bpy.types.Scene.VMV_MorphologyRenderingResolution = bpy.props.EnumProperty(
@@ -175,6 +158,33 @@ bpy.types.Scene.VMV_RenderMorphologyScaleBar = bpy.props.BoolProperty(
     description='Add a scale bar overlaid on the resulting image automatically',
     default=False)
 
+# Simulation options ###############################################################################
+# The first time frame of the simulation as loaded from the file
+bpy.types.Scene.VMV_FirstSimulationFrame = bpy.props.IntProperty(
+    name='',
+    description='The first time frame of the simulation as loaded from the morphology file'
+                'This is the typical initial time-step with which the simulation will start from',
+    default=0, min=0, max=1000000)
+
+# The last time frame of the simulation as loaded from the file
+bpy.types.Scene.VMV_LastSimulationFrame = bpy.props.IntProperty(
+    name='',
+    description='The last time frame of the simulation as loaded from the morphology file'
+                'This is the typical last time-step with which the simulation will end at',
+    default=0, min=0, max=1000000)
+
+# Simulation progress bar
+bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.IntProperty(
+    name='',
+    description='The time it takes to reconstruct the vasculature mesh',
+    default=0, min=0, max=100, subtype='PERCENTAGE')
+
+# The icon that will be displayed on the Play/Pause button
+bpy.types.Scene.VMV_PlayPauseButtonIcon = 'PLAY'
+
+# A flag that captures the state of the simulation, whether it is running or not
+bpy.types.Scene.VMV_IsSimulationRunning = False
+
 # Other parameters #################################################################################
 # The minimum value associated with the color map
 bpy.types.Scene.VMV_MinimumValue = bpy.props.StringProperty(
@@ -188,45 +198,4 @@ bpy.types.Scene.VMV_MaximumValue = bpy.props.StringProperty(
 bpy.types.Scene.VMV_MorphologyReconstructionTime = bpy.props.FloatProperty(
     name='Reconstruction Time (Sec)',
     description='The time it takes to reconstruct the vasculature morphology',
-    default=0, min=0, max=1000000)
-
-####################################################################################################
-# The first time frame loaded from the file
-bpy.types.Scene.VMV_FirstLoadedFrame = bpy.props.IntProperty(
-    name='',
-    description='The first time step as loaded from the morphology file. '
-                'This is the typical initial time-step with which the simulation will start '
-                'off from',
-    default=0, min=0, max=1000000)
-
-# The last time frame loaded from the file
-bpy.types.Scene.VMV_LastLoadedFrame = bpy.props.IntProperty(
-    name='',
-    description='The first time step as loaded from the morphology file. '
-                'This is the typical final time-step with which the simulation will end at',
-    default=0, min=0, max=1000000)
-
-
-
-
-bpy.types.Scene.VMV_FirstFrame = bpy.props.IntProperty(
-    name='First Time Frame',
-    default=0, min=0, max=1000000)
-
-bpy.types.Scene.VMV_LastFrame = bpy.props.IntProperty(
-    name='Last Time Frame',
-    default=100, min=0, max=1000000)
-
-
-
-
-# Simulation progress bar
-bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.IntProperty(
-    name='',
-    description='The time it takes to reconstruct the vasculature mesh',
-    default=0, min=0, max=100, subtype='PERCENTAGE')
-
-# Simulation current frame value
-bpy.types.Scene.VMV_CurrentFrame = bpy.props.IntProperty(
-    name='',
     default=0, min=0, max=1000000)

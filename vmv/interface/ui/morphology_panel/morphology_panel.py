@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -18,6 +18,7 @@
 # System import
 import time
 import copy
+import math
 
 # Blender imports
 import bpy
@@ -35,7 +36,6 @@ import vmv.utilities
 import vmv.rendering
 import vmv.shading
 from .morphology_panel_ops import *
-#from .morphology_panel_simulation import *
 
 
 ####################################################################################################
@@ -53,6 +53,35 @@ class VMVMorphologyPanel(bpy.types.Panel):
     bl_region_type = 'UI'
     bl_category = 'VessMorphoVis'
     bl_options = {'DEFAULT_CLOSED'}
+
+    ################################################################################################
+    # @update_time_frame
+    ################################################################################################
+    def update_time_frame(self,
+                          context):
+        """Updates the time frame and the corresponding text box for a given time step
+
+        :param context:
+            Blender context.
+        """
+
+        # The value that is set by the user
+        input_value = context.scene.VMV_CurrentSimulationFrame
+
+        # If the input value is less than the first frame, set it to the first frame
+        if input_value < context.scene.VMV_FirstSimulationFrame:
+            context.scene.VMV_CurrentSimulationFrame = context.scene.VMV_FirstSimulationFrame
+
+        # If the input value is greater than the last frame, set it to the last frame
+        if input_value > context.scene.VMV_LastSimulationFrame:
+            context.scene.VMV_CurrentSimulationFrame = context.scene.VMV_LastSimulationFrame
+
+        # Otherwise, update the UI
+        bpy.context.scene.frame_set(input_value)
+
+        # Update the progress bar
+        context.scene.VMV_SimulationProgressBar = math.ceil(int(
+            100.0 * input_value / context.scene.VMV_LastSimulationFrame))
 
     ################################################################################################
     # @update_morphology_color
@@ -151,6 +180,12 @@ class VMVMorphologyPanel(bpy.types.Panel):
     for index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
         setattr(bpy.types.Scene, 'VMV_Color%d' % index, bpy.props.FloatVectorProperty(
             name='', subtype='COLOR', default=colors[index], min=0.0, max=1.0, description=''))
+
+    # The current time frame of the simulation
+    bpy.types.Scene.VMV_CurrentSimulationFrame = bpy.props.IntProperty(
+        name='',
+        default=0, min=0, max=1000000,
+        update=update_time_frame)
 
     ################################################################################################
     # @draw_morphology_color_options
@@ -432,20 +467,6 @@ class VMVReconstructMorphology(bpy.types.Operator):
 
         # Done, return {'FINISHED'}
         return {'FINISHED'}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ####################################################################################################
