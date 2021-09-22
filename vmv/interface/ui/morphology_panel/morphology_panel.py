@@ -17,7 +17,6 @@
 
 # System import
 import time
-import copy
 import math
 
 # Blender imports
@@ -34,6 +33,7 @@ import vmv.skeleton
 import vmv.interface
 import vmv.utilities
 import vmv.rendering
+import vmv.mesh
 import vmv.shading
 from .morphology_panel_ops import *
 
@@ -148,6 +148,37 @@ class VMV_MorphologyPanel(bpy.types.Panel):
                 else:
                     vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
                         Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
+
+    ################################################################################################
+    # @update_bevel_object
+    ################################################################################################
+    def update_bevel_object(self,
+                            context):
+
+        # TODO: Verify if the morphology is deleted or exists in the scene, using its name!
+        if vmv.interface.MorphologyPolylineObject is not None:
+            bevel_sides = context.scene.VMV_TubeQuality
+
+            # Get the bevel object
+            bevel_object = vmv.scene.get_object_by_name('bevel')
+            if bevel_object is not None:
+
+                # Delete the old bevel object
+                vmv.scene.delete_object_in_scene(bevel_object)
+
+                # Create a new bevel object
+                bevel_object = vmv.mesh.create_bezier_circle(
+                    radius=1.0, vertices=bevel_sides, name='bevel')
+                vmv.interface.MorphologyPolylineObject.data.bevel_object = bevel_object
+
+    # Tube quality
+    bpy.types.Scene.VMV_TubeQuality = bpy.props.IntProperty(
+        name='Sides',
+        description='Number of sides of the cross-section of each segment along the drawn tube.'
+                    'The minimum is 4, maximum 128 and default is 8. High value is required for '
+                    'closeups and low value is sufficient for far-away visualizations',
+        default=8, min=4, max=128,
+        update=update_bevel_object)
 
     # Options that require an @update function #####################################################
     # The base color that will be used for all the components in the morphology
@@ -470,14 +501,11 @@ class VMV_ReconstructMorphology(bpy.types.Operator):
         return {'FINISHED'}
 
 
-
-
-
 ####################################################################################################
 # @VMV_ReconstructMesh
 ####################################################################################################
-class VMVExportMorphology(bpy.types.Operator):
-    """Export the reconstructed mesh to a file"""
+class VMV_ExportMorphology(bpy.types.Operator):
+    """Export the reconstructed morphology to a file"""
 
     # Operator parameters
     bl_idname = 'export.morphology'
@@ -602,7 +630,7 @@ def register_panel():
     bpy.utils.register_class(vmv.interface.VMV_RenderSimulation)
 
     # Morphology export button
-    bpy.utils.register_class(VMVExportMorphology)
+    bpy.utils.register_class(VMV_ExportMorphology)
 
 
 ####################################################################################################
@@ -631,4 +659,4 @@ def unregister_panel():
     bpy.utils.unregister_class(vmv.interface.VMV_RenderSimulation)
 
     # Morphology export button
-    bpy.utils.unregister_class(VMVExportMorphology)
+    bpy.utils.unregister_class(VMV_ExportMorphology)

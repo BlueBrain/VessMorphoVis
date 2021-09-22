@@ -47,6 +47,12 @@ class ColorCoding:
     # Label the short sections
     SHORT_SECTIONS = 'SHORT_SECTION_COLOR_CODING'
 
+    # By section index
+    BY_SECTION_INDEX = 'COLOR_CODING_BY_SECTION_INDEX'
+
+    # By segment index
+    BY_SEGMENT_INDEX = 'COLOR_CODING_BY_SEGMENT_INDEX'
+
     ################################################################################################
     # Segments color-coding items to be added to the interface list
     ################################################################################################
@@ -84,7 +90,13 @@ class ColorCoding:
         (BY_VOLUME,
          'Segment Volume',
          'Color-code the morphology based on the volume of the segment with respect to '
-         'the distribution of the segments volumes along the entire morphology')
+         'the distribution of the segments volumes along the entire morphology'),
+
+        # Segment index
+        (BY_SEGMENT_INDEX,
+         'Segment Index',
+         'Color-code the morphology gradually based on the index the segment starting from 0 and '
+         'until the last segment in the morphology')
     ]
 
     ################################################################################################
@@ -123,7 +135,12 @@ class ColorCoding:
         # Number of samples
         (BY_NUMBER_SAMPLES,
          'Number of Samples',
-         'Color-code the morphology based on the number of samples along the section')
+         'Color-code the morphology based on the number of samples along the section'),
+
+        # Section index
+        (BY_SECTION_INDEX,
+         'Section Index',
+         'Color-code the morphology gradually according to the index of the section')
     ]
 
     ############################################################################################
@@ -165,6 +182,14 @@ class ColorCoding:
         # By number of samples along the section
         elif argument == 'number-samples':
             return ColorCoding.BY_NUMBER_SAMPLES
+
+        # By segment index
+        elif argument == 'segment-index':
+            return ColorCoding.BY_SEGMENT_INDEX
+
+        # By section index
+        elif argument == 'section-index':
+            return ColorCoding.BY_SECTION_INDEX
 
         # By default use the default scheme
         else:

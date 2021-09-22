@@ -89,18 +89,17 @@ def get_color_coded_segments_poly_lines_with_alternating_colors(section):
 ####################################################################################################
 # @get_color_coded_segments_poly_lines_based_on_radius
 ####################################################################################################
-def get_color_coded_segments_poly_lines_based_on_radius(section, 
-                                                        minimum, 
-                                                        maximum,
-    color_map_resolution=vmv.consts.Color.COLORMAP_RESOLUTION):
+def get_color_coded_segments_poly_lines_based_on_radius(
+        section, minimum, maximum,
+        color_map_resolution=vmv.consts.Color.COLORMAP_RESOLUTION):
     """Gets a list of all the segments composing the section color-coded based 
     on their radii in the morphology.
 
     :param section:     
         A given section to extract its segments from.
-    :param minimum_radius:  
+    :param minimum:
         The radius of the smaller sample in the morphology. 
-    :param maximum_radius: [description]
+    :param maximum: [description]
         The radius of the larger sample in the morphology.
     :return:
         A list of segments represented by color-coded poly-lines. 
@@ -288,7 +287,7 @@ def get_color_coded_segments_poly_lines_based_on_volume(section,
         radius_2 = section.samples[i + 1].radius
         samples.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
 
-        # Surface area 
+        # Volume
         segment_volume = vmv.skeleton.compute_segment_volume(
             section.samples[i], section.samples[i + 1])
 
@@ -302,4 +301,53 @@ def get_color_coded_segments_poly_lines_based_on_volume(section,
         poly_lines.append(vmv.skeleton.PolyLine(samples, color_index))
 
     # Return the list of polylines 
+    return poly_lines
+
+
+####################################################################################################
+# @get_color_coded_segments_poly_lines_based_on_index
+####################################################################################################
+def get_color_coded_segments_poly_lines_based_on_index(morphology,
+                                                       section,
+                                                       minimum,
+                                                       maximum,
+    color_map_resolution=vmv.consts.Color.COLORMAP_RESOLUTION):
+
+    # A list of all the poly-lines that correspond to each segment in the morphology
+    poly_lines = list()
+
+    # Compute the first segment index based on the section index in the morphology
+    first_segment_index = 0
+    for i_section in range(0, section.index):
+        first_segment_index += len(morphology.sections_list[i_section].samples)
+
+    # Construct the section from all the samples
+    for i_sample in range(len(section.samples) - 1):
+
+        # Segment poly-line
+        samples = list()
+
+        # First sample
+        point_1 = section.samples[i_sample].point
+        radius_1 = section.samples[i_sample].radius
+        samples.append([(point_1[0], point_1[1], point_1[2], 1), radius_1])
+
+        # Second sample
+        point_2 = section.samples[i_sample + 1].point
+        radius_2 = section.samples[i_sample + 1].radius
+        samples.append([(point_2[0], point_2[1], point_2[2], 1), radius_2])
+
+        # Compute the current segment index
+        segment_index = first_segment_index + i_sample
+
+        # Poly-line color index (we use two colors to highlight the segment)
+        color_index = vmv.utilities.get_index(value=segment_index,
+                                              minimum_value=minimum,
+                                              maximum_value=maximum,
+                                              number_steps=color_map_resolution)
+
+        # Add the poly-line to the aggregate list
+        poly_lines.append(vmv.skeleton.PolyLine(samples, color_index))
+
+    # Return the list of polylines
     return poly_lines

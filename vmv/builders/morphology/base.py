@@ -70,6 +70,12 @@ class MorphologyBuilder:
         # Context for the UI to display certain messages
         self.context = None
 
+        # Minimum simulation value
+        self.minimum_simulation_value = 1e30
+
+        # Maximum simulation value
+        self.maximum_simulation_value = -1 * 1e30
+
     ################################################################################################
     # @create_skeleton_materials
     ################################################################################################
@@ -93,34 +99,42 @@ class MorphologyBuilder:
     ################################################################################################
     # @create_color_map
     ################################################################################################
-    def create_color_map(self):
-        """Creates the color map that will be assigned to the skeleton.
+    def create_color_map(self,
+                         dynamic_colormap=False):
+        """Creates a color map that will be assigned to the skeleton.
 
-        :return:
-            A color-map list.
+        :param dynamic_colormap:
+            A dynamic color map is requested.
         :rtype:
             List of Vector((X, Y, Z))
         """
 
-        # Single color
-        if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
-            return [self.options.morphology.color]
-
-        # Alternating colors
-        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
-            return [self.options.morphology.color, self.options.morphology.alternating_color]
-
-        # Otherwise, it is a color-map
-        else:
+        # Dynamic color map for the simulation
+        if dynamic_colormap:
             return vmv.utilities.create_color_map_from_color_list(
                 self.options.morphology.color_map_colors,
                 number_colors=self.options.morphology.color_map_resolution)
+        else:
+            # Single color
+            if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
+                return [self.options.morphology.color]
+
+            # Alternating colors
+            elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
+                return [self.options.morphology.color, self.options.morphology.alternating_color]
+
+            # Otherwise, it is a color-map
+            else:
+                return vmv.utilities.create_color_map_from_color_list(
+                    self.options.morphology.color_map_colors,
+                    number_colors=self.options.morphology.color_map_resolution)
 
     ################################################################################################
     # @build_skeleton
     ################################################################################################
     def build_skeleton(self,
-                       context=None):
+                       context=None,
+                       dynamic_colormap=False):
         """Draws the morphology skeleton and return a reference to it.
         """
 
@@ -128,13 +142,14 @@ class MorphologyBuilder:
         self.context = context
 
         # Clear the scene
-        vmv.logger.info('Clearing scene')
+        vmv.logger.info('Clearing Scene')
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
-        vmv.logger.info('Clearing assets')
+        vmv.logger.info('Clearing Assets')
         vmv.scene.ops.clear_scene_materials()
 
-        # Create assets and color-maps
-        vmv.logger.info('Creating assets')
-        self.color_map = self.create_color_map()
+        # Create assets and color-maps, based on what is selected in the morphology panel
+        vmv.logger.info('Creating Colormap')
+        self.color_map = self.create_color_map(dynamic_colormap=dynamic_colormap)
+

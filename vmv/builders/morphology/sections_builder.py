@@ -96,7 +96,7 @@ class SectionsBuilder(MorphologyBuilder):
         """
 
         # Get minimum and maximum (average-radii) of the sections in the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_average_radii(
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_sections_average_radii(
             self.morphology)
 
         # Update the interface with the minimum and maximum values for the color-mapping  
@@ -124,7 +124,7 @@ class SectionsBuilder(MorphologyBuilder):
         """
 
         # Get minimum and maximum lengths of the sections in the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_lengths(
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_sections_lengths(
             self.morphology)
 
         # Update the interface with the minimum and maximum values for the color-mapping  
@@ -152,7 +152,7 @@ class SectionsBuilder(MorphologyBuilder):
         """
 
         # Get minimum and maximum surface areas of the sections in the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_surface_areas(
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_sections_surface_areas(
             self.morphology)
 
         # Update the interface with the minimum and maximum values for the color-mapping  
@@ -180,7 +180,7 @@ class SectionsBuilder(MorphologyBuilder):
         """
 
         # Get minimum and maximum volumes of the sections in the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_volumes(self.morphology)
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_sections_volumes(self.morphology)
 
         # Update the interface with the minimum and maximum values for the color-mapping  
         if self.context is not None:
@@ -208,7 +208,7 @@ class SectionsBuilder(MorphologyBuilder):
         """
 
         # Get minimum and maximum volumes of the sections in the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_sections_number_samples(
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_sections_number_samples(
             self.morphology)
 
         # Update the interface with the minimum and maximum values for the color-mapping  
@@ -224,6 +224,36 @@ class SectionsBuilder(MorphologyBuilder):
                     for section in self.morphology.sections_list] 
         
         # Return the list 
+        return poly_lines_data
+
+    ################################################################################################
+    # @get_poly_lines_data_colored_based_on_section_index
+    ################################################################################################
+    def get_poly_lines_data_colored_based_on_section_index(self):
+        """Gets a list of poly-line that are color-coded based on the section index, where the
+        sections will start from zero and to the last section index.
+
+        :return:
+            A list of poly-line that are color-coded based on the section index.
+        """
+
+        # Get minimum and maximum volumes of the sections in the morphology
+        minimum = 0
+        maximum = len(self.morphology.sections_list)
+
+        # Update the interface with the minimum and maximum values for the color-mapping
+        if self.context is not None:
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
+
+        # Get the poly-line data of each section
+        poly_lines_data = [
+            vmv.skeleton.ops.get_color_coded_sections_poly_lines_based_on_section_index(
+                section=section, minimum=minimum, maximum=maximum,
+                color_map_resolution=self.options.morphology.color_map_resolution)
+            for section in self.morphology.sections_list]
+
+        # Return the list
         return poly_lines_data
 
     ################################################################################################
@@ -245,21 +275,26 @@ class SectionsBuilder(MorphologyBuilder):
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_VOLUME:
             return self.get_poly_lines_data_colored_based_on_volume() 
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_NUMBER_SAMPLES:
-            return self.get_poly_lines_data_colored_based_on_number_samples_in_section() 
+            return self.get_poly_lines_data_colored_based_on_number_samples_in_section()
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SECTION_INDEX:
+            return self.get_poly_lines_data_colored_based_on_section_index()
         else:
             return self.get_poly_lines_data_colored_with_single_color()
 
     ################################################################################################
     # @build_skeleton
     ################################################################################################
-    def build_skeleton(self, context=None):
+    def build_skeleton(self,
+                       context=None,
+                       dynamic_colormap=False):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
         vmv.logger.header('Building skeleton: SectionsBuilder')
 
         # Call the base function
-        super(SectionsBuilder, self).build_skeleton(context=context)
+        super(SectionsBuilder, self).build_skeleton(
+            context=context, dynamic_colormap=dynamic_colormap)
 
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(

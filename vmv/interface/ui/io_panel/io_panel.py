@@ -143,7 +143,7 @@ class VMV_LoadMorphology(bpy.types.Operator):
             # Construct a builder object
             builder = vmv.builders.SectionsBuilder(morphology=vmv.interface.MorphologyObject,
                                                    options=vmv.interface.Options)
-            builder.build_skeleton()
+            vmv.interface.MorphologyPolylineObject = builder.build_skeleton()
 
             # Switch to full view along some axis
             vmv.utilities.view_all_from_projection()

@@ -16,11 +16,7 @@
 ####################################################################################################
 
 # System imports
-import random, copy
-
-# Blender imports
-import bpy
-from mathutils import Vector
+import sys
 
 # Internal imports
 import vmv.geometry
@@ -104,7 +100,7 @@ class SegmentsBuilder(MorphologyBuilder):
         poly_lines_data = list() 
 
         # Get minimum and maximum radii of the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_samples_radii(self.morphology)
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_samples_radii(self.morphology)
 
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
@@ -135,7 +131,7 @@ class SegmentsBuilder(MorphologyBuilder):
         poly_lines_data = list() 
 
         # Get minimum and maximum radii of the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_length(self.morphology)
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_segments_length(self.morphology)
         
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
@@ -166,7 +162,7 @@ class SegmentsBuilder(MorphologyBuilder):
         poly_lines_data = list() 
 
         # Get minimum and maximum radii of the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_surface_area(
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_segments_surface_area(
             self.morphology)
         
         # Update the interface with the minimum and maximum values for the color-mapping
@@ -188,18 +184,17 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_poly_line_data_based_on_volume
     ################################################################################################
     def get_poly_line_data_based_on_volume(self):
-        """Gets a poly-lines data list based on surface area.
+        """Gets a poly-lines data list based on volume.
 
         :return: 
-            A poly-lines data list based on the surface area of the segments in the morphology. 
+            A poly-lines data list based on the volume of the segments in the morphology.
         """
         
         # The poly-lines data list 
         poly_lines_data = list() 
 
         # Get minimum and maximum radii of the morphology
-        minimum, maximum = vmv.skeleton.get_minumum_and_maximum_segments_volume(
-            self.morphology)
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_segments_volume(self.morphology)
         
         # Update the interface with the minimum and maximum values for the color-mapping
         if self.context is not None:
@@ -214,6 +209,37 @@ class SegmentsBuilder(MorphologyBuilder):
                     color_map_resolution=self.options.morphology.color_map_resolution))
 
         # Return the list 
+        return poly_lines_data
+
+    ################################################################################################
+    # @get_poly_line_data_based_on_segment_index
+    ################################################################################################
+    def get_poly_line_data_based_on_segment_index(self):
+        """Gets a poly-lines data list based on the segment index (or the sample index).
+
+        :return:
+            A poly-lines data list based on the index of the segments in the morphology.
+        """
+
+        # The poly-lines data list
+        poly_lines_data = list()
+
+        # Get minimum and maximum radii of the morphology
+        minimum, maximum = vmv.skeleton.get_minimum_and_maximum_segments_index(self.morphology)
+
+        # Update the interface with the minimum and maximum values for the color-mapping
+        if self.context is not None:
+            self.context.scene.VMV_MinimumValue = str(minimum)
+            self.context.scene.VMV_MaximumValue = str(maximum)
+
+        # Get the poly-line data of each section
+        for section in self.morphology.sections_list:
+            poly_lines_data.extend(
+                vmv.skeleton.ops.get_color_coded_segments_poly_lines_based_on_index(
+                    morphology=self.morphology, section=section, minimum=minimum, maximum=maximum,
+                    color_map_resolution=self.options.morphology.color_map_resolution))
+
+        # Return the list
         return poly_lines_data
 
     ################################################################################################
@@ -233,75 +259,161 @@ class SegmentsBuilder(MorphologyBuilder):
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SURFACE_AREA:
             return self.get_poly_line_data_based_on_surface_area()
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_VOLUME:
-            return self.get_poly_line_data_based_on_volume() 
+            return self.get_poly_line_data_based_on_volume()
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SEGMENT_INDEX:
+            return self.get_poly_line_data_based_on_segment_index()
         else:
-            return self.get_poly_line_data_colored_with_single_color() 
-
-    ################################################################################################
-    # @create_color_map
-    ################################################################################################
-    def create_color_map(self):
-        """Creates the color map that will be assigned to the skeleton.
-
-        :return: 
-            A color-map list.
-        :rtype: 
-            List of Vector((X, Y, Z))
-        """
-
-        # Single color
-        if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
-            return [self.options.morphology.color]
-
-        # Alternating colors
-        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
-            return [self.options.morphology.color, self.options.morphology.alternating_color]
-        
-        # Otherwise, it is a color-map
-        else:
-            return vmv.utilities.create_color_map_from_color_list(
-                self.options.morphology.color_map_colors,
-                number_colors=self.options.morphology.color_map_resolution)
+            return self.get_poly_line_data_colored_with_single_color()
 
     ################################################################################################
     # @build_skeleton
     ################################################################################################
-    def build_skeleton(self, 
-                       context=None):
-        """Draws the morphology skeleton using fast reconstruction and drawing method.
+    def build_skeleton(self,
+                       context=None,
+                       dynamic_colormap=False):
+        """Draws the morphology skeleton using a fast reconstruction and drawing method.
         """
 
+        # Header
         vmv.logger.header('Building skeleton: SegmentsBuilder')
 
-        # Get the context 
-        self.context = context 
-
-        # Clear the scene
-        vmv.logger.info('Clearing scene')
-        vmv.scene.ops.clear_scene()
-
-        # Clear the materials
-        vmv.logger.info('Clearing assets')
-        vmv.scene.ops.clear_scene_materials()
-
-        # Create assets and color-maps 
-        vmv.logger.info('Creating assets')
-        color_map = self.create_color_map()
+        # Call the base function
+        super(SegmentsBuilder, self).build_skeleton(
+            context=context, dynamic_colormap=dynamic_colormap)
 
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
             radius=1.0, vertices=self.options.morphology.bevel_object_sides, name='bevel')
 
         # Construct sections poly-lines
-        vmv.logger.info('Constructing poly-lines')
+        vmv.logger.info('Constructing polylines')
         poly_lines_data = self.get_segments_poly_lines_data()
 
         # Pre-process the radii
-        vmv.logger.info('Adjusting radii')
+        vmv.logger.info('Adjusting Radii')
         vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
 
         # Construct the final object and add it to the morphology
-        vmv.logger.info('Drawing poly-lines')
-        return vmv.geometry.create_poly_lines_object_from_poly_lines_data(
-            poly_lines_data, material=self.options.morphology.material, color_map=color_map,
+        vmv.logger.info('Drawing Polylines')
+        self.morphology_skeleton = vmv.geometry.create_poly_lines_object_from_poly_lines_data(
+            poly_lines_data, material=self.options.morphology.material, color_map=self.color_map,
             name=self.morphology.name, bevel_object=bevel_object)
+        return self.morphology_skeleton
+
+    ################################################################################################
+    # @update_ui_minimum_and_maximum_values
+    ################################################################################################
+    def update_ui_minimum_and_maximum_values(self):
+        """Updates the minimum and maximum values for the UI.
+        """
+
+        # Get the minimum and maximum values
+        self.context.scene.VMV_MinimumValue = str(self.minimum_simulation_value)
+        self.context.scene.VMV_MaximumValue = str(self.maximum_simulation_value)
+
+    ################################################################################################
+    # @identify_radius_simulation_dynamic_range
+    ################################################################################################
+    def identify_radius_simulation_dynamic_range(self):
+        """Identifies the dynamic range of the radius simulation, or variation, data.
+        """
+
+        # Scan the entire simulation data to obtain the dynamic range
+        for sample_simulation_list in self.morphology.radius_simulation_data:
+            for value in sample_simulation_list:
+                if value < self.minimum_simulation_value:
+                    self.minimum_simulation_value = value
+                if value > self.maximum_simulation_value:
+                    self.maximum_simulation_value = value
+
+        # Update the values
+        self.update_ui_minimum_and_maximum_values()
+
+    ################################################################################################
+    # @identify_flow_simulation_dynamic_range
+    ################################################################################################
+    def identify_flow_simulation_dynamic_range(self):
+
+        # Scan the entire simulation data to obtain the dynamic range
+        for sample_simulation_list in self.morphology.flow_simulation_data:
+            for value in sample_simulation_list:
+                if value < self.minimum_simulation_value:
+                    self.minimum_simulation_value = value
+                if value > self.maximum_simulation_value:
+                    self.maximum_simulation_value = value
+
+        # Update the values
+        self.update_ui_minimum_and_maximum_values()
+
+    ################################################################################################
+    # @identify_pressure_simulation_dynamic_range
+    ################################################################################################
+    def identify_pressure_simulation_dynamic_range(self):
+
+        # Scan the entire simulation data to obtain the dynamic range
+        for sample_simulation_list in self.morphology.pressure_simulation_data:
+            for value in sample_simulation_list:
+                if value < self.minimum_simulation_value:
+                    self.minimum_simulation_value = value
+                if value > self.maximum_simulation_value:
+                    self.maximum_simulation_value = value
+
+        # Update the values
+        self.update_ui_minimum_and_maximum_values()
+
+    ################################################################################################
+    # @load_radius_simulation_data_at_step
+    ################################################################################################
+    def load_radius_simulation_data_at_step(self,
+                                            time_step):
+        """
+
+        :param time_step:
+        :return:
+        """
+
+        segment_index = 0
+
+        # For every section in the morphology
+        for section in self.morphology.sections_list:
+
+            # For every segment in the section
+            for i_sample in range(len(section.samples) - 1):
+
+                # The index
+                radius_index = section.samples[i_sample].index
+
+                # Get a reference to the radii
+                radius_list = self.morphology.radius_simulation_data[radius_index - 1]
+
+                # Get the segment polyline
+                segment_polyline = self.morphology_skeleton.data.splines[segment_index]
+
+                # Compute the material index
+                color_index = vmv.utilities.get_index(
+                    value=radius_list[time_step],
+                    minimum_value=self.minimum_simulation_value,
+                    maximum_value=self.maximum_simulation_value,
+                    number_steps=self.options.morphology.color_map_resolution)
+
+                # Get a reference to the material list of the morphology skeleton
+                segment_polyline.material_index = color_index
+                segment_polyline.keyframe_insert('material_index', frame=time_step)
+
+                segment_index += 1
+
+
+    ################################################################################################
+    # @load_radius_simulation_data
+    ################################################################################################
+    def load_radius_simulation_data(self):
+        """
+
+        :return:
+        """
+
+        self.identify_radius_simulation_dynamic_range()
+
+        # Add simulation data
+        for time_step in range(0, len(self.morphology.radius_simulation_data[0])):
+            self.load_radius_simulation_data_at_step(time_step=time_step)

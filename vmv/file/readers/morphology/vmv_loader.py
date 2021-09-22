@@ -554,10 +554,12 @@ class VMVReader:
 
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
-            name=morphology_name, file_path=self.morphology_file,
+            name=morphology_name,
+            file_path=self.morphology_file,
             number_samples=self.number_loaded_vertices,
             number_sections=self.number_loaded_strands,
-            sections_list=self.sections_list, roots=self.roots,
+            sections_list=self.sections_list,
+            roots=self.roots,
             radius_simulation_data=self.radius_simulation_data)
 
         # Return the object

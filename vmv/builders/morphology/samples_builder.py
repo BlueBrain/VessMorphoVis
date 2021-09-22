@@ -96,7 +96,7 @@ class SamplesBuilder(MorphologyBuilder):
         vmv.shading.set_material_to_object(sphere_mesh, materials_list[0])
 
         # Append the sphere mesh to the morphology objects
-        self.morphology_objects.append(sphere_mesh)
+        self.morphology_skeleton.append(sphere_mesh)
 
     ################################################################################################
     # @get_sections_poly_lines_data
@@ -141,6 +141,9 @@ class SamplesBuilder(MorphologyBuilder):
 
         vmv.logger.header('Building skeleton: SamplesBuilder')
 
+        # Call the base function
+        super(SamplesBuilder, self).build_skeleton(context=context)
+
         # Get the context 
         self.context = context 
 
@@ -150,10 +153,6 @@ class SamplesBuilder(MorphologyBuilder):
 
         # Clear the materials
         vmv.scene.ops.clear_scene_materials()
-
-        self.materials = vmv.skeleton.ops.create_skeleton_materials(
-            name='axon_skeleton', material_type=self.options.morphology.material,
-            color=self.options.morphology.color)
 
         # Pre-process the radii
         vmv.logger.info('Adjusting radii')

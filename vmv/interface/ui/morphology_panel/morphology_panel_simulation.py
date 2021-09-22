@@ -23,6 +23,7 @@ import bpy
 
 # Internal imports
 import vmv.builders
+import vmv.enums
 import vmv.interface
 
 
@@ -72,6 +73,18 @@ class VMV_LoadSimulation(bpy.types.Operator):
             # Update the current simulation frame to the first one
             context.scene.VMV_CurrentSimulationFrame = 0
 
+            # Interpolations
+            scale = float(context.scene.VMV_MaximumValue) - float(context.scene.VMV_MinimumValue)
+            delta = scale / float(vmv.consts.Color.COLORMAP_RESOLUTION)
+
+            # Fill the list of colors
+            for color_index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
+                r0_value = float(context.scene.VMV_MinimumValue) + (color_index * delta)
+                r1_value = float(context.scene.VMV_MinimumValue) + ((color_index + 1) * delta)
+                print(r0_value, r1_value)
+                setattr(context.scene, 'VMV_R0_Value%d' % color_index, r0_value)
+                setattr(context.scene, 'VMV_R1_Value%d' % color_index, r1_value)
+
             # Refresh the panel context
             self.cancel(context)
 
@@ -117,24 +130,58 @@ class VMV_LoadSimulation(bpy.types.Operator):
             {'FINISHED'}
         """
 
-        # Construct the morphology builder
-        # TODO: Depending on the simulation type
-        self.morphology_builder = vmv.builders.SectionsBuilder(
-            morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
+        # A simple reference
+        visualization_type = vmv.interface.Options.morphology.visualization_type
 
-        # Construct the polyline object
-        self.morphology_object_polyline = self.morphology_builder.build_skeleton(context=context)
+        # Construct the morphology builder based on the simulation type
+        if visualization_type == vmv.enums.Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS:
 
-        # Use the event timer to update the UI during the soma building
-        wm = context.window_manager
-        self.event_timer = wm.event_timer_add(time_step=0.001, window=context.window)
-        wm.modal_handler_add(self)
+            # A sections builder will be used to show variations in structure with respect to time
+            self.morphology_builder = vmv.builders.SectionsBuilder(
+                morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
+        else:
+
+            # A segments builder will be used to show functional variations with color map
+            self.morphology_builder = vmv.builders.SegmentsBuilder(
+                morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
+
+        # Construct the polyline object with dynamic colormap
+
+        if visualization_type == vmv.enums.Morphology.Visualization.RADII_COLORMAP or \
+           visualization_type == vmv.enums.Morphology.Visualization.FLOW_COLORMAP or \
+           visualization_type == vmv.enums.Morphology.Visualization.PRESSURE_COLORMAP:
+            self.morphology_object_polyline = self.morphology_builder.build_skeleton(
+                context=context, dynamic_colormap=True)
+        else:
+            self.morphology_object_polyline = self.morphology_builder.build_skeleton(
+                context=context)
+
+        # Simulation dynamic range
+        if visualization_type == vmv.enums.Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS:
+            pass
+        elif visualization_type == vmv.enums.Morphology.Visualization.RADII_COLORMAP:
+            self.morphology_builder.identify_radius_simulation_dynamic_range()
+        elif visualization_type == vmv.enums.Morphology.Visualization.FLOW_COLORMAP:
+            self.morphology_builder.identify_flow_simulation_dynamic_range()
+        elif visualization_type == vmv.enums.Morphology.Visualization.FLOW_COLORMAP:
+            self.morphology_builder.identify_pressure_simulation_dynamic_range()
+        else:
+            pass
 
         # Update the last simulation frame
         # TODO: Depending on the simulation type
         if vmv.interface.MorphologyObject.has_radius_simulation:
             context.scene.VMV_LastSimulationFrame = \
                 len(vmv.interface.MorphologyObject.radius_simulation_data[0]) - 1
+
+        # NOTE: Make sure you pass the current polyline object to the global reference to be able
+        # to control it while updating certain UI elements
+        vmv.interface.MorphologyPolylineObject = self.morphology_object_polyline
+
+        # Use the event timer to update the UI during the soma building
+        wm = context.window_manager
+        self.event_timer = wm.event_timer_add(time_step=0.001, window=context.window)
+        wm.modal_handler_add(self)
 
         # Done
         return {'RUNNING_MODAL'}

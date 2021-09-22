@@ -140,9 +140,12 @@ def get_color_coded_section_poly_line_based_on_surface_area(
 
 
 ####################################################################################################
-# @get_color_coded_sections_poly_lines_based_on_volume
+# @get_color_coded_section_poly_line_based_on_volume
 ####################################################################################################
-def get_color_coded_section_poly_line_based_on_volume(section, minimum, maximum, color_map_resolution):
+def get_color_coded_section_poly_line_based_on_volume(section,
+                                                      minimum,
+                                                      maximum,
+                                                      color_map_resolution):
 
     # Compute the average radius of the section 
     section_volume = vmv.skeleton.compute_section_volume(section)
@@ -162,7 +165,7 @@ def get_color_coded_section_poly_line_based_on_volume(section, minimum, maximum,
 
 
 ####################################################################################################
-# @get_color_coded_sections_poly_lines_based_on_volume
+# @get_color_coded_section_poly_line_based_on_number_samples
 ####################################################################################################
 def get_color_coded_section_poly_line_based_on_number_samples(
         section, minimum, maximum, color_map_resolution):
@@ -178,4 +181,24 @@ def get_color_coded_section_poly_line_based_on_number_samples(
                                           number_steps=color_map_resolution)
 
     # Return the constructed poly-lines 
+    return vmv.skeleton.PolyLine(samples=samples, color_index=color_index)
+
+
+####################################################################################################
+# @get_color_coded_sections_poly_lines_based_on_section_index
+####################################################################################################
+def get_color_coded_sections_poly_lines_based_on_section_index(
+        section, minimum, maximum, color_map_resolution):
+
+    # Add the samples
+    samples = [[(sample.point[0], sample.point[1], sample.point[2], 1), sample.radius]
+               for sample in section.samples]
+
+    # Poly-line color index (we use two colors to highlight the segment)
+    color_index = vmv.utilities.get_index(value=section.index,
+                                          minimum_value=minimum,
+                                          maximum_value=maximum,
+                                          number_steps=color_map_resolution)
+
+    # Return the constructed poly-lines
     return vmv.skeleton.PolyLine(samples=samples, color_index=color_index)

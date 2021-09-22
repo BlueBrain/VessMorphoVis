@@ -1368,3 +1368,33 @@ def extend_clipping_planes(clip_start=0.01,
 
     # Ending clipping plane
     bpy.context.space_data.clip_end = clip_end
+
+
+####################################################################################################
+# @select_object_by_name
+####################################################################################################
+def select_object_by_name(object_name):
+    """Select an object in the scene given its name.
+    :param object_name:
+        The name of object to be selected.
+    """
+
+    # Set the '.select' flag of the object to True
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.name == object_name:
+            select_object(scene_object)
+
+
+####################################################################################################
+# @get_object_by_name
+####################################################################################################
+def get_object_by_name(object_name):
+    """Gets an object in the scene given its name.
+    :param object_name:
+        The name of object to be returned.
+    """
+
+    # Set the '.select' flag of the object to True
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.name == object_name:
+            return scene_object

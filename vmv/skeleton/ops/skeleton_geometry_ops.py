@@ -188,9 +188,9 @@ def compute_section_average_radius(section):
 
 
 ####################################################################################################
-# @get_minumum_and_maximum_sections_average_radii
+# @get_minimum_and_maximum_sections_average_radii
 ####################################################################################################
-def get_minumum_and_maximum_sections_average_radii(morphology):
+def get_minimum_and_maximum_sections_average_radii(morphology):
 
     # Get a list of radii 
     radii = [compute_section_average_radius(section=section) 
@@ -201,9 +201,9 @@ def get_minumum_and_maximum_sections_average_radii(morphology):
 
 
 ####################################################################################################
-# @get_minumum_and_maximum_sections_lengths
+# @get_minimum_and_maximum_sections_lengths
 ####################################################################################################
-def get_minumum_and_maximum_sections_lengths(morphology):
+def get_minimum_and_maximum_sections_lengths(morphology):
 
     # Get a list of lengths 
     sections_lengths = [compute_section_length(section=section) 
@@ -214,9 +214,9 @@ def get_minumum_and_maximum_sections_lengths(morphology):
 
 
 ####################################################################################################
-# @get_minumum_and_maximum_samples_radii
+# @get_minimum_and_maximum_samples_radii
 ####################################################################################################
-def get_minumum_and_maximum_samples_radii(morphology):
+def get_minimum_and_maximum_samples_radii(morphology):
 
     minimum = vmv.consts.Math.INFINITY  
     maximum = -vmv.consts.Math.INFINITY
@@ -233,9 +233,9 @@ def get_minumum_and_maximum_samples_radii(morphology):
 
 
 ###################################################################################################
-# @get_minumum_and_maximum_segments_length
+# @get_minimum_and_maximum_segments_length
 ####################################################################################################
-def get_minumum_and_maximum_segments_length(morphology):
+def get_minimum_and_maximum_segments_length(morphology):
 
 
     minimum = vmv.consts.Math.INFINITY  
@@ -429,9 +429,9 @@ def compute_sections_surface_areas_from_segments(section,
     sections_surface_areas.append(section_surface_area)
 
 ###################################################################################################
-# @get_minumum_and_maximum_segments_surface_area
+# @get_minimum_and_maximum_segments_surface_area
 ####################################################################################################
-def get_minumum_and_maximum_segments_surface_area(morphology):
+def get_minimum_and_maximum_segments_surface_area(morphology):
 
     
     segments_surface_areas = list()
@@ -445,11 +445,10 @@ def get_minumum_and_maximum_segments_surface_area(morphology):
 
 
 ###################################################################################################
-# @get_minumum_and_maximum_segments_volume
+# @get_minimum_and_maximum_segments_volume
 ####################################################################################################
-def get_minumum_and_maximum_segments_volume(morphology):
+def get_minimum_and_maximum_segments_volume(morphology):
 
-    
     segments_volumes = list()
 
     for section in morphology.sections_list:
@@ -462,9 +461,9 @@ def get_minumum_and_maximum_segments_volume(morphology):
 
 
 ###################################################################################################
-# @get_minumum_and_maximum_sections_surface_area
+# @get_minimum_and_maximum_sections_surface_area
 ####################################################################################################
-def get_minumum_and_maximum_sections_surface_areas(morphology):
+def get_minimum_and_maximum_sections_surface_areas(morphology):
 
     sections_surface_area = list()
 
@@ -475,9 +474,9 @@ def get_minumum_and_maximum_sections_surface_areas(morphology):
 
 
 ###################################################################################################
-# @get_minumum_and_maximum_sections_volume
+# @get_minimum_and_maximum_sections_volume
 ####################################################################################################
-def get_minumum_and_maximum_sections_volumes(morphology):
+def get_minimum_and_maximum_sections_volumes(morphology):
 
     
     sections_volumes = list()
@@ -490,9 +489,9 @@ def get_minumum_and_maximum_sections_volumes(morphology):
 
 
 ###################################################################################################
-# @get_minumum_and_maximum_sections_number_samples
+# @get_minimum_and_maximum_sections_number_samples
 ####################################################################################################
-def get_minumum_and_maximum_sections_number_samples(morphology):
+def get_minimum_and_maximum_sections_number_samples(morphology):
 
     
     sections_number_samples = list()
@@ -504,6 +503,20 @@ def get_minumum_and_maximum_sections_number_samples(morphology):
     return min(sections_number_samples), max(sections_number_samples)
 
 
+###################################################################################################
+# @get_minimum_and_maximum_segments_index
+####################################################################################################
+def get_minimum_and_maximum_segments_index(morphology):
+
+    # We compute the total number of segments in the morphology.
+    total_number_segments = 0
+
+    # For every section in the morphology, append the total number of segments in the section
+    for section in morphology.sections_list:
+        total_number_segments += len(section.samples)
+
+    # Return the result
+    return 0, total_number_segments
 
 
 def update_poly_lines_radii(poly_lines,

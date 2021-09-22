@@ -52,14 +52,6 @@ def define_visualization_methods_menus():
 # Visualization methods
 define_visualization_methods_menus()
 
-# Tube quality
-bpy.types.Scene.VMV_TubeQuality = bpy.props.IntProperty(
-    name='Sides',
-    description='Number of sides of the cross-section of each segment along the drawn tube.'
-                'The minimum is 4, maximum 128 and default is 8. High value is required for '
-                'closeups and low value is sufficient for far-away visualizations',
-    default=8, min=4, max=128)
-
 # Section radius
 bpy.types.Scene.VMV_SectionsRadii = bpy.props.EnumProperty(
     items=vmv.enums.Morphology.Radii.RADII_UI_ITEMS,
