@@ -91,13 +91,13 @@ bpy.types.Scene.VMV_PerSectionColorCodingBasis = bpy.props.EnumProperty(
 
 # The alternative color used to color every second object in the morphology
 bpy.types.Scene.VMV_MorphologyColor1 = bpy.props.FloatVectorProperty(
-    name='Color 1',
+    name='',
     subtype='COLOR', default=vmv.consts.Color.VERY_WHITE, min=0.0, max=1.0,
     description='The first alternating color of the morphology')
 
 # The alternative color used to color every second object in the morphology
 bpy.types.Scene.VMV_MorphologyColor2 = bpy.props.FloatVectorProperty(
-    name='Color 2',
+    name='',
     subtype='COLOR', default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
     description='The second alternating color of the morphology')
 

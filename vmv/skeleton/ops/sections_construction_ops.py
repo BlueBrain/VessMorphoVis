@@ -67,7 +67,23 @@ def get_color_coded_section_poly_line_with_alternating_colors(section):
                for sample in section.samples]
 
     # Return the constructed poly-line 
-    return vmv.skeleton.PolyLine(samples=samples, color_index=section.index % 2)     
+    return vmv.skeleton.PolyLine(samples=samples, color_index=section.index % 2)
+
+
+####################################################################################################
+# @get_color_coded_section_poly_line_for_short_sections
+####################################################################################################
+def get_color_coded_section_poly_line_for_short_sections(section):
+
+    # Add the samples
+    samples = [[(sample.point[0], sample.point[1], sample.point[2], 1), sample.radius]
+               for sample in section.samples]
+
+    # Return the constructed poly-line
+    if vmv.is_short_section(section=section):
+        return vmv.skeleton.PolyLine(samples=samples, color_index=1)
+    else:
+        return vmv.skeleton.PolyLine(samples=samples, color_index=0)
 
 
 ####################################################################################################

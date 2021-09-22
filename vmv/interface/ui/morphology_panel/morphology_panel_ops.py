@@ -171,13 +171,45 @@ def add_alternating_colors_option(layout,
     """
 
     # Color 1
-    color_1_row = layout.row()
-    color_1_row.prop(scene, 'VMV_MorphologyColor1')
+    row = layout.row()
+    row.label(text='Color 1')
+    row.prop(scene, 'VMV_MorphologyColor1')
     options.morphology.color = scene.VMV_MorphologyColor1
 
     # Color 2
-    color_2_row = layout.row()
-    color_2_row.prop(scene, 'VMV_MorphologyColor2')
+    row = layout.row()
+    row.label(text='Color 2')
+    row.prop(scene, 'VMV_MorphologyColor2')
+    options.morphology.alternating_color = scene.VMV_MorphologyColor2
+
+
+####################################################################################################
+# @add_short_sections_colors_option
+####################################################################################################
+def add_short_sections_colors_option(layout,
+                                     scene,
+                                     options):
+    """Adds alternating coloring options, simply two colors where we can see different patterns in
+    the morphology to visualize the short sections.
+
+    :param layout:
+        Panel layout.
+    :param scene:
+        Context scene.
+    :param options:
+        System options.
+    """
+
+    # Color 1
+    row = layout.row()
+    row.label(text='Normal Section')
+    row.prop(scene, 'VMV_MorphologyColor1')
+    options.morphology.color = scene.VMV_MorphologyColor1
+
+    # Color 2
+    row = layout.row()
+    row.label(text='Short Section')
+    row.prop(scene, 'VMV_MorphologyColor2')
     options.morphology.alternating_color = scene.VMV_MorphologyColor2
 
 
@@ -207,6 +239,9 @@ def add_per_section_color_coding_options(layout,
     # Alternating colors
     elif scene.VMV_PerSectionColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
         add_alternating_colors_option(layout=layout, scene=scene, options=options)
+
+    elif scene.VMV_PerSectionColorCodingBasis == vmv.enums.ColorCoding.SHORT_SECTIONS:
+        add_short_sections_colors_option(layout=layout, scene=scene, options=options)
 
     # Using a colormap
     else:

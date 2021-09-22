@@ -81,7 +81,21 @@ class SectionsBuilder(MorphologyBuilder):
             for section in self.morphology.sections_list]
         
         # Return the list 
-        return poly_lines_data 
+        return poly_lines_data
+
+    ################################################################################################
+    # @get_poly_lines_data_colored_for_short_sections
+    ################################################################################################
+    def get_poly_lines_data_colored_for_short_sections(self):
+
+        # Get the poly-line data of each section
+        poly_lines_data = [
+            vmv.skeleton.ops.get_color_coded_section_poly_line_for_short_sections(
+                section=section)
+            for section in self.morphology.sections_list]
+
+        # Return the list
+        return poly_lines_data
 
     ################################################################################################
     # @get_poly_lines_data_colored_based_on_radius
@@ -266,6 +280,8 @@ class SectionsBuilder(MorphologyBuilder):
             return self.get_poly_lines_data_colored_with_single_color()   
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
             return self.get_poly_lines_data_colored_with_alternating_colors()
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.SHORT_SECTIONS:
+            return self.get_poly_lines_data_colored_for_short_sections()
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_RADIUS:
             return self.get_poly_lines_data_colored_based_on_radius() 
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_LENGTH:

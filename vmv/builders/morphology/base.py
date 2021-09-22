@@ -123,6 +123,9 @@ class MorphologyBuilder:
             elif self.options.morphology.color_coding == vmv.enums.ColorCoding.ALTERNATING_COLORS:
                 return [self.options.morphology.color, self.options.morphology.alternating_color]
 
+            elif self.options.morphology.color_coding == vmv.enums.ColorCoding.SHORT_SECTIONS:
+                return [self.options.morphology.color, self.options.morphology.alternating_color]
+
             # Otherwise, it is a color-map
             else:
                 return vmv.utilities.create_color_map_from_color_list(

@@ -114,6 +114,11 @@ class ColorCoding:
          'Alternating Colors',
          'Use alternating sections colors to visualize certain patterns in the morphology'),
 
+        # Short sections
+        (SHORT_SECTIONS,
+         'Short Sections',
+         'Visualize the short sections in the morphology for validation'),
+
         # Length
         (BY_LENGTH,
          'Section Length',
