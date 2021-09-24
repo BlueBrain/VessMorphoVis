@@ -100,8 +100,6 @@ class VMV_MorphologyPanel(bpy.types.Panel):
 
             vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
                 Vector((color[0], color[1], color[2], 1.0))
-        else:
-            pass
 
     ################################################################################################
     # @update_ui_colors

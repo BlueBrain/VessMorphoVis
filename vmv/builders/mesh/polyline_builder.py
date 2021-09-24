@@ -31,12 +31,13 @@ import vmv.mesh
 import vmv.skeleton
 import vmv.utilities
 import vmv.scene
+from .base import MeshBuilder
 
 
 ####################################################################################################
 # @PolylineBuilder
 ####################################################################################################
-class PolylineBuilder:
+class PolylineBuilder(MeshBuilder):
     """Mesh builder that creates piecewise watertight meshes for the different sections in the
     morphology."""
 
@@ -54,103 +55,14 @@ class PolylineBuilder:
             Loaded options from VessMorphoVis.
         """
 
-        # Morphology
-        self.morphology = morphology
-
-        # Loaded options from VessMorphoVis
-        self.options = options
-
-        # A list of the colors/materials of the mesh
-        self.materials = None
-
-        # Meta object skeleton, used to build the skeleton of the morphology
-        self.meta_skeleton = None
-
-        # Meta object mesh, used to build the mesh of the morphology
-        self.mesh = None
+        # Base
+        MeshBuilder.__init__(self, morphology=morphology, options=options)
 
         # Final mesh center
         self.center = Vector((0.0, 0.0, 0.0))
 
         # Create the skeleton materials during the initialization
         self.create_skeleton_materials()
-
-    ################################################################################################
-    # @create_materials
-    ################################################################################################
-    def create_materials(self,
-                         name,
-                         color):
-        """Creates just two materials of the mesh on the input parameters of the user.
-
-        :param name:
-            The name of the material/color.
-        :param color:
-            The code of the given colors.
-        :return:
-            A list of two elements (different or same colors) where we can apply later to the drawn
-            sections or segments.
-        """
-
-        # A list of the created materials
-        materials_list = list()
-
-        for i in range(2):
-
-            # Create the material
-            material = vmv.shading.create_material(
-                name='%s_color_%d' % (name, i), color=color,
-                material_type=self.options.mesh.material)
-
-            # Append the material to the materials list
-            materials_list.append(material)
-
-        # Return the list
-        return materials_list
-
-    ################################################################################################
-    # @create_skeleton_materials
-    ################################################################################################
-    def create_skeleton_materials(self):
-        """Create the materials of the skeleton.
-        """
-
-        # Clear the material
-        for material in bpy.data.materials:
-            if 'mesh_material' in material.name:
-                material.user_clear()
-                bpy.data.materials.remove(material)
-
-        # Create the material
-        self.materials = self.create_materials(
-            name='mesh_material', color=self.options.mesh.color)
-
-        # Create an illumination specific for the given material
-        # vmv.shading.create_material_specific_illumination(self.options.morphology.material)
-
-    ################################################################################################
-    # @assign_material_to_mesh
-    ################################################################################################
-    def assign_material_to_mesh(self):
-
-        # Deselect all objects
-        vmv.scene.ops.deselect_all()
-
-        # Activate the mesh object
-        bpy.context.view_layer.objects.active = self.mesh
-
-        # Adjusting the texture space, before assigning the material
-        bpy.context.object.data.use_auto_texspace = False
-        bpy.context.object.data.texspace_size[0] = 5
-        bpy.context.object.data.texspace_size[1] = 5
-        bpy.context.object.data.texspace_size[2] = 5
-
-        # Assign the material to the selected mesh
-        vmv.shading.set_material_to_object(self.mesh, self.materials[0])
-
-        # Activate the mesh object
-        vmv.scene.select_objects([self.mesh])
-        bpy.context.view_layer.objects.active = self.mesh
 
     ################################################################################################
     # @build

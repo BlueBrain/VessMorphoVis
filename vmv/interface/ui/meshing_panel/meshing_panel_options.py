@@ -22,52 +22,9 @@ import bpy
 import vmv.utilities
 
 # Meshing parameters ###############################################################################
-# Meshing technique
-bpy.types.Scene.VMV_MeshingTechnique = bpy.props.EnumProperty(
-    items=vmv.enums.Meshing.Technique.MESHING_TECHNIQUES_ITEMS,
-    name='Technique',
-    default=vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT)
 
-# Mesh tessellation flag
-bpy.types.Scene.VMV_TessellateMesh = bpy.props.BoolProperty(
-    name='Tessellation',
-    description='Tessellate the reconstructed mesh to reduce the geometry complexity',
-    default=False)
 
-# Mesh tessellation level
-bpy.types.Scene.VMV_MeshTessellationRatio = bpy.props.FloatProperty(
-    name='Ratio',
-    description='Mesh tessellation ratio (between 0.01 and 1.0)',
-    default=1.0, min=0.01, max=1.0)
 
-# Auto-detected meta balls resolution
-bpy.types.Scene.VMV_MetaBallAutoResolution = bpy.props.BoolProperty(
-    name='Auto',
-    description='Detects the resolution of the meta balls object based on the radius of the '
-                'smallest sample in the morphology. You can disable this option and set a '
-                'user-specific resolution below',
-    default=True)
-
-# Mesh color
-bpy.types.Scene.VMV_MetaBallResolution = bpy.props.FloatProperty(
-    name='',
-    default=vmv.consts.Meshing.META_RESOLUTION,
-    min=vmv.consts.Meshing.MIN_META_BALL_RESOLUTION,
-    max=vmv.consts.Meshing.MAX_META_BALL_RESOLUTION,
-    description='The resolution of the meta object')
-
-# Color parameters #################################################################################
-# Mesh material
-bpy.types.Scene.VMV_MeshShader = bpy.props.EnumProperty(
-    items=vmv.enums.Shader.SHADER_ITEMS,
-    name='Shader',
-    default=vmv.enums.Shader.LAMBERT_WARD)
-
-# Mesh color
-bpy.types.Scene.VMV_MeshColor = bpy.props.FloatVectorProperty(
-    name='Mesh Color', subtype='COLOR',
-    default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
-    description='The color of the reconstructed mesh surface')
 
 # Rendering parameters #############################################################################
 # Rendering resolution

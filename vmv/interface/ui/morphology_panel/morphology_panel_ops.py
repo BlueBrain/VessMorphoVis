@@ -302,8 +302,8 @@ def add_color_options(layout,
 
     # Morphology material
     morphology_material_row = layout.row()
-    morphology_material_row.label(text='Shading')
     morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
+    morphology_material_row.label(text='Shading')
     options.morphology.material = scene.VMV_MorphologyMaterial
 
     # Per-section color coding

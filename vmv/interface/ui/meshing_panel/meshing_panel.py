@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -17,10 +17,10 @@
 
 # System imports
 import time
-import copy
 
 # Blender imports
 import bpy
+from mathutils import Vector
 
 # Internal imports
 import vmv.bbox
@@ -32,6 +32,7 @@ import vmv.skeleton
 import vmv.interface
 import vmv.utilities
 import vmv.rendering
+import vmv.shading
 from .meshing_panel_ops import *
 
 
@@ -50,6 +51,105 @@ class VMV_MeshingPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_category = 'VessMorphoVis'
     bl_options = {'DEFAULT_CLOSED'}
+
+    ################################################################################################
+    # @update_mesh_material
+    ################################################################################################
+    def update_mesh_material(self,
+                             context):
+
+        # If the mesh object is not None
+        if vmv.interface.MeshObject is not None:
+
+            # Create the materials
+            material = vmv.shading.create_material(
+                name='mesh', color=context.scene.VMV_MeshColor,
+                material_type=context.scene.VMV_MeshShader)
+
+            vmv.interface.Options.mesh.material = context.scene.VMV_MeshShader
+
+            vmv.interface.MeshObject.active_material = material
+
+            # Create an illumination specific for the given material
+            vmv.shading.create_material_specific_illumination(
+                material_type=material, camera_view=self.options.mesh.camera_view)
+
+        pass
+
+    ################################################################################################
+    # @update_mesh_color
+    ################################################################################################
+    def update_mesh_color(self,
+                          context):
+        """Updates the mesh color on-the-fly once the color is changed from the palette.
+
+        :param context:
+            Blender context.
+        """
+
+        # If the mesh object is not None
+        if vmv.interface.MeshObject is not None:
+
+            # Get the color from the palette
+            color = context.scene.VMV_MeshColor
+
+            # Update the mesh color
+            vmv.interface.MeshObject.active_material.diffuse_color = \
+                Vector((color[0], color[1], color[2], 1.0))
+
+    ################################################################################################
+    # Panel options
+    ################################################################################################
+    # Meshing technique
+    bpy.types.Scene.VMV_MeshingTechnique = bpy.props.EnumProperty(
+        items=vmv.enums.Meshing.Technique.MESHING_TECHNIQUES_ITEMS,
+        name='Technique',
+        default=vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT)
+
+    # Auto-detected meta balls resolution
+    bpy.types.Scene.VMV_MetaBallAutoResolution = bpy.props.BoolProperty(
+        name='Auto',
+        description='Detects the resolution of the meta balls object based on the radius of the '
+                    'smallest sample in the morphology. You can disable this option and set a '
+                    'user-specific resolution below.',
+        default=True)
+
+    # Mesh color
+    bpy.types.Scene.VMV_MetaBallResolution = bpy.props.FloatProperty(
+        name='',
+        default=vmv.consts.Meshing.META_RESOLUTION,
+        min=vmv.consts.Meshing.MIN_META_BALL_RESOLUTION,
+        max=vmv.consts.Meshing.MAX_META_BALL_RESOLUTION,
+        description='The resolution of the meta object. Note that if this value is smaller than '
+                    '0.01, it might take very long time to mesh the skeleton. It also depends on '
+                    'the number of vertices or samples in the morphology.')
+
+    # Mesh tessellation flag
+    bpy.types.Scene.VMV_TessellateMesh = bpy.props.BoolProperty(
+        name='Tessellation',
+        description='Tessellate the reconstructed mesh to reduce the geometry complexity.',
+        default=False)
+
+    # Mesh tessellation level
+    bpy.types.Scene.VMV_MeshTessellationRatio = bpy.props.FloatProperty(
+        name='Ratio',
+        description='Mesh tessellation ratio (between 0.01 and 1.0)',
+        default=1.0, min=0.01, max=1.0)
+
+    # Color parameters #############################################################################
+    # Mesh material
+    bpy.types.Scene.VMV_MeshShader = bpy.props.EnumProperty(
+        items=vmv.enums.Shader.SHADER_ITEMS,
+        name='Shader',
+        default=vmv.enums.Shader.LAMBERT_WARD,
+        update=update_mesh_material)
+
+    # Mesh color
+    bpy.types.Scene.VMV_MeshColor = bpy.props.FloatVectorProperty(
+        name='Mesh Color', subtype='COLOR',
+        default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
+        description='The color of the reconstructed mesh surface',
+        update=update_mesh_color)
 
     ################################################################################################
     # @draw
@@ -126,7 +226,7 @@ class VMV_ReconstructMesh(bpy.types.Operator):
                 morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
 
         # Build the vascular mesh
-        builder.build_mesh()
+        vmv.interface.MeshObject = builder.build_mesh()
 
         # Update the interface with some parameters
         context.scene.VMV_MetaBallResolution = vmv.interface.Options.mesh.meta_resolution
@@ -162,6 +262,10 @@ class VMV_RenderMeshImage(bpy.types.Operator):
         :return:
             {'FINISHED'}
         """
+
+        if not vmv.scene.is_there_any_mesh_in_scene():
+            self.report({'WARNING'}, 'The scene does not contain any mesh to render!')
+            return {'FINISHED'}
 
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Mesh ... Wait Please')
@@ -282,6 +386,11 @@ class VMV_RenderMesh360(bpy.types.Operator):
             Panel context.
         """
 
+        # Make sure that the scene contains any mesh to be rendered
+        if not vmv.scene.is_there_any_mesh_in_scene():
+            self.report({'WARNING'}, 'The scene does not contain any mesh to render!')
+            return {'FINISHED'}
+
         # Verify the presence of the sequences directory before rendering
         vmv.interface.verify_sequences_directory(panel=self)
 
@@ -354,17 +463,26 @@ class VMV_ExportMesh(bpy.types.Operator):
             {'FINISHED'}
         """
 
+        # Make sure that the scene contains any mesh to export
+        if not vmv.scene.is_there_any_mesh_in_scene():
+            self.report({'WARNING'}, 'The scene does not contain any mesh to export!')
+            return {'FINISHED'}
+
         # Verify the presence of the meshes directory before exporting
         vmv.interface.verify_meshes_directory(panel=self)
 
-        # Select the mesh object to be exported
+        # Select the mesh object that corresponding to the morphology to be exported
         mesh_object = vmv.scene.select_object_containing_string(vmv.consts.Meshing.MESH_SUFFIX)
 
+        # Make sure that the mesh object is not None
+        if mesh_object is None:
+            self.report({'WARNING'}, 'The scene does not contain any mesh to export!')
+            return {'FINISHED'}
+
         # Export the mesh
-        vmv.file.export_mesh_object(mesh_object=mesh_object,
-                                    output_directory=vmv.interface.Options.io.meshes_directory,
-                                    file_name=mesh_object.name,
-                                    file_format=context.scene.VMV_ExportedMeshFormat)
+        vmv.file.export_mesh_object(
+            mesh_object=mesh_object, output_directory=vmv.interface.Options.io.meshes_directory,
+            file_name=mesh_object.name, file_format=context.scene.VMV_ExportedMeshFormat)
 
         # Done
         return {'FINISHED'}

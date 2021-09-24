@@ -28,6 +28,16 @@ import vmv.mesh
 
 
 ####################################################################################################
+# @update_scene
+####################################################################################################
+def update_scene():
+    """Updates the scene and the 3d view after any transformation.
+    """
+
+    bpy.context.view_layer.update()
+
+
+####################################################################################################
 # @view_axis
 ####################################################################################################
 def view_axis(axis='TOP'):
@@ -118,6 +128,7 @@ def set_transparent_background():
 def set_colors_to_raw():
     """Use RAW colors with FLAT shading to lighten the results
     """
+
     bpy.context.scene.view_settings.view_transform = 'Raw'
 
 
@@ -127,6 +138,7 @@ def set_colors_to_raw():
 def set_colors_to_filimc():
     """Use filmic mode for rendering.
     """
+
     bpy.context.scene.view_settings.view_transform = 'Filmic'
 
 
@@ -1394,7 +1406,47 @@ def get_object_by_name(object_name):
         The name of object to be returned.
     """
 
-    # Set the '.select' flag of the object to True
+    # For every object in the scene, check its name
     for scene_object in bpy.context.scene.objects:
         if scene_object.name == object_name:
             return scene_object
+
+    # If there is no object defined by the name , return None
+    return None
+
+
+####################################################################################################
+# @is_there_any_mesh_in_scene
+####################################################################################################
+def is_there_any_mesh_in_scene():
+    """Detects if the scene has any mesh or not.
+
+    :return:
+        True if there is at least a single mesh in the scene, and False otherwise.
+    """
+
+    # For every object in the scene, detect if this object is a mesh or not
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.type == 'MESH':
+            return True
+    return False
+
+
+####################################################################################################
+# @is_there_any_morphology_in_scene
+####################################################################################################
+def is_there_any_morphology_in_scene():
+    """Detects if the scene has any morphology or not.
+
+    :return:
+        True if there is at least a single morphology or polyline in the scene, and False otherwise.
+    """
+
+    # For every object in the scene, detect if this object is a polyline or not
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.type == 'CURVE':
+            return True
+    return False
+
+
+

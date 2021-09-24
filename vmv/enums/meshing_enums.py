@@ -69,7 +69,7 @@ class Meshing:
         # Meshing techniques items for the list
         MESHING_TECHNIQUES_ITEMS = [
             (PIECEWISE_WATERTIGHT,
-             'Poly-lines ',
+             'Polylines (Sections)',
              'Piecewise watertight meshing, where a group of connected segments will be created '
              'as a single watertight mesh, but the whole mesh will not be watertight. '
              'This approach is relatively fast for large scale morphologies and us used to create '

@@ -15,13 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import sys
-import copy
-
-# Blender imports
-import bpy
-
 # Internal imports
 import vmv.geometry
 import vmv.mesh

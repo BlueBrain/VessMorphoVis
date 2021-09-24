@@ -44,14 +44,22 @@ def add_meshing_options(layout,
     # Meta-balls-specific algorithm options
     if scene.VMV_MeshingTechnique == vmv.enums.Meshing.Technique.META_BALLS:
 
+        row = layout.row()
+        row.label(text='Resolution')
+
         # Auto meta-ball resolution
-        layout.row().prop(scene, 'VMV_MetaBallAutoResolution', icon='OUTLINER_OB_EMPTY')
+        row.prop(scene, 'VMV_MetaBallAutoResolution', icon='OUTLINER_OB_EMPTY')
         options.mesh.meta_auto_resolution = scene.VMV_MetaBallAutoResolution
 
+        resolution_row = row.row()
+        resolution_row.prop(scene, 'VMV_MetaBallResolution')
+        options.mesh.meta_resolution = scene.VMV_MetaBallResolution
+
         # Meta-ball resolution, if the auto-resolution option is not checked
-        if not scene.VMV_MetaBallAutoResolution:
-            layout.row().prop(scene, 'VMV_MetaBallResolution', icon='OUTLINER_OB_EMPTY')
-            options.mesh.meta_resolution = scene.VMV_MetaBallResolution
+        if scene.VMV_MetaBallAutoResolution:
+            resolution_row.enabled = False
+        else:
+            resolution_row.enabled = True
 
     # Mesh tessellation
     row = layout.row()
