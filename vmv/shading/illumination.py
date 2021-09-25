@@ -29,9 +29,9 @@ import vmv.utilities
 
 
 ####################################################################################################
-# @create_lambert_ward_illumination
+# @create_default_illumination
 ####################################################################################################
-def create_lambert_ward_illumination():
+def create_default_illumination():
     """Creates an illumination specific for the default shader.
     """
 
@@ -188,7 +188,7 @@ def create_material_specific_illumination(material_type):
 
     # Lambert Ward
     if material_type == vmv.enums.Shader.LAMBERT_WARD:
-        return create_lambert_ward_illumination()
+        return create_default_illumination()
 
     # Glossy bumpy
     elif material_type == vmv.enums.Shader.GLOSSY_BUMPY:
@@ -203,13 +203,13 @@ def create_material_specific_illumination(material_type):
 
     # Default, just use the lambert shader illumination
     else:
-        return create_lambert_ward_illumination()
+        return create_default_illumination()
 
 
 ####################################################################################################
-# @create_lambert_ward_illumination
+# @create_default_illumination
 ####################################################################################################
-def create_lambert_ward_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
+def create_default_illumination(camera_view=vmv.enums.Rendering.View.FRONT):
     """
     """
 
@@ -406,7 +406,7 @@ def create_material_specific_illumination(material_type,
 
     # Lambert Ward
     if material_type == vmv.enums.Shader.LAMBERT_WARD:
-        return create_lambert_ward_illumination(camera_view=camera_view)
+        return create_default_illumination(camera_view=camera_view)
 
     # Lambert Ward
     elif material_type == vmv.enums.Shader.PLASTIC:
@@ -422,4 +422,4 @@ def create_material_specific_illumination(material_type,
 
     # Default, just use the lambert shader illumination
     else:
-        return create_lambert_ward_illumination(camera_view=camera_view)
+        return create_default_illumination(camera_view=camera_view)

@@ -300,12 +300,6 @@ def add_color_options(layout,
     arbors_colors_row = layout.row()
     arbors_colors_row.label(text='Morphology Colors', icon='COLOR')
 
-    # Morphology material
-    morphology_material_row = layout.row()
-    morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
-    morphology_material_row.label(text='Shading')
-    options.morphology.material = scene.VMV_MorphologyMaterial
-
     # Per-section color coding
     color_coding_row = layout.row()
 
@@ -325,6 +319,11 @@ def add_color_options(layout,
     else:
         add_default_coloring_option(layout=layout, scene=scene, options=options)
 
+    # Morphology material
+    morphology_material_row = layout.row()
+    morphology_material_row.label(text='Shading')
+    morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
+    options.morphology.material = scene.VMV_MorphologyMaterial
 
 ####################################################################################################
 # @add_radii_options

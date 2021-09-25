@@ -150,7 +150,7 @@ class Camera:
         bpy.data.scenes['Scene'].render.filepath = '%s.png' % image_name
 
         # Render the image and ignore Blender verbosity
-        bpy.ops.render.render(write_still=True)
+        bpy.ops.render.render(use_viewport = True, write_still=True)
 
     ################################################################################################
     # @get_camera_positions
@@ -483,12 +483,6 @@ class Camera:
         if bounding_box is None:
             bounding_box = vmv.bbox.compute_scene_bounding_box()
 
-        # For perspective rendering add the background plane
-        background_plane = None
-        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
-            background_plane = vmv.rendering.add_background_plane(
-                bounding_box=bounding_box, camera_view=camera_view)
-
         # Setup the camera
         self.setup_camera_for_scene(bounding_box, camera_view, camera_projection)
 
@@ -529,6 +523,12 @@ class Camera:
         # Deselect all the object in the scene
         vmv.scene.ops.deselect_all()
 
+        # For perspective rendering add the background plane
+        background_plane = None
+        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
+            background_plane = vmv.rendering.add_background_plane(
+                bounding_box=bounding_box, camera_view=camera_view)
+
         # Render the image
         self.render_image(image_name=image_name)
 
@@ -537,8 +537,8 @@ class Camera:
             vmv.scene.ops.delete_object_in_scene(self.camera)
 
         # Delete the background plane
-        #if background_plane is not None:
-        #    vmv.scene.delete_object_in_scene(background_plane)
+        if background_plane is not None:
+            vmv.scene.delete_object_in_scene(background_plane)
 
     ################################################################################################
     # @render_scene_bounding_box

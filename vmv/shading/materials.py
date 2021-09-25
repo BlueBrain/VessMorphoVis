@@ -35,7 +35,7 @@ import vmv.utilities
 # @import_shader
 ####################################################################################################
 def import_shader(shader_name):
-    """Import a shader from  the VessMorphoVis shading library.
+    """Imports a shader from the VessMorphoVis shading library.
 
     :param shader_name:
         The name of the shader file in the library.
@@ -347,8 +347,8 @@ def create_transparent_material(name,
 # @create_toon_material
 ####################################################################################################
 def create_toon_material(name,
-                            color=vmv.consts.Color.WHITE):
-    """Creates a carton shader.
+                         color=vmv.consts.Color.WHITE):
+    """Creates a cartoon shader.
 
     :param name:
         Material name
@@ -378,12 +378,12 @@ def create_toon_material(name,
         material_reference.metallic = 0.0
 
         # Flat shading
+        vmv.scene.set_scene_transparency(transparent=False)
         bpy.context.scene.display.shading.light = 'MATCAP'
         bpy.context.scene.display.shading.studio_light = 'toon.exr'
-        vmv.scene.set_scene_transparency(transparent=False)
 
         # Switch the view port shading
-        vmv.scene.switch_scene_shading('SOLID')
+        vmv.scene.switch_scene_shading('RENDERED')
 
     else:
 

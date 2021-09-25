@@ -300,23 +300,21 @@ class VMV_MorphologyPanel(bpy.types.Panel):
             # Due to a bug in the workbench renderer in Blender, we will allow the
             # perspective projection for all the materials that use cycles and have high number of
             # samples per pixel, mainly the artistic rendering.
-            if vmv.Options.morphology.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
+            # if vmv.Options.morphology.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
 
-                # Add the projection option
-                projection_row = self.layout.column()
-                projection_row.prop(context.scene, 'VMV_MorphologyCameraProjection', icon='AXIS_FRONT')
-                vmv.Options.morphology.camera_projection = \
-                    context.scene.VMV_MorphologyCameraProjection
+            # Add the projection option
+            projection_row = self.layout.column()
+            projection_row.prop(context.scene, 'VMV_MorphologyCameraProjection', icon='AXIS_FRONT')
+            vmv.Options.morphology.camera_projection = context.scene.VMV_MorphologyCameraProjection
 
             # Set it by default to ORTHOGRAPHIC
-            else:
-                vmv.Options.morphology.camera_projection = \
-                    vmv.enums.Rendering.Projection.ORTHOGRAPHIC
+            # else:
+            # vmv.Options.morphology.camera_projection = vmv.enums.Rendering.Projection.ORTHOGRAPHIC
 
-                # Scale bar
-                scale_bar_row = layout.row()
-                scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
-                vmv.interface.Options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
+            # Scale bar
+            scale_bar_row = layout.row()
+            scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
+            vmv.interface.Options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
 
         # Set it by default to ORTHOGRAPHIC
         else:

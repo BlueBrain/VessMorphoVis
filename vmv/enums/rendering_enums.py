@@ -108,10 +108,14 @@ class Rendering:
 
         # Projection items to be added to the GUI
         PROJECTION_ITEMS = [
+
+            # Orthographic projection
             (ORTHOGRAPHIC,
              'Orthographic',
              'Render an orthographic projection of the reconstruction. '
              'This type of rendering is accurate and crucial for scientific images'),
+
+            # Perspective projection
             (PERSPECTIVE,
              'Perspective',
              'Renders a perspective projection of the reconstruction.'
