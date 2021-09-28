@@ -433,22 +433,19 @@ class VMV_ReconstructMorphology(bpy.types.Operator):
             print('ERROR: Morphology is not loaded')
 
         # Construct the skeleton builder
-        if vmv.interface.Options.morphology.builder == \
-                vmv.enums.Morphology.Builder.SEGMENTS:
+        if vmv.interface.Options.morphology.builder == vmv.enums.Morphology.Builder.SEGMENTS:
             self.morphology_builder = vmv.builders.SegmentsBuilder(
                 morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
 
         # Disconnected sections builder
-        elif vmv.interface.Options.morphology.builder == \
-                vmv.enums.Morphology.Builder.SECTIONS:
+        elif vmv.interface.Options.morphology.builder == vmv.enums.Morphology.Builder.SECTIONS:
 
             self.morphology_builder = vmv.builders.SectionsBuilder(
                 morphology=vmv.interface.MorphologyObject,
                 options=vmv.interface.Options)
 
         # Samples builder
-        elif vmv.interface.Options.morphology.builder == \
-                vmv.enums.Morphology.Builder.SAMPLES:
+        elif vmv.interface.Options.morphology.builder == vmv.enums.Morphology.Builder.SAMPLES:
 
             self.morphology_builder = vmv.builders.SamplesBuilder(
                 morphology=vmv.interface.MorphologyObject,

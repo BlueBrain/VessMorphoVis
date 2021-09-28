@@ -72,7 +72,7 @@ class VMV_RenderMorphologyImage(bpy.types.Operator):
         self.report({'INFO'}, 'Rendering Morphology ... Wait Please')
 
         # Compute the bounding box for the available meshes only
-        bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
+        bounding_box = vmv.bbox.compute_scene_bounding_box()
 
         # Image name
         image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.Options.morphology.label,
@@ -248,7 +248,7 @@ class VMV_RenderMorphology360(bpy.types.Operator):
                 vmv.interface.Options.io.sequences_directory)
 
         # A reference to the bounding box that will be used for the rendering
-        rendering_bbox = vmv.bbox.compute_scene_bounding_box_for_curves()
+        rendering_bbox =vmv.bbox.compute_scene_bounding_box()
 
         # Compute a 360 bounding box to fit the arbors
         self.bounding_box_360 = vmv.bbox.compute_360_bounding_box(
@@ -324,9 +324,6 @@ class VMV_RenderSimulation(bpy.types.Operator):
         :param event:
             A given event for the panel.
         """
-
-        # Get a reference to the scene
-        scene = context.scene
 
         # Cancelling event, if using right click or exceeding the time limit of the simulation
         if event.type in {'ESC'} or self.timer_limits > bpy.context.scene.VMV_LastSimulationFrame:
@@ -419,7 +416,7 @@ class VMV_RenderSimulation(bpy.types.Operator):
                 vmv.interface.Options.io.sequences_directory)
 
         # A reference to the bounding box that will be used for the rendering
-        self.bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
+        self.bounding_box = vmv.bbox.compute_scene_bounding_box()
 
         # Stretch the bounding box by few microns
         self.bounding_box.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
