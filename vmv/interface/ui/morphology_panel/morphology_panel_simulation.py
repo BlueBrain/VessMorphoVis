@@ -101,7 +101,7 @@ class VMV_LoadSimulation(bpy.types.Operator):
             bpy.context.scene.frame_current = self.frame
 
             # Load the simulation data on a per-frame basis
-            self.morphology_builder.load_radius_simulation_data_at_step(self.frame)
+            self.morphology_builder.load_radius_simulation_data_at_step(self.frame, context=context)
 
             # Update the progress bar
             context.scene.VMV_SimulationProgressBar = \

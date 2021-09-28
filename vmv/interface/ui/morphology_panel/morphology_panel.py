@@ -18,6 +18,7 @@
 # System import
 import time
 import math
+import copy
 
 # Blender imports
 import bpy
@@ -27,6 +28,7 @@ from mathutils import Vector
 import vmv
 import vmv.bbox
 import vmv.enums
+import vmv.consts
 import vmv.file
 import vmv.builders
 import vmv.skeleton
@@ -55,11 +57,65 @@ class VMV_MorphologyPanel(bpy.types.Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     ################################################################################################
+    # @update_morphology_material
+    ################################################################################################
+    def update_morphology_material(self,
+                                   context):
+        """Updates the shading and materials assigned to the morphology on-the-fly.
+
+        :param context:
+            Blender context.
+        """
+
+        # Make sure that the morphology is loaded and drawn in the scene
+        if vmv.interface.is_vascular_morphology_in_scene():
+
+            # Detect how many material slots the morphology has
+            slots = vmv.interface.MorphologyPolylineObject.material_slots
+
+            # Single material
+            if len(slots) == 1:
+                color_map = [context.scene.VMV_MorphologyColor]
+
+            # Alternating or short sections
+            elif len(slots) == 2:
+                color_map = [context.scene.VMV_MorphologyColor1,
+                             context.scene.VMV_MorphologyColor2]
+
+            # Full scale color-map
+            else:
+                color_map = vmv.utilities.create_color_map_from_color_list(
+                    vmv.interface.Options.morphology.color_map_colors,
+                    number_colors=vmv.interface.Options.morphology.color_map_resolution)
+
+            # Keep a list of the morphology materials by name
+            morphology_materials_names = list()
+            for material in vmv.interface.MorphologyPolylineObject.data.materials:
+                morphology_materials_names.append(material.name)
+
+            # Create the new materials and assign them to the morphology
+            for i in range(len(color_map)):
+
+                # Create the material
+                material = vmv.shading.create_material(
+                    name='%s_%d_%s' % (vmv.interface.MorphologyObject.name, i,
+                                       vmv.utilities.get_random_string(6)),
+                    color=color_map[i],
+                    material_type=context.scene.VMV_MorphologyMaterial)
+
+                # Update the material with the new one
+                vmv.interface.MorphologyPolylineObject.data.materials[i] = material
+
+            # Clear the old materials, to avoid any memory explosion
+            for material_name in morphology_materials_names:
+                vmv.scene.clear_material_with_name(name=material_name)
+
+    ################################################################################################
     # @update_time_frame
     ################################################################################################
     def update_time_frame(self,
                           context):
-        """Updates the time frame and the corresponding text box for a given time step
+        """Updates the time frame and the corresponding text box for a given time step.
 
         :param context:
             Blender context.
@@ -94,12 +150,59 @@ class VMV_MorphologyPanel(bpy.types.Panel):
             Blender context.
         """
 
-        # TODO: Verify if the morphology is deleted or exists in the scene, using its name!
-        if vmv.interface.MorphologyPolylineObject is not None:
-            color = context.scene.VMV_MorphologyColor
+        # Make sure that the morphology is loaded and drawn in the scene
+        if vmv.interface.is_vascular_morphology_in_scene():
 
-            vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
-                Vector((color[0], color[1], color[2], 1.0))
+            # No materials, return
+            if len(vmv.interface.MorphologyPolylineObject.data.materials) == 0:
+                return
+
+            # Just a single material
+            elif len(vmv.interface.MorphologyPolylineObject.data.materials) == 1:
+
+                # Update the active material
+                vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
+                    Vector((context.scene.VMV_MorphologyColor[0],
+                            context.scene.VMV_MorphologyColor[1],
+                            context.scene.VMV_MorphologyColor[2],
+                            1.0))
+            # Make sure that the morphology has two materials
+            elif len(vmv.interface.MorphologyPolylineObject.data.materials) == 2:
+                # Update material 1
+                vmv.interface.MorphologyPolylineObject.data.materials[0].diffuse_color = \
+                    Vector((context.scene.VMV_MorphologyColor1[0],
+                            context.scene.VMV_MorphologyColor1[1],
+                            context.scene.VMV_MorphologyColor1[2],
+                            1.0))
+
+                # Update material 2
+                vmv.interface.MorphologyPolylineObject.data.materials[1].diffuse_color = \
+                    Vector((context.scene.VMV_MorphologyColor2[0],
+                            context.scene.VMV_MorphologyColor2[1],
+                            context.scene.VMV_MorphologyColor2[2],
+                            1.0))
+            # Color mapping
+            else:
+
+                # Interpolate
+                colors = vmv.utilities.create_color_map_from_color_list(
+                    vmv.interface.Options.morphology.color_map_colors,
+                    number_colors=vmv.interface.Options.morphology.color_map_resolution)
+
+                for i in range(len(vmv.interface.MorphologyPolylineObject.material_slots)):
+                    vmv.interface.MorphologyPolylineObject.active_material_index = i
+
+                    if bpy.context.scene.render.engine == 'CYCLES':
+                        material_nodes = vmv.interface.MorphologyPolylineObject.active_material.node_tree
+                        color_1 = material_nodes.nodes['ColorRamp'].color_ramp.elements[0].color
+                        color_2 = material_nodes.nodes['ColorRamp'].color_ramp.elements[1].color
+
+                        for j in range(3):
+                            color_1[j] = colors[i][j]
+                            color_2[j] = 0.5 * colors[i][j]
+                    else:
+                        vmv.interface.MorphologyPolylineObject.active_material.diffuse_color = \
+                            Vector((colors[i][0], colors[i][1], colors[i][2], 1.0))
 
     ################################################################################################
     # @update_ui_colors
@@ -126,7 +229,8 @@ class VMV_MorphologyPanel(bpy.types.Panel):
         for color_index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
             setattr(context.scene, 'VMV_Color%d' % color_index, colors[color_index])
 
-        if vmv.interface.MorphologyPolylineObject is not None:
+        # Make sure that the morphology is already in the scene
+        if vmv.interface.is_vascular_morphology_in_scene():
 
             # Interpolate
             colors = vmv.utilities.create_color_map_from_color_list(
@@ -140,6 +244,7 @@ class VMV_MorphologyPanel(bpy.types.Panel):
                     material_nodes = vmv.interface.MorphologyPolylineObject.active_material.node_tree
                     color_1 = material_nodes.nodes['ColorRamp'].color_ramp.elements[0].color
                     color_2 = material_nodes.nodes['ColorRamp'].color_ramp.elements[1].color
+
                     for j in range(3):
                         color_1[j] = colors[i][j]
                         color_2[j] = 0.5 * colors[i][j]
@@ -152,13 +257,20 @@ class VMV_MorphologyPanel(bpy.types.Panel):
     ################################################################################################
     def update_bevel_object(self,
                             context):
+        """Updates the number of sides of the bevel object in the scene.
 
-        # TODO: Verify if the morphology is deleted or exists in the scene, using its name!
-        if vmv.interface.MorphologyPolylineObject is not None:
-            bevel_sides = context.scene.VMV_TubeQuality
+        :param context:
+            Blender context.
+        """
+
+        # Make sure that the morphology is in the scene
+        if vmv.interface.is_vascular_morphology_in_scene():
 
             # Get the bevel object
-            bevel_object = vmv.scene.get_object_by_name('bevel')
+            bevel_object = vmv.scene.get_object_by_name(
+                vmv.interface.MorphologyPolylineObject.data.bevel_object.name)
+
+            # Make sure that this bevel object is not None
             if bevel_object is not None:
 
                 # Delete the old bevel object
@@ -166,15 +278,17 @@ class VMV_MorphologyPanel(bpy.types.Panel):
 
                 # Create a new bevel object
                 bevel_object = vmv.mesh.create_bezier_circle(
-                    radius=1.0, vertices=bevel_sides, name='bevel')
+                    radius=1.0, vertices=context.scene.VMV_BevelSides, name='bevel')
                 vmv.interface.MorphologyPolylineObject.data.bevel_object = bevel_object
+                vmv.scene.hide_object(scene_object=bevel_object)
 
+    ################################################################################################
     # Tube quality
-    bpy.types.Scene.VMV_TubeQuality = bpy.props.IntProperty(
+    bpy.types.Scene.VMV_BevelSides = bpy.props.IntProperty(
         name='Sides',
         description='Number of sides of the cross-section of each segment along the drawn tube.'
                     'The minimum is 4, maximum 128 and default is 8. High value is required for '
-                    'closeups and low value is sufficient for far-away visualizations',
+                    'closeups and low value is sufficient for far-away visualizations.',
         default=8, min=4, max=128,
         update=update_bevel_object)
 
@@ -183,7 +297,21 @@ class VMV_MorphologyPanel(bpy.types.Panel):
     bpy.types.Scene.VMV_MorphologyColor = bpy.props.FloatVectorProperty(
         name='Color',
         subtype='COLOR', default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
-        description='The base color of the morphology',
+        description='The base color of the morphology.',
+        update=update_morphology_color)
+
+    # The alternative color used to color every second object in the morphology
+    bpy.types.Scene.VMV_MorphologyColor1 = bpy.props.FloatVectorProperty(
+        name='',
+        description='The first alternating color of the morphology',
+        subtype='COLOR', default=vmv.consts.Color.VERY_WHITE, min=0.0, max=1.0,
+        update=update_morphology_color)
+
+    # The alternative color used to color every second object in the morphology
+    bpy.types.Scene.VMV_MorphologyColor2 = bpy.props.FloatVectorProperty(
+        name='',
+        subtype='COLOR', default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
+        description='The second alternating color of the morphology',
         update=update_morphology_color)
 
     # A list of all the color maps available in VMV
@@ -194,9 +322,10 @@ class VMV_MorphologyPanel(bpy.types.Panel):
         default=vmv.enums.ColorMaps.GNU_PLOT,
         update=update_ui_colors)
 
+    # Inversion for the color-map
     bpy.types.Scene.VMV_InvertColorMap = bpy.props.BoolProperty(
         name='Invert',
-        description='Invert the selected colormap',
+        description='Invert the selected colormap.',
         default=False,
         update=update_ui_colors)
 
@@ -208,7 +337,8 @@ class VMV_MorphologyPanel(bpy.types.Panel):
     # Update the UI color elements from the color map list
     for index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
         setattr(bpy.types.Scene, 'VMV_Color%d' % index, bpy.props.FloatVectorProperty(
-            name='', subtype='COLOR', default=colors[index], min=0.0, max=1.0, description=''))
+            name='', subtype='COLOR', default=colors[index], min=0.0, max=1.0, description='',
+            update=update_morphology_color))
 
     # The current time frame of the simulation
     bpy.types.Scene.VMV_CurrentSimulationFrame = bpy.props.IntProperty(
@@ -216,161 +346,18 @@ class VMV_MorphologyPanel(bpy.types.Panel):
         default=0, min=0, max=1000000,
         update=update_time_frame)
 
-    ################################################################################################
-    # @draw_morphology_color_options
-    ################################################################################################
-    def draw_morphology_color_options(self, context):
-        """Draw the coloring options.
-
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Get a reference to the scene
-        scene = context.scene
-
-        # Reference to morphology options
-        morphology_options = vmv.interface.Options.morphology
-
-        # Coloring parameters
-        colors_row = self.layout.row()
-        colors_row.label(text='Colors & Materials:', icon='COLOR')
-
-        # Morphology material
-        morphology_material_row = self.layout.row()
-        morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
-        morphology_options.material = scene.VMV_MorphologyMateria
-
-    ################################################################################################
-    # @draw_morphology_rendering_options
-    ################################################################################################
-    def draw_morphology_rendering_options(self,
-                                          context):
-        """Draw the rendering options.
-
-        :param context:
-            Context.
-        """
-
-        # Get a reference to the layout of the panel
-        layout = self.layout
-
-        # Rendering options
-        rendering_row = self.layout.row()
-        rendering_row.label(text='Rendering Options:', icon='RENDER_STILL')
-
-        # Rendering resolution
-        rendering_resolution_row = self.layout.row()
-        rendering_resolution_row.label(text='Resolution:')
-        rendering_resolution_row.prop(context.scene, 'VMV_MorphologyRenderingResolution', expand=True)
-
-        # Add the frame resolution option
-        if context.scene.VMV_MorphologyRenderingResolution == \
-                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Frame resolution option (only for the close up mode)
-            frame_resolution_row = self.layout.row()
-            frame_resolution_row.label(text='Frame Resolution:')
-            frame_resolution_row.prop(context.scene, 'VMV_MorphologyImageResolution')
-            vmv.interface.Options.morphology.resolution_basis = \
-                context.scene.VMV_MorphologyRenderingResolution
-
-        # Otherwise, add the scale factor option
-        else:
-
-            # Scale factor option
-            scale_factor_row = self.layout.row()
-            scale_factor_row.label(text='Resolution Scale:')
-            scale_factor_row.prop(context.scene, 'VMV_MorphologyImageScaleFactor')
-            vmv.interface.Options.morphology.resolution_scale_factor = \
-                context.scene.VMV_MorphologyImageScaleFactor
-
-        # Rendering view column
-        view_row = self.layout.column()
-        view_row.prop(context.scene, 'VMV_MorphologyRenderingViews', icon='AXIS_FRONT')
-        vmv.Options.morphology.camera_view = context.scene.VMV_MorphologyRenderingViews
-
-        # Rendering projection column only for a fixed resolution
-        if context.scene.VMV_MorphologyRenderingResolution == \
-                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Due to a bug in the workbench renderer in Blender, we will allow the
-            # perspective projection for all the materials that use cycles and have high number of
-            # samples per pixel, mainly the artistic rendering.
-            # if vmv.Options.morphology.material in vmv.enums.Shader.SUB_SURFACE_SCATTERING:
-
-            # Add the projection option
-            projection_row = self.layout.column()
-            projection_row.prop(context.scene, 'VMV_MorphologyCameraProjection', icon='AXIS_FRONT')
-            vmv.Options.morphology.camera_projection = context.scene.VMV_MorphologyCameraProjection
-
-            # Set it by default to ORTHOGRAPHIC
-            # else:
-            # vmv.Options.morphology.camera_projection = vmv.enums.Rendering.Projection.ORTHOGRAPHIC
-
-            # Scale bar
-            scale_bar_row = layout.row()
-            scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
-            vmv.interface.Options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
-
-        # Set it by default to ORTHOGRAPHIC
-        else:
-            vmv.Options.morphology.camera_projection = \
-                vmv.enums.Rendering.Projection.ORTHOGRAPHIC
-
-            # Scale bar
-            scale_bar_row = layout.row()
-            scale_bar_row.prop(context.scene, 'VMV_RenderMorphologyScaleBar')
-            vmv.interface.Options.morphology.render_scale_bar = context.scene.VMV_RenderMorphologyScaleBar
-
-        # Rendering button
-        rendering_button_row = self.layout.column()
-        rendering_button_row.operator('render_morphology.image', icon='MESH_DATA')
-
-        # Render animation row
-        render_animation_row = self.layout.row()
-        render_animation_row.label(text='Render Animation:', icon='CAMERA_DATA')
-        render_animations_buttons_row = self.layout.row(align=True)
-        render_animations_buttons_row.operator('render_morphology.360', icon='FORCE_MAGNETIC')
-
-        # Render simulation
-        if vmv.interface.SimulationLoaded:
-            rendering_simulation_button_row = self.layout.column()
-            rendering_simulation_button_row.operator('render.simulation', icon='MESH_DATA')
-
-        # Rendering progress bar
-        rendering_progress_row = self.layout.row()
-        rendering_progress_row.prop(context.scene, 'VMV_MorphologyRenderingProgress')
-        rendering_progress_row.enabled = False
-
-    ################################################################################################
-    # @draw_morphology_export_options
-    ################################################################################################
-    def draw_morphology_export_options(self,
-                                       context):
-        """Draw the morphology export button.
-
-        :param context:
-            Context.
-        """
-
-        # Saving meshes parameters
-        save_mesh_row = self.layout.row()
-        save_mesh_row.label(text='Export Morphology As:', icon='MESH_UVSPHERE')
-
-        # Exported format column
-        format_column = self.layout.column()
-        format_column.prop(context.scene, 'ExportedMorphologyFormat', icon='GROUP_VERTEX')
-        format_column.operator('export.morphology', icon='MESH_DATA')
+    # Material
+    bpy.types.Scene.VMV_MorphologyMaterial = bpy.props.EnumProperty(
+        items=vmv.enums.Shader.SHADER_ITEMS,
+        name='',
+        default=vmv.enums.Shader.LAMBERT_WARD,
+        update=update_morphology_material)
 
     ################################################################################################
     # @draw
     ################################################################################################
     def draw(self, context):
-        """Draw the panel.
+        """Draws the panel.
 
         :param context:
             Panel context.
@@ -397,10 +384,8 @@ class VMV_MorphologyPanel(bpy.types.Panel):
                 layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
         # Draw the morphology rendering options
-        self.draw_morphology_rendering_options(context=context)
-
-        # Draw the morphology export options
-        # self.draw_morphology_export_options(context=context)
+        add_morphology_rendering_options(
+            layout=self.layout, scene=context.scene, options=vmv.interface.Options)
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
         if vmv.interface.MorphologyLoaded:
@@ -448,7 +433,6 @@ class VMV_ReconstructMorphology(bpy.types.Operator):
             print('ERROR: Morphology is not loaded')
 
         # Construct the skeleton builder
-        # Disconnected segments builder
         if vmv.interface.Options.morphology.builder == \
                 vmv.enums.Morphology.Builder.SEGMENTS:
             self.morphology_builder = vmv.builders.SegmentsBuilder(
@@ -521,82 +505,6 @@ class VMV_ExportMorphology(bpy.types.Operator):
             {'FINISHED'}
         """
 
-
-        """
-        # Load the morphology file
-        loading_result = vmv.interface.ui.load_morphology(self, context.scene)
-
-        # If the result is None, report the issue
-        if loading_result is None:
-            self.report({'ERROR'}, 'Please select a morphology file')
-            return {'FINISHED'}
-
-        # Meshing technique
-        meshing_technique = vmv.interface.Options.mesh.meshing_technique
-
-        # Piece-wise watertight meshing
-        if meshing_technique == vmv.enums.Meshing.Technique.PIECEWISE_WATERTIGHT:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.PiecewiseBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        # Bridging
-        elif meshing_technique == vmv.enums.Meshing.Technique.BRIDGING:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.BridgingBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        # Union
-        elif meshing_technique == vmv.enums.Meshing.Technique.UNION:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.UnionBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        # Extrusion
-        elif meshing_technique == vmv.enums.Meshing.Technique.EXTRUSION:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.ExtrusionBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        elif meshing_technique == vmv.enums.Meshing.Technique.SKINNING:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.SkinningBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        elif meshing_technique == vmv.enums.Meshing.Technique.META_OBJECTS:
-
-            # Create the mesh builder
-            mesh_builder = vmv.builders.MetaBuilder(
-                morphology=vmv.interface.ui_morphology, options=vmv.interface.Options)
-
-            # Reconstruct the mesh
-            vmv.interface.ui_reconstructed_mesh = mesh_builder.reconstruct_mesh()
-
-        else:
-
-            # Invalid method
-            self.report({'ERROR'}, 'Invalid Meshing Technique')
-        """
         return {'FINISHED'}
 
 

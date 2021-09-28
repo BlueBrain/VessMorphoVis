@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -43,3 +43,6 @@ class RenderingPlanes:
 
     # Horizon scale
     HORIZON_SCALE = 100
+
+    # The distance of the background plane from the center
+    BACKGROUND_PLANE_Z = 5e4

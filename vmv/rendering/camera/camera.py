@@ -150,7 +150,7 @@ class Camera:
         bpy.data.scenes['Scene'].render.filepath = '%s.png' % image_name
 
         # Render the image and ignore Blender verbosity
-        bpy.ops.render.render(use_viewport = True, write_still=True)
+        bpy.ops.render.render(write_still=True)
 
     ################################################################################################
     # @get_camera_positions
@@ -204,8 +204,8 @@ class Camera:
         camera_z = r / math.tan(math.radians(0.5 * fov)) * 1.25
 
         # Camera location
-        camera_location_x = Vector((camera_x, center.y, center.z))
-        camera_location_y = Vector((center.x, camera_y, center.z))
+        camera_location_x = Vector((-camera_x, center.y, center.z))
+        camera_location_y = Vector((center.x, -camera_y, center.z))
         camera_location_z = Vector((center.x, center.y, camera_z))
 
         # Return a vector for the camera position for XYZ locations
@@ -461,7 +461,8 @@ class Camera:
                      camera_view=vmv.enums.Rendering.View.FRONT,
                      camera_projection=vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
                      image_resolution=512,
-                     image_name='IMAGE',
+                     image_name='image',
+                     add_background_plane=False,
                      keep_camera_in_scene=True):
         """Render scene using an orthographic camera.
 
@@ -525,7 +526,7 @@ class Camera:
 
         # For perspective rendering add the background plane
         background_plane = None
-        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
+        if add_background_plane:
             background_plane = vmv.rendering.add_background_plane(
                 bounding_box=bounding_box, camera_view=camera_view)
 
@@ -533,12 +534,12 @@ class Camera:
         self.render_image(image_name=image_name)
 
         # Keep the camera in the scene or delete it after the rendering
-        if not keep_camera_in_scene:
-            vmv.scene.ops.delete_object_in_scene(self.camera)
+        #if not keep_camera_in_scene:
+        #    vmv.scene.ops.delete_object_in_scene(self.camera)
 
         # Delete the background plane
-        if background_plane is not None:
-            vmv.scene.delete_object_in_scene(background_plane)
+        #if background_plane is not None:
+        #    vmv.scene.delete_object_in_scene(background_plane)
 
     ################################################################################################
     # @render_scene_bounding_box
@@ -547,7 +548,8 @@ class Camera:
                               bounding_box=None,
                               camera_view=vmv.enums.Rendering.View.FRONT,
                               scale_factor=1.0,
-                              image_name='IMAGE',
+                              image_name='image',
+                              add_background_plane=False,
                               keep_camera_in_scene=False):
         """Render a scene to scale using orthographic projection.
 

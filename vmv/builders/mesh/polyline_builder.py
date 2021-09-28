@@ -74,6 +74,7 @@ class PolylineBuilder(MeshBuilder):
         # Verify and repair the morphology
         # self.verify_and_repair_morphology()
 
+        # Update the center of the mesh to the center of the bounding box of the morphology
         self.center = self.morphology.bounding_box.center
 
         # Create an instance of the SectionBuilder to build the morphology in advance
@@ -86,13 +87,10 @@ class PolylineBuilder(MeshBuilder):
         self.mesh = vmv.scene.convert_object_to_mesh(morphology_skeleton)
 
         # Update its name with the mesh suffix to be able to locate it
-        self.mesh.name = self.morphology.name + vmv.consts.Meshing.MESH_SUFFIX
-
-        # We can here create the materials at the end to avoid any issues
-        self.create_skeleton_materials()
+        self.mesh.name = self.mesh.name + vmv.consts.Suffix.MESH_SUFFIX
 
         # Assign the material to the mesh
-        self.assign_material_to_mesh()
+        #self.assign_material_to_mesh()
 
         # Mission done
         vmv.logger.header('Done!')

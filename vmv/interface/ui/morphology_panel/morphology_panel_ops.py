@@ -16,6 +16,8 @@
 ####################################################################################################
 
 # Blender imports
+import copy
+
 import bpy
 
 # Internal imports
@@ -83,8 +85,13 @@ def add_visualization_type_options(layout,
 
     # Visualization type
     visualization_type_row = layout.row()
+    vmv.interface.CurrentVisualizationType = copy.deepcopy(options.morphology.visualization_type)
     visualization_type_row.prop(scene, 'VMV_VisualizationType')
     options.morphology.visualization_type = scene.VMV_VisualizationType
+
+    if scene.VMV_VisualizationType != vmv.interface.CurrentVisualizationType:
+        vmv.interface.SimulationLoaded = False
+    vmv.interface.CurrentVisualizationType = copy.deepcopy(scene.VMV_VisualizationType)
 
 
 ####################################################################################################
@@ -325,6 +332,7 @@ def add_color_options(layout,
     morphology_material_row.prop(scene, 'VMV_MorphologyMaterial')
     options.morphology.material = scene.VMV_MorphologyMaterial
 
+
 ####################################################################################################
 # @add_radii_options
 ####################################################################################################
@@ -380,8 +388,8 @@ def add_tube_quality_options(layout,
     # Tube quality
     tube_quality_row = layout.row()
     tube_quality_row.label(text='Tube Quality')
-    tube_quality_row.prop(scene, 'VMV_TubeQuality')
-    options.morphology.bevel_object_sides = scene.VMV_TubeQuality
+    tube_quality_row.prop(scene, 'VMV_BevelSides')
+    options.morphology.bevel_object_sides = scene.VMV_BevelSides
 
 
 ####################################################################################################
@@ -455,20 +463,22 @@ def add_colormap_dynamics_visualization_options(layout,
     builder_row.prop(scene, 'VMV_DynamicFunctionBuilders', icon='FORCE_CURVE')
     options.morphology.builder = scene.VMV_DynamicFunctionBuilders
 
+    # Add radius options
+    add_radii_options(layout=layout, scene=scene, options=options)
+
     # Tube quality only for the sections and segments, to improve the performance
     add_tube_quality_options(layout=layout, scene=scene, options=options)
 
     # Simulation visualization
-
     add_simulation_visualization_options(layout=layout, scene=scene, options=options)
 
     # Color-coding (per-segment)
     add_colormap_options(layout=layout, scene=scene, options=options)
 
 
-################################################################################################
+####################################################################################################
 # @add_morphology_reconstruction_button
-################################################################################################
+####################################################################################################
 def add_morphology_reconstruction_button(layout,
                                          scene):
     """Adds the morphology reconstruction button to the panel.
@@ -496,9 +506,9 @@ def add_morphology_reconstruction_button(layout,
         row.enabled = False
 
 
-################################################################################################
+####################################################################################################
 # @add_morphology_reconstruction_button
-################################################################################################
+####################################################################################################
 def add_simulation_visualization_options(layout,
                                          scene,
                                          options):
@@ -553,3 +563,101 @@ def add_simulation_visualization_options(layout,
     progress.enabled = False
 
 
+####################################################################################################
+# @add_morphology_rendering_options
+####################################################################################################
+def add_morphology_rendering_options(layout,
+                                      scene,
+                                      options):
+    """Draw the rendering options.
+
+    :param context:
+        Context.
+    """
+
+    # Rendering options
+    rendering_row = layout.row()
+    rendering_row.label(text='Rendering Options:', icon='RENDER_STILL')
+
+    # Rendering resolution
+    rendering_resolution_row = layout.row()
+    rendering_resolution_row.label(text='Resolution:')
+    rendering_resolution_row.prop(scene, 'VMV_MorphologyRenderingResolution', expand=True)
+
+    # Add the frame resolution option
+    if scene.VMV_MorphologyRenderingResolution == \
+            vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+
+        # Frame resolution option (only for the close up mode)
+        frame_resolution_row = layout.row()
+        frame_resolution_row.label(text='Frame Resolution:')
+        frame_resolution_row.prop(scene, 'VMV_MorphologyImageResolution')
+        options.morphology.resolution_basis = \
+            scene.VMV_MorphologyRenderingResolution
+
+    # Otherwise, add the scale factor option
+    else:
+
+        # Scale factor option
+        scale_factor_row = layout.row()
+        scale_factor_row.label(text='Resolution Scale:')
+        scale_factor_row.prop(scene, 'VMV_MorphologyImageScaleFactor')
+        options.morphology.resolution_scale_factor = \
+            scene.VMV_MorphologyImageScaleFactor
+
+    # Rendering view column
+    view_row = layout.column()
+    view_row.prop(scene, 'VMV_MorphologyRenderingViews', icon='AXIS_FRONT')
+    vmv.Options.morphology.camera_view = scene.VMV_MorphologyRenderingViews
+
+    # Scale bar
+    scale_bar_row = layout.row()
+    scale_bar_row.prop(scene, 'VMV_RenderMorphologyScaleBar')
+    options.morphology.render_scale_bar = scene.VMV_RenderMorphologyScaleBar
+
+    # Background
+    background_row = layout.row()
+    background_row.prop(scene, 'VMV_TransparentMorphologyBackground')
+    options.morphology.transparent_background = scene.VMV_TransparentMorphologyBackground
+
+    # Rendering button
+    rendering_button_row = layout.column()
+    rendering_button_row.operator('render_morphology.image', icon='MESH_DATA')
+
+    # Render animation row
+    render_animation_row = layout.row()
+    render_animation_row.label(text='Render Animation:', icon='CAMERA_DATA')
+    render_animations_buttons_row = layout.row(align=True)
+    render_animations_buttons_row.operator('render_morphology.360', icon='FORCE_MAGNETIC')
+
+    # Render simulation
+    if vmv.interface.SimulationLoaded:
+        rendering_simulation_button_row = layout.column()
+        rendering_simulation_button_row.operator('render.simulation', icon='MESH_DATA')
+
+    # Rendering progress bar
+    rendering_progress_row = layout.row()
+    rendering_progress_row.prop(scene, 'VMV_MorphologyRenderingProgress')
+    rendering_progress_row.enabled = False
+
+
+####################################################################################################
+# @draw_morphology_export_options
+####################################################################################################
+def draw_morphology_export_options(layout,
+                                   scene,
+                                   options):
+    """Draw the morphology export button.
+
+    :param context:
+        Context.
+    """
+
+    # Saving meshes parameters
+    save_mesh_row = layout.row()
+    save_mesh_row.label(text='Export Morphology As:', icon='MESH_UVSPHERE')
+
+    # Exported format column
+    format_column = layout.column()
+    format_column.prop(scene, 'ExportedMorphologyFormat', icon='GROUP_VERTEX')
+    format_column.operator('export.morphology', icon='MESH_DATA')

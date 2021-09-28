@@ -104,7 +104,8 @@ class VMV_RenderMorphologyImage(bpy.types.Operator):
                 camera_projection=vmv.Options.morphology.camera_projection,
                 image_resolution=context.scene.VMV_MorphologyImageResolution,
                 image_name=image_name,
-                image_directory=vmv.interface.Options.io.images_directory)
+                image_directory=vmv.interface.Options.io.images_directory,
+                add_background_plane=not vmv.Options.morphology.transparent_background)
 
         # Render at a specific scale factor
         else:
@@ -115,7 +116,8 @@ class VMV_RenderMorphologyImage(bpy.types.Operator):
                 camera_view=vmv.Options.morphology.camera_view,
                 image_scale_factor=context.scene.VMV_MorphologyImageScaleFactor,
                 image_name=image_name,
-                image_directory=vmv.interface.Options.io.images_directory)
+                image_directory=vmv.interface.Options.io.images_directory,
+                add_background_plane=not vmv.Options.morphology.transparent_background)
 
         # Delete the morphology scale bar, if rendered
         if context.scene.VMV_RenderMorphologyScaleBar:
@@ -193,7 +195,8 @@ class VMV_RenderMorphology360(bpy.types.Operator):
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_resolution=context.scene.VMV_MorphologyImageResolution,
-                    image_name=image_name)
+                    image_name=image_name,
+                    add_background_plane=not vmv.Options.morphology.transparent_background)
 
             # Render at a specific scale factor
             else:
@@ -205,7 +208,8 @@ class VMV_RenderMorphology360(bpy.types.Operator):
                     bounding_box=self.bounding_box_360,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_scale_factor=context.scene.VMV_MorphologyImageResolution,
-                    image_name=image_name)
+                    image_name=image_name,
+                    add_background_plane=not vmv.Options.morphology.transparent_background)
 
             # Update the progress shell
             vmv.utilities.show_progress('Rendering', self.timer_limits, 360)

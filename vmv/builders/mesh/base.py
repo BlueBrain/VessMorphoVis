@@ -123,19 +123,13 @@ class MeshBuilder:
         # Deselect all objects
         vmv.scene.ops.deselect_all()
 
-        # Activate the mesh object
-        bpy.context.view_layer.objects.active = self.mesh
-
         # Adjusting the texture space, before assigning the material
-        bpy.context.object.data.use_auto_texspace = False
-        bpy.context.object.data.texspace_size[0] = 5
-        bpy.context.object.data.texspace_size[1] = 5
-        bpy.context.object.data.texspace_size[2] = 5
+        vmv.shading.adjust_material_uv(mesh_object=self.mesh)
 
         # Assign the material to the selected mesh
         vmv.shading.set_material_to_object(self.mesh, self.materials[0])
 
         # Activate the mesh object
         vmv.scene.select_objects([self.mesh])
-        bpy.context.view_layer.objects.active = self.mesh
+        #bpy.context.view_layer.objects.active = self.mesh
 

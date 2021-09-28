@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Copyright (c) 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -19,8 +19,8 @@
 ####################################################################################################
 # Meshing
 ####################################################################################################
-class Meshing:
-    """Meshing constants
+class Suffix:
+    """Suffix constants
     """
 
     ################################################################################################
@@ -29,20 +29,8 @@ class Meshing:
     def __init__(self):
         pass
 
-    # Minimum tessellation level
-    MIN_TESSELLATION_LEVEL = 0.1
+    # Morphology suffix
+    MORPHOLOGY_SUFFIX = '_Morphology'
 
-    # Maximum tessellation level
-    MAX_TESSELLATION_LEVEL = 1.0
-
-    # Default sides of a bevel object
-    BEVEL_OBJECT_SIDES = 16
-
-    # Meta-ball default resolution
-    META_RESOLUTION = 1.0
-
-    # Minimum meta ball resolution
-    MIN_META_BALL_RESOLUTION = 0.01
-
-    # Minimum meta ball resolution
-    MAX_META_BALL_RESOLUTION = 10.0
+    # Mesh suffix
+    MESH_SUFFIX = '_Mesh'

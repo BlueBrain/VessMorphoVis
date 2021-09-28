@@ -17,18 +17,15 @@
 ####################################################################################################
 
 # Imports
-import copy
-import os
-import ntpath 
 import argparse
+import os
+import random
+import ntpath
 
 
 ####################################################################################################
 # @parse_command_line_arguments
 ####################################################################################################
-import random
-
-
 def parse_command_line_arguments(arguments=None):
     """Parses the input arguments.
 
@@ -39,22 +36,22 @@ def parse_command_line_arguments(arguments=None):
     """
 
     # add all the options
-    description = 'Creates VMV with virtual (random) radius fluctuations to test the simulation'
+    description = 'Creates VMV datasets with random radius fluctuations to test the simulation.'
     parser = argparse.ArgumentParser(description=description)
 
-    arg_help = 'An input morphology file'
+    arg_help = 'An input VMV morphology file.'
     parser.add_argument('--morphology',
                         action='store', dest='morphology', help=arg_help)
 
-    arg_help = 'Output directory where the generated results will be written'
+    arg_help = 'Output directory where the generated results will be written to.'
     parser.add_argument('--output-directory',
                         action='store', dest='output_directory', help=arg_help)
 
-    arg_help = 'The number of steps in the simulation file'
+    arg_help = 'The number of steps in the simulation file.'
     parser.add_argument('--steps',
                         action='store', dest='steps', type=int, default=10, help=arg_help)
 
-    arg_help = 'The percentage of radius variations with respect to time'
+    arg_help = 'The percentage of radius variations with respect to time.'
     parser.add_argument('--variation',
                         action='store', dest='variation', type=float, default=10.0, help=arg_help)
                         
@@ -126,25 +123,19 @@ def read_vmv_file(file_path):
             number_strands = int(item[1])
             break
 
-    # Get the number of attributes per vertex
-    for item in data:
-        if 'NUM_ATTRIB_PER_VERT' in item:
-            item = item.split(' ')
-            number_attributes_per_vertex = int(item[1])
-            break
-
     # Log
-    print('Data contains [%d] vertices, [%d] strands and [%d] attributes' %
-          (number_vertices, number_strands, number_attributes_per_vertex))
+    print('Data contains [%d] vertices, [%d] strands' % (number_vertices, number_strands))
 
     # If all the sizes are read, simply break and close the file
-    if number_vertices == 0 or number_strands == 0 or number_attributes_per_vertex == 0:
+    if number_vertices == 0 or number_strands == 0:
         print('Invalid data set')
+        exit(0)
 
     # Read the vertices by getting the index of the $VERT_LIST_BEGIN tag
     starting_vertex_index = 0
     for item in data:
         if '$VERT_LIST_BEGIN' in item:
+
             # Further increment to jump directly to the actual starting index and break
             starting_vertex_index += 1
             break
@@ -209,7 +200,7 @@ def read_vmv_file(file_path):
 
 
 ####################################################################################################
-# @create_vmv_strands_string
+# @create_virtual_radius_variations
 ####################################################################################################
 def create_virtual_radius_variations(vertex_list,
                                      maximum_variation,
@@ -237,12 +228,29 @@ def create_virtual_radius_variations(vertex_list,
         # The time frame
         time_frame = list()
 
-        # For every vertex
-        for vertex in vertex_list:
+        # The first time frame
+        if i == 0:
 
-            # Get the initial radius of the vertex
-            time_frame.append(vertex[4] * random.uniform(-maximum_variation, maximum_variation) / 100.0)
+            # For every vertex
+            for vertex in vertex_list:
 
+                # Get the initial radius of the vertex
+                value = vertex[4] + vertex[4] * (random.uniform(-1 * maximum_variation, maximum_variation)) * 0.01
+                if value < 0: value = 0.1
+                time_frame.append(value)
+
+        else:
+
+            previous_time_frame = variations_list[i - 1]
+
+            # For every vertex
+            for vertex in previous_time_frame:
+
+                value = vertex + vertex * (
+                    random.uniform(-1 * maximum_variation, maximum_variation)) * 0.01
+                if value < 0: value = 0.1
+                # Get the initial radius of the vertex
+                time_frame.append(value)
         # Add the time frame to the simulation list
         variations_list.append(time_frame)
 

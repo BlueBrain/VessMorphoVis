@@ -25,6 +25,40 @@ import vmv.scene
 
 
 ####################################################################################################
+# @create_plane
+####################################################################################################
+def create_plane(size=1,
+                 location=(0, 0, 0),
+                 name='plane'):
+    """Adds a plane to the scene and returns a reference to it.
+
+    :param size:
+        Plane size.
+    :param location:
+        Plane location.
+    :param name:
+        Plane name.
+    :return:
+        A reference to the plane
+    """
+
+    # Deselect all objects
+    vmv.scene.ops.deselect_all()
+
+    # Add the plane
+    bpy.ops.mesh.primitive_plane_add(size=size, enter_editmode=False, location=location)
+
+    # Have it selected
+    plane = bpy.context.active_object
+
+    # Update the sphere name
+    plane.name = name
+
+    # Return a reference
+    return plane
+
+
+####################################################################################################
 # @create_uv_sphere
 ####################################################################################################
 def create_uv_sphere(radius=1, 

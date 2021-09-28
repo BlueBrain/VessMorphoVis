@@ -56,7 +56,12 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_poly_line_data_colored_with_single_color
     ################################################################################################
     def get_poly_line_data_colored_with_single_color(self):
+        """Gets a list of polylines (or polyline data in Blender format) for a morphology
+        color-coded with a single color only.
 
+        :return:
+            A list of polylines.
+        """
         # The poly-lines data list 
         poly_lines_data = list() 
 
@@ -73,7 +78,12 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_poly_line_data_colored_with_single_color
     ################################################################################################
     def get_poly_line_data_colored_with_alternating_colors(self):
+        """Gets a list of polylines (or polyline data in Blender format) for a morphology
+        color-coded with alternating colors.
 
+        :return:
+            A list of polylines.
+        """
         # The poly-lines data list 
         poly_lines_data = list() 
         
@@ -118,7 +128,7 @@ class SegmentsBuilder(MorphologyBuilder):
         return poly_lines_data
 
     ################################################################################################
-    # @get_poly_line_data_based_on_radius
+    # @get_poly_line_data_based_on_length
     ################################################################################################
     def get_poly_line_data_based_on_length(self):
         """Gets a poly-lines data list based on length.
@@ -246,6 +256,8 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_segments_poly_lines_data
     ################################################################################################
     def get_segments_poly_lines_data(self):
+        """Gets a list of all the polylines that account for the sections in the morphology.
+        """
 
         # Get the data based on the color-coding scheme  
         if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
@@ -284,6 +296,7 @@ class SegmentsBuilder(MorphologyBuilder):
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
             radius=1.0, vertices=self.options.morphology.bevel_object_sides, name='bevel')
+        vmv.scene.hide_object(scene_object=bevel_object)
 
         # Construct sections poly-lines
         vmv.logger.info('Constructing polylines')
@@ -297,7 +310,7 @@ class SegmentsBuilder(MorphologyBuilder):
         vmv.logger.info('Drawing Polylines')
         self.morphology_skeleton = vmv.geometry.create_poly_lines_object_from_poly_lines_data(
             poly_lines_data, material=self.options.morphology.material, color_map=self.color_map,
-            name=self.morphology.name, bevel_object=bevel_object)
+            name=self.morphology_name, bevel_object=bevel_object)
         return self.morphology_skeleton
 
     ################################################################################################
@@ -365,12 +378,15 @@ class SegmentsBuilder(MorphologyBuilder):
     # @load_radius_simulation_data_at_step
     ################################################################################################
     def load_radius_simulation_data_at_step(self,
-                                            time_step):
+                                            time_step,
+                                            context=None):
         """
 
         :param time_step:
         :return:
         """
+
+        self.context = context
 
         segment_index = 0
 
@@ -395,6 +411,13 @@ class SegmentsBuilder(MorphologyBuilder):
                     minimum_value=self.minimum_simulation_value,
                     maximum_value=self.maximum_simulation_value,
                     number_steps=self.options.morphology.color_map_resolution)
+
+                if self.context is not None:
+                    if radius_list[time_step] < float(self.context.scene.VMV_MinimumValue):
+                        self.context.scene.VMV_MinimumValue = str(radius_list[time_step])
+
+                    if radius_list[time_step] > float(self.context.scene.VMV_MaximumValue):
+                        self.context.scene.VMV_MaximumValue = str(radius_list[time_step])
 
                 # Get a reference to the material list of the morphology skeleton
                 segment_polyline.material_index = color_index

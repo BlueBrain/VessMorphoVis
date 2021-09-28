@@ -129,14 +129,14 @@ def write_h5_file(file_name, output_path, vmv):
     h5_file = h5py.File('%s/%s' % (output_path, file_name), 'w')
 
     # Create the points data set
-    points_dataset = h5_file.create_dataset("/points", data=h5_vertex_list)
+    points_dataset = h5_file.create_dataset("/points", data=h5_vertex_list, compression="gzip")
 
     # Create the structure (or the strands) dataset
-    structure_dataset = h5_file.create_dataset("/structure", data=h5_strands)
+    structure_dataset = h5_file.create_dataset("/structure", data=h5_strands, compression="gzip")
 
     # Create the connectivity dataset
     connectivity = [[1, 2]]
-    structure_dataset = h5_file.create_dataset("/connectivity", data=connectivity)
+    structure_dataset = h5_file.create_dataset("/connectivity", data=connectivity, compression="gzip")
 
     # Create the connectivity dataset
     # connectivity_dataset = h5_file.create_dataset("/connectivity", (4, vmv.number_loaded_vertices),

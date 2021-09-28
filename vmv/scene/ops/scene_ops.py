@@ -359,6 +359,10 @@ def clear_scene():
     # bpy.context.space_data.clip_start = 0.01
     # bpy.context.space_data.clip_end = 10000
 
+    # Make all the objects in the scene visible
+    for scene_object in bpy.context.scene.objects:
+        unhide_object(scene_object)
+
     # Select each object in the scene
     for scene_object in bpy.context.scene.objects:
         select_object(scene_object)
@@ -443,7 +447,25 @@ def clear_scene_materials():
 
     # Clear all the materials that are already present in the scene
     for material in bpy.data.materials:
-        if 'morphology_skeleton' in material.name:
+        material.user_clear()
+        bpy.data.materials.remove(material)
+
+
+####################################################################################################
+# @clear_scene_materials
+####################################################################################################
+def clear_material_with_name(name):
+    """Clears a material with a specific name.
+
+    :param name:
+        Material name.
+    """
+
+    # Clear a specific material with a given name
+    for material in bpy.data.materials:
+
+        # Make sure that is has the same name
+        if material.name == name:
             material.user_clear()
             bpy.data.materials.remove(material)
 
@@ -689,6 +711,9 @@ def delete_object_in_scene(scene_object):
     # Deselect all the other objects in the scene
     deselect_all()
 
+    # If the object is hidden, show it to be able to delete it
+    unhide_object(scene_object)
+
     # Select this particular object, to highlight it
     select_object(scene_object)
 
@@ -713,6 +738,9 @@ def delete_list_objects(object_list):
 
     # Delete object by object from the list
     for scene_object in object_list:
+
+        # If the object is hidden, show it to be able to delete it
+        unhide_object(scene_object)
 
         # Select this particular object, to highlight it
         select_object(scene_object)

@@ -31,6 +31,7 @@ def render(bounding_box,
            image_resolution=vmv.consts.Image.DEFAULT_RESOLUTION,
            image_name='image',
            image_directory=None,
+           add_background_plane=False,
            keep_camera_in_scene=False):
     """Render the reconstructed mesh to a .PNG image.
 
@@ -64,6 +65,7 @@ def render(bounding_box,
                                  camera_projection=camera_projection,
                                  image_resolution=image_resolution,
                                  image_name=image_prefix,
+                                 add_background_plane=add_background_plane,
                                  keep_camera_in_scene=keep_camera_in_scene)
 
 
@@ -75,6 +77,7 @@ def render_to_scale(bounding_box,
                     image_scale_factor=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
                     image_name='image',
                     image_directory=None,
+                    add_background_plane=False,
                     keep_camera_in_scene=False):
     """Render the reconstructed mesh to scale to a .PNG image.
 
@@ -105,6 +108,7 @@ def render_to_scale(bounding_box,
                                           camera_view=camera_view,
                                           scale_factor=image_scale_factor,
                                           image_name=image_prefix,
+                                          add_background_plane=add_background_plane,
                                           keep_camera_in_scene=keep_camera_in_scene)
 
 
@@ -117,6 +121,7 @@ def render_at_angle(scene_objects,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
                     image_resolution=vmv.consts.Image.DEFAULT_RESOLUTION,
                     image_name='image',
+                    add_background_plane=False,
                     image_directory=None):
     """Render the mesh to a .PNG image at a specific angle.
 
@@ -145,7 +150,8 @@ def render_at_angle(scene_objects,
 
     # Render the image
     render(bounding_box=bounding_box, camera_view=camera_view, image_resolution=image_resolution,
-           image_name=image_name, keep_camera_in_scene=False)
+           image_name=image_name, add_background_plane=add_background_plane,
+           keep_camera_in_scene=False)
 
 
 ################################################################################################
@@ -157,6 +163,7 @@ def render_at_angle_to_scale(scene_objects,
                              camera_view=vmv.enums.Rendering.View.FRONT_360,
                              image_scale_factor=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
                              image_name='image',
+                             add_background_plane=False,
                              image_directory=None):
     """Render the mesh to a .PNG image at a specific angle.
 
@@ -188,6 +195,7 @@ def render_at_angle_to_scale(scene_objects,
                     camera_view=camera_view,
                     image_scale_factor=image_scale_factor,
                     image_name=image_name,
+                    add_background_plane=add_background_plane,
                     keep_camera_in_scene=False)
 
 

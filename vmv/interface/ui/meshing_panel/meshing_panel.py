@@ -72,9 +72,7 @@ class VMV_MeshingPanel(bpy.types.Panel):
 
             # Create an illumination specific for the given material
             vmv.shading.create_material_specific_illumination(
-                material_type=material, camera_view=self.options.mesh.camera_view)
-
-        pass
+                material_type=material, camera_view=vmv.interface.Options.mesh.camera_view)
 
     ################################################################################################
     # @update_mesh_color
@@ -472,7 +470,7 @@ class VMV_ExportMesh(bpy.types.Operator):
         vmv.interface.verify_meshes_directory(panel=self)
 
         # Select the mesh object that corresponding to the morphology to be exported
-        mesh_object = vmv.scene.select_object_containing_string(vmv.consts.Meshing.MESH_SUFFIX)
+        mesh_object = vmv.scene.select_object_containing_string(vmv.consts.Suffix.MESH_SUFFIX)
 
         # Make sure that the mesh object is not None
         if mesh_object is None:

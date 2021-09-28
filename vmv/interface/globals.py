@@ -36,6 +36,9 @@ SimulationLoaded = False
 # A flag that captures the state of the simulation, whether it is running or not
 SimulationRunning = False
 
+# Current visualization type, to update the UI once the visualization type is changed
+CurrentVisualizationType = None
+
 # A flag that is used to track if VMV is initialized or not
 SystemInitialized = False
 

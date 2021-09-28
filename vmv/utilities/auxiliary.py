@@ -18,6 +18,8 @@
 
 # System imports
 import math
+import random
+import string
 
 # Internal imports
 import vmv.consts
@@ -61,3 +63,25 @@ def get_index(value,
 
     # Return The index of the color map
     return math.ceil((value - minimum_value) / (1.0 * delta)) - 1
+
+
+####################################################################################################
+# @get_random_string
+####################################################################################################
+def get_random_string(length):
+    """Gets a random string with a specific length.
+
+    :param length:
+        String length
+    :return:
+        Random string.
+    """
+
+    # Choose from all lowercase letter
+    letters = string.ascii_lowercase
+
+    # Make the random string
+    random_string = ''.join(random.choice(letters) for i in range(length))
+
+    # Return a reference to the resulting string
+    return random_string

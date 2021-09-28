@@ -711,6 +711,35 @@ def create_glossy_material(name,
 
 
 ####################################################################################################
+# @load_background_material
+####################################################################################################
+def load_background_material():
+    """Creates a background shader.
+
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    current_scene.render.engine = 'CYCLES'
+
+    # Use 64 samples per pixel to create a nice image.
+    bpy.context.scene.cycles.samples = 64
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='background')
+
+    # Rename the material
+    material_reference.name = 'background'
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
 # @create_glossy_material
 ####################################################################################################
 def create_glossy_bumpy_material(name,
@@ -777,59 +806,59 @@ def create_material(name,
 
     # Lambert Ward
     if material_type == vmv.enums.Shader.LAMBERT_WARD:
-        return create_lambert_ward_material(name='%s_color' % name, color=color)
+        return create_lambert_ward_material(name=name, color=color)
 
     # Super electron light
     elif material_type == vmv.enums.Shader.SUPER_ELECTRON_LIGHT:
-        return create_super_electron_light_material(name='%s_color' % name, color=color)
+        return create_super_electron_light_material(name=name, color=color)
 
     # Super electron dark
     elif material_type == vmv.enums.Shader.SUPER_ELECTRON_DARK:
-        return create_super_electron_dark_material(name='%s_color' % name, color=color)
+        return create_super_electron_dark_material(name=name, color=color)
 
     # Electron light
     elif material_type == vmv.enums.Shader.ELECTRON_LIGHT:
-        return create_electron_light_material(name='%s_color' % name, color=color)
+        return create_electron_light_material(name=name, color=color)
 
     # Electron dark
     elif material_type == vmv.enums.Shader.ELECTRON_DARK:
-        return create_electron_dark_material(name='%s_color' % name, color=color)
+        return create_electron_dark_material(name=name, color=color)
 
     # Glossy
     elif material_type == vmv.enums.Shader.GLOSSY:
-        return create_glossy_material(name='%s_color' % name, color=color)
+        return create_glossy_material(name=name, color=color)
 
     # Glossy
     elif material_type == vmv.enums.Shader.WAX:
-        return create_glossy_material(name='%s_color' % name, color=color)
+        return create_glossy_material(name=name, color=color)
 
     # Glossy bumpy
     elif material_type == vmv.enums.Shader.GLOSSY_BUMPY:
-        return create_glossy_bumpy_material(name='%s_color' % name, color=color)
+        return create_glossy_bumpy_material(name=name, color=color)
 
     # Wire frame
     elif material_type == vmv.enums.Shader.WIRE_FRAME:
-        return create_wire_frame_material(name='%s_color' % name, color=color)
+        return create_wire_frame_material(name=name, color=color)
 
     # Flat
     elif material_type == vmv.enums.Shader.FLAT:
         # Always set the colors to raw when using the flat material
         vmv.scene.set_colors_to_raw()
-        return create_flat_material(name='%s_color' % name, color=color, transparent=False)
+        return create_flat_material(name=name, color=color, transparent=False)
 
     # Flat with transparency
     elif material_type == vmv.enums.Shader.FLAT_TRANSPARENT:
         # Always set the colors to raw when using the flat material
         vmv.scene.set_colors_to_raw()
-        return create_flat_material(name='%s_color' % name, color=color, transparent=True)
+        return create_flat_material(name=name, color=color, transparent=True)
 
     # Toon
     elif material_type == vmv.enums.Shader.TOON:
-        return create_toon_material(name='%s_color' % name, color=color)
+        return create_toon_material(name=name, color=color)
 
     # Transparent
     elif material_type == vmv.enums.Shader.TRANSPARENT:
-        return create_transparent_material(name='%s_color' % name, color=color)
+        return create_transparent_material(name=name, color=color)
 
     # Default
     else:

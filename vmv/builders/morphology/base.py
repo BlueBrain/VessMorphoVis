@@ -26,8 +26,10 @@ import bpy
 import vmv
 import vmv.geometry
 import vmv.mesh
+import vmv.consts
 import vmv.scene
 import vmv.skeleton
+import vmv.shading
 import vmv.utilities
 
 
@@ -75,6 +77,9 @@ class MorphologyBuilder:
 
         # Maximum simulation value
         self.maximum_simulation_value = -1 * 1e30
+
+        # The morphology name
+        self.morphology_name = '%s%s' % (morphology.name, vmv.consts.Suffix.MORPHOLOGY_SUFFIX)
 
     ################################################################################################
     # @create_skeleton_materials
@@ -155,4 +160,8 @@ class MorphologyBuilder:
         # Create assets and color-maps, based on what is selected in the morphology panel
         vmv.logger.info('Creating Colormap')
         self.color_map = self.create_color_map(dynamic_colormap=dynamic_colormap)
+
+        # Create the corresponding illumination
+        vmv.shading.create_material_specific_illumination(
+            material_type=self.options.morphology.material)
 

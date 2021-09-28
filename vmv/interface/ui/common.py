@@ -348,3 +348,39 @@ def render_mesh_image(panel,
     # Delete the scale bar, if rendered
     if scene.VMV_RenderMeshScaleBar:
         vmv.scene.delete_object_in_scene(scene_object=scale_bar)
+
+
+####################################################################################################
+# @is_vascular_morphology_in_scene
+####################################################################################################
+def is_vascular_morphology_in_scene():
+    """Makes sure that the morphology is loaded and drawn in the scene.
+
+    :return:
+        True if the morphology skeleton is in the scene, False otherwise.
+    """
+
+    # Make sure that the morphology is loaded and drawn in the scene
+    if vmv.interface.MorphologyObject is not None:
+        if vmv.scene.is_object_in_scene_by_name('%s%s' % (
+                vmv.interface.MorphologyObject.name, vmv.consts.Suffix.MORPHOLOGY_SUFFIX)):
+            return True
+    return False
+
+
+####################################################################################################
+# @is_vascular_mesh_in_scene
+####################################################################################################
+def is_vascular_mesh_in_scene():
+    """Makes sure that the vascular mesh is in the scene.
+
+    :return:
+        True if the vascular mesh is in the scene, False otherwise.
+    """
+
+    # Make sure that the morphology is loaded and drawn in the scene
+    if vmv.interface.MorphologyObject is not None:
+        if vmv.scene.is_object_in_scene_by_name('%s%s' % (
+                vmv.interface.MorphologyObject.name, vmv.consts.Suffix.MESH_SUFFIX)):
+            return True
+    return False

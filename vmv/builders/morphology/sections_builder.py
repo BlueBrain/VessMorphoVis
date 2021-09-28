@@ -53,6 +53,12 @@ class SectionsBuilder(MorphologyBuilder):
     # @get_poly_lines_data_colored_with_single_color
     ################################################################################################
     def get_poly_lines_data_colored_with_single_color(self):
+        """Gets a list of polylines (or polyline data in Blender format) for a morphology
+        color-coded with a single color only.
+
+        :return:
+            A list of polylines.
+        """
 
         # Get the poly-line data of each section
         poly_lines_data = [
@@ -66,6 +72,12 @@ class SectionsBuilder(MorphologyBuilder):
     # @get_poly_lines_data_colored_with_alternating_colors
     ################################################################################################
     def get_poly_lines_data_colored_with_alternating_colors(self):
+        """Gets a list of polylines (or polyline data in Blender format) for a morphology
+        color-coded with alternating colors.
+
+        :return:
+            A list of polylines.
+        """
 
         # Get the poly-line data of each section
         poly_lines_data = [
@@ -80,6 +92,12 @@ class SectionsBuilder(MorphologyBuilder):
     # @get_poly_lines_data_colored_for_short_sections
     ################################################################################################
     def get_poly_lines_data_colored_for_short_sections(self):
+        """Gets a list of polylines (or polyline data in Blender format) for a morphology
+        color-coded with alternating colors to reveal the short sections in the morphology.
+
+        :return:
+            A list of polylines.
+        """
 
         # Get the poly-line data of each section
         poly_lines_data = [
@@ -112,10 +130,11 @@ class SectionsBuilder(MorphologyBuilder):
             self.context.scene.VMV_MaximumValue = str(maximum)
 
         # Get the poly-line data of each section
-        poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_radius(
-                    section=section, minimum=minimum, maximum=maximum, 
-                    color_map_resolution=self.options.morphology.color_map_resolution) \
-                        for section in self.morphology.sections_list] 
+        poly_lines_data = [
+            vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_radius(
+                section=section, minimum=minimum, maximum=maximum,
+                color_map_resolution=self.options.morphology.color_map_resolution)
+            for section in self.morphology.sections_list]
         
         # Return the list 
         return poly_lines_data
@@ -227,8 +246,8 @@ class SectionsBuilder(MorphologyBuilder):
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_number_samples(
                 section=section, minimum=minimum, maximum=maximum,
-                color_map_resolution=self.options.morphology.color_map_resolution) 
-                    for section in self.morphology.sections_list] 
+                color_map_resolution=self.options.morphology.color_map_resolution)
+            for section in self.morphology.sections_list]
         
         # Return the list 
         return poly_lines_data
@@ -267,6 +286,8 @@ class SectionsBuilder(MorphologyBuilder):
     # @get_sections_poly_lines_data
     ################################################################################################
     def get_sections_poly_lines_data(self):
+        """Gets a list of all the polylines that account for the sections in the morphology.
+        """
 
         # Get the data based on the color-coding scheme  
         if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
@@ -299,7 +320,7 @@ class SectionsBuilder(MorphologyBuilder):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
-        vmv.logger.header('Building skeleton: SectionsBuilder')
+        vmv.logger.header('Building Skeleton: SectionsBuilder')
 
         # Call the base function
         super(SectionsBuilder, self).build_skeleton(
@@ -308,13 +329,14 @@ class SectionsBuilder(MorphologyBuilder):
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
             radius=1.0, vertices=self.options.morphology.bevel_object_sides, name='bevel')
+        vmv.scene.hide_object(scene_object=bevel_object)
 
         # Construct sections poly-lines
-        vmv.logger.info('Constructing poly-lines')
+        vmv.logger.info('Constructing Poly-lines')
         poly_lines_data = self.get_sections_poly_lines_data()
 
         # Pre-process the radii
-        vmv.logger.info('Adjusting radii')
+        vmv.logger.info('Adjusting Radii')
         vmv.skeleton.update_poly_lines_radii(poly_lines=poly_lines_data, options=self.options)
 
         # Adaptively resampling the reconstructed sections
@@ -323,22 +345,25 @@ class SectionsBuilder(MorphologyBuilder):
             vmv.skeleton.resample_poly_lines_adaptively(poly_lines=poly_lines_data)
 
         # Construct the final object and add it to the morphology
-        vmv.logger.info('Drawing object')
+        vmv.logger.info('Drawing Object')
         self.morphology_skeleton = vmv.geometry.create_poly_lines_object_from_poly_lines_data(
             poly_lines_data, material=self.options.morphology.material, color_map=self.color_map,
-            name=self.morphology.name, bevel_object=bevel_object)
+            name=self.morphology_name, bevel_object=bevel_object)
         return self.morphology_skeleton
 
     ################################################################################################
     # @load_radius_simulation_data_at_step
     ################################################################################################
     def load_radius_simulation_data_at_step(self,
-                                            time_step):
+                                            time_step,
+                                            context=None):
         """
 
         :param time_step:
         :return:
         """
+
+        self.context = context
 
         for i_section, section in enumerate(self.morphology.sections_list):
 
@@ -351,7 +376,7 @@ class SectionsBuilder(MorphologyBuilder):
                 # Get a reference to the radii
                 radius_list = self.morphology.radius_simulation_data[radius_index - 1]
 
-                point.radius += (radius_list[time_step] * 1)
+                point.radius = radius_list[time_step]
                 point.keyframe_insert('radius', frame=time_step)
 
     ################################################################################################

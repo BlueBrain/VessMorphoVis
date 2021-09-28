@@ -372,7 +372,7 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     # Create the material and append it to the list
     for i, color in enumerate(color_map):
         materials = vmv.shading.create_material(
-            name='%s_color_%d' % ('material', i), color=color, material_type=material)
+            name='%s_%d' % (name, i), color=color, material_type=material)
         materials_list.append(materials)
 
     # Add the materials to the object
@@ -471,8 +471,9 @@ def draw_poly_line(poly_line_data,
 
         # Create a material from a given color
         if color is not None:
+
             # Create a new material (color) and assign it to the line
-            line_material = bpy.data.materials.new('color.%s' % name)
+            line_material = bpy.data.materials.new(name)
             line_material.diffuse_color = color
             line_data.materials.append(line_material)
 

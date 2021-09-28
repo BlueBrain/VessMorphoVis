@@ -48,6 +48,22 @@ def define_visualization_methods_menus():
         default=vmv.enums.Morphology.Builder.SEGMENTS)
 
 
+####################################################################################################
+# @define_visualization_methods_menus
+####################################################################################################
+def define_color_mapping_values():
+
+    # Colormap minimum and maximum values
+    for i in range(vmv.consts.Color.COLORMAP_RESOLUTION):
+        delta = 100.0 / float(vmv.consts.Color.COLORMAP_RESOLUTION)
+        setattr(bpy.types.Scene, 'VMV_R0_Value%d' % i, bpy.props.FloatProperty(
+            name='', default=i * delta, precision=5,
+            min=-1e10, max=1e10, description=''))
+        setattr(bpy.types.Scene, 'VMV_R1_Value%d' % i, bpy.props.FloatProperty(
+            name='', default=(i + 1) * delta, precision=5,
+            min=-1e10, max=1e10, description=''))
+
+
 # Morphology visualization #########################################################################
 # Visualization methods
 define_visualization_methods_menus()
@@ -70,46 +86,24 @@ bpy.types.Scene.VMV_RadiusScaleValue = bpy.props.FloatProperty(
     description='A scale factor for scaling the radii of the tubes between (0.01 and 5.0)',
     default=1.0, min=0.01, max=5.0)
 
-# Shading parameters ###############################################################################
-# Material
-bpy.types.Scene.VMV_MorphologyMaterial = bpy.props.EnumProperty(
-    items=vmv.enums.Shader.SHADER_ITEMS,
-    name='',
-    default=vmv.enums.Shader.LAMBERT_WARD)
 
+# Shading parameters ###############################################################################
 # Segments color-coding
 bpy.types.Scene.VMV_PerSegmentColorCodingBasis = bpy.props.EnumProperty(
     items=vmv.enums.ColorCoding.SEGMENTS_COLOR_CODING_ITEMS,
     name='',
+    description='The color-coding schemes for segment-based visualization.',
     default=vmv.enums.ColorCoding.DEFAULT)
 
 # Sections color-coding
 bpy.types.Scene.VMV_PerSectionColorCodingBasis = bpy.props.EnumProperty(
     items=vmv.enums.ColorCoding.SECTIONS_COLOR_CODING_ITEMS,
     name='',
+    description='The color-coding schemes for section-based visualization.',
     default=vmv.enums.ColorCoding.DEFAULT)
 
-# The alternative color used to color every second object in the morphology
-bpy.types.Scene.VMV_MorphologyColor1 = bpy.props.FloatVectorProperty(
-    name='',
-    subtype='COLOR', default=vmv.consts.Color.VERY_WHITE, min=0.0, max=1.0,
-    description='The first alternating color of the morphology')
-
-# The alternative color used to color every second object in the morphology
-bpy.types.Scene.VMV_MorphologyColor2 = bpy.props.FloatVectorProperty(
-    name='',
-    subtype='COLOR', default=vmv.consts.Color.LIGHT_RED_COLOR, min=0.0, max=1.0,
-    description='The second alternating color of the morphology')
-
-# Colormap minimum and maximum values
-for i in range(vmv.consts.Color.COLORMAP_RESOLUTION):
-    delta = 100.0 / float(vmv.consts.Color.COLORMAP_RESOLUTION)
-    setattr(bpy.types.Scene, 'VMV_R0_Value%d' % i, bpy.props.FloatProperty(
-        name='', default=i * delta,
-        min=0.0, max=1e10, description=''))
-    setattr(bpy.types.Scene, 'VMV_R1_Value%d' % i, bpy.props.FloatProperty(
-        name='', default=(i + 1) * delta,
-        min=0.0, max=1e10, description=''))
+# Color-mapping values
+define_color_mapping_values()
 
 # Rendering parameters #############################################################################
 # Rendering resolution
@@ -123,15 +117,10 @@ bpy.types.Scene.VMV_MorphologyRenderingViews = bpy.props.EnumProperty(
     items=vmv.enums.Rendering.View.VIEW_ITEMS,
     name='View', default=vmv.enums.Rendering.View.FRONT)
 
-# Camera projection
+# Camera projection (ORTHO is the standard)
 bpy.types.Scene.VMV_MorphologyCameraProjection = bpy.props.EnumProperty(
     items=vmv.enums.Rendering.Projection.PROJECTION_ITEMS,
     name='Projection', default=vmv.enums.Rendering.Projection.ORTHOGRAPHIC)
-
-# 360 rendering progress bar
-bpy.types.Scene.VMV_MorphologyRenderingProgress = bpy.props.IntProperty(
-    name='Rendering Progress',
-    default=0, min=0, max=100, subtype='PERCENTAGE')
 
 # Image resolution
 bpy.types.Scene.VMV_MorphologyImageResolution = bpy.props.IntProperty(
@@ -149,6 +138,17 @@ bpy.types.Scene.VMV_RenderMorphologyScaleBar = bpy.props.BoolProperty(
     name='Add Scale Bar',
     description='Add a scale bar overlaid on the resulting image automatically',
     default=False)
+
+# Add background to the final image or set it transparent
+bpy.types.Scene.VMV_TransparentMorphologyBackground = bpy.props.BoolProperty(
+    name='TransparentBackground',
+    description='Set transparent background for the rendered image',
+    default=True)
+
+# 360 rendering progress bar
+bpy.types.Scene.VMV_MorphologyRenderingProgress = bpy.props.IntProperty(
+    name='Rendering Progress',
+    default=0, min=0, max=100, subtype='PERCENTAGE')
 
 # Simulation options ###############################################################################
 # The first time frame of the simulation as loaded from the file

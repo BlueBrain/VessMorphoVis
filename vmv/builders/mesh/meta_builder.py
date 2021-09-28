@@ -308,7 +308,7 @@ class MetaBuilder(MeshBuilder):
 
         # Update its name with the mesh suffix to be able to locate it
         self.mesh = bpy.context.scene.objects[self.morphology.name + '.001']
-        self.mesh.name = self.morphology.name + vmv.consts.Meshing.MESH_SUFFIX
+        self.mesh.name = self.morphology.name + vmv.consts.Suffix.MESH_SUFFIX
 
         # Re-select it again to be able to perform post-processing operations in it
         self.mesh.select_set(True)
@@ -343,6 +343,9 @@ class MetaBuilder(MeshBuilder):
         """
 
         vmv.logger.header('Building Mesh: MetaBalls')
+
+        # Clear the scene
+        vmv.scene.clear_scene()
 
         # Initialize the meta object
         start = time.time()

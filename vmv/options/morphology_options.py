@@ -88,6 +88,28 @@ class MorphologyOptions:
         # Render scale bar to the image, ONLY in case of ORTHOGRAPHIC projection
         self.render_scale_bar = False
 
+        # Load the morphology at the global coordinates, otherwise center it at the origin
+        self.global_coordinates = False
+
+        # Adaptive resampling of the sections to reduce the number of samples
+        self.adaptive_resampling = False
+
+        # Number of sides of the bevel object used to scale the sections
+        # This parameter controls the quality of the reconstructed morphology
+        self.bevel_object_sides = vmv.consts.Bevel.BEVEL_OBJECT_SIDES
+
+        # Morphology material
+        self.material = vmv.enums.Shader.LAMBERT_WARD
+
+        # Color coding scheme
+        self.color_coding = vmv.enums.ColorCoding.DEFAULT
+
+        # Render scale bar to the image, ONLY in case of ORTHOGRAPHIC projection
+        self.render_scale_bar = False
+
+        # Set a transparent background for the rendered image
+        self.transparent_background = True
+
         # Morphology color-map name (this is probably loaded from the CLI)
         self.color_map = vmv.enums.ColorMaps.PLASMA
 
