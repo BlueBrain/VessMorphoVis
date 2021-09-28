@@ -248,7 +248,7 @@ class VMV_RenderMorphology360(bpy.types.Operator):
                 vmv.interface.Options.io.sequences_directory)
 
         # A reference to the bounding box that will be used for the rendering
-        rendering_bbox =vmv.bbox.compute_scene_bounding_box()
+        rendering_bbox = vmv.bbox.compute_scene_bounding_box()
 
         # Compute a 360 bounding box to fit the arbors
         self.bounding_box_360 = vmv.bbox.compute_360_bounding_box(

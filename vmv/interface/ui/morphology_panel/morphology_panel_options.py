@@ -77,13 +77,13 @@ bpy.types.Scene.VMV_SectionsRadii = bpy.props.EnumProperty(
 # Fixed section radius value
 bpy.types.Scene.VMV_FixedRadiusValue = bpy.props.FloatProperty(
     name='Value (micron)',
-    description='The value of the fixed radius in microns between (0.05 and 5.0)',
+    description='The value of the fixed radius in microns between (0.05 and 5.0).',
     default=1.0, min=0.05, max=5.0)
 
 # Tubes radius scale value
 bpy.types.Scene.VMV_RadiusScaleValue = bpy.props.FloatProperty(
     name='Scale',
-    description='A scale factor for scaling the radii of the tubes between (0.01 and 5.0)',
+    description='A scale factor for scaling the radii of the tubes between (0.01 and 5.0).',
     default=1.0, min=0.01, max=5.0)
 
 
@@ -125,24 +125,26 @@ bpy.types.Scene.VMV_MorphologyCameraProjection = bpy.props.EnumProperty(
 # Image resolution
 bpy.types.Scene.VMV_MorphologyImageResolution = bpy.props.IntProperty(
     name='Resolution',
-    description='The resolution of the image generated from rendering the morphology',
-    default=512, min=128, max=1024 * 10)
+    description='The resolution of the image generated from rendering the morphology.',
+    default=vmv.consts.Image.DEFAULT_RESOLUTION,
+    min=vmv.consts.Image.MIN_RESOLUTION,
+    max=vmv.consts.Image.MAX_RESOLUTION)
 
 # Frame scale factor 'for rendering to scale option '
 bpy.types.Scene.VMV_MorphologyImageScaleFactor = bpy.props.FloatProperty(
     name='Scale', default=1.0, min=1.0, max=100.0,
-    description='The scale factor for rendering a morphology to scale')
+    description='The scale factor for rendering a morphology to scale.')
 
 # Render the corresponding scale bar on the resulting image
 bpy.types.Scene.VMV_RenderMorphologyScaleBar = bpy.props.BoolProperty(
     name='Add Scale Bar',
-    description='Add a scale bar overlaid on the resulting image automatically',
+    description='Add a scale bar overlaid on the resulting image automatically.',
     default=False)
 
 # Add background to the final image or set it transparent
 bpy.types.Scene.VMV_TransparentMorphologyBackground = bpy.props.BoolProperty(
     name='TransparentBackground',
-    description='Set transparent background for the rendered image',
+    description='Set transparent background for the rendered image.',
     default=True)
 
 # 360 rendering progress bar
@@ -155,20 +157,20 @@ bpy.types.Scene.VMV_MorphologyRenderingProgress = bpy.props.IntProperty(
 bpy.types.Scene.VMV_FirstSimulationFrame = bpy.props.IntProperty(
     name='',
     description='The first time frame of the simulation as loaded from the morphology file'
-                'This is the typical initial time-step with which the simulation will start from',
+                'This is the typical initial time-step with which the simulation will start from.',
     default=0, min=0, max=1000000)
 
 # The last time frame of the simulation as loaded from the file
 bpy.types.Scene.VMV_LastSimulationFrame = bpy.props.IntProperty(
     name='',
     description='The last time frame of the simulation as loaded from the morphology file'
-                'This is the typical last time-step with which the simulation will end at',
+                'This is the typical last time-step with which the simulation will end at.',
     default=0, min=0, max=1000000)
 
 # Simulation progress bar
 bpy.types.Scene.VMV_SimulationProgressBar = bpy.props.IntProperty(
     name='',
-    description='The time it takes to reconstruct the vasculature mesh',
+    description='The time it takes to reconstruct the vasculature mesh.',
     default=0, min=0, max=100, subtype='PERCENTAGE')
 
 # The icon that will be displayed on the Play/Pause button
@@ -186,5 +188,5 @@ bpy.types.Scene.VMV_MaximumValue = bpy.props.StringProperty(
 # Reconstruction time
 bpy.types.Scene.VMV_MorphologyReconstructionTime = bpy.props.FloatProperty(
     name='Reconstruction Time (Sec)',
-    description='The time it takes to reconstruct the vasculature morphology',
+    description='The time it takes to reconstruct the vasculature morphology.',
     default=0, min=0, max=1000000)

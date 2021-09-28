@@ -48,6 +48,8 @@ def render(bounding_box,
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     :param keep_camera_in_scene:
         Keep the camera used to do the rendering after the rendering is done.
     """
@@ -137,6 +139,8 @@ def render_at_angle(scene_objects,
         The resolution of the image, by default 512.
     :param image_name:
         The name of the image, by default 'SKELETON'.
+    :param add_background_plane:
+        Adds a background plane to the scene.
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
@@ -144,6 +148,10 @@ def render_at_angle(scene_objects,
 
     # Rotate all the objects as if they are a single object
     for scene_object in scene_objects:
+
+        # Ignore the background plane if it exists
+        if scene_object.name == 'background_plane':
+            continue
 
         # Rotate the mesh object around the y axis
         scene_object.rotation_euler[1] = angle * 2 * 3.14 / 360.0

@@ -235,11 +235,6 @@ class Camera:
             vmv.logger.log('WARNING: Scene Bounding Box is Recomputed!')
             bounds = vmv.bbox.compute_scene_bounding_box().bounds
 
-        # Compute the orthographic scale based in the give camera view
-        orthographic_scale = 1.0
-        x_bounds = 0.0
-        y_bounds = 0.0
-
         # Front view
         if camera_view == vmv.enums.Rendering.View.FRONT:
 
@@ -476,6 +471,8 @@ class Camera:
             The name of the image, by default 'IMAGE'.
         :param camera_projection:
             Camera projection either orthographic or perspective.
+        :param add_background_plane:
+            Adds a background plane to the scene.
         :param keep_camera_in_scene:
             Keep the camera in the scene after rendering.
         """
@@ -534,12 +531,12 @@ class Camera:
         self.render_image(image_name=image_name)
 
         # Keep the camera in the scene or delete it after the rendering
-        #if not keep_camera_in_scene:
-        #    vmv.scene.ops.delete_object_in_scene(self.camera)
+        if not keep_camera_in_scene:
+            vmv.scene.ops.delete_object_in_scene(self.camera)
 
         # Delete the background plane
-        #if background_plane is not None:
-        #    vmv.scene.delete_object_in_scene(background_plane)
+        if background_plane is not None:
+            vmv.scene.delete_object_in_scene(background_plane)
 
     ################################################################################################
     # @render_scene_bounding_box
@@ -562,6 +559,8 @@ class Camera:
             A factor to scale the resolution of the image.
         :param image_name:
             The name of the image, by default 'IMAGE'.
+        :param add_background_plane:
+            Adds a background plane to the scene.
         :param keep_camera_in_scene:
             Keep the camera in the scene after rendering.
         """

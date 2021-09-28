@@ -205,7 +205,8 @@ def add_background_plane(bounding_box,
     """
 
     # Front
-    if camera_view == vmv.enums.Rendering.View.FRONT:
+    if camera_view == vmv.enums.Rendering.View.FRONT or \
+       camera_view == vmv.enums.Rendering.View.FRONT_360:
         return add_background_plane_for_front_camera(bounding_box)
 
     # Side
