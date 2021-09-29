@@ -51,7 +51,8 @@ def assign_material_to_background_plane(plane_mesh):
         material = vmv.shading.create_lambert_ward_material(
             name='background',
             color=vmv.consts.Color.VERY_WHITE,
-            specular=vmv.consts.Color.VERY_WHITE)
+            specular=vmv.consts.Color.VERY_WHITE,
+            switch_scene_shading=False)
 
     # Assign it
     vmv.shading.set_material_to_object(mesh_object=plane_mesh, material_reference=material)

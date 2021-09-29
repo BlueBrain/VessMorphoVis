@@ -92,7 +92,8 @@ def load_background_material():
 def create_lambert_ward_material(name,
                                  color=vmv.consts.Color.WHITE,
                                  specular=(1, 1, 1),
-                                 alpha=0.0):
+                                 alpha=0.0,
+                                 switch_scene_shading=True):
     """Creates a a texture material.
 
     :param name:
@@ -127,11 +128,11 @@ def create_lambert_ward_material(name,
         line_material.metallic = 0.0
 
         # Switch the view port shading
-        vmv.scene.switch_scene_shading('SOLID')
-
-        bpy.context.scene.display.shading.light = 'STUDIO'
-        bpy.context.scene.display.shading.studio_light = 'Default'
-        vmv.scene.set_scene_transparency(transparent=False)
+        if switch_scene_shading:
+            vmv.scene.switch_scene_shading('SOLID')
+            bpy.context.scene.display.shading.light = 'STUDIO'
+            bpy.context.scene.display.shading.studio_light = 'Default'
+            vmv.scene.set_scene_transparency(transparent=False)
 
         # Return a reference to the material
         return line_material
@@ -159,7 +160,8 @@ def create_lambert_ward_material(name,
         material_reference.ambient = 1.0
 
         # Switch the view port shading
-        vmv.scene.switch_scene_shading('SOLID')
+        if switch_scene_shading:
+            vmv.scene.switch_scene_shading('SOLID')
 
         # Return a reference to the material
         return material_reference
@@ -549,12 +551,12 @@ def create_material(name,
     # Super electron light
     elif material_type == vmv.enums.Shader.SUPER_ELECTRON_LIGHT:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='super-electron-light')
+            name=name, color=color, shader_name='super-electron-dark')
 
     # Super electron dark
     elif material_type == vmv.enums.Shader.SUPER_ELECTRON_DARK:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='super-electron-dark')
+            name=name, color=color, shader_name='super-electron-light')
 
     # Electron light
     elif material_type == vmv.enums.Shader.ELECTRON_LIGHT:
