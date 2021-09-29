@@ -271,7 +271,8 @@ class VMV_RenderMeshImage(bpy.types.Operator):
         # Render the mesh image
         vmv.render_mesh_image(panel=self, scene=context.scene,
                               rendering_view=vmv.interface.Options.mesh.camera_view,
-                              camera_projection=vmv.interface.Options.mesh.camera_projection)
+                              camera_projection=vmv.interface.Options.mesh.camera_projection,
+                              add_background_plane=not vmv.Options.mesh.transparent_background)
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Mesh Done')

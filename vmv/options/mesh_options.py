@@ -87,6 +87,9 @@ class MeshOptions:
         # Render scale bar on the image
         self.render_scale_bar = False
 
+        # Use transparent background
+        self.transparent_background = True
+
         # Render a static frame of the mesh
         self.render = False
 

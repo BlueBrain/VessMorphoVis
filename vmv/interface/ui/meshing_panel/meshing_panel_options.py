@@ -21,11 +21,6 @@ import bpy
 # Internal imports
 import vmv.utilities
 
-# Meshing parameters ###############################################################################
-
-
-
-
 # Rendering parameters #############################################################################
 # Rendering resolution
 bpy.types.Scene.VMV_MeshRenderingResolution = bpy.props.EnumProperty(
@@ -64,6 +59,12 @@ bpy.types.Scene.VMV_RenderMeshScaleBar = bpy.props.BoolProperty(
     name='Add Scale Bar',
     description='Add a scale bar overlaid on the resulting image automatically',
     default=False)
+
+# Add background to the final image or set it transparent
+bpy.types.Scene.VMV_TransparentMeshBackground = bpy.props.BoolProperty(
+    name='TransparentBackground',
+    description='Set transparent background for the rendered image.',
+    default=True)
 
 # Exported mesh file formats
 bpy.types.Scene.VMV_ExportedMeshFormat = bpy.props.EnumProperty(

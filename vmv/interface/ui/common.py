@@ -293,7 +293,8 @@ def render_morphology_image(panel,
 def render_mesh_image(panel,
                       scene,
                       rendering_view,
-                      camera_projection):
+                      camera_projection,
+                      add_background_plane):
     """Renders an image of  mesh in the scene.
 
     :param panel:
@@ -334,7 +335,8 @@ def render_mesh_image(panel,
             camera_projection=camera_projection,
             image_resolution=scene.VMV_MeshFrameResolution,
             image_name=image_name,
-            image_directory=vmv.interface.Options.io.images_directory)
+            image_directory=vmv.interface.Options.io.images_directory,
+            add_background_plane=add_background_plane)
 
     # Render at a specific SCALE FACTOR
     else:
@@ -343,7 +345,8 @@ def render_mesh_image(panel,
             camera_view=rendering_view,
             image_scale_factor=scene.VMV_MeshFrameScaleFactor,
             image_name=image_name,
-            image_directory=vmv.interface.Options.io.images_directory)
+            image_directory=vmv.interface.Options.io.images_directory,
+            add_background_plane=add_background_plane)
 
     # Delete the scale bar, if rendered
     if scene.VMV_RenderMeshScaleBar:

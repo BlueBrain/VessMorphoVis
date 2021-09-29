@@ -711,6 +711,88 @@ def create_glossy_material(name,
 
 
 ####################################################################################################
+# @create_marble_material
+####################################################################################################
+def create_marble_material(name,
+                           color=vmv.consts.Color.WHITE):
+    """Creates a glossy shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    current_scene.render.engine = 'CYCLES'
+
+    # Use 64 samples per pixel to create a nice image.
+    bpy.context.scene.cycles.samples = 64
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='marble')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    material_reference.node_tree.nodes["RGB"].outputs[0].default_value[0] = color[0]
+    material_reference.node_tree.nodes["RGB"].outputs[0].default_value[1] = color[1]
+    material_reference.node_tree.nodes["RGB"].outputs[0].default_value[2] = color[2]
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
+# @create_marble_material
+####################################################################################################
+def create_cracky_material(name,
+                           color=vmv.consts.Color.WHITE):
+    """Creates a glossy shader.
+
+    :param name:
+        Material name
+    :param color:
+        Material color.
+    :return:
+        A reference to the material.
+    """
+
+    # Get active scene
+    current_scene = bpy.context.scene
+
+    # Switch the rendering engine to cycles to be able to create the material
+    current_scene.render.engine = 'CYCLES'
+
+    # Use 64 samples per pixel to create a nice image.
+    bpy.context.scene.cycles.samples = 64
+
+    # Import the material from the library
+    material_reference = import_shader(shader_name='cracked')
+
+    # Rename the material
+    material_reference.name = str(name)
+
+    material_reference.node_tree.nodes["RGB"].outputs[0].default_value[0] = color[0]
+    material_reference.node_tree.nodes["RGB"].outputs[0].default_value[1] = color[1]
+    material_reference.node_tree.nodes["RGB"].outputs[0].default_value[2] = color[2]
+
+    # Switch the view port shading
+    vmv.scene.switch_scene_shading('MATERIAL')
+
+    # Return a reference to the material
+    return material_reference
+
+
+####################################################################################################
 # @load_background_material
 ####################################################################################################
 def load_background_material():
@@ -829,12 +911,12 @@ def create_material(name,
         return create_glossy_material(name=name, color=color)
 
     # Glossy
-    elif material_type == vmv.enums.Shader.WAX:
-        return create_glossy_material(name=name, color=color)
+    elif material_type == vmv.enums.Shader.MARBLE:
+        return create_marble_material(name=name, color=color)
 
     # Glossy bumpy
-    elif material_type == vmv.enums.Shader.GLOSSY_BUMPY:
-        return create_glossy_bumpy_material(name=name, color=color)
+    elif material_type == vmv.enums.Shader.CRACKY:
+        return create_cracky_material(name=name, color=color)
 
     # Wire frame
     elif material_type == vmv.enums.Shader.WIRE_FRAME:

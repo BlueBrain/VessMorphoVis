@@ -198,6 +198,11 @@ def add_rendering_options(layout,
     layout.row().prop(scene, 'VMV_RenderMeshScaleBar')
     vmv.interface.Options.mesh.render_scale_bar = scene.VMV_RenderMeshScaleBar
 
+    # Background
+    background_row = layout.row()
+    background_row.prop(scene, 'VMV_TransparentMeshBackground')
+    options.mesh.transparent_background = scene.VMV_TransparentMeshBackground
+
     # Rendering button
     layout.row().operator('render_mesh.image', icon='MESH_DATA')
 
