@@ -15,9 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import copy
-
 # Blender imports
 import math
 

@@ -64,64 +64,15 @@ class VMV_RenderMorphologyImage(bpy.types.Operator):
             self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
             return {'FINISHED'}
 
-        # Create the images directory if it does not exist
-        if not vmv.file.ops.path_exists(vmv.interface.Options.io.images_directory):
-            vmv.file.ops.clean_and_create_directory(vmv.interface.Options.io.images_directory)
-
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Morphology ... Wait Please')
 
-        # Compute the bounding box for the available meshes only
-        bounding_box = vmv.bbox.compute_scene_bounding_box()
-
-        # Image name
-        image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.Options.morphology.label,
-                                           vmv.Options.morphology.camera_view)
-
-        # Stretch the bounding box by few microns
-        rendering_bbox = copy.deepcopy(bounding_box)
-        rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
-
-        # Adding the illumination
-        vmv.shading.create_material_specific_illumination(
-            vmv.interface.Options.morphology.material)
-
-        # Draw the morphology scale bar
-        if context.scene.VMV_RenderMorphologyScaleBar:
-            scale_bar = vmv.interface.draw_scale_bar(
-                bounding_box=bounding_box,
-                material_type=vmv.interface.Options.morphology.material,
-                view=vmv.Options.morphology.camera_view)
-
-        # Render at a specific resolution
-        if context.scene.VMV_MorphologyRenderingResolution == \
-                vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
-
-            # Render the morphology
-            vmv.rendering.render(
-                bounding_box=rendering_bbox,
-                camera_view=vmv.Options.morphology.camera_view,
-                camera_projection=vmv.Options.morphology.camera_projection,
-                image_resolution=context.scene.VMV_MorphologyImageResolution,
-                image_name=image_name,
-                image_directory=vmv.interface.Options.io.images_directory,
-                add_background_plane=not vmv.Options.morphology.transparent_background)
-
-        # Render at a specific scale factor
-        else:
-
-            # Render the morphology
-            vmv.rendering.render_to_scale(
-                bounding_box=rendering_bbox,
-                camera_view=vmv.Options.morphology.camera_view,
-                image_scale_factor=context.scene.VMV_MorphologyImageScaleFactor,
-                image_name=image_name,
-                image_directory=vmv.interface.Options.io.images_directory,
-                add_background_plane=not vmv.Options.morphology.transparent_background)
-
-        # Delete the morphology scale bar, if rendered
-        if context.scene.VMV_RenderMorphologyScaleBar:
-            vmv.scene.delete_object_in_scene(scene_object=scale_bar)
+        # Render the morphology image
+        vmv.render_morphology_image(
+            panel=self, scene=context.scene,
+            rendering_view=vmv.interface.Options.morphology.camera_view,
+            camera_projection=vmv.interface.Options.morphology.camera_projection,
+            add_background_plane=not vmv.Options.morphology.transparent_background)
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')

@@ -94,6 +94,8 @@ def render_to_scale(bounding_box,
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     :param keep_camera_in_scene:
         Keep the camera used to do the rendering after the rendering is done.
     """
@@ -187,6 +189,8 @@ def render_at_angle_to_scale(scene_objects,
         The factor used to scale the resolution of the image the image, by default 1.
     :param image_name:
         The name of the image, by default 'SKELETON'.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
@@ -205,5 +209,3 @@ def render_at_angle_to_scale(scene_objects,
                     image_name=image_name,
                     add_background_plane=add_background_plane,
                     keep_camera_in_scene=False)
-
-

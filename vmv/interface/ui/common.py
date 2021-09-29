@@ -205,86 +205,72 @@ def configure_output_directory(options,
 ####################################################################################################
 def render_morphology_image(panel,
                             scene,
-                            view):
-    """Renders an image of the morphology reconstructed in the scene.
+                            rendering_view,
+                            camera_projection,
+                            add_background_plane):
+    """Renders an image of morphology in the scene.
 
     :param panel:
-        UI Panel.
+       UI Panel.
     :param scene:
-        A reference to the Blender scene.
-    :param view:
-        Rendering view.
+       A reference to the Blender scene.
+    :param rendering_view:
+       Rendering view.
+    :param camera_projection:
+       The projection of the camera.
+    :param add_background_plane:
+       Adds a background plane to the final image.
     """
 
-    # Validate the output directory
-    vmv.interface.ui.validate_output_directory(
-        panel=panel, scene=scene)
+    # Verify the presence of the images directory
+    vmv.interface.verify_images_directory(panel=panel)
 
-    # Create the images directory if it does not exist
-    if not vmv.file.ops.path_exists(Globals.Options.io.images_directory):
-        vmv.file.ops.clean_and_create_directory(Globals.Options.io.images_directory)
+    # Compute the bounding box for the available meshes only
+    bounding_box = vmv.bbox.compute_scene_bounding_box()
 
-    # Report the process starting in the UI
-    panel.report({'INFO'}, 'Rendering ... Wait')
+    # Image name
+    image_name = 'MORPHOLOGY_%s_%s' % (vmv.interface.Options.morphology.label, rendering_view)
 
-    # Compute the bounding box for a close up view
-    if scene.MorphologyRenderingView == \
-            vmv.enums.Rendering.View.CLOSE_UP_VIEW:
+    # Stretch the bounding box by few microns and some distance to highlight the rendering
+    rendering_bbox = copy.deepcopy(bounding_box)
+    rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
+    rendering_bbox.extend_bbox(bounding_box.compute_diagonal() * 0.1)
 
-        # Compute the bounding box for a close up view
-        bounding_box = vmv.bbox.compute_unified_extent_bounding_box(
-            extent=scene.MeshCloseUpSize)
-
-    # Compute the bounding box for a mid shot view
-    elif scene.MorphologyRenderingView == \
-            vmv.enums.Rendering.View.MID_SHOT_VIEW:
-
-        # Compute the bounding box for the available meshes only
-        bounding_box = vmv.bbox.compute_scene_bounding_box_for_curves()
-
-    # Compute the bounding box for the wide shot view that correspond to the whole morphology
-    else:
-
-        # Compute the full morphology bounding box
-        bounding_box = vmv.skeleton.compute_full_morphology_bounding_box(
-            morphology=vmv.interface.ui_morphology)
-
-    # Get the view prefix
-    if view == vmv.enums.Rendering.View.FRONT:
-        view_prefix = 'FRONT'
-    elif view == vmv.enums.Rendering.View.SIDE:
-        view_prefix = 'SIDE'
-    elif view == vmv.enums.Rendering.View.TOP:
-        view_prefix = 'TOP'
-    else:
-        view_prefix = ''
+    # Draw the morphology scale bar
+    if scene.VMV_RenderMorphologyScaleBar:
+        scale_bar = vmv.interface.draw_scale_bar(
+            bounding_box=bounding_box,
+            material_type=vmv.interface.Options.morphology.material,
+            view=vmv.Options.morphology.camera_view)
 
     # Render at a specific resolution
-    if scene.RenderingType == \
-            vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
+    if scene.VMV_MorphologyRenderingResolution == vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
 
-        # Render the image
+        # Render the morphology
         vmv.rendering.render(
-            bounding_box=bounding_box,
-            camera_view=view,
+            bounding_box=rendering_bbox,
+            camera_view=rendering_view,
+            camera_projection=camera_projection,
             image_resolution=scene.VMV_MorphologyImageResolution,
-            image_name='MORPHOLOGY_%s_%s' % (view_prefix, Globals.Options.morphology.label),
-            image_directory=Globals.Options.io.images_directory,
-            keep_camera_in_scene=scene.KeepMeshCameras)
+            image_name=image_name,
+            image_directory=vmv.interface.Options.io.images_directory,
+            add_background_plane=add_background_plane)
 
     # Render at a specific scale factor
     else:
 
-        # Render the image
+        # Render the morphology
         vmv.rendering.render_to_scale(
-            bounding_box=bounding_box,
-            camera_view=view,
+            bounding_box=rendering_bbox,
+            camera_view=vmv.Options.morphology.camera_view,
             image_scale_factor=scene.VMV_MorphologyImageScaleFactor,
-            image_name='MORPHOLOGY_%s_%s' % (view_prefix, Globals.Options.morphology.label),
-            image_directory=Globals.Options.io.images_directory)
+            image_name=image_name,
+            image_directory=vmv.interface.Options.io.images_directory,
+            add_background_plane=add_background_plane)
 
-    # Report the process termination in the UI
-    panel.report({'INFO'}, 'Rendering Done')
+    # Delete the morphology scale bar, if rendered
+    if scene.VMV_RenderMorphologyScaleBar:
+        vmv.scene.delete_object_in_scene(scene_object=scale_bar)
 
 
 ####################################################################################################
@@ -305,6 +291,8 @@ def render_mesh_image(panel,
         Rendering view.
     :param camera_projection:
         The projection of the camera.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     """
 
     # Verify the presence of the images directory
@@ -319,6 +307,7 @@ def render_mesh_image(panel,
     # Stretch the bounding box by few microns
     rendering_bbox = copy.deepcopy(bounding_box)
     rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
+    rendering_bbox.extend_bbox(bounding_box.compute_diagonal() * 0.1)
 
     # Draw the scale bar
     if scene.VMV_RenderMeshScaleBar:

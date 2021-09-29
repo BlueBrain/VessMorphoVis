@@ -104,6 +104,8 @@ def create_lambert_ward_material(name,
         Specular component.
     :param alpha:
         Transparency value, default opaque alpha = 0.
+    :param switch_scene_shading:
+        Enabled to switch the scene shading based on the rendering engine.
     :return:
         A reference to the material.
     """
@@ -570,17 +572,17 @@ def create_material(name,
 
     # Glossy
     elif material_type == vmv.enums.Shader.GLOSSY:
-        return create_default_cycles_material(
+        return create_shady_cycles_material(
             name=name, color=color, shader_name='glossy')
 
     # Glossy
     elif material_type == vmv.enums.Shader.MARBLE:
-        return create_default_cycles_material(
+        return create_shady_cycles_material(
             name=name, color=color, shader_name='marble')
 
     # Cracky
     elif material_type == vmv.enums.Shader.CRACKY:
-        return create_default_cycles_material(
+        return create_shady_cycles_material(
             name=name, color=color, shader_name='cracky')
 
     # Wire frame
