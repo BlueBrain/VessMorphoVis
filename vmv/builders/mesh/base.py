@@ -130,6 +130,4 @@ class MeshBuilder:
         vmv.shading.set_material_to_object(self.mesh, self.materials[0])
 
         # Activate the mesh object
-        vmv.scene.select_objects([self.mesh])
-        #bpy.context.view_layer.objects.active = self.mesh
-
+        vmv.scene.set_active_object(self.mesh)
