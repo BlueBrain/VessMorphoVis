@@ -148,9 +148,6 @@ class VMV_LoadMorphology(bpy.types.Operator):
             # Switch to full view along some axis
             vmv.utilities.view_all_from_projection()
 
-            # Update the viewport shading
-            vmv.utilities.update_view_port_shading_to_solid()
-
             # Show the loading time
             drawing_done = time.time()
             context.scene.VMV_MorphologyDrawingTime = drawing_done - loading_done

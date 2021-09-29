@@ -38,7 +38,7 @@ def add_input_options(layout,
 
     # Input data options
     input_data_row = layout.row()
-    input_data_row.label(text='Input Data:', icon='LIBRARY_DATA_DIRECT')
+    input_data_row.label(text='Input Data', icon='LIBRARY_DATA_DIRECT')
 
     # Input morphology file
     morphology_file_row = layout.row()
@@ -86,7 +86,7 @@ def add_output_options(layout,
 
     # Output options
     output_data_options = layout.row()
-    output_data_options.label(text='Output Options:', icon='NEWFOLDER')
+    output_data_options.label(text='Output Options', icon='NEWFOLDER')
     show_hide_elements.append(output_data_options)
 
     # Output directory
@@ -153,7 +153,7 @@ def add_file_content_summary(layout,
 
     # File summary
     row = layout.row()
-    row.label(text='File Summary:', icon='BORDERMOVE')
+    row.label(text='File Summary', icon='BORDERMOVE')
 
     # Just put them all in a single column
     column = layout.column()
@@ -193,7 +193,7 @@ def add_statistics(layout,
 
     # Stats
     morphology_stats_row = layout.row()
-    morphology_stats_row.label(text='Stats:', icon='RECOVER_LAST')
+    morphology_stats_row.label(text='Stats', icon='RECOVER_LAST')
 
     # Loading time
     loading_time_row = layout.row()

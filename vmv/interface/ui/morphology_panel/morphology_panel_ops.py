@@ -77,21 +77,24 @@ def define_morphology_visualization_type_items():
 
 
 ####################################################################################################
-# @add_colormap_options
+# @add_visualization_type_options
 ####################################################################################################
 def add_visualization_type_options(layout,
                                    scene,
                                    options):
 
-    # Visualization type
-    visualization_type_row = layout.row()
-    vmv.interface.CurrentVisualizationType = copy.deepcopy(options.morphology.visualization_type)
-    visualization_type_row.prop(scene, 'VMV_VisualizationType')
-    options.morphology.visualization_type = scene.VMV_VisualizationType
+    # Make sure that the morphology is loaded
+    if vmv.interface.MorphologyObject is not None:
 
-    if scene.VMV_VisualizationType != vmv.interface.CurrentVisualizationType:
-        vmv.interface.SimulationLoaded = False
-    vmv.interface.CurrentVisualizationType = copy.deepcopy(scene.VMV_VisualizationType)
+        # Visualization type
+        visualization_type_row = layout.row()
+        vmv.interface.CurrentVisualizationType = copy.deepcopy(options.morphology.visualization_type)
+        visualization_type_row.prop(scene, 'VMV_VisualizationType')
+        options.morphology.visualization_type = scene.VMV_VisualizationType
+
+        if scene.VMV_VisualizationType != vmv.interface.CurrentVisualizationType:
+            vmv.interface.SimulationLoaded = False
+        vmv.interface.CurrentVisualizationType = copy.deepcopy(scene.VMV_VisualizationType)
 
 
 ####################################################################################################
@@ -577,11 +580,11 @@ def add_morphology_rendering_options(layout,
 
     # Rendering options
     rendering_row = layout.row()
-    rendering_row.label(text='Rendering Options:', icon='RENDER_STILL')
+    rendering_row.label(text='Rendering Options', icon='RENDER_STILL')
 
     # Rendering resolution
     rendering_resolution_row = layout.row()
-    rendering_resolution_row.label(text='Resolution:')
+    rendering_resolution_row.label(text='Resolution')
     rendering_resolution_row.prop(scene, 'VMV_MorphologyRenderingResolution', expand=True)
 
     # Add the frame resolution option
@@ -590,7 +593,7 @@ def add_morphology_rendering_options(layout,
 
         # Frame resolution option (only for the close up mode)
         frame_resolution_row = layout.row()
-        frame_resolution_row.label(text='Frame Resolution:')
+        frame_resolution_row.label(text='Frame Resolution')
         frame_resolution_row.prop(scene, 'VMV_MorphologyImageResolution')
         options.morphology.resolution_basis = \
             scene.VMV_MorphologyRenderingResolution
@@ -600,7 +603,7 @@ def add_morphology_rendering_options(layout,
 
         # Scale factor option
         scale_factor_row = layout.row()
-        scale_factor_row.label(text='Resolution Scale:')
+        scale_factor_row.label(text='Resolution Scale')
         scale_factor_row.prop(scene, 'VMV_MorphologyImageScaleFactor')
         options.morphology.resolution_scale_factor = \
             scene.VMV_MorphologyImageScaleFactor
@@ -626,7 +629,7 @@ def add_morphology_rendering_options(layout,
 
     # Render animation row
     render_animation_row = layout.row()
-    render_animation_row.label(text='Render Animation:', icon='CAMERA_DATA')
+    render_animation_row.label(text='Render Animation', icon='CAMERA_DATA')
     render_animations_buttons_row = layout.row(align=True)
     render_animations_buttons_row.operator('render_morphology.360', icon='FORCE_MAGNETIC')
 
@@ -660,7 +663,7 @@ def draw_morphology_export_options(layout,
 
     # Saving meshes parameters
     save_mesh_row = layout.row()
-    save_mesh_row.label(text='Export Morphology As:', icon='MESH_UVSPHERE')
+    save_mesh_row.label(text='Export Morphology As', icon='MESH_UVSPHERE')
 
     # Exported format column
     format_column = layout.column()

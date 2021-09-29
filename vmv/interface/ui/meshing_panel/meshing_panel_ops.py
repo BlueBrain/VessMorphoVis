@@ -36,7 +36,7 @@ def add_meshing_options(layout,
     """
 
     # Title
-    layout.row().label(text='Meshing Options:', icon='SURFACE_DATA')
+    layout.row().label(text='Meshing Options', icon='SURFACE_DATA')
 
     # Meshing technique
     layout.row().prop(scene, 'VMV_MeshingTechnique', icon='OUTLINER_OB_EMPTY')
@@ -89,7 +89,7 @@ def add_mesh_reconstruction_button(layout,
     """
 
     # Title
-    layout.row().label(text='Mesh Reconstruction:', icon='PARTICLE_POINT')
+    layout.row().label(text='Mesh Reconstruction', icon='PARTICLE_POINT')
 
     # Mesh reconstruction button
     layout.row().operator('reconstruct.mesh', icon='MESH_DATA')
@@ -98,7 +98,7 @@ def add_mesh_reconstruction_button(layout,
     if vmv.interface.MorphologyLoaded:
 
         # Title
-        layout.row().label(text='Stats:', icon='RECOVER_LAST')
+        layout.row().label(text='Stats', icon='RECOVER_LAST')
 
         # Reconstruction time
         row = layout.row()
@@ -123,7 +123,7 @@ def add_color_options(layout,
     """
 
     # Title
-    layout.row().label(text='Colors & Shaders:', icon='COLOR')
+    layout.row().label(text='Colors & Shaders', icon='COLOR')
 
     # Mesh shader
     layout.row().prop(scene, 'VMV_MeshShader')
@@ -151,24 +151,24 @@ def add_rendering_options(layout,
     """
 
     # Title
-    layout.row().label(text='Rendering Options:', icon='RENDER_STILL')
+    layout.row().label(text='Rendering Options', icon='RENDER_STILL')
 
     # Rendering resolution
     row = layout.row()
-    row.label(text='Resolution:')
+    row.label(text='Resolution')
     row.prop(scene, 'VMV_MeshRenderingResolution', expand=True)
 
     # If a fixed resolution is set
     if scene.VMV_MeshRenderingResolution == vmv.enums.Rendering.Resolution.FIXED_RESOLUTION:
         row = layout.row()
-        row.label(text='Frame Resolution:')
+        row.label(text='Frame Resolution')
         row.prop(scene, 'VMV_MeshFrameResolution')
         row.enabled = True
 
     # Otherwise, add the scale factor option
     else:
         row = layout.row()
-        row.label(text='Resolution Scale:')
+        row.label(text='Resolution Scale')
         row.prop(scene, 'VMV_MeshFrameScaleFactor')
         row.enabled = True
 
@@ -207,7 +207,7 @@ def add_rendering_options(layout,
     layout.row().operator('render_mesh.image', icon='MESH_DATA')
 
     # Render animation row
-    layout.row().label(text='Render Animation:', icon='CAMERA_DATA')
+    layout.row().label(text='Render Animation', icon='CAMERA_DATA')
     row = layout.row(align=True)
     row.operator('render_mesh.360', icon='FORCE_MAGNETIC')
     row.enabled = True
@@ -237,7 +237,7 @@ def add_mesh_export_options(layout,
     """
 
     # Title
-    layout.row().label(text='Export Mesh As:', icon='MESH_UVSPHERE')
+    layout.row().label(text='Export Mesh As', icon='MESH_UVSPHERE')
 
     # Exported format
     layout.row().prop(scene, 'VMV_ExportedMeshFormat', icon='GROUP_VERTEX')
