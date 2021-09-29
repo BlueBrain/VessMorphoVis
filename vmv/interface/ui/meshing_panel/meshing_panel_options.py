@@ -82,3 +82,9 @@ bpy.types.Scene.VMV_MeshReconstructionTime = bpy.props.FloatProperty(
     name='Reconstruction Time (Sec)',
     description='The time it takes to reconstruct the vasculature mesh',
     default=0, min=0, max=1000000)
+
+# Rendering time
+bpy.types.Scene.VMV_MeshRenderingTime = bpy.props.FloatProperty(
+    name='Rendering (Sec)',
+    description='The time it takes to render the mesh into an image',
+    default=0, min=0, max=1000000)

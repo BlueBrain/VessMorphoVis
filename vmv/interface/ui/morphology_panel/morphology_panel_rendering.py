@@ -17,10 +17,10 @@
 
 # System imports
 import math
+import time
 
 # Blender imports
 import bpy
-import copy
 
 # Internal imports
 import vmv.bbox
@@ -67,12 +67,21 @@ class VMV_RenderMorphologyImage(bpy.types.Operator):
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Morphology ... Wait Please')
 
+        # Start timer
+        start_rendering = time.time()
+
         # Render the morphology image
         vmv.render_morphology_image(
             panel=self, scene=context.scene,
             rendering_view=vmv.interface.Options.morphology.camera_view,
             camera_projection=vmv.interface.Options.morphology.camera_projection,
             add_background_plane=not vmv.Options.morphology.transparent_background)
+
+        # End timer
+        end_rendering = time.time()
+
+        # Update the panel
+        context.scene.VMV_MorphologyRenderingTime = end_rendering - start_rendering
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Morphology Done')
@@ -93,6 +102,7 @@ class VMV_RenderMorphology360(bpy.types.Operator):
     # Timer parameters
     event_timer = None
     timer_limits = 0
+    start_time = 0
 
     # 360 bounding box
     bounding_box_360 = None
@@ -118,6 +128,10 @@ class VMV_RenderMorphology360(bpy.types.Operator):
 
         # Cancelling event, if using right click or exceeding the time limit of the simulation
         if event.type in {'RIGHTMOUSE', 'ESC'} or self.timer_limits > 360:
+
+            # Stats.
+            rendering_time = time.time()
+            context.scene.VMV_MorphologyRenderingTime = rendering_time - self.start_time
 
             # Reset the timer limits
             self.timer_limits = 0
@@ -198,6 +212,9 @@ class VMV_RenderMorphology360(bpy.types.Operator):
             vmv.file.ops.clean_and_create_directory(
                 vmv.interface.Options.io.sequences_directory)
 
+        # Timer
+        self.start_time = time.time()
+
         # A reference to the bounding box that will be used for the rendering
         rendering_bbox = vmv.bbox.compute_scene_bounding_box()
 
@@ -256,6 +273,7 @@ class VMV_RenderSimulation(bpy.types.Operator):
     # Timer parameters
     event_timer = None
     timer_limits = 0
+    start_time = 0
 
     # 360 bounding box
     bounding_box = None
@@ -281,6 +299,10 @@ class VMV_RenderSimulation(bpy.types.Operator):
 
             # Reset the timer limits
             self.timer_limits = 0
+
+            # Stats.
+            rendering_time = time.time()
+            context.scene.VMV_MorphologyRenderingTime = rendering_time - self.start_time
 
             # Refresh the panel context
             self.cancel(context)
@@ -365,6 +387,9 @@ class VMV_RenderSimulation(bpy.types.Operator):
         if not vmv.file.ops.path_exists(vmv.interface.Options.io.sequences_directory):
             vmv.file.ops.clean_and_create_directory(
                 vmv.interface.Options.io.sequences_directory)
+
+        # Timer
+        self.start_time = time.time()
 
         # A reference to the bounding box that will be used for the rendering
         self.bounding_box = vmv.bbox.compute_scene_bounding_box()

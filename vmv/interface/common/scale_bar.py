@@ -19,6 +19,7 @@
 import math
 
 # Blender imports
+import bpy
 from mathutils import Vector
 
 # Internal imports
@@ -193,8 +194,13 @@ def create_default_scale_bar_legend(scale_bar_length,
         mesh_list=[scale_bar_segment, value_text_object], name='Scale Bar Legend')
 
     # Assign the materials to the scale bar and the font object
-    material = vmv.skeleton.create_single_material(
-        name='scale_bar_legend', material_type=material_type, color=color)
+    # If CYCLES, then use the glossy one
+    if bpy.context.scene.render.engine == 'CYCLES':
+        material = vmv.shading.create_shady_cycles_material(
+            name='scale_bar_legend', color=color, shader_name='emission')
+    else:
+        material = vmv.skeleton.create_single_material(
+            name='scale_bar_legend', material_type=material_type, color=color)
     vmv.shading.set_material_to_object(mesh_object=scale_bar_legend, material_reference=material)
 
     # Return a reference to the scale bar legend 

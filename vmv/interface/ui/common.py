@@ -234,12 +234,12 @@ def render_morphology_image(panel,
     # Stretch the bounding box by few microns and some distance to highlight the rendering
     rendering_bbox = copy.deepcopy(bounding_box)
     rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
-    rendering_bbox.extend_bbox(bounding_box.compute_diagonal() * 0.1)
+    rendering_bbox.extend_bbox(delta=bounding_box.compute_diagonal() * 0.1)
 
     # Draw the morphology scale bar
     if scene.VMV_RenderMorphologyScaleBar:
         scale_bar = vmv.interface.draw_scale_bar(
-            bounding_box=bounding_box,
+            bounding_box=rendering_bbox,
             material_type=vmv.interface.Options.morphology.material,
             view=vmv.Options.morphology.camera_view)
 
@@ -307,7 +307,7 @@ def render_mesh_image(panel,
     # Stretch the bounding box by few microns
     rendering_bbox = copy.deepcopy(bounding_box)
     rendering_bbox.extend_bbox(delta=vmv.consts.Image.GAP_DELTA)
-    rendering_bbox.extend_bbox(bounding_box.compute_diagonal() * 0.1)
+    rendering_bbox.extend_bbox(delta=bounding_box.compute_diagonal() * 0.1)
 
     # Draw the scale bar
     if scene.VMV_RenderMeshScaleBar:
