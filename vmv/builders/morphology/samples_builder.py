@@ -97,6 +97,10 @@ class SamplesBuilder(MorphologyBuilder):
         # Assign the material
         vmv.shading.set_material_to_object(self.morphology_skeleton, material)
 
+        # Create the corresponding illumination
+        vmv.shading.create_material_specific_illumination(
+            material_type=self.options.morphology.material)
+
     ################################################################################################
     # @build_skeleton
     ################################################################################################

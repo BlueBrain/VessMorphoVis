@@ -479,7 +479,8 @@ def create_default_cycles_material(name,
 ####################################################################################################
 def create_shady_cycles_material(name,
                                  color,
-                                 shader_name):
+                                 shader_name,
+                                 samples_per_pixel=64):
     """Create a shady cycles material.
 
     :param name:
@@ -488,6 +489,8 @@ def create_shady_cycles_material(name,
         Material RGB.
     :param shader_name:
         The name of the shader file with which we will load the material.
+    :param samples_per_pixel:
+        Samples per pixel, by default 64.
     :return:
         A reference to the created material.
     """
@@ -499,7 +502,7 @@ def create_shady_cycles_material(name,
     current_scene.render.engine = 'CYCLES'
 
     # Use only 2 samples
-    bpy.context.scene.cycles.samples = vmv.consts.Image.DEFAULT_SPP
+    bpy.context.scene.cycles.samples = samples_per_pixel
 
     # Import the material from the library
     material = import_shader(shader_name=shader_name)
@@ -553,37 +556,37 @@ def create_material(name,
     # Super electron light
     elif material_type == vmv.enums.Shader.SUPER_ELECTRON_LIGHT:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='super-electron-dark')
+            name=name, color=color, shader_name='super-electron-dark', samples_per_pixel=8)
 
     # Super electron dark
     elif material_type == vmv.enums.Shader.SUPER_ELECTRON_DARK:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='super-electron-light')
+            name=name, color=color, shader_name='super-electron-light', samples_per_pixel=8)
 
     # Electron light
     elif material_type == vmv.enums.Shader.ELECTRON_LIGHT:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='electron-light')
+            name=name, color=color, shader_name='electron-light', samples_per_pixel=8)
 
     # Electron dark
     elif material_type == vmv.enums.Shader.ELECTRON_DARK:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='electron-dark')
+            name=name, color=color, shader_name='electron-dark', samples_per_pixel=8)
 
     # Glossy
     elif material_type == vmv.enums.Shader.GLOSSY:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='glossy')
+            name=name, color=color, shader_name='glossy', samples_per_pixel=64)
 
     # Glossy
     elif material_type == vmv.enums.Shader.MARBLE:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='marble')
+            name=name, color=color, shader_name='marble', samples_per_pixel=64)
 
     # Cracky
     elif material_type == vmv.enums.Shader.CRACKY:
         return create_shady_cycles_material(
-            name=name, color=color, shader_name='cracky')
+            name=name, color=color, shader_name='cracky', samples_per_pixel=64)
 
     # Wire frame
     elif material_type == vmv.enums.Shader.WIRE_FRAME:
