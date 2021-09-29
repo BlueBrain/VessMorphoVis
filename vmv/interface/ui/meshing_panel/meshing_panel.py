@@ -268,11 +268,20 @@ class VMV_RenderMeshImage(bpy.types.Operator):
         # Report the process starting in the UI
         self.report({'INFO'}, 'Rendering Mesh ... Wait Please')
 
+        # Start timer
+        start_rendering = time.time()
+
         # Render the mesh image
         vmv.render_mesh_image(panel=self, scene=context.scene,
                               rendering_view=vmv.interface.Options.mesh.camera_view,
                               camera_projection=vmv.interface.Options.mesh.camera_projection,
                               add_background_plane=not vmv.Options.mesh.transparent_background)
+
+        # End timer
+        end_rendering = time.time()
+
+        # Update the panel
+        context.scene.VMV_MeshRenderingTime = end_rendering - start_rendering
 
         # Report the process termination in the UI
         self.report({'INFO'}, 'Rendering Mesh Done')
@@ -294,6 +303,7 @@ class VMV_RenderMesh360(bpy.types.Operator):
     # Timer parameters
     event_timer = None
     timer_limits = 0
+    start_time = 0
 
     # 360 bounding box
     bounding_box_360 = None
@@ -315,14 +325,15 @@ class VMV_RenderMesh360(bpy.types.Operator):
             A given event for the panel.
         """
 
-        # Get a reference to the scene
-        scene = context.scene
-
         # Cancelling event, if using right click or exceeding the time limit of the simulation
         if event.type in {'RIGHTMOUSE', 'ESC'} or self.timer_limits > 360:
 
             # Reset the timer limits
             self.timer_limits = 0
+
+            # Stats.
+            rendering_time = time.time()
+            context.scene.VMV_MeshRenderingTime = rendering_time - self.start_time
 
             # Refresh the panel context
             self.cancel(context)

@@ -217,6 +217,11 @@ def add_rendering_options(layout,
     row.prop(scene, 'VMV_MeshRenderingProgress')
     row.enabled = False
 
+    # Rendering time
+    row = layout.row()
+    row.prop(scene, 'VMV_MeshRenderingTime')
+    row.enabled = False
+
 
 ####################################################################################################
 # @add_mesh_export_options

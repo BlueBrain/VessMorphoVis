@@ -640,6 +640,11 @@ def add_morphology_rendering_options(layout,
     rendering_progress_row.prop(scene, 'VMV_MorphologyRenderingProgress')
     rendering_progress_row.enabled = False
 
+    # Rendering time
+    rendering_time_row = layout.row()
+    rendering_time_row.prop(scene, 'VMV_MorphologyRenderingTime')
+    rendering_time_row.enabled = False
+
 
 ####################################################################################################
 # @draw_morphology_export_options
