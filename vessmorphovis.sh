@@ -104,7 +104,7 @@ echo -e "\nRUNNING ... VessMorphoVis \n"
     --resolution-scale-factor=$FULL_VIEW_SCALE_FACTOR                                               \
     --shader=$SHADER                                                                                \
     --execution-node=$EXECUTION_NODE                                                                \
-    --tessellation-level=$TESSELLATION_LEVEL                                                        \
+    --tessellation-ratio=$TESSELLATION_RATIO                                                        \
     $BOOL_ARGS
 
 echo -e "\nVessMorphoVis DONE !\n"

@@ -22,14 +22,13 @@ import time
 import bpy
 
 # Internal imports
-import vmv
 import vmv.analysis
 
 
 ####################################################################################################
-# @VMVAnalysisPanel
+# @VMV_AnalysisPanel
 ####################################################################################################
-class VMVAnalysisPanel(bpy.types.Panel):
+class VMV_AnalysisPanel(bpy.types.Panel):
     """Analysis panel"""
 
     ################################################################################################
@@ -170,7 +169,7 @@ class VMVAnalysisPanel(bpy.types.Panel):
         results_area.enabled = False
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
-        if vmv.interface.ui_morphology_loaded:
+        if vmv.interface.MorphologyLoaded:
             self.layout.enabled = True
 
             # Stats
@@ -186,9 +185,9 @@ class VMVAnalysisPanel(bpy.types.Panel):
 
 
 ####################################################################################################
-# @VMVAnalyzeMorphology
+# @VMV_AnalyzeMorphology
 ####################################################################################################
-class VMVAnalyzeMorphology(bpy.types.Operator):
+class VMV_AnalyzeMorphology(bpy.types.Operator):
     """Analyze the morphology skeleton"""
 
     # Operator parameters
@@ -215,13 +214,13 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         # Morphology total length
         vmv.logger.info('Total length')
         morphology_total_length = vmv.analysis.compute_total_morphology_length(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.MorphologyTotalLength = morphology_total_length
 
         # Total number of samples
         vmv.logger.info('Samples')
         total_number_samples = vmv.analysis.compute_total_number_samples_from_sections_list(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberSamples = total_number_samples
 
         # Total number of segments
@@ -231,37 +230,37 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         # Total number of sections
         vmv.logger.info('Sections')
         total_number_sections = vmv.analysis.compute_total_number_sections(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberSections = total_number_sections
 
         # Sections with two samples
         vmv.logger.info('Sections with two samples')
         number_section_with_two_samples = vmv.analysis.compute_number_of_sections_with_two_samples(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberSectionsWithTwoSamples = number_section_with_two_samples
 
         # Number of short sections
         vmv.logger.info('Short sections')
         number_short_sections = vmv.analysis.compute_number_of_short_sections(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberShortSections = number_short_sections
 
         # Samples radius stats.
         vmv.logger.info('Radii')
         minimum_sample_radius, maximum_sample_radius, average_sample_radius, zero_radii_sample = \
-            vmv.analysis.analyze_samples_radii(vmv.interface.ui.ui_morphology.sections_list)
+            vmv.analysis.analyze_samples_radii(vmv.interface.MorphologyObject.sections_list)
         context.scene.MinimumSampleRadius = minimum_sample_radius
         context.scene.MaximumSampleRadius = maximum_sample_radius
         context.scene.AverageSampleRadius = average_sample_radius
         context.scene.NumberZeroRadiusSamples = zero_radii_sample
 
         vmv.logger.info('Repair Zero-radii')
-        vmv.analysis.correct_samples_with_zero_radii(vmv.interface.ui.ui_morphology.sections_list)
+        vmv.analysis.correct_samples_with_zero_radii(vmv.interface.MorphologyObject.sections_list)
 
         # Segments length stats.
         vmv.logger.info('Segments lengths')
         minimum_segment_length, maximum_segment_length, average_segment_length = \
-            vmv.analysis.analyze_segments_length(vmv.interface.ui.ui_morphology.sections_list)
+            vmv.analysis.analyze_segments_length(vmv.interface.MorphologyObject.sections_list)
         context.scene.MinimumSegmentLength = minimum_segment_length
         context.scene.MaximumSegmentLength = maximum_segment_length
         context.scene.AverageSegmentLength = average_segment_length
@@ -269,38 +268,38 @@ class VMVAnalyzeMorphology(bpy.types.Operator):
         # Section length stats.
         vmv.logger.info('Sections lengths')
         minimum_section_length, maximum_section_length, average_section_length = \
-            vmv.analysis.analyze_sections_length(vmv.interface.ui.ui_morphology.sections_list)
+            vmv.analysis.analyze_sections_length(vmv.interface.MorphologyObject.sections_list)
         context.scene.MinimumSectionLength = minimum_section_length
         context.scene.MaximumSectionLength = maximum_section_length
         context.scene.AverageSectionLength = average_section_length
 
         vmv.logger.info('Loops')
         number_loops = vmv.analysis.compute_number_of_loops(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberLoops = number_loops
 
         vmv.logger.info('Components')
         number_components = vmv.analysis.compute_number_of_components(
-            vmv.interface.ui.ui_morphology.sections_list)
+            vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberComponents = number_components
 
         # Bounding box data
         vmv.logger.info('Bounding box')
-        if vmv.interface.ui.ui_morphology.bounding_box is None:
-            vmv.interface.ui.ui_morphology.bounding_box = \
-                vmv.interface.ui.ui_morphology.compute_bounding_box()
-        context.scene.BBoxCenterX = vmv.interface.ui.ui_morphology.bounding_box.center[0]
-        context.scene.BBoxCenterY = vmv.interface.ui.ui_morphology.bounding_box.center[1]
-        context.scene.BBoxCenterZ = vmv.interface.ui.ui_morphology.bounding_box.center[2]
-        context.scene.BoundsX = vmv.interface.ui.ui_morphology.bounding_box.bounds[0]
-        context.scene.BoundsY = vmv.interface.ui.ui_morphology.bounding_box.bounds[1]
-        context.scene.BoundsZ = vmv.interface.ui.ui_morphology.bounding_box.bounds[2]
-        context.scene.BBoxPMinX = vmv.interface.ui.ui_morphology.bounding_box.p_min[0]
-        context.scene.BBoxPMinY = vmv.interface.ui.ui_morphology.bounding_box.p_min[1]
-        context.scene.BBoxPMinZ = vmv.interface.ui.ui_morphology.bounding_box.p_min[2]
-        context.scene.BBoxPMaxX = vmv.interface.ui.ui_morphology.bounding_box.p_max[0]
-        context.scene.BBoxPMaxY = vmv.interface.ui.ui_morphology.bounding_box.p_max[1]
-        context.scene.BBoxPMaxZ = vmv.interface.ui.ui_morphology.bounding_box.p_max[2]
+        if vmv.interface.MorphologyObject.bounding_box is None:
+            vmv.interface.MorphologyObject.bounding_box = \
+                vmv.interface.MorphologyObject.compute_bounding_box()
+        context.scene.BBoxCenterX = vmv.interface.MorphologyObject.bounding_box.center[0]
+        context.scene.BBoxCenterY = vmv.interface.MorphologyObject.bounding_box.center[1]
+        context.scene.BBoxCenterZ = vmv.interface.MorphologyObject.bounding_box.center[2]
+        context.scene.BoundsX = vmv.interface.MorphologyObject.bounding_box.bounds[0]
+        context.scene.BoundsY = vmv.interface.MorphologyObject.bounding_box.bounds[1]
+        context.scene.BoundsZ = vmv.interface.MorphologyObject.bounding_box.bounds[2]
+        context.scene.BBoxPMinX = vmv.interface.MorphologyObject.bounding_box.p_min[0]
+        context.scene.BBoxPMinY = vmv.interface.MorphologyObject.bounding_box.p_min[1]
+        context.scene.BBoxPMinZ = vmv.interface.MorphologyObject.bounding_box.p_min[2]
+        context.scene.BBoxPMaxX = vmv.interface.MorphologyObject.bounding_box.p_max[0]
+        context.scene.BBoxPMaxY = vmv.interface.MorphologyObject.bounding_box.p_max[1]
+        context.scene.BBoxPMaxZ = vmv.interface.MorphologyObject.bounding_box.p_max[2]
 
         # Update the analysis stats.
         analysis_done = time.time()
@@ -317,10 +316,10 @@ def register_panel():
     """Registers all the classes in this panel"""
 
     # InputOutput data
-    bpy.utils.register_class(VMVAnalysisPanel)
+    bpy.utils.register_class(VMV_AnalysisPanel)
 
     # Analysis button
-    bpy.utils.register_class(VMVAnalyzeMorphology)
+    bpy.utils.register_class(VMV_AnalyzeMorphology)
 
 
 ####################################################################################################
@@ -330,7 +329,7 @@ def unregister_panel():
     """Un-registers all the classes in this panel"""
 
     # InputOutput data
-    bpy.utils.unregister_class(VMVAnalysisPanel)
+    bpy.utils.unregister_class(VMV_AnalysisPanel)
 
     # Analysis button
-    bpy.utils.unregister_class(VMVAnalyzeMorphology)
+    bpy.utils.unregister_class(VMV_AnalyzeMorphology)

@@ -105,9 +105,9 @@ class Camera:
         """Rotate the camera in the direction of the typical side view.
         """
 
-        # Adjust the orientationMeshRenderingResolution
+        # Adjust the orientation
         self.camera.rotation_euler[0] = 0
-        self.camera.rotation_euler[1] = 1.5708
+        self.camera.rotation_euler[1] = -1.5708
         self.camera.rotation_euler[2] = 0
 
     ################################################################################################
@@ -118,8 +118,8 @@ class Camera:
         """
 
         # Adjust the orientation
-        self.camera.rotation_euler[0] = -1.5708
-        self.camera.rotation_euler[1] = 3.14
+        self.camera.rotation_euler[0] = 1.5708
+        self.camera.rotation_euler[1] = 0
         self.camera.rotation_euler[2] = 0
 
     ################################################################################################
@@ -158,7 +158,6 @@ class Camera:
     @staticmethod
     def get_camera_positions(bounding_box):
         """Computes the camera position for an orthographic projection
-
         :param bounding_box:
             Scene bounding box.
         :return:
@@ -172,8 +171,8 @@ class Camera:
         camera_z = bounding_box.p_max[2] + bounding_box.bounds[2]
 
         # Camera location
-        camera_location_x = Vector((camera_x, center.y, center.z))
-        camera_location_y = Vector((center.x, camera_y, center.z))
+        camera_location_x = Vector((-camera_x, center.y, center.z))
+        camera_location_y = Vector((center.x, -camera_y, center.z))
         camera_location_z = Vector((center.x, center.y, camera_z))
 
         # Return a vector for the camera position for XYZ locations
@@ -205,8 +204,8 @@ class Camera:
         camera_z = r / math.tan(math.radians(0.5 * fov)) * 1.25
 
         # Camera location
-        camera_location_x = Vector((camera_x, center.y, center.z))
-        camera_location_y = Vector((center.x, camera_y, center.z))
+        camera_location_x = Vector((-camera_x, center.y, center.z))
+        camera_location_y = Vector((center.x, -camera_y, center.z))
         camera_location_z = Vector((center.x, center.y, camera_z))
 
         # Return a vector for the camera position for XYZ locations
@@ -235,11 +234,6 @@ class Camera:
             # Recompute the scene bounding box
             vmv.logger.log('WARNING: Scene Bounding Box is Recomputed!')
             bounds = vmv.bbox.compute_scene_bounding_box().bounds
-
-        # Compute the orthographic scale based in the give camera view
-        orthographic_scale = 1.0
-        x_bounds = 0.0
-        y_bounds = 0.0
 
         # Front view
         if camera_view == vmv.enums.Rendering.View.FRONT:
@@ -462,7 +456,8 @@ class Camera:
                      camera_view=vmv.enums.Rendering.View.FRONT,
                      camera_projection=vmv.enums.Rendering.Projection.ORTHOGRAPHIC,
                      image_resolution=512,
-                     image_name='IMAGE',
+                     image_name='image',
+                     add_background_plane=False,
                      keep_camera_in_scene=True):
         """Render scene using an orthographic camera.
 
@@ -476,6 +471,8 @@ class Camera:
             The name of the image, by default 'IMAGE'.
         :param camera_projection:
             Camera projection either orthographic or perspective.
+        :param add_background_plane:
+            Adds a background plane to the scene.
         :param keep_camera_in_scene:
             Keep the camera in the scene after rendering.
         """
@@ -483,12 +480,6 @@ class Camera:
         # Get the scene bounding box to adjust the camera accordingly, if the bounds are not set
         if bounding_box is None:
             bounding_box = vmv.bbox.compute_scene_bounding_box()
-
-        # For perspective rendering add the background plane
-        background_plane = None
-        if camera_projection == vmv.enums.Rendering.Projection.PERSPECTIVE:
-            background_plane = vmv.rendering.add_background_plane(
-                bounding_box=bounding_box, camera_view=camera_view)
 
         # Setup the camera
         self.setup_camera_for_scene(bounding_box, camera_view, camera_projection)
@@ -530,6 +521,12 @@ class Camera:
         # Deselect all the object in the scene
         vmv.scene.ops.deselect_all()
 
+        # For perspective rendering add the background plane
+        background_plane = None
+        if add_background_plane:
+            background_plane = vmv.rendering.add_background_plane(
+                bounding_box=bounding_box, camera_view=camera_view)
+
         # Render the image
         self.render_image(image_name=image_name)
 
@@ -538,8 +535,8 @@ class Camera:
             vmv.scene.ops.delete_object_in_scene(self.camera)
 
         # Delete the background plane
-        #if background_plane is not None:
-        #    vmv.scene.delete_object_in_scene(background_plane)
+        if background_plane is not None:
+            vmv.scene.delete_object_in_scene(background_plane)
 
     ################################################################################################
     # @render_scene_bounding_box
@@ -548,7 +545,8 @@ class Camera:
                               bounding_box=None,
                               camera_view=vmv.enums.Rendering.View.FRONT,
                               scale_factor=1.0,
-                              image_name='IMAGE',
+                              image_name='image',
+                              add_background_plane=False,
                               keep_camera_in_scene=False):
         """Render a scene to scale using orthographic projection.
 
@@ -561,6 +559,8 @@ class Camera:
             A factor to scale the resolution of the image.
         :param image_name:
             The name of the image, by default 'IMAGE'.
+        :param add_background_plane:
+            Adds a background plane to the scene.
         :param keep_camera_in_scene:
             Keep the camera in the scene after rendering.
         """

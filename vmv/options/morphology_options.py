@@ -36,16 +36,19 @@ class MorphologyOptions:
         """
 
         # Morphology file path
-        self.morphology_file_path = None
+        self.file_path = None
 
         # Morphology file name
-        self.morphology_file_name = None
+        self.file_name = None
 
         # Morphology label, based on the morphology file name
         self.label = None
 
+        # The visualization type requested by the user
+        self.visualization_type = vmv.enums.Morphology.Visualization.STRUCTURE
+
         # The method used to build the morphology skeleton object in the scene from the raw file
-        self.reconstruction_method = vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
+        self.builder = vmv.enums.Morphology.Builder.SECTIONS
 
         # Skeleton style, ORIGINAL by default
         self.skeleton = vmv.enums.Morphology.Style.ORIGINAL
@@ -80,19 +83,44 @@ class MorphologyOptions:
         self.material = vmv.enums.Shader.LAMBERT_WARD
 
         # Color coding scheme 
-        self.color_coding = vmv.enums.ColorCoding.SINGLE_COLOR
+        self.color_coding = vmv.enums.ColorCoding.DEFAULT
+
+        # Render scale bar to the image, ONLY in case of ORTHOGRAPHIC projection
+        self.render_scale_bar = False
+
+        # Load the morphology at the global coordinates, otherwise center it at the origin
+        self.global_coordinates = False
+
+        # Adaptive resampling of the sections to reduce the number of samples
+        self.adaptive_resampling = False
+
+        # Number of sides of the bevel object used to scale the sections
+        # This parameter controls the quality of the reconstructed morphology
+        self.bevel_object_sides = vmv.consts.Bevel.BEVEL_OBJECT_SIDES
+
+        # Morphology material
+        self.material = vmv.enums.Shader.LAMBERT_WARD
+
+        # Color coding scheme
+        self.color_coding = vmv.enums.ColorCoding.DEFAULT
+
+        # Render scale bar to the image, ONLY in case of ORTHOGRAPHIC projection
+        self.render_scale_bar = False
+
+        # Set a transparent background for the rendered image
+        self.transparent_background = True
 
         # Morphology color-map name (this is probably loaded from the CLI)
         self.color_map = vmv.enums.ColorMaps.PLASMA
 
         # The resolution of the colormap (number of samples)
-        self.color_map_resolution = vmv.consts.Color.COLOR_MAP_RESOLUTION
+        self.color_map_resolution = vmv.consts.Color.COLORMAP_RESOLUTION
 
         # Morphology color-map colors (this is probably set from the GUI)
         self.color_map_colors = list()
 
         # Base morphology color
-        self.color = vmv.consts.Color.GRAY
+        self.color = vmv.consts.Color.LIGHT_RED_COLOR
 
         # Alternating morphology color (use for ALTERNATING_COLORS schemes)
         self.alternating_color = vmv.consts.Color.BLACK

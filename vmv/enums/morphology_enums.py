@@ -23,11 +23,99 @@ class Morphology:
     """Morphology enumerators
     """
 
-    ############################################################################################
+    ################################################################################################
     # @__init__
-    ############################################################################################
+    ################################################################################################
     def __init__(self):
         pass
+
+    ################################################################################################
+    # @Visualization
+    ################################################################################################
+    class Visualization:
+        """The kind of visualization, whether structure or dynamics
+        """
+
+        # Visualize static structural aspects
+        STRUCTURE = 'MORPHOLOGY_VISUALIZATION_STRUCTURE'
+        STRUCTURE_UI_ITEM = (
+            STRUCTURE,
+            'Static Structure',
+            'Visualize static data, showing only the structure of the vasculature without any '
+            'variations with respect to time')
+
+        # Visualize radius dynamics using structural variations with respect to time
+        RADII_STRUCTURAL_DYNAMICS = 'MORPHOLOGY_VISUALIZATION_RADII_STRUCTURAL_DYNAMICS'
+        RADII_STRUCTURAL_DYNAMICS_UI_ITEM = (
+            RADII_STRUCTURAL_DYNAMICS,
+            'Radii Dynamics',
+            'Visualize structural dynamics with respect to time showing the variations in radii '
+            'along the structure of the morphology with respect to time, without any color-mapping.'
+            'This approach uses the Section-based builder only, showing the morphology skeleton as '
+            'a set of sections')
+
+        # Visualize radius dynamics using a color-map
+        RADII_COLORMAP = 'MORPHOLOGY_VISUALIZATION_RADII_COLORMAP'
+        RADII_COLORMAP_DYNAMICS_UI_ITEM = (
+            RADII_COLORMAP,
+            'Radii (Color Map)',
+            'Visualize the variations of the radii along the morphology with respect to time '
+            'using a color-map. This approach uses the Segment-based builder only, showing the '
+            'morphology as a set of segments')
+
+        # Visualize blood flow dynamics
+        FLOW_COLORMAP = 'MORPHOLOGY_VISUALIZATION_FLOW_COLORMAP'
+        FLOW_COLORMAP_DYNAMICS_UI_ITEM = (
+            FLOW_COLORMAP,
+            'Blood Flow (Color Map)',
+            'Visualize the variations of the blood flow along the morphology with respect to time '
+            'using a color-map. This approach uses the Segment-based builder only, showing the '
+            'morphology as a set of segments')
+
+        # Visualize blood pressure dynamics
+        PRESSURE_COLORMAP = 'MORPHOLOGY_VISUALIZATION_PRESSURE_COLORMAP'
+        PRESSURE_COLORMAP_DYNAMICS_UI_ITEM = (
+            PRESSURE_COLORMAP,
+            'Blood Pressure (Color Map)',
+            'Visualize the variations of the blood pressure along the morphology with respect to '
+            'time using a color-map. This approach uses the Segment-based builder only, showing '
+            'the morphology as a set of segments')
+
+        ############################################################################################
+        # @__init__
+        ############################################################################################
+        def __init__(self):
+            pass
+
+        ############################################################################################
+        # @get_enum
+        ############################################################################################
+        @staticmethod
+        def get_enum(argument):
+
+            # Structure
+            if argument == 'structure':
+                return Morphology.Visualization.STRUCTURE
+
+            # Radii structural variations
+            elif argument == 'radii-structural':
+                return Morphology.Visualization.RADII_STRUCTURAL_DYNAMICS
+
+            # Radii (with color map)
+            elif argument == 'radii':
+                return Morphology.Visualization.RADII_COLORMAP
+
+            # Blood flow (with color map)
+            elif argument == 'flow':
+                return Morphology.Visualization.FLOW_COLORMAP
+
+            # Blood pressure (with color map)
+            elif argument == 'pressure':
+                return Morphology.Visualization.PRESSURE_COLORMAP
+
+            # By default, visualize structure
+            else:
+                return Morphology.Visualization.STRUCTURE
 
     ################################################################################################
     # @Skeleton
@@ -74,39 +162,35 @@ class Morphology:
                 return Morphology.Style.ORIGINAL
 
     ################################################################################################
-    # @ReconstructionMethod
+    # @Builder
     ################################################################################################
-    class ReconstructionMethod:
+    class Builder:
         """The reconstruction method used to build the morphology.
         """
 
-        # Use the ConnectedSections builder
-        CONNECTED_SECTIONS = 'CONNECTED_SECTIONS_RECONSTRUCTION'
+        # Use the Sections builder
+        SECTIONS = 'SECTIONS_BUILDER'
+        SECTIONS_UI_ITEM = (
+            SECTIONS,
+            'Sections',
+            'Build the morphology as a set of sections, where each section is an independent '
+            'object')
 
-        # Use the DisconnectedSections builder
-        DISCONNECTED_SECTIONS = 'DISCONNECTED_SECTIONS_RECONSTRUCTION'
+        # Use the Segments builder
+        SEGMENTS = 'RECONSTRUCTION_METHOD_SEGMENTS_BUILDER'
+        SEGMENTS_UI_ITEM = (
+            SEGMENTS,
+            'Segments',
+            'Reconstruct the morphology as a set of segments, where each segment is an '
+            'independent object (this approach is time consuming!)')
 
-        # Use the DisconnectedSegments builder
-        DISCONNECTED_SEGMENTS = 'DISCONNECTED_SEGMENTS_RECONSTRUCTION'
+        # Use the Samples Builder Drawing samples only as spheres
+        SAMPLES = 'SAMPLES_BUILDER'
+        SAMPLES_UI_ITEM = (
+            SAMPLES,
+            'Samples',
+            'Reconstruct the morphology as a set of samples')
 
-        # Use the SamplesBuilder Drawing samples only as spheres
-        SAMPLES = 'SAMPLES_RECONSTRUCTION'
-
-        # The list that will appear in the GUI
-        METHOD_ITEMS = [
-            (DISCONNECTED_SEGMENTS,
-             'Disconnected Segments',
-             "Each segment is an independent object (this approach is time consuming)"),
-            (DISCONNECTED_SECTIONS,
-             'Disconnected Sections',
-             "Each section is an independent object"),
-            (CONNECTED_SECTIONS,
-             'Connected Sections',
-             "The sections of a single arbor are connected together"),
-            (SAMPLES,
-             'Samples',
-             "The morphology is reconstructed as a list of samples")
-        ]
         ############################################################################################
         # @__init__
         ############################################################################################
@@ -119,25 +203,21 @@ class Morphology:
         @staticmethod
         def get_enum(argument):
 
-            # Disconnected segments
-            if argument == 'disconnected-segments':
-                return Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS
+            # Segments
+            if argument == 'segments':
+                return Morphology.Builder.SEGMENTS
 
-            # Disconnected sections
-            elif argument == 'disconnected-sections':
-                return Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
-
-            # Connected sections
-            elif argument == 'connected-sections':
-                return Morphology.ReconstructionMethod.CONNECTED_SECTIONS
+            # Sections
+            elif argument == 'sections':
+                return Morphology.Builder.SECTIONS
 
             # Samples
             elif argument == 'samples':
-                return Morphology.ReconstructionMethod.SAMPLES
+                return Morphology.Builder.SAMPLES
 
             # Default
             else:
-                return Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS
+                return Morphology.Builder.SECTIONS
 
     ################################################################################################
     # @Radii
@@ -157,6 +237,21 @@ class Morphology:
 
         # Minimum threshold
         MINIMUM = 'VESSELS_RADII_MINIMUM_THRESHOLD'
+
+        # Radii items that will appear in the user interface
+        RADII_UI_ITEMS = [
+            (AS_SPECIFIED,
+             'As Specified in Morphology',
+             'Use the cross-sectional radii as reported in the morphology file'),
+
+            (FIXED,
+             'At a Fixed Radii',
+             'Set all the tubes to a fixed radius for enhanced visualization'),
+
+            (SCALED,
+             'With Scale Factor',
+             'Scale all the tubes using a specified scale factor')
+        ]
 
         ############################################################################################
         # @__init__

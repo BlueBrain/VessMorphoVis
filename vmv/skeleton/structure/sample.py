@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -20,12 +20,11 @@
 # Sample
 ####################################################################################################
 class Sample:
-    """Morphological skeleton sample.
+    """Vasculature morphology sample.
 
-    The section is composed of a set of segments, and each segment is composed of two samples.
-    Each sample has a point in the cartesian coordinates and a radius that reflect the
-    cross-sectional area of the morphology at a certain point.
-    Note that the samples
+    NOTE: The section is composed of a set of segments, and each segment is composed of two samples.
+    Each sample has a point in the Cartesian coordinates and a radius that reflects the cross
+    sectional area of the morphology at a certain point.
     """
 
     ################################################################################################
@@ -34,14 +33,18 @@ class Sample:
     def __init__(self,
                  point,
                  radius,
-                 index=-1,
-                 parent_index=-1):
+                 index=None,
+                 parent_index=None):
         """Constructor
 
-        :param point:
+       :param point:
             Sample position in the cartesian space, Vector((x, y, z)).
         :param radius:
             Sample radius.
+        @param index:
+            Sample unique index.
+        @param parent_index:
+            The index of the parent sample, if exists. Used for tracking and connectivity.
         """
 
         # Sample cartesian point
@@ -50,6 +53,8 @@ class Sample:
         # Sample radius
         self.radius = radius
 
-        self.index=index
+        # Sample unique index
+        self.index = index
 
+        # Sample's parent index
         self.parent_index = parent_index

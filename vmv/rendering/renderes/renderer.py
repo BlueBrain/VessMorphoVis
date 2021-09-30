@@ -31,7 +31,8 @@ def render(bounding_box,
            image_resolution=vmv.consts.Image.DEFAULT_RESOLUTION,
            image_name='image',
            image_directory=None,
-           keep_camera_in_scene=True):
+           add_background_plane=False,
+           keep_camera_in_scene=False):
     """Render the reconstructed mesh to a .PNG image.
 
     :param bounding_box:
@@ -47,6 +48,8 @@ def render(bounding_box,
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     :param keep_camera_in_scene:
         Keep the camera used to do the rendering after the rendering is done.
     """
@@ -64,6 +67,7 @@ def render(bounding_box,
                                  camera_projection=camera_projection,
                                  image_resolution=image_resolution,
                                  image_name=image_prefix,
+                                 add_background_plane=add_background_plane,
                                  keep_camera_in_scene=keep_camera_in_scene)
 
 
@@ -75,7 +79,8 @@ def render_to_scale(bounding_box,
                     image_scale_factor=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
                     image_name='image',
                     image_directory=None,
-                    keep_camera_in_scene=True):
+                    add_background_plane=False,
+                    keep_camera_in_scene=False):
     """Render the reconstructed mesh to scale to a .PNG image.
 
     :param bounding_box:
@@ -89,6 +94,8 @@ def render_to_scale(bounding_box,
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     :param keep_camera_in_scene:
         Keep the camera used to do the rendering after the rendering is done.
     """
@@ -105,6 +112,7 @@ def render_to_scale(bounding_box,
                                           camera_view=camera_view,
                                           scale_factor=image_scale_factor,
                                           image_name=image_prefix,
+                                          add_background_plane=add_background_plane,
                                           keep_camera_in_scene=keep_camera_in_scene)
 
 
@@ -115,8 +123,9 @@ def render_at_angle(scene_objects,
                     angle,
                     bounding_box,
                     camera_view=vmv.enums.Rendering.View.FRONT_360,
-                    image_resolution=512,
+                    image_resolution=vmv.consts.Image.DEFAULT_RESOLUTION,
                     image_name='image',
+                    add_background_plane=False,
                     image_directory=None):
     """Render the mesh to a .PNG image at a specific angle.
 
@@ -132,6 +141,8 @@ def render_at_angle(scene_objects,
         The resolution of the image, by default 512.
     :param image_name:
         The name of the image, by default 'SKELETON'.
+    :param add_background_plane:
+        Adds a background plane to the scene.
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
@@ -140,12 +151,17 @@ def render_at_angle(scene_objects,
     # Rotate all the objects as if they are a single object
     for scene_object in scene_objects:
 
+        # Ignore the background plane if it exists
+        if scene_object.name == 'background_plane':
+            continue
+
         # Rotate the mesh object around the y axis
         scene_object.rotation_euler[1] = angle * 2 * 3.14 / 360.0
 
     # Render the image
     render(bounding_box=bounding_box, camera_view=camera_view, image_resolution=image_resolution,
-           image_name=image_name, keep_camera_in_scene=False)
+           image_name=image_name, add_background_plane=add_background_plane,
+           keep_camera_in_scene=False)
 
 
 ################################################################################################
@@ -157,6 +173,7 @@ def render_at_angle_to_scale(scene_objects,
                              camera_view=vmv.enums.Rendering.View.FRONT_360,
                              image_scale_factor=vmv.consts.Image.DEFAULT_IMAGE_SCALE_FACTOR,
                              image_name='image',
+                             add_background_plane=False,
                              image_directory=None):
     """Render the mesh to a .PNG image at a specific angle.
 
@@ -172,6 +189,8 @@ def render_at_angle_to_scale(scene_objects,
         The factor used to scale the resolution of the image the image, by default 1.
     :param image_name:
         The name of the image, by default 'SKELETON'.
+    :param add_background_plane:
+        Adds a background plane to the final image.
     :param image_directory:
         The directory where the image will be rendered. If the directory is set to None,
         then the prefix is included in @image_name.
@@ -188,6 +207,5 @@ def render_at_angle_to_scale(scene_objects,
                     camera_view=camera_view,
                     image_scale_factor=image_scale_factor,
                     image_name=image_name,
+                    add_background_plane=add_background_plane,
                     keep_camera_in_scene=False)
-
-

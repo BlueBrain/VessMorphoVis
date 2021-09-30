@@ -1,6 +1,6 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
-# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
+#               Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
 #
@@ -23,137 +23,152 @@ class ColorCoding:
     """ColorCoding enumerators
     """
 
-    # Use a single color for all the components in the morphology 
-    SINGLE_COLOR = 'SINGLE_COLOR'
+    # Color the morphology by components
+    DEFAULT = 'DEFAULT_COLOR_CODING'
 
-    # Use alternating colors for the different components in the morphology 
-    ALTERNATING_COLORS = 'ALTERNATING_COLORS'
+    # Use alternating colors for every other component in the morphology
+    ALTERNATING_COLORS = 'ALTERNATING_COLORS_COLOR_CODING'
 
-    # Color code the components according to their average radius 
-    BY_RADIUS = 'COLOR_CODING_BY_RADIUS'
+    # Color code the components according to their average radius
+    BY_RADIUS = 'COLOR_CODING_BY_RADIUS_COLOR_CODING'
 
     # Color code the components according to their length
-    BY_LENGTH = 'COLOR_CODING_BY_LENGTH'
+    BY_LENGTH = 'COLOR_CODING_BY_LENGTH_COLOR_CODING'
 
-    # Color code the components according to their area 
-    BY_AREA = 'COLOR_CODING_BY_AREA'
+    # Color code the components according to their surface area
+    BY_SURFACE_AREA = 'COLOR_CODING_BY_AREA_COLOR_CODING'
 
-    # Color code the components according to their volume 
-    BY_VOLUME = 'COLOR_CODING_BY_VOLUME'
+    # Color code the components according to their volume
+    BY_VOLUME = 'COLOR_CODING_BY_VOLUME_COLOR_CODING'
 
-    # Color code the section according to the number of samples it contain 
-    BY_NUMBER_SAMPLES = 'COLOR_CODING_BY_NUMBER_SAMPLES'
+    # Color code the section according to the number of samples it contains
+    BY_NUMBER_SAMPLES = 'COLOR_CODING_BY_NUMBER_SAMPLES_COLOR_CODING'
 
-    # Short Sections 
+    # Label the short sections
     SHORT_SECTIONS = 'SHORT_SECTION_COLOR_CODING'
+
+    # By section index
+    BY_SECTION_INDEX = 'COLOR_CODING_BY_SECTION_INDEX'
+
+    # By segment index
+    BY_SEGMENT_INDEX = 'COLOR_CODING_BY_SEGMENT_INDEX'
 
     ################################################################################################
     # Segments color-coding items to be added to the interface list
     ################################################################################################
     SEGMENTS_COLOR_CODING_ITEMS = [
-        
-        # Single color for all the segments in the morphology 
-        (SINGLE_COLOR,
-            'Single Color',
-            'Use a single color for all the segments in the entire morphology'),
 
-        # Alternating colors  
+        # Default coloring scheme
+        (DEFAULT,
+         'Default',
+         'A single color will be applied to the entire morphology'),
+
+        # Alternating colors for every two segments in the morphology
         (ALTERNATING_COLORS,
-            'Alternating Colors',
-            'Use alternating segments colors to visualze certain patterns in the morphology'),
+         'Alternating Colors',
+         'Use alternating segments colors to visualize certain patterns in the morphology'),
 
-        # Radius 
+        # Radius
         (BY_RADIUS,
-            'Segment Radius',
-            'Color-code the morphology based on the radius of the segment with respect to ' 
-            'the radii distribution along the entire morphology'),
-        
+         'Segment Radius',
+         'Color-code the morphology based on the radius of the segment with respect to '
+         'the radii distribution along the entire morphology'),
+
         # Length
         (BY_LENGTH,
-            'Segment Length',
-            'Color-code the morphology based on the length of the segment with respect to ' 
-            'the segments length distribution along the entire morphology'),
+         'Segment Length',
+         'Color-code the morphology based on the length of the segment with respect to '
+         'the segments length distribution along the entire morphology'),
 
         # Area
-        (BY_AREA,
-            'Segment Area',
-            'Color-code the morphology based on the area of the segment with respect to ' 
-            'the distribution of the segments areas along the entire morphology'),
+        (BY_SURFACE_AREA,
+         'Segment Area',
+         'Color-code the morphology based on the area of the segment with respect to '
+         'the distribution of the segments areas along the entire morphology'),
 
         # Volume
         (BY_VOLUME,
-            'Segment Volume',
-            'Color-code the morphology based on the volume of the segment with respect to ' 
-            'the distribution of the segments volumes along the entire morphology')
+         'Segment Volume',
+         'Color-code the morphology based on the volume of the segment with respect to '
+         'the distribution of the segments volumes along the entire morphology'),
+
+        # Segment index
+        (BY_SEGMENT_INDEX,
+         'Segment Index',
+         'Color-code the morphology gradually based on the index the segment starting from 0 and '
+         'until the last segment in the morphology')
     ]
 
     ################################################################################################
-    # Sections color-coding items to be added to the interface list
+    # Color coding options per section
     ################################################################################################
-    SECTIONS_COLOR_CODING_ITEMS =[
-        
-        # Single color for all the sections in the morphology 
-        (SINGLE_COLOR,
-            'Single Color',
-            'Use a single color for all the sections in the entire morphology'),
+    SECTIONS_COLOR_CODING_ITEMS = [
 
-        # Alternating colors for every two sections in the morphology 
+        # Default coloring scheme
+        (DEFAULT,
+         'Default',
+         'A single color will be applied to the entire morphology'),
+
+        # Alternating colors for every two sections in the morphology
         (ALTERNATING_COLORS,
-            'Alternating Colors',
-            'Use alternating sections colors to visualze certain patterns in the morphology'),
+         'Alternating Colors',
+         'Use alternating sections colors to visualize certain patterns in the morphology'),
 
-        # Radius 
-        (BY_RADIUS,
-            'Average Section Radius',
-            'Color-code the morphology based on the average radius of the section with respect to ' 
-            'the radii distribution along the entire morphology'),
-        
+        # Short sections
+        (SHORT_SECTIONS,
+         'Short Sections',
+         'Visualize the short sections in the morphology for validation'),
+
         # Length
         (BY_LENGTH,
-            'Section Length',
-            'Color-code the morphology based on the length of the section with respect to ' 
-            'the sections length distribution along the entire morphology'),
+         'Section Length',
+         'Color-code the morphology based on the length of the section with respect to '
+         'the sections length distribution along the entire morphology'),
 
         # Area
-        (BY_AREA,
-            'Section Area',
-            'Color-code the morphology based on the area of the section with respect to ' 
-            'the distribution of the sections areas along the entire morphology'),
+        (BY_SURFACE_AREA,
+         'Section Surface Area',
+         'Color-code the morphology based on the area of the section with respect to '
+         'the distribution of the sections surface areas along the entire morphology'),
 
         # Volume
         (BY_VOLUME,
-            'Section Volume',
-            'Color-code the morphology based on the volume of the section with respect to ' 
-            'the distribution of the sections volumes along the entire morphology'),
+         'Section Volume',
+         'Color-code the morphology based on the volume of the section with respect to '
+         'the distribution of the sections volumes along the entire morphology'),
 
-        # Number of samples 
+        # Number of samples
         (BY_NUMBER_SAMPLES,
-            'Number of Samples',
-            'Color-code the morphology based on the number of samples along the section')
+         'Number of Samples',
+         'Color-code the morphology based on the number of samples along the section'),
+
+        # Section index
+        (BY_SECTION_INDEX,
+         'Section Index',
+         'Color-code the morphology gradually according to the index of the section')
     ]
-        
 
     ############################################################################################
     # @__init__
     ############################################################################################
     def __init__(self):
         pass
-    
+
     ############################################################################################
     # @get_enum
     ############################################################################################
     @staticmethod
     def get_enum(argument):
-        
-        # Single color 
-        if argument == 'single':
-            return ColorCoding.SINGLE_COLOR
 
-        # Alternating colors 
+        # Default scheme
+        if argument == 'default':
+            return ColorCoding.DEFAULT
+
+        # Alternating colors
         if argument == 'alternating':
             return ColorCoding.ALTERNATING_COLORS
-        
-        # By radius 
+
+        # By radius
         elif argument == 'radius':
             return ColorCoding.BY_RADIUS
 
@@ -163,7 +178,7 @@ class ColorCoding:
 
         # By area
         elif argument == 'area':
-            return ColorCoding.BY_AREA
+            return ColorCoding.BY_SURFACE_AREA
 
         # By volume
         elif argument == 'volume':
@@ -173,16 +188,14 @@ class ColorCoding:
         elif argument == 'number-samples':
             return ColorCoding.BY_NUMBER_SAMPLES
 
-        # Color the short sections 
-        elif argument == 'short sections':
-            return ColorCoding.SHORT_SECTIONS
+        # By segment index
+        elif argument == 'segment-index':
+            return ColorCoding.BY_SEGMENT_INDEX
 
-        # By default use by length
+        # By section index
+        elif argument == 'section-index':
+            return ColorCoding.BY_SECTION_INDEX
+
+        # By default use the default scheme
         else:
-            return ColorCoding.SINGLE_COLOR
-            
-    
-        
-
-
-
+            return ColorCoding.DEFAULT

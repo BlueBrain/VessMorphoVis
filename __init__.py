@@ -41,7 +41,7 @@ bl_info = {
     "description": "Vasculature morphology reconstruction, analysis, meshing and visualization.",
     # Optional: specifies the wiki URL for an add-on.
     # This will appear in this add-on listing as "Documentation".
-    'wiki_url': 'https://github.com/BlueBrain/NeuroMorphoVis',
+    'wiki_url': 'https://github.com/BlueBrain/VessMorphoVis',
     # This support can be either 'OFFICIAL', 'COMMUNITY', or 'TESTING'. 'OFFICIAL' should only be
     # used if this add-on is included with Blender.
     # (If you're not sure, don't use 'OFFICIAL'.) 'COMMUNITY' and 'TESTING' are both fine to use.

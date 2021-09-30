@@ -47,8 +47,11 @@ class Shader:
     # Glossy shader
     GLOSSY = 'GLOSSY_SHADER'
 
-    # Wax shader
-    WAX = 'WAX_SHADER'
+    # Cracky shader
+    CRACKY = 'CRACKY_SHADER'
+
+    # Marble shader
+    MARBLE = 'MARBLE_SHADER'
 
     # Glossy bympy shader
     GLOSSY_BUMPY = 'GLOSSY_BUMPY_SHADER'
@@ -116,64 +119,65 @@ class Shader:
     ################################################################################################
     # A list of all the available materials in VessMorphoVis
     ################################################################################################
-    MATERIAL_ITEMS = [
+    SHADER_ITEMS = [
         (LAMBERT_WARD,
-         'Default',
-         "Use the default Lambert Ward shader. This shader is used to create high resolution "
-         "images in few seconds. The rendering quality of this shader is not the best"),
-
-        (FLAT,
-         'Flat',
-         "Use Flat shader. This shader is used to create high resolution images in few seconds. "
-         "The rendering quality of this shader is not the best"),
-
-        (FLAT_TRANSPARENT,
-         'Flat Transparent',
-         "Use Flat Transparent shader. This shader is used to create high resolution images in "
-         "few seconds. The rendering quality of this shader is not the best"),
-
-        (TOON,
-         'Toon',
-         "Use Toon shader. This shader is used to create high resolution images in few seconds. "
-         "The rendering quality of this shader is not the best"),
+         'Default (Lambert Ward)',
+         'Use the default Lambert Ward shader. This shader is used to create high resolution '
+         'images in few seconds. The rendering quality of this shader is not the best'),
 
         (TRANSPARENT,
          'Transparent',
-         "Transparent shader to show the internals of the mesh"),
+         'Transparent shader to show the internals of the mesh'),
+
+        (FLAT,
+         'Flat',
+         'Use Flat shader. This shader is used to create high resolution images in a few seconds. '
+         'The rendering quality of this shader is not the best'),
+
+        (FLAT_TRANSPARENT,
+         'Flat Transparent',
+         'Use Flat Transparent shader. This shader is used to create high resolution images in '
+         'few seconds. The rendering quality of this shader is not the best'),
+
+        (TOON,
+         'Toon',
+         'Use Toon shader. This shader is used to create high resolution images in few seconds. '
+         'The rendering quality of this shader is not the best'),
 
         (ELECTRON_LIGHT,
-         'Electron Light',
-         "Light electron microscopy shader"),
+         'Electron Light (Artistic)',
+         'Light electron microscopy shader'),
 
         (ELECTRON_DARK,
-         'Electron Dark',
-         "Dark electron microscopy shader"),
+         'Electron Dark (Artistic)',
+         'Dark electron microscopy shader'),
 
         (SUPER_ELECTRON_LIGHT,
-         'Super Electron Light',
-         "Highly detailed light electron shader"),
+         'Super Electron Light (Artistic)',
+         'Highly detailed light electron shader'),
 
         (SUPER_ELECTRON_DARK,
-         'Super Electron Dark',
-         "Highly detailed dark electron shader"),
-
-        (WAX,
-         'Wax',
-         "Creates high quality images. This shader might take up to few hours to create a single "
-         "image depending on the complexity of the neuron"),
-
-        (GLOSSY,
-         'Plastic',
-         "Creates high quality images. This shader might take up to few hours to create a single "
-         "image depending on the complexity of the neuron"),
-
-        (GLOSSY_BUMPY,
-         'Glossy Bumpy',
-         "Creates high quality images. This shader might take up to few hours to create a single "
-         "image depending on the complexity of the neuron"),
+         'Super Electron Dark (Artistic)',
+         'Highly detailed dark electron shader'),
 
         (WIRE_FRAME,
-         'Wire-frame',
-         "Wire-frame shader to show the polygons of the mesh")
+         'Wire Frame',
+         'Wire-frame shader to show the polygons of the mesh. This shader is used for '
+         'geometry verification.'),
+
+        (GLOSSY,
+         'Glossy (Artistic)',
+         'Creates high quality images. This shader might take up to few hours to create a single '
+         'image depending on the complexity of the neuron'),
+
+        (MARBLE,
+         'Marble (Artistic)',
+         'Creates high quality images. This shader might take up to few hours to create a single '
+         'image depending on the complexity of the neuron'),
+
+        (CRACKY,
+         'Cracky (Artistic)',
+         'Creates high quality images. This shader might take up to few hours to create a single '
+         'image depending on the complexity of the neuron'),
     ]
 

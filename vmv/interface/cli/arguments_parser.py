@@ -647,7 +647,7 @@ def create_executable_for_single_morphology_file(arguments,
     :param morphology_file:
         The path to the morphology file.
     :return:
-        An executable shell command to call NeuroMorphoVis for a single morphology file.
+        An executable shell command to call VessMorphoVis for a single morphology file.
     """
 
     # Format a string with blender arguments

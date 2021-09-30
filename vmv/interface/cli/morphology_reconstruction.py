@@ -58,28 +58,28 @@ def build_skeleton(cli_morphology,
         True if the morphology is reconstructed, False otherwise for the follow up operations.
     """
 
-    method = cli_options.morphology.reconstruction_method
+    method = cli_options.morphology.builder
 
     # Disconnected sections
-    if method == vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SECTIONS:
+    if method == vmv.enums.Morphology.Builder.SECTIONS:
 
         # Create the builder and build the morphology skeleton
-        builder = vmv.builders.DisconnectedSectionsBuilder(morphology=cli_morphology,
+        builder = vmv.builders.SectionsBuilder(morphology=cli_morphology,
                                                            options=cli_options)
         builder.build_skeleton()
         return True
 
     # Disconnected segments
-    elif method == vmv.enums.Morphology.ReconstructionMethod.DISCONNECTED_SEGMENTS:
+    elif method == vmv.enums.Morphology.Builder.SEGMENTS:
 
         # Create the builder and build the morphology skeleton
-        builder = vmv.builders.DisconnectedSegmentsBuilder(morphology=cli_morphology,
+        builder = vmv.builders.SegmentsBuilder(morphology=cli_morphology,
                                                            options=cli_options)
         builder.build_skeleton()
         return True
 
     # Connected sections
-    elif method == vmv.enums.Morphology.ReconstructionMethod.CONNECTED_SECTIONS:
+    elif method == vmv.enums.Morphology.Builder.CONNECTED_SECTIONS:
 
         # Create the builder and build the morphology skeleton
         builder = vmv.builders.ConnectedSectionsBuilder(morphology=cli_morphology,
@@ -88,7 +88,7 @@ def build_skeleton(cli_morphology,
         return True
 
     # Samples builder
-    elif method == vmv.enums.Morphology.ReconstructionMethod.SAMPLES:
+    elif method == vmv.enums.Morphology.Builder.SAMPLES:
 
         # Create the builder and build the morphology skeleton
         builder = vmv.builders.SamplesBuilder(morphology=cli_morphology, options=cli_options)
@@ -152,7 +152,7 @@ def reconstruct_vascular_morphology(cli_morphology,
                 camera_view=cli_options.morphology.camera_view,
                 image_scale_factor=cli_options.morphology.resolution_scale_factor,
                 image_name='MORPHOLOGY_FRONT_%s' % cli_morphology.name,
-                image_directory=vmv.interface.options.io.images_directory)
+                image_directory=Globals.Options.io.images_directory)
 
     # Render a 360 sequence of the reconstructed morphology skeleton
     if cli_options.morphology.render_360:
@@ -196,7 +196,7 @@ if __name__ == "__main__":
 
         if not loading_flag:
             vmv.logger.log('ERROR: Cannot load the morphology file [%s]. Terminating!' %
-                           str(cli_options.morphology.morphology_file_path))
+                           str(cli_options.morphology.file_path))
             exit(0)
 
     else:

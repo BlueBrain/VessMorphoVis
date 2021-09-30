@@ -59,8 +59,8 @@ class Color:
     # Default color for blood
     DEFAULT_BLOOD_COLOR = Vector((172.0 / 256.0, 4.0 / 256.0, 4.0 / 256.0))
 
-    # Number of color elements in the user interface
-    NUMBER_COLORS_UI = 8
+    # Light red color
+    LIGHT_RED_COLOR = Vector((0.9, 0.1, 0.075))
 
-    # The default number of samples in the color map
-    COLOR_MAP_RESOLUTION = 32
+    # NUmber of colors in the colormap
+    COLORMAP_RESOLUTION = 16

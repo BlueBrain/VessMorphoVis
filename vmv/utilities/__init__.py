@@ -15,6 +15,8 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+from .auxiliary import *
+from .colors import *
 from .parser import *
 from .system import *
 from .std_output import *

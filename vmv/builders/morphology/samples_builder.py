@@ -15,26 +15,19 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import sys
-import copy
-
-# Blender imports
-import bpy
-
 # Internal imports
-import vmv
 import vmv.geometry
 import vmv.mesh
 import vmv.bmeshi
 import vmv.scene
 import vmv.skeleton
+from .base import MorphologyBuilder
 
 
 ####################################################################################################
 # @SamplesBuilder
 ####################################################################################################
-class SamplesBuilder:
+class SamplesBuilder(MorphologyBuilder):
     """Morphology builder with samples, where each sample is drawn as an independent object.
     """
 
@@ -52,19 +45,8 @@ class SamplesBuilder:
             System options.
         """
 
-        # Clone the original morphology to morphology before the pre=processing
-        self.morphology = morphology
-
-        # All the options of the project
-        self.options = options
-
-        # All the reconstructed objects of the morphology, for example, tubes, spheres, etc...
-        self.morphology_objects = []
-
-        # A list of the colors/materials of the skeleton
-        self.materials = None
-
-        self.context = None
+        # Base
+        MorphologyBuilder.__init__(self, morphology=morphology, options=options)
 
     ################################################################################################
     # @draw_section_samples_as_spheres
@@ -90,14 +72,11 @@ class SamplesBuilder:
     ################################################################################################
     def link_and_shade_spheres(self,
                                sphere_list,
-                               materials_list,
                                prefix):
         """Links the added sphere to the scene.
 
         :param sphere_list:
             A list of sphere to be linked to the scene and shaded with the corresponding materials.
-        :param materials_list:
-            A list of materials to be applied to the spheres after being linked to the scene.
         :param prefix:
             Prefix to name each sphere object after linking it to the scene.
         """
@@ -105,80 +84,53 @@ class SamplesBuilder:
         joint_bmesh = vmv.bmeshi.join_bmeshes_list(bmeshes_list=sphere_list)
 
         # Link the bmesh spheres to the scene
-        sphere_mesh = vmv.bmeshi.ops.link_to_new_object_in_scene(joint_bmesh, prefix)
+        self.morphology_skeleton = vmv.bmeshi.ops.link_to_new_object_in_scene(joint_bmesh, prefix)
 
         # Smooth shading
-        vmv.mesh.shade_smooth_object(sphere_mesh)
+        vmv.mesh.shade_smooth_object(self.morphology_skeleton)
+
+        # Create a simple material
+        material = vmv.shading.create_material(
+            name='morphology_skeleton', material_type=self.options.morphology.material,
+            color=self.options.morphology.color)
 
         # Assign the material
-        vmv.shading.set_material_to_object(sphere_mesh, materials_list[0])
+        vmv.shading.set_material_to_object(self.morphology_skeleton, material)
 
-        # Append the sphere mesh to the morphology objects
-        self.morphology_objects.append(sphere_mesh)
-
-    ################################################################################################
-    # @get_sections_poly_lines_data
-    ################################################################################################
-    def get_sections_poly_lines_data(self):
-        """Gets a list of the data of all the poly-lines that correspond to the sections in the
-        morphology.
-
-        NOTE: Each entry in the the poly-lines list has the following format:
-            * poly_lines_data[0]: a list of all the samples (points and their radii)
-            * poly_lines_data[0]: the material index
-
-        :return:
-            A list of all the poly-lines that correspond to the sections in the entire morphology.
-        """
-
-        # A list of all the poly-lines
-        poly_lines_data = list()
-
-        # Get the poly-line data of each section
-        for i, section in enumerate(self.morphology.sections_list):
-
-            # Poly-line samples
-            poly_line_samples = vmv.skeleton.ops.get_section_poly_line(section=section)
-
-            # Poly-line material index (we use two colors to highlight the sections)
-            poly_line_material_index = i % 2
-
-            # Add the poly-line to the aggregate list
-            poly_lines_data.append([poly_line_samples, poly_line_material_index])
-
-        # Return the poly-lines list
-        return poly_lines_data
+        # Create the corresponding illumination
+        vmv.shading.create_material_specific_illumination(
+            material_type=self.options.morphology.material)
 
     ################################################################################################
     # @build_skeleton
     ################################################################################################
     def build_skeleton(self, 
-                       context=None):
+                       context=None,
+                       dynamic_colormap=False):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
         """
 
-        vmv.logger.header('Building skeleton: SamplesBuilder')
+        vmv.logger.header('Building Skeleton: SamplesBuilder')
+
+        # Call the base function
+        super(SamplesBuilder, self).build_skeleton(context=context)
 
         # Get the context 
         self.context = context 
 
         # Clear the scene
-        vmv.logger.info('Clearing scene')
+        vmv.logger.info('Clearing Scene')
         vmv.scene.ops.clear_scene()
 
         # Clear the materials
         vmv.scene.ops.clear_scene_materials()
 
-        self.materials = vmv.skeleton.ops.create_skeleton_materials(
-            name='axon_skeleton', material_type=self.options.morphology.material,
-            color=self.options.morphology.color)
-
         # Pre-process the radii
-        vmv.logger.info('Adjusting radii')
+        vmv.logger.info('Adjusting Radii')
         vmv.skeleton.update_skeleton_radii(morphology=self.morphology, options=self.options)
 
         # Construct the final object and add it to the morphology
-        vmv.logger.info('Constructing object')
+        vmv.logger.info('Constructing Object')
 
         spheres = list()
         for section in self.morphology.sections_list:
@@ -187,6 +139,8 @@ class SamplesBuilder:
         # Construct the final object and add it to the morphology
         vmv.logger.info('Linking spheres')
 
-        self.link_and_shade_spheres(sphere_list=spheres,
-                                    materials_list=self.materials,
-                                    prefix='samples')
+        # Link the sphere together into a single object and shade it
+        self.link_and_shade_spheres(sphere_list=spheres, prefix=self.morphology_name)
+
+        # Return a reference to the morphology
+        return self.morphology_skeleton

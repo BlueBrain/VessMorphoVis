@@ -46,6 +46,3 @@ class Meshing:
 
     # Minimum meta ball resolution
     MAX_META_BALL_RESOLUTION = 10.0
-
-    # The suffix that is added to any reconstructed mesh to be able to search for it
-    MESH_SUFFIX = '_vmv_mesh'

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
-#               Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
+# Copyright (c) 2016 - 2020, EPFL / Blue Brain Project
+#               Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
-# This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
+# This file is part of NeuroMorphoVis <https://github.com/BlueBrain/NeuroMorphoVis>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the
 # GNU General Public License as published by the Free Software Foundation, version 3 of the License.
@@ -38,14 +38,14 @@ def parse_command_line_arguments(arguments=None):
     """
 
     # add all the options
-    description = 'Installing VessMorphoVis from scratch. Simple, easy and awesome! ' \
+    description = 'Installing NeuroMorphoVis from scratch. Simple, easy and awesome! ' \
                   'This script is valid for *nix-based operating systems including macOSX and ' \
                   'Linux distributions. For windows, you can download a zip package from the ' \
                   'release page. \n' \
                   'NOTE: git, wget or curl must be installed to run this script.'
     parser = argparse.ArgumentParser(description=description)
 
-    arg_help = 'Blender version. 2.79, 2.80, or 2.81, 2.82, 2.83. ' \
+    arg_help = 'Blender version. 2.79, 2.80, or 2.81, 2.82, and 2.90. ' \
                'By default it is 2.80. It is recommended to avoid 2.79.'
     parser.add_argument('--blender-version',
                         action='store', dest='blender_version', default='2.80', help=arg_help)
@@ -123,7 +123,7 @@ def log_detail(msg):
 # @install_for_linux
 ####################################################################################################
 def install_for_linux(directory, blender_version, verbose=False):
-    """Install VessMorphoVis on Linux operating system.
+    """Install NeuroMorphoVis on Linux operating system.
 
     :param directory:
         Installation directory.
@@ -152,7 +152,11 @@ def install_for_linux(directory, blender_version, verbose=False):
         extension = 'tar.xz'
     elif blender_version == '2.83':
         python_version = '3.7'
-        package_name = 'blender-2.83a-linux64'
+        package_name = 'blender-2.83.9-linux64'
+        extension = 'tar.xz'
+    elif blender_version == '2.90':
+        python_version = '3.7'
+        package_name = 'blender-2.90.1-linux64'
         extension = 'tar.xz'
     else:
         print('ERROR: Wrong Blender version [%s]' % blender_version)
@@ -175,23 +179,23 @@ def install_for_linux(directory, blender_version, verbose=False):
     run_command(shell_command, verbose)
 
     # Moving to blender
-    blender_directory = '%s/bluebrain-blender' % directory
+    blender_directory = '%s/blender-neuromorphovis' % directory
     shell_command = 'mv %s/%s %s' % (directory, package_name, blender_directory)
     if os.path.exists(blender_directory):
         os.rmdir(blender_directory)
     run_command(shell_command, verbose)
 
-    # Clone VessMorphoVis into the 'addons' directory
-    addons_directory = '%s/blender-bluebrain/%s/scripts/addons/' % (directory, blender_version)
-    vessmorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
-    shell_command = 'git clone %s %s/vessmorphovis' % (vessmorphovis_url, addons_directory)
+    # Clone NeuroMorphoVis into the 'addons' directory
+    addons_directory = '%s/blender-neuromorphovis/%s/scripts/addons/' % (directory, blender_version)
+    neuromorphovis_url = 'https://github.com/BlueBrain/NeuroMorphoVis.git'
+    shell_command = 'git clone %s %s/neuromorphovis' % (neuromorphovis_url, addons_directory)
     run_command(shell_command, verbose)
 
     # Installing dependencies
-    pip_wheels = ['morphio', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
+    pip_wheels = ['numpy', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
 
     # Removing the site-packages directory
-    blender_python_wheels = '%s/blender-vessorphovis/%s/python/lib/python%s/site-packages/' % \
+    blender_python_wheels = '%s/blender-neuromorphovis/%s/python/lib/python%s/site-packages/' % \
                             (directory, blender_version, python_version)
     shell_command = 'rm -rf %s/numpy' % blender_python_wheels
     run_command(shell_command, verbose)
@@ -217,10 +221,29 @@ def install_for_linux(directory, blender_version, verbose=False):
     pip_executable = '%s/pip' % blender_python_prefix
 
     # packages
-    for wheel in pip_wheels:
+    for i, wheel in enumerate(pip_wheels):
         shell_command = '%s install --ignore-installed %s' % (pip_executable, wheel)
         print('INSTALL: %s' % shell_command)
         run_command(shell_command, verbose)
+
+    # h5py specific version
+    shell_command = '%s install --ignore-installed h5py==2.10.0' % pip_executable
+    print('INSTALL: %s' % shell_command)
+    run_command(shell_command, verbose)
+
+    try:
+        bbp_devpi = 'https://bbpteam.epfl.ch/repository/devpi/simple/'
+        log_detail('Installing: BBP dependencies')
+        shell_command = '%s install -i %s bluepy' % (pip_executable, bbp_devpi)
+        run_command(shell_command, verbose)
+
+        shell_command = '%s install -i %s bluepy_configfile' % (pip_executable, bbp_devpi)
+        run_command(shell_command, verbose)
+
+        shell_command = '%s install -i %s bluepy_snap' % (pip_executable, bbp_devpi)
+        run_command(shell_command, verbose)
+    except ImportError:
+        print('The BBP dependencies were not installed. Can NOT use BluePy or load circuits!')
 
     # Remove the archive
     log_process('Cleaning')
@@ -232,7 +255,7 @@ def install_for_linux(directory, blender_version, verbose=False):
 # @install_for_mac
 ####################################################################################################
 def install_for_mac(directory, blender_version, verbose=False):
-    """Install VessMorphoVis on macOSX operating system.
+    """Install NeuroMorphoVis on macOSX operating system.
 
     :param directory:
         Installation directory.
@@ -261,6 +284,9 @@ def install_for_mac(directory, blender_version, verbose=False):
     elif blender_version == '2.83':
         python_version = '3.7'
         package_name = 'blender-2.83.1-macOS.dmg'
+    elif blender_version == '2.90':
+        python_version = '3.7'
+        package_name = 'blender-2.90.1-macOS.dmg'
     else:
         print('ERROR: Wrong Blender version [%s]' % blender_version)
         exit(0)
@@ -289,16 +315,16 @@ def install_for_mac(directory, blender_version, verbose=False):
     shell_command = 'hdiutil detach /Volumes/Blender'
     run_command(shell_command, verbose)
 
-    # Clone VessMorphoVis into the 'addons' directory
-    log_process('Clone VessMorphoVis')
+    # Clone NeuroMorphoVis into the 'addons' directory
+    log_process('Clone NeuroMorphoVis')
     if blender_version == '2.79':
         blender_app_directory = '%s/Blender/blender.app' % directory
     else:
         blender_app_directory = '%s/Blender.app' % directory
     addons_directory = '%s/Contents/Resources/%s/scripts/addons/' % (blender_app_directory,
                                                                      blender_version)
-    vessmorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
-    shell_command = 'git clone %s %s/vessmorphovis' % (vessmorphovis_url, addons_directory)
+    neuromorphovis_url = 'https://github.com/BlueBrain/NeuroMorphoVis.git'
+    shell_command = 'git clone %s %s/neuromorphovis' % (neuromorphovis_url, addons_directory)
     run_command(shell_command, verbose)
 
     # Blender python
@@ -330,14 +356,31 @@ def install_for_mac(directory, blender_version, verbose=False):
     run_command(shell_command, verbose)
 
     # Installing dependencies
-    pip_wheels = ['h5py', 'numpy', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
+    pip_wheels = ['numpy', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
 
     for wheel in pip_wheels:
-
-        # Command
         log_detail('Installing: %s' % wheel)
         shell_command = '%s install --ignore-installed %s' % (pip_executable, wheel)
         run_command(shell_command, verbose)
+
+    # h5py specific version
+    shell_command = '%s install --ignore-installed h5py==2.10.0' % pip_executable
+    print('INSTALL: %s' % shell_command)
+    run_command(shell_command, verbose)
+
+    try:
+        bbp_devpi = 'https://bbpteam.epfl.ch/repository/devpi/simple/'
+        log_detail('Installing: BBP dependencies')
+        shell_command = '%s install -i %s bluepy' % (pip_executable, bbp_devpi)
+        run_command(shell_command, verbose)
+
+        shell_command = '%s install -i %s bluepy_configfile' % (pip_executable, bbp_devpi)
+        run_command(shell_command, verbose)
+
+        shell_command = '%s install -i %s bluepy_snap' % (pip_executable, bbp_devpi)
+        run_command(shell_command, verbose)
+    except ImportError:
+        print('The BBP dependencies were not installed. Can NOT use BluePy or load circuits!')
 
     # Copying the perf file to loade NMV directly
 
@@ -348,10 +391,10 @@ def install_for_mac(directory, blender_version, verbose=False):
 
 
 ####################################################################################################
-# @install_vessmorphovis
+# @install_neuromorphovis
 ####################################################################################################
-def install_vessmorphovis(directory, blender_version, verbose=False):
-    """Installs VessMorphoVis
+def install_neuromorphovis(directory, blender_version, verbose=False):
+    """Installs NeuroMorphoVis
 
     :param directory:
         Installation directory.
@@ -410,9 +453,11 @@ if __name__ == "__main__":
         log_header('Blender 2.82')
     elif args.blender_version == '2.83':
         log_header('Blender 2.83')
+    elif args.blender_version == '2.90':
+        log_header('Blender 2.90')
     else:
-        log_header('VessMorphoVis is ONLY available for Blender versions '
-            '2.79, 2.80, 2.81, 2.82, 2.83. Recommended version: 2.83')
+        log_header('NeuroMorphoVis is ONLY available for Blender versions '
+                   '2.79, 2.80, 2.81, 2.82, 2.83, 2.90. Recommended version: 2.83')
         exit(0)
 
     # Installation directory
@@ -427,4 +472,4 @@ if __name__ == "__main__":
         os.mkdir(installation_directory)
 
     # Download blender based on the software
-    install_vessmorphovis(installation_directory, args.blender_version, args.verbose)
+    install_neuromorphovis(installation_directory, args.blender_version, args.verbose)

@@ -32,7 +32,7 @@ class IOOptions:
 
         # INPUT OPTIONS ############################################################################
         # The path to the morphology file
-        self.morphology_file_path = None
+        self.file_path = None
 
         # OUTPUT OPTIONS ###########################################################################
         # The root output directory where the results will be generated

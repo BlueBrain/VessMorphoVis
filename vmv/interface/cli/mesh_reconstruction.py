@@ -299,7 +299,7 @@ if __name__ == "__main__":
 
         if not loading_flag:
             vmv.logger.log('ERROR: Cannot load the morphology file [%s]. Terminating!' %
-                           str(cli_options.morphology.morphology_file_path))
+                           str(cli_options.morphology.file_path))
             exit(0)
 
     else:

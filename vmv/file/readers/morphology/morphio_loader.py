@@ -16,6 +16,8 @@
 ####################################################################################################
 
 # Blender imports
+import copy
+
 from mathutils import Vector
 
 # Internal imports
@@ -38,8 +40,8 @@ class MorphIOLoader:
     ################################################################################################
     class SectionMorphIO:
         """An auxiliary structure to keep track on the structure.
-
         """
+
         def __init__(self, id, points, radii, predecessors, successors):
             self.id = id
             self.points = points
@@ -72,6 +74,12 @@ class MorphIOLoader:
         # we should treat each root as an independent object and later group all of then into a
         # single object.
         self.roots = list()
+
+        # The number of loaded vertices or samples
+        self.number_loaded_vertices = None
+
+        # The number of loaded strands or segments
+        self.number_loaded_strands = None
 
     ################################################################################################
     # @read_data_from_file
@@ -107,6 +115,9 @@ class MorphIOLoader:
 
             # Compute the bounding box of the morphology
             self.bounding_box = vmv.bbox.compute_bounding_box_for_list_of_points(points_list)
+
+            # Update the number of samples
+            self.number_loaded_vertices = copy.deepcopy(len(points_list))
 
             # Delete the points list
             points_list.clear()
@@ -177,6 +188,9 @@ class MorphIOLoader:
             # Data
             self.sections_list = sections_list
 
+            # Number of strands
+            self.number_loaded_strands = len(sections_list)
+
             # Detect the root sections and update the list
             for section in self.sections_list:
                 if section.is_root():
@@ -222,7 +236,10 @@ class MorphIOLoader:
 
         # Construct the morphology object following to reading the file
         morphology_object = vmv.skeleton.Morphology(
-            morphology_name=morphology_name, morphology_file_path=self.morphology_file,
+            name=morphology_name,
+            file_path=self.morphology_file,
+            number_samples=self.number_loaded_vertices,
+            number_sections=self.number_loaded_strands,
             sections_list=self.sections_list, roots=self.roots)
 
         # Return the object

@@ -28,6 +28,16 @@ import vmv.mesh
 
 
 ####################################################################################################
+# @update_scene
+####################################################################################################
+def update_scene():
+    """Updates the scene and the 3d view after any transformation.
+    """
+
+    bpy.context.view_layer.update()
+
+
+####################################################################################################
 # @view_axis
 ####################################################################################################
 def view_axis(axis='TOP'):
@@ -118,6 +128,7 @@ def set_transparent_background():
 def set_colors_to_raw():
     """Use RAW colors with FLAT shading to lighten the results
     """
+
     bpy.context.scene.view_settings.view_transform = 'Raw'
 
 
@@ -127,6 +138,7 @@ def set_colors_to_raw():
 def set_colors_to_filimc():
     """Use filmic mode for rendering.
     """
+
     bpy.context.scene.view_settings.view_transform = 'Filmic'
 
 
@@ -347,6 +359,10 @@ def clear_scene():
     # bpy.context.space_data.clip_start = 0.01
     # bpy.context.space_data.clip_end = 10000
 
+    # Make all the objects in the scene visible
+    for scene_object in bpy.context.scene.objects:
+        unhide_object(scene_object)
+
     # Select each object in the scene
     for scene_object in bpy.context.scene.objects:
         select_object(scene_object)
@@ -431,7 +447,25 @@ def clear_scene_materials():
 
     # Clear all the materials that are already present in the scene
     for material in bpy.data.materials:
-        if 'morphology_skeleton' in material.name:
+        material.user_clear()
+        bpy.data.materials.remove(material)
+
+
+####################################################################################################
+# @clear_scene_materials
+####################################################################################################
+def clear_material_with_name(name):
+    """Clears a material with a specific name.
+
+    :param name:
+        Material name.
+    """
+
+    # Clear a specific material with a given name
+    for material in bpy.data.materials:
+
+        # Make sure that is has the same name
+        if material.name == name:
             material.user_clear()
             bpy.data.materials.remove(material)
 
@@ -677,6 +711,9 @@ def delete_object_in_scene(scene_object):
     # Deselect all the other objects in the scene
     deselect_all()
 
+    # If the object is hidden, show it to be able to delete it
+    unhide_object(scene_object)
+
     # Select this particular object, to highlight it
     select_object(scene_object)
 
@@ -701,6 +738,9 @@ def delete_list_objects(object_list):
 
     # Delete object by object from the list
     for scene_object in object_list:
+
+        # If the object is hidden, show it to be able to delete it
+        unhide_object(scene_object)
 
         # Select this particular object, to highlight it
         select_object(scene_object)
@@ -1368,3 +1408,73 @@ def extend_clipping_planes(clip_start=0.01,
 
     # Ending clipping plane
     bpy.context.space_data.clip_end = clip_end
+
+
+####################################################################################################
+# @select_object_by_name
+####################################################################################################
+def select_object_by_name(object_name):
+    """Select an object in the scene given its name.
+    :param object_name:
+        The name of object to be selected.
+    """
+
+    # Set the '.select' flag of the object to True
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.name == object_name:
+            select_object(scene_object)
+
+
+####################################################################################################
+# @get_object_by_name
+####################################################################################################
+def get_object_by_name(object_name):
+    """Gets an object in the scene given its name.
+    :param object_name:
+        The name of object to be returned.
+    """
+
+    # For every object in the scene, check its name
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.name == object_name:
+            return scene_object
+
+    # If there is no object defined by the name , return None
+    return None
+
+
+####################################################################################################
+# @is_there_any_mesh_in_scene
+####################################################################################################
+def is_there_any_mesh_in_scene():
+    """Detects if the scene has any mesh or not.
+
+    :return:
+        True if there is at least a single mesh in the scene, and False otherwise.
+    """
+
+    # For every object in the scene, detect if this object is a mesh or not
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.type == 'MESH':
+            return True
+    return False
+
+
+####################################################################################################
+# @is_there_any_morphology_in_scene
+####################################################################################################
+def is_there_any_morphology_in_scene():
+    """Detects if the scene has any morphology or not.
+
+    :return:
+        True if there is at least a single morphology or polyline in the scene, and False otherwise.
+    """
+
+    # For every object in the scene, detect if this object is a polyline or not
+    for scene_object in bpy.context.scene.objects:
+        if scene_object.type == 'CURVE':
+            return True
+    return False
+
+
+

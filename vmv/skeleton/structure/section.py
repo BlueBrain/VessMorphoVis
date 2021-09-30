@@ -20,23 +20,23 @@
 # Section
 ####################################################################################################
 class Section:
-    """An individual section in the skeleton.
+    """Vasculature morphology section or strand.
 
     The section is composed of a set of segments, and each segment is composed of two samples.
-    Each sample has a point in the cartesian coordinates and a radius that reflects the
-    cross-sectional area of the morphology at a certain point.
+    Each sample has a point in the cartesian coordinates and a radius that reflects the cross
+    sectional area of the morphology at a certain point.
     """
 
     ################################################################################################
     # @__init__
     ################################################################################################
     def __init__(self,
-                 index=-1,
+                 index=None,
                  samples=None):
         """Constructor.
 
         :param index:
-            Section index in the morphology.
+            Unique section index in the morphology.
         :param samples:
             A list of samples along the section.
         """
@@ -44,7 +44,7 @@ class Section:
         # Section index
         self.index = index
 
-        # List of samples
+        # The list of samples the section composes 
         self.samples = samples if samples is not None else list()
 
         # Parent sections, initially empty list till the reconstruction of the entire data set

@@ -15,6 +15,9 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import math
+
 # Blender imports
 from mathutils import Vector
 
@@ -69,6 +72,21 @@ class BoundingBox:
         self.p_min -= Vector((delta, delta, delta))
         self.p_max += Vector((delta, delta, delta))
         self.bounds = self.p_max - self.p_min
+
+    ################################################################################################
+    # @compute_diagonal
+    ################################################################################################
+    def compute_diagonal(self):
+        """Computes the diagonal of the bounding box.
+
+        :return:
+            The diagonal of the bounding box.
+        """
+
+        # Compute the diagonal of the bounding box
+        return math.sqrt(self.bounds[0] * self.bounds[0] +
+                         self.bounds[1] * self.bounds[1] +
+                         self.bounds[2] * self.bounds[2])
 
     ################################################################################################
     # @print_details
