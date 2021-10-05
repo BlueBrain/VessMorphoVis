@@ -18,7 +18,7 @@
 __author__      = "Marwan Abdellah"
 __copyright__   = "Copyright (c) 2019, Blue Brain Project / EPFL"
 __credits__     = ["Juan Hernando"]
-__version__     = "0.1.0"
+__version__     = "0.2.0"
 __maintainer__  = "Marwan Abdellah"
 __email__       = "marwan.abdellah@epfl.ch"
 __status__      = "Production"
