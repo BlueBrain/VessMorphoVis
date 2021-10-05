@@ -154,7 +154,7 @@ def create_colormap_from_color_list(color_list,
 
 
 ####################################################################################################
-# @ create_colormap_from_hex_list
+# @create_colormap_from_hex_list
 ####################################################################################################
 def create_colormap_from_hex_list(hex_list,
                                   number_colors):
@@ -177,3 +177,33 @@ def create_colormap_from_hex_list(hex_list,
 
     # Create the RGB color list
     return create_colormap_from_color_list(rgb_color_list, number_colors)
+
+
+####################################################################################################
+# @create_xyz_color_list
+####################################################################################################
+def create_xyz_color_list():
+    """Creates a list of colors that are aligned with the XYZ coordinates using a sampling step
+    of 0.25.
+
+    :return:
+        A list of colors.
+    """
+
+    # The samples between 0.0 and 1.0
+    samples = [0.0, 0.25, 0.5, 0.75, 1.0]
+
+    # The number of samples
+    n = len(samples)
+
+    # The list of colors
+    colors = list()
+
+    # Create the colors and add them to the list
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                colors.append(Vector((samples[i], samples[j], samples[k])))
+
+    # Return a reference to the colors
+    return colors

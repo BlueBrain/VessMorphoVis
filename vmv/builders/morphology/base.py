@@ -21,6 +21,7 @@ import copy
 
 # Blender imports
 import bpy
+from mathutils import Vector
 
 # Internal imports
 import vmv
@@ -130,6 +131,9 @@ class MorphologyBuilder:
 
             elif self.options.morphology.color_coding == vmv.enums.ColorCoding.SHORT_SECTIONS:
                 return [self.options.morphology.color, self.options.morphology.alternating_color]
+
+            elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SEGMENT_ALIGNMENT:
+                return vmv.utilities.create_xyz_color_list()
 
             # Otherwise, it is a color-map
             else:

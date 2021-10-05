@@ -53,6 +53,9 @@ class ColorCoding:
     # By segment index
     BY_SEGMENT_INDEX = 'COLOR_CODING_BY_SEGMENT_INDEX'
 
+    # By alignment
+    BY_SEGMENT_ALIGNMENT = 'COLOR_CODING_BY_ALIGNMENT'
+
     ################################################################################################
     # Segments color-coding items to be added to the interface list
     ################################################################################################
@@ -61,42 +64,48 @@ class ColorCoding:
         # Default coloring scheme
         (DEFAULT,
          'Default',
-         'A single color will be applied to the entire morphology'),
+         'A single color will be applied to the entire morphology.'),
 
         # Alternating colors for every two segments in the morphology
         (ALTERNATING_COLORS,
          'Alternating Colors',
-         'Use alternating segments colors to visualize certain patterns in the morphology'),
+         'Use alternating segments colors to visualize certain patterns in the morphology.'),
 
         # Radius
         (BY_RADIUS,
          'Segment Radius',
          'Color-code the morphology based on the radius of the segment with respect to '
-         'the radii distribution along the entire morphology'),
+         'the radii distribution along the entire morphology.'),
 
         # Length
         (BY_LENGTH,
          'Segment Length',
          'Color-code the morphology based on the length of the segment with respect to '
-         'the segments length distribution along the entire morphology'),
+         'the segments length distribution along the entire morphology.'),
 
         # Area
         (BY_SURFACE_AREA,
          'Segment Area',
          'Color-code the morphology based on the area of the segment with respect to '
-         'the distribution of the segments areas along the entire morphology'),
+         'the distribution of the segments areas along the entire morphology.'),
 
         # Volume
         (BY_VOLUME,
          'Segment Volume',
          'Color-code the morphology based on the volume of the segment with respect to '
-         'the distribution of the segments volumes along the entire morphology'),
+         'the distribution of the segments volumes along the entire morphology.'),
 
         # Segment index
         (BY_SEGMENT_INDEX,
          'Segment Index',
          'Color-code the morphology gradually based on the index the segment starting from 0 and '
-         'until the last segment in the morphology')
+         'until the last segment in the morphology.'),
+
+        # Segment alignment
+        (BY_SEGMENT_ALIGNMENT,
+         'Segment Alignment',
+         'Color-code the morphology based on the alignments of the segments along their strands'
+         'in the morphology, where you can align colors to X, Y and Z axes.')
     ]
 
     ################################################################################################

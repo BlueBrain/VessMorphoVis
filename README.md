@@ -126,6 +126,8 @@ _VessMorphoVis_ is available to download and use under the GNU General Public Li
 The code is open sourced with approval from the open sourcing committee and principal coordinators 
 of the Blue Brain Project in June 2020. 
 
+Copyright (c) 2019 - 2021 Blue Brain Project/EPFL
+
 # Attributions 
 
 * [Blender](https://www.blender.org/) (C) is copyright to Blender Foundation. 

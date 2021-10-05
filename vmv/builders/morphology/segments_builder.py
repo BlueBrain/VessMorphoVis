@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2018 - 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -253,6 +253,23 @@ class SegmentsBuilder(MorphologyBuilder):
         return poly_lines_data
 
     ################################################################################################
+    # @get_poly_line_data_based_on_segment_index
+    ################################################################################################
+    def get_poly_line_data_based_on_segment_alignment(self):
+
+        # The poly-lines data list
+        poly_lines_data = list()
+
+        # Get the poly-line data of each section
+        for section in self.morphology.sections_list:
+            poly_lines_data.extend(
+                vmv.skeleton.ops.get_color_coded_segments_poly_lines_based_on_alignment(
+                    section=section))
+
+        # Return the list
+        return poly_lines_data
+
+    ################################################################################################
     # @get_segments_poly_lines_data
     ################################################################################################
     def get_segments_poly_lines_data(self):
@@ -274,6 +291,8 @@ class SegmentsBuilder(MorphologyBuilder):
             return self.get_poly_line_data_based_on_volume()
         elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SEGMENT_INDEX:
             return self.get_poly_line_data_based_on_segment_index()
+        elif self.options.morphology.color_coding == vmv.enums.ColorCoding.BY_SEGMENT_ALIGNMENT:
+            return self.get_poly_line_data_based_on_segment_alignment()
         else:
             return self.get_poly_line_data_colored_with_single_color()
 

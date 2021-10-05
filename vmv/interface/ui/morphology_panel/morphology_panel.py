@@ -82,6 +82,10 @@ class VMV_MorphologyPanel(bpy.types.Panel):
                 color_map = [context.scene.VMV_MorphologyColor1,
                              context.scene.VMV_MorphologyColor2]
 
+            # Alignment colors
+            elif len(slots) == 125:
+                color_map = vmv.utilities.create_xyz_color_list()
+
             # Full scale color-map
             else:
                 color_map = vmv.utilities.create_color_map_from_color_list(
@@ -328,6 +332,24 @@ class VMV_MorphologyPanel(bpy.types.Panel):
         description='Invert the selected colormap.',
         default=False,
         update=update_ui_colors)
+
+    # Red color for X alignment
+    bpy.types.Scene.VMV_RedColor = bpy.props.FloatVectorProperty(
+        name='',
+        description='The red color corresponds to the X-axis',
+        subtype='COLOR', default=vmv.consts.Color.RED, min=0.0, max=1.0)
+
+    # Green color for Y alignment
+    bpy.types.Scene.VMV_GreenColor = bpy.props.FloatVectorProperty(
+        name='',
+        description='The green color corresponds to the Y-axis',
+        subtype='COLOR', default=vmv.consts.Color.GREEN, min=0.0, max=1.0)
+
+    # Blue color for Z alignment
+    bpy.types.Scene.VMV_BlueColor = bpy.props.FloatVectorProperty(
+        name='',
+        description='The blue color corresponds to the Z-axis',
+        subtype='COLOR', default=vmv.consts.Color.BLUE, min=0.0, max=1.0)
 
     # Create a list of colors from the selected colormap
     colors = vmv.utilities.create_colormap_from_hex_list(

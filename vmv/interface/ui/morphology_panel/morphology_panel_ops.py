@@ -194,6 +194,34 @@ def add_alternating_colors_option(layout,
 
 
 ####################################################################################################
+# @add_alignment_colors_option
+####################################################################################################
+def add_alignment_colors_option(layout,
+                                scene):
+
+    # Red Color
+    row = layout.row()
+    row.label(text='X')
+    column = row.column()
+    column.prop(scene, 'VMV_RedColor')
+    column.enabled = False
+
+    # Green Color
+    row = layout.row()
+    row.label(text='Y')
+    column = row.column()
+    column.prop(scene, 'VMV_GreenColor')
+    column.enabled = False
+
+    # Blue Color
+    row = layout.row()
+    row.label(text='Z')
+    column = row.column()
+    column.prop(scene, 'VMV_BlueColor')
+    column.enabled = False
+
+
+####################################################################################################
 # @add_short_sections_colors_option
 ####################################################################################################
 def add_short_sections_colors_option(layout,
@@ -250,6 +278,7 @@ def add_per_section_color_coding_options(layout,
     elif scene.VMV_PerSectionColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
         add_alternating_colors_option(layout=layout, scene=scene, options=options)
 
+    # Short sections
     elif scene.VMV_PerSectionColorCodingBasis == vmv.enums.ColorCoding.SHORT_SECTIONS:
         add_short_sections_colors_option(layout=layout, scene=scene, options=options)
 
@@ -284,6 +313,10 @@ def add_per_segment_color_coding_options(layout,
     # Alternating colors
     elif scene.VMV_PerSegmentColorCodingBasis == vmv.enums.ColorCoding.ALTERNATING_COLORS:
         add_alternating_colors_option(layout=layout, scene=scene, options=options)
+
+    # Alignment colors
+    elif scene.VMV_PerSegmentColorCodingBasis == vmv.enums.ColorCoding.BY_SEGMENT_ALIGNMENT:
+        add_alignment_colors_option(layout=layout, scene=scene)
 
     # Using a colormap
     else:
