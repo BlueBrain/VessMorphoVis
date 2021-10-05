@@ -116,45 +116,45 @@ class ColorCoding:
         # Default coloring scheme
         (DEFAULT,
          'Default',
-         'A single color will be applied to the entire morphology'),
+         'A single color will be applied to the entire morphology.'),
 
         # Alternating colors for every two sections in the morphology
         (ALTERNATING_COLORS,
          'Alternating Colors',
-         'Use alternating sections colors to visualize certain patterns in the morphology'),
+         'Use alternating sections colors to visualize certain patterns in the morphology.'),
 
         # Short sections
         (SHORT_SECTIONS,
          'Short Sections',
-         'Visualize the short sections in the morphology for validation'),
+         'Visualize the short sections in the morphology for validation.'),
 
         # Length
         (BY_LENGTH,
          'Section Length',
          'Color-code the morphology based on the length of the section with respect to '
-         'the sections length distribution along the entire morphology'),
+         'the sections length distribution along the entire morphology.'),
 
         # Area
         (BY_SURFACE_AREA,
          'Section Surface Area',
          'Color-code the morphology based on the area of the section with respect to '
-         'the distribution of the sections surface areas along the entire morphology'),
+         'the distribution of the sections surface areas along the entire morphology.'),
 
         # Volume
         (BY_VOLUME,
          'Section Volume',
          'Color-code the morphology based on the volume of the section with respect to '
-         'the distribution of the sections volumes along the entire morphology'),
+         'the distribution of the sections volumes along the entire morphology.'),
 
         # Number of samples
         (BY_NUMBER_SAMPLES,
          'Number of Samples',
-         'Color-code the morphology based on the number of samples along the section'),
+         'Color-code the morphology based on the number of samples along the section.'),
 
         # Section index
         (BY_SECTION_INDEX,
          'Section Index',
-         'Color-code the morphology gradually according to the index of the section')
+         'Color-code the morphology gradually according to the index of the section.')
     ]
 
     ############################################################################################

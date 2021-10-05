@@ -40,13 +40,14 @@ def parse_command_line_arguments(arguments=None):
     # add all the options
     description = 'Installing Neuro/Vess-MorphoVis from scratch. Simple, easy and awesome! ' \
                   'This script is valid for *nix-based operating systems including macOSX and ' \
-                  'Linux distributions. For windows, you can download a zip package from the ' \
-                  'release page. \n' \
+                  'Linux distributions. For windows, you can download a zip package from the '  \
+                  'release page. \n'                                                            \
                   'NOTE: git, wget or curl must be installed to run this script.'
     parser = argparse.ArgumentParser(description=description)
 
     arg_help = 'Blender version. 2.79, 2.80, or 2.81, 2.82, and 2.90, 2.93. ' \
                'By default it is 2.90. It is recommended to avoid 2.79.'
+
     parser.add_argument('--blender-version',
                         action='store', dest='blender_version', default='2.80', help=arg_help)
 
@@ -179,23 +180,29 @@ def install_for_linux(directory, blender_version, verbose=False):
     run_command(shell_command, verbose)
 
     # Moving to blender
-    blender_directory = '%s/blender-neuromorphovis' % directory
+    blender_directory = '%s/blender-bbp' % directory
     shell_command = 'mv %s/%s %s' % (directory, package_name, blender_directory)
     if os.path.exists(blender_directory):
         os.rmdir(blender_directory)
     run_command(shell_command, verbose)
 
     # Clone NeuroMorphoVis into the 'addons' directory
-    addons_directory = '%s/blender-neuromorphovis/%s/scripts/addons/' % (directory, blender_version)
+    addons_directory = '%s/blender-bbp/%s/scripts/addons/' % (directory, blender_version)
     neuromorphovis_url = 'https://github.com/BlueBrain/NeuroMorphoVis.git'
     shell_command = 'git clone %s %s/neuromorphovis' % (neuromorphovis_url, addons_directory)
+    run_command(shell_command, verbose)
+
+    # Clone VessMorphoVis into the 'addons' directory
+    addons_directory = '%s/blender-bbp/%s/scripts/addons/' % (directory, blender_version)
+    vessmorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
+    shell_command = 'git clone %s %s/vessmorphovis' % (vessmorphovis_url, addons_directory)
     run_command(shell_command, verbose)
 
     # Installing dependencies
     pip_wheels = ['numpy', 'matplotlib', 'seaborn', 'pandas', 'Pillow']
 
     # Removing the site-packages directory
-    blender_python_wheels = '%s/blender-neuromorphovis/%s/python/lib/python%s/site-packages/' % \
+    blender_python_wheels = '%s/blender-bbp/%s/python/lib/python%s/site-packages/' % \
                             (directory, blender_version, python_version)
     shell_command = 'rm -rf %s/numpy' % blender_python_wheels
     run_command(shell_command, verbose)
@@ -323,8 +330,15 @@ def install_for_mac(directory, blender_version, verbose=False):
         blender_app_directory = '%s/Blender.app' % directory
     addons_directory = '%s/Contents/Resources/%s/scripts/addons/' % (blender_app_directory,
                                                                      blender_version)
+    
+    # Clone NeuroMorphoVis
     neuromorphovis_url = 'https://github.com/BlueBrain/NeuroMorphoVis.git'
     shell_command = 'git clone %s %s/neuromorphovis' % (neuromorphovis_url, addons_directory)
+    run_command(shell_command, verbose)
+
+    # Clone VessMorphoVis
+    vessmorphovis_url = 'https://github.com/BlueBrain/VessMorphoVis.git'
+    shell_command = 'git clone %s %s/vessmorphovis' % (vessmorphovis_url, addons_directory)
     run_command(shell_command, verbose)
 
     # Blender python

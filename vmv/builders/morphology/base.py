@@ -21,7 +21,10 @@ import copy
 
 # Blender imports
 import bpy
+<<<<<<< HEAD
 from mathutils import Vector
+=======
+>>>>>>> 1d1524dfee63f4d2fb17d74386cf4b7862948b84
 
 # Internal imports
 import vmv

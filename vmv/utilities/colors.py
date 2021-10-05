@@ -154,7 +154,11 @@ def create_colormap_from_color_list(color_list,
 
 
 ####################################################################################################
+<<<<<<< HEAD
 # @create_colormap_from_hex_list
+=======
+# @ create_colormap_from_hex_list
+>>>>>>> 1d1524dfee63f4d2fb17d74386cf4b7862948b84
 ####################################################################################################
 def create_colormap_from_hex_list(hex_list,
                                   number_colors):
@@ -177,6 +181,7 @@ def create_colormap_from_hex_list(hex_list,
 
     # Create the RGB color list
     return create_colormap_from_color_list(rgb_color_list, number_colors)
+<<<<<<< HEAD
 
 
 ####################################################################################################
@@ -207,3 +212,5 @@ def create_xyz_color_list():
 
     # Return a reference to the colors
     return colors
+=======
+>>>>>>> 1d1524dfee63f4d2fb17d74386cf4b7862948b84

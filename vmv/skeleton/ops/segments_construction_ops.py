@@ -103,6 +103,7 @@ def get_color_coded_segments_poly_lines_with_alternating_colors(section):
 ####################################################################################################
 def get_color_coded_segments_poly_lines_based_on_radius(
         section, minimum, maximum, color_map_resolution=vmv.consts.Color.COLORMAP_RESOLUTION):
+
     """Gets a list of all the segments composing the section color-coded based 
     on their radii in the morphology.
 
@@ -453,3 +454,4 @@ def get_color_coded_segments_poly_lines_based_on_alignment(section):
 
     # Return the list of polylines
     return poly_lines
+
