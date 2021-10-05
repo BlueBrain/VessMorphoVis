@@ -1,9 +1,5 @@
 ####################################################################################################
-<<<<<<< HEAD
 # Copyright (c) 2019 - 2021, EPFL / Blue Brain Project
-=======
-# Copyright (c) 2018 - 2019, EPFL / Blue Brain Project
->>>>>>> 1d1524dfee63f4d2fb17d74386cf4b7862948b84
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -260,7 +256,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_poly_line_data_based_on_segment_alignment
     ################################################################################################
     def get_poly_line_data_based_on_segment_alignment(self):
-    	"""Gets a list of all the polylines based on the alignment of the segments in the morphology.
+        """Gets a list of all the polylines based on the alignment of the segments in the morphology.
         """
 
         # The poly-lines data list
