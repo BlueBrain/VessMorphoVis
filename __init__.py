@@ -32,7 +32,7 @@ bl_info = {
     # The main author(s) of this add-on
     "author": "Marwan Abdellah, Blue Brain Project at EPFL",
     # A tuple, containing the add-on version
-    "version": (0, 1, 0),
+    "version": (0, 2, 0),
     # The earliest Blender version this add-on will work with. If you're not sure what versions of
     # Blender this add-on is compatible with, use the version of Blender you're developing
     # the add-on with.
