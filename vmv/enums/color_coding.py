@@ -129,6 +129,12 @@ class ColorCoding:
          'Visualize the short sections in the morphology for validation.'),
 
         # Length
+        (BY_RADIUS,
+         'Average Section Radius',
+         'Color-code the morphology based on the average radius of the section with respect to '
+         'the average radii of the sections in the entire morphology.'),
+
+        # Length
         (BY_LENGTH,
          'Section Length',
          'Color-code the morphology based on the length of the section with respect to '
