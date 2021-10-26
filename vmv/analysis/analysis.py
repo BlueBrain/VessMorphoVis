@@ -319,6 +319,10 @@ def correct_samples_with_zero_radii(sections_list, epsilon=1e-3):
     # Per section
     for section in sections_list:
 
+        # Make sure that the section has at least one sample
+        if len(section.samples) == 0:
+            return
+
         # Get the mean radius
         mean_radius = 0
         for sample in section.samples:

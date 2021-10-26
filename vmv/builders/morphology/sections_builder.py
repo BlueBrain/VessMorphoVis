@@ -318,6 +318,13 @@ class SectionsBuilder(MorphologyBuilder):
                        context=None,
                        dynamic_colormap=False):
         """Draws the morphology skeleton using fast reconstruction and drawing method.
+
+        :param context:
+            Blender context.
+        :param dynamic_colormap:
+            A dynamic colormap.
+        :return:
+            A reference to the reconstructed morphology skeleton.
         """
 
         vmv.logger.header('Building Skeleton: SectionsBuilder')
@@ -352,65 +359,90 @@ class SectionsBuilder(MorphologyBuilder):
         return self.morphology_skeleton
 
     ################################################################################################
+    # @adjust_point_radius_at_time_step
+    ################################################################################################
+    def adjust_point_radius_at_time_step(self,
+                                         point,
+                                         section,
+                                         point_index,
+                                         time_step):
+        """Adjusts the radius of a point along a morphological section at a given time step.
+
+        :param point:
+            Spline point.
+        :param section:
+            Morphological section.
+        :param point_index:
+            The unique index of the point.
+        :param time_step:
+            The time step.
+        """
+
+        # Get the index of the radius from the samples list
+        radius_index = section.samples[point_index].index
+
+        # Get a reference to the radii
+        radius_list = self.morphology.radius_simulation_data[radius_index - 1]
+
+        # Update the point radius along the spline
+        point.radius = radius_list[time_step]
+
+        # Set the keyframe to the time step
+        point.keyframe_insert('radius', frame=time_step)
+
+    ################################################################################################
+    # @update_section_radii_at_step
+    ################################################################################################
+    def update_section_radii_at_step(self,
+                                     section,
+                                     section_index,
+                                     time_step):
+        """Updates the radii of a given section at a time.
+
+        :param section:
+            A given section.
+        :param section_index:
+            Its index.
+        :param time_step:
+            The time step.
+        """
+
+        if len(section.samples) > 0:
+
+            # Get a reference to the polyline
+            polyline = self.morphology_skeleton.data.splines[section_index]
+
+            for i_point, point in enumerate(polyline.points):
+                self.adjust_point_radius_at_time_step(point, section, i_point, time_step)
+
+    ################################################################################################
     # @load_radius_simulation_data_at_step
     ################################################################################################
     def load_radius_simulation_data_at_step(self,
                                             time_step,
                                             context=None):
-        """
+        """Loads the radius simulation data at a specific time step.
 
         :param time_step:
-        :return:
+            The time step.
+        :param context:
+            Blender context.
         """
 
+        # Update the context
         self.context = context
 
+        # Do it per section
         for i_section, section in enumerate(self.morphology.sections_list):
-
-            # Get a reference to the polyline
-            polyline = self.morphology_skeleton.data.splines[i_section]
-
-            for i_point, point in enumerate(polyline.points):
-                radius_index = section.samples[i_point].index
-
-                # Get a reference to the radii
-                radius_list = self.morphology.radius_simulation_data[radius_index - 1]
-
-                point.radius = radius_list[time_step]
-                point.keyframe_insert('radius', frame=time_step)
+            self.update_section_radii_at_step(section, i_section, time_step)
 
     ################################################################################################
     # @load_radius_simulation_data
     ################################################################################################
     def load_radius_simulation_data(self):
-        """
-
-        :return:
+        """Loads the radius simulation data for all the time steps.
         """
 
         # Add simulation data
         for time_step in range(0, len(self.morphology.radius_simulation_data[0])):
             self.load_radius_simulation_data_at_step(time_step=time_step)
-
-    ################################################################################################
-    # @load_radius_simulation_data
-    ################################################################################################
-    def load_simulation_data(self):
-
-        # Add simulation data
-        for time_step in range(0, len(self.morphology.radius_simulation_data[0])):
-            for i_section, section in enumerate(self.morphology.sections_list):
-
-                # Get a reference to the polyline
-                polyline = self.morphology_skeleton.data.splines[i_section]
-
-                for i_point, point in enumerate(polyline.points):
-
-                    radius_index = section.samples[i_point].index
-
-                    # Get a reference to the radii
-                    radius_list = self.morphology.radius_simulation_data[radius_index - 1]
-
-                    point.radius += (radius_list[time_step] * 1)
-                    point.keyframe_insert('radius', frame=time_step)
-
