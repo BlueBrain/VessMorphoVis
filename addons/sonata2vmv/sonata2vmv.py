@@ -333,12 +333,13 @@ def run_sonata2vmv(args):
 
     try:
         from vasculatureapi import PointVasculature
+        from vasculatureapi import SectionVasculature
     except ImportError:
         print('Cannot import PointVasculature, please install vasculatureapi using BBP VPN')
         exit(0)
 
     # Load the structure file
-    graph = PointVasculature.load(args.structure_file)
+    graph = PointVasculature.load_sonata(args.structure_file)
 
     # The properties
     edge_properties = graph.edge_properties

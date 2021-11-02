@@ -362,58 +362,56 @@ class SectionsBuilder(MorphologyBuilder):
     # @adjust_point_radius_at_time_step
     ################################################################################################
     def adjust_point_radius_at_time_step(self,
-                                         point,
-                                         section,
+                                         polyline,
                                          point_index,
+                                         section_index,
                                          time_step):
         """Adjusts the radius of a point along a morphological section at a given time step.
 
-        :param point:
-            Spline point.
-        :param section:
-            Morphological section.
+        :param polyline:
+            Spline polyline.
         :param point_index:
             The unique index of the point.
+        :param section_index:
+            Morphological section index.
+
         :param time_step:
             The time step.
         """
 
         # Get the index of the radius from the samples list
-        radius_index = section.samples[point_index].index
+        radius_index = self.morphology.sections_list[section_index].samples[point_index].index
 
         # Get a reference to the radii
         radius_list = self.morphology.radius_simulation_data[radius_index - 1]
 
         # Update the point radius along the spline
-        point.radius = radius_list[time_step]
+        polyline.points[point_index].radius = radius_list[time_step]
 
         # Set the keyframe to the time step
-        point.keyframe_insert('radius', frame=time_step)
+        polyline.points[point_index].keyframe_insert('radius', frame=time_step)
 
     ################################################################################################
     # @update_section_radii_at_step
     ################################################################################################
     def update_section_radii_at_step(self,
-                                     section,
                                      section_index,
                                      time_step):
         """Updates the radii of a given section at a time.
 
-        :param section:
-            A given section.
         :param section_index:
-            Its index.
+            The index of the section.
         :param time_step:
             The time step.
         """
 
-        if len(section.samples) > 0:
+        if len(self.morphology.sections_list[section_index].samples) > 0:
 
             # Get a reference to the polyline
             polyline = self.morphology_skeleton.data.splines[section_index]
 
-            for i_point, point in enumerate(polyline.points):
-                self.adjust_point_radius_at_time_step(point, section, i_point, time_step)
+            [self.adjust_point_radius_at_time_step(polyline, i_point, section_index, time_step)
+             for i_point in range(len(polyline.points))]
 
     ################################################################################################
     # @load_radius_simulation_data_at_step
@@ -433,8 +431,8 @@ class SectionsBuilder(MorphologyBuilder):
         self.context = context
 
         # Do it per section
-        for i_section, section in enumerate(self.morphology.sections_list):
-            self.update_section_radii_at_step(section, i_section, time_step)
+        [self.update_section_radii_at_step(i_section, time_step)
+         for i_section in range(len(self.morphology.sections_list))]
 
     ################################################################################################
     # @load_radius_simulation_data
@@ -444,5 +442,5 @@ class SectionsBuilder(MorphologyBuilder):
         """
 
         # Add simulation data
-        for time_step in range(0, len(self.morphology.radius_simulation_data[0])):
-            self.load_radius_simulation_data_at_step(time_step=time_step)
+        [self.load_radius_simulation_data_at_step(time_step=time_step)
+         for time_step in range(0, len(self.morphology.radius_simulation_data[0]))]
