@@ -413,10 +413,8 @@ def get_color_coded_segments_poly_lines_based_on_alignment(section):
             return 1
         elif 0.50 <= value < 0.75:
             return 2
-        elif 0.50 <= value < 0.75:
-            return 3
         else:
-            return 4
+            return 3
 
     # A list of all the poly-lines that correspond to each segment in the morphology
     poly_lines = list()
@@ -454,4 +452,3 @@ def get_color_coded_segments_poly_lines_based_on_alignment(section):
 
     # Return the list of polylines
     return poly_lines
-

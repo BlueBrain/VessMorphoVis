@@ -95,3 +95,22 @@ def create_color_map_from_hex_list(hex_list,
 
     # Create the RGB color list
     return create_color_map_from_color_list(rgb_color_list, number_colors)
+
+
+####################################################################################################
+# @sample_range
+####################################################################################################
+def sample_range(start,
+                 end,
+                 steps):
+
+    # Delta
+    delta = 1. * (end - start) / (steps - 1)
+
+    # Data
+    data = list()
+    for i in range(steps):
+        value = start + i * delta
+        data.append(value)
+
+    return data

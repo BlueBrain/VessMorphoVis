@@ -93,7 +93,7 @@ class ConnectedSectionsBuilder:
         self.context = None
 
     def get_number_components(self):
-        return  len(self.components)
+        return len(self.components)
 
 
     def build_component(self, component_index):

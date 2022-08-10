@@ -167,4 +167,5 @@ class MorphologyBuilder:
 
         # Create the corresponding illumination
         vmv.shading.create_material_specific_illumination(
-            material_type=self.options.morphology.material)
+            material_type=self.options.morphology.material,
+            location=self.morphology.bounding_box.center)

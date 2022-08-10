@@ -16,6 +16,8 @@
 ####################################################################################################
 
 # Blender modules
+import math
+
 import bpy
 
 # Internal modules
@@ -229,7 +231,10 @@ def create_bezier_circle(radius=1,
     bpy.ops.curve.primitive_bezier_circle_add(location=location)
 
     # Get a reference to it
-    bpy.context.object.data.resolution_u = vertices / 4
+    if vertices == 4:
+        bpy.context.object.data.resolution_u = 0
+    else:
+        bpy.context.object.data.resolution_u = math.ceil(vertices / 4)
     circle_mesh = bpy.context.active_object
 
     # Set the radius

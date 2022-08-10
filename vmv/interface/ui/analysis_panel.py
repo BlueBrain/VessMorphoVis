@@ -125,6 +125,15 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # Average segment length
         results_area.prop(scene, 'AverageSegmentLength')
 
+        # Segment length in X
+        results_area.prop(scene, 'SegmentLengthX')
+
+        # Segment length in Y
+        results_area.prop(scene, 'SegmentLengthY')
+
+        # Segment length in Y
+        results_area.prop(scene, 'SegmentLengthZ')
+
         # Number of loops
         results_area.prop(scene, 'NumberLoops')
 
@@ -167,6 +176,8 @@ class VMV_AnalysisPanel(bpy.types.Panel):
 
         # Disable the editing of the results area since it will be used only for display
         results_area.enabled = False
+
+        row.operator('vmv.export_analysis_results')
 
         # If the morphology is loaded, enable the layout, otherwise make it disabled by default
         if vmv.interface.MorphologyLoaded:
@@ -219,7 +230,7 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
 
         # Total number of samples
         vmv.logger.info('Samples')
-        total_number_samples = vmv.analysis.compute_total_number_samples_from_sections_list(
+        total_number_samples = vmv.analysis.compute_total_of_number_samples_from_sections_list(
             vmv.interface.MorphologyObject.sections_list)
         context.scene.NumberSamples = total_number_samples
 
@@ -273,6 +284,15 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         context.scene.MaximumSectionLength = maximum_section_length
         context.scene.AverageSectionLength = average_section_length
 
+        # Alignment stats.
+        vmv.logger.info('Alignment')
+        x_segment_length, y_segment_length, z_segment_length = \
+            vmv.analysis.analyze_segments_alignment_length(
+                vmv.interface.MorphologyObject.sections_list)
+        context.scene.SegmentLengthX = x_segment_length
+        context.scene.SegmentLengthY = y_segment_length
+        context.scene.SegmentLengthZ = z_segment_length
+
         vmv.logger.info('Loops')
         number_loops = vmv.analysis.compute_number_of_loops(
             vmv.interface.MorphologyObject.sections_list)
@@ -310,6 +330,54 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
 
 
 ####################################################################################################
+# @cExportAnalysisResults
+####################################################################################################
+class VMV_ExportAnalysisResults(bpy.types.Operator):
+    """Export the analysis results into a file"""
+
+    # Operator parameters
+    bl_idname = "vmv.export_analysis_results"
+    bl_label = "Export Results"
+
+    ################################################################################################
+    # @execute
+    ################################################################################################
+    def execute(self,
+                context):
+        """Execute the operator.
+
+        :param context:
+            Blender context
+        :return:
+            'FINISHED'
+        """
+
+        # Ensure that there is a valid directory where the images will be written to
+        if vmv.interface.Options.io.output_directory is None:
+            self.report({'ERROR'}, vmv.consts.Messages.PATH_NOT_SET)
+            return {'FINISHED'}
+
+        if not vmv.file.ops.path_exists(context.scene.VMV_OutputDirectory):
+            self.report({'ERROR'}, vmv.consts.Messages.INVALID_OUTPUT_PATH)
+            return {'FINISHED'}
+
+        # Verify the output directory
+        vmv.interface.validate_output_directory(self)
+
+        # Create the analysis directory if it does not exist
+        if not vmv.file.ops.path_exists(vmv.interface.Options.io.analysis_directory):
+            vmv.file.ops.clean_and_create_directory(
+                vmv.interface.Options.io.analysis_directory)
+
+        # Export the analysis results
+        vmv.analysis.export_analysis_results(
+            morphology=vmv.interface.MorphologyObject,
+            output_directory=vmv.interface.Options.io.analysis_directory)
+
+        return {'FINISHED'}
+
+
+####################################################################################################
 # @register_panel
 ####################################################################################################
 def register_panel():
@@ -320,6 +388,9 @@ def register_panel():
 
     # Analysis button
     bpy.utils.register_class(VMV_AnalyzeMorphology)
+
+    # Export analysis results button
+    bpy.utils.register_class(VMV_ExportAnalysisResults)
 
 
 ####################################################################################################
@@ -333,3 +404,7 @@ def unregister_panel():
 
     # Analysis button
     bpy.utils.unregister_class(VMV_AnalyzeMorphology)
+
+    # Export analysis results button
+    bpy.utils.unregister_class(VMV_ExportAnalysisResults)
+

@@ -107,6 +107,8 @@ class MorphIOLoader:
             # Load the morphology data using MorphIO
             morphology_data = vasculature.Vasculature(self.morphology_file)
 
+            morphology_data.section(0).points
+
             # Get a list of points using the iterator
             points = numpy.vstack([section.points for section in morphology_data.iter()])
 

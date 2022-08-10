@@ -61,3 +61,27 @@ def write_list_string_to_file(list_strings,
 
     # Close the file
     file_handle.close()
+
+
+####################################################################################################
+# @write_distribution_to_file
+####################################################################################################
+def write_distribution_to_file(distribution,
+                               file_path):
+    """Write a string to a file
+
+    :param distribution:
+        A list containing analysis distribution.
+    :param file_path:
+        The output path of the file.
+    """
+
+    # Open the file
+    file_handle = open(file_path, 'w')
+
+    # Write the strings
+    for element in distribution:
+        file_handle.write(str(element) + '\n')
+
+    # Close the file
+    file_handle.close()

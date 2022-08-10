@@ -336,6 +336,8 @@ class SectionsBuilder(MorphologyBuilder):
         # Create a static bevel object that you can use to scale the samples
         bevel_object = vmv.mesh.create_bezier_circle(
             radius=1.0, vertices=self.options.morphology.bevel_object_sides, name='bevel')
+        vmv.scene.translate_object(
+            scene_object=bevel_object, shift=self.morphology.bounding_box.center)
         vmv.scene.hide_object(scene_object=bevel_object)
 
         # Construct sections poly-lines

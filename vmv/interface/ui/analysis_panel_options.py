@@ -134,6 +134,24 @@ bpy.types.Scene.NumberDuplicatedSamples = bpy.props.IntProperty(
                 'are almost in the same position',
     default=0, subtype='FACTOR')
 
+# Alignment X-segment length
+bpy.types.Scene.SegmentLengthX = bpy.props.FloatProperty(
+    name='Segments\' Length in X',
+    description='The total segment length along the X-axis in microns.',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+# Alignment Y-segment length
+bpy.types.Scene.SegmentLengthY = bpy.props.FloatProperty(
+    name='Segments\' Length in Y',
+    description='The total segment length along the Y-axis in microns.',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+# Alignment Z-segment length
+bpy.types.Scene.SegmentLengthZ = bpy.props.FloatProperty(
+    name='Segments\' Length in Z',
+    description='The total segment length along the Z-axis in microns.',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
 # Bounding box
 bpy.types.Scene.BBoxPMinX = bpy.props.FloatProperty(
     name='X',
