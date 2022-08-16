@@ -23,7 +23,7 @@ import vmv.analysis
 # @compute_total_morphology_length
 ####################################################################################################
 def compute_total_morphology_length(sections_list):
-    """Computes the total length of the morphology
+    """Computes the total length of the morphology.
 
     :param sections_list:
         A list of all the sections that compose the morphology.

@@ -20,6 +20,10 @@ import pandas
 import math
 
 
+# Internal improts
+import vmv.utilities
+
+
 ####################################################################################################
 # @compute_segments_lengths
 ####################################################################################################
@@ -321,6 +325,13 @@ def analyze_segments_length(sections_list):
 # @analyze_segments_alignment_length
 ####################################################################################################
 def analyze_segments_alignment_length(sections_list):
+    """Analyzes the length of the segment with respect to its angle.
+
+    :param sections_list:
+        A list of all the sections in the morphology.
+    :return:
+        Total segments length in the X, Y- and Z-axis.
+    """
 
     total_segment_length_x = 0.0
     total_segment_length_y = 0.0
@@ -334,11 +345,9 @@ def analyze_segments_alignment_length(sections_list):
 
             # First sample
             point_1 = i_section.samples[i_sample].point
-            radius_1 = i_section.samples[i_sample].radius
 
             # Second sample
             point_2 = i_section.samples[i_sample + 1].point
-            radius_2 = i_section.samples[i_sample + 1].radius
 
             # Computes the direction of the vector and get tha absolute values of the angles
             direction = (point_2 - point_1).normalized()
@@ -353,7 +362,25 @@ def analyze_segments_alignment_length(sections_list):
             elif gamma > alpha and gamma > beta:
                 total_segment_length_z += (point_2 - point_1).length
             else:
-                print('Analysis issue %f %f %f' % (alpha, beta, gamma))
+                if vmv.utilities.equal(alpha, beta) and vmv.utilities.equal(beta, gamma):
+                    length = (point_2 - point_1).length
+                    total_segment_length_x += length / 3.0
+                    total_segment_length_y += length / 3.0
+                    total_segment_length_z += length / 3.0
+                elif vmv.utilities.equal(alpha, beta):
+                    length = (point_2 - point_1).length
+                    total_segment_length_x += length / 2.0
+                    total_segment_length_y += length / 2.0
+                elif vmv.utilities.equal(beta, gamma):
+                    length = (point_2 - point_1).length
+                    total_segment_length_y += length / 3.0
+                    total_segment_length_z += length / 3.0
+                elif vmv.utilities.equal(gamma, alpha):
+                    length = (point_2 - point_1).length
+                    total_segment_length_z += length / 3.0
+                    total_segment_length_x += length / 3.0
+                else:
+                    print('\tWarning: Analysis issue %f %f %f' % (alpha, beta, gamma))
 
     # Return the results
     return total_segment_length_x, total_segment_length_y, total_segment_length_z

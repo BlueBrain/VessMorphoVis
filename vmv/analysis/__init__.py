@@ -17,7 +17,5 @@
 
 from .kernels import * 
 from .items import *
-from .quantification import *
-from .parameters import *
 from .plotting import *
 from .functions import *

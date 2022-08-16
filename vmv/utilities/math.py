@@ -15,8 +15,10 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import math
 
-# Imports 
+# Blender Imports
 from mathutils import Vector
 
 
@@ -114,3 +116,13 @@ def sample_range(start,
         data.append(value)
 
     return data
+
+
+####################################################################################################
+# @equal
+####################################################################################################
+def equal(arg1, arg2, epsilon=1e-5):
+
+    if math.fabs(arg1 - arg2) < epsilon:
+        return True
+    return False

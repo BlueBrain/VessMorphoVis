@@ -1,3 +1,20 @@
+####################################################################################################
+# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
+#
+# This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, version 3 of the License.
+#
+# This Blender-based tool is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program.
+# If not, see <http://www.gnu.org/licenses/>.
+####################################################################################################
+
 # System imports
 import os
 import math
@@ -5,14 +22,8 @@ import numpy
 import seaborn
 import matplotlib.pyplot as pyplot
 import matplotlib.font_manager as font_manager
-import matplotlib.ticker
-import colorsys
-from matplotlib.ticker import PercentFormatter
-from matplotlib.ticker import FuncFormatter
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 
+# Internal imports
 import vmv.consts
 import vmv.utilities
 
@@ -21,12 +32,8 @@ import vmv.utilities
 # @verify_plotting_packages
 ####################################################################################################
 def verify_plotting_packages():
-    #font_dirs = [os.path.dirname(os.path.realpath(__file__)) + '/fonts/']
-    #font_dirs.extend([os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'])
-
-    #font_path = os.path.dirname(os.path.realpath(__file__)) + '/fonts/' + 'HelveticaLtObl.ttf'
-    #font_manager.fontManager.addfont(font_path)
-    #prop = font_manager.FontProperties(fname=font_path)
+    """Verifies the paths of the fonts that are used for plotting the figures.
+    """
 
     # Import the fonts
     font_dirs = [os.path.dirname(vmv.consts.Paths.FONTS_DIRECTORY)]
@@ -70,22 +77,51 @@ def read_dist_file(file_path,
 
 
 ####################################################################################################
-# @plot_back2back_histograms_normalized
+# @plot_normalized_histogram
 ####################################################################################################
 def plot_normalized_histogram(data,
-                               output_directory,
-                               output_prefix,
-                               title=None,
-                               invert=False,
-                               figure_width=3,
-                               figure_height=10,
-                               bins=50,
-                               color='red',
-                               axvline_color='black',
-                               bin_width=0.95,
-                               save_pdf=False,
-                               save_svg=False,
-                               dpi=150):
+                              output_directory,
+                              output_prefix,
+                              title=None,
+                              figure_width=3,
+                              figure_height=10,
+                              bins=50,
+                              color='red',
+                              axvline_color='black',
+                              bin_width=0.95,
+                              save_pdf=False,
+                              save_svg=False,
+                              dpi=150):
+    """Plot normalized histograms of the input data.
+
+    :param data:
+        A list of data.
+    :param output_directory:
+        The directory where the results will be written
+    :param output_prefix:
+        The output prefix.
+    :param title:
+        The title of the figure.
+    :param figure_width:
+        The width of the figure.
+    :param figure_height:
+        The height of the figure.
+    :param bins:
+        Number of bins in the histogram.
+    :param color:
+        The color of the histogram.
+    :param axvline_color:
+        The color of the Y-axis.
+    :param bin_width:
+        The width of the bins.
+    :param save_pdf:
+        Save the figure as a PDF.
+    :param save_svg:
+        Save the figure as an SVG file.
+    :param dpi:
+        The dots per inch.
+    """
+
     verify_plotting_packages()
 
     font_size = 30
@@ -108,7 +144,6 @@ def plot_normalized_histogram(data,
     pyplot.rcParams['xtick.major.pad'] = '10'
     pyplot.rcParams['ytick.major.pad'] = '10'
     pyplot.rcParams['axes.edgecolor'] = '1'
-
     pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
     pyplot.rcParams['axes.xmargin'] = 0
     pyplot.rcParams['axes.ymargin'] = 0
@@ -207,9 +242,8 @@ def plot_range(avg_value,
                output_directory,
                figure_width=10,
                figure_height=2):
-
-    # Clean the figure
-    #pyplot.clf()
+    """Plot a range.
+    """
 
     # Tight layout
     pyplot.tight_layout()
@@ -247,10 +281,6 @@ def plot_range(avg_value,
     # Adjust the spines
     ax.spines["bottom"].set_color('black')
     ax.spines['bottom'].set_linewidth(2)
-    #ax.spines['bottom'].set_position(('data', -0.25))
-
-    # Adjust the X-axis elements
-    # ax.set_xticks(numpy.array(vmv.utilities.sample_range(0.0, max_value, 5)))
 
     # Plot the ticks
     pyplot.tick_params(axis='x', width=2, which='both', bottom=True)
@@ -275,6 +305,25 @@ def plot_average_profile(df,
                          figure_width=3,
                          figure_height=10,
                          bins=25):
+    """Plot average profile of a given data frame with respect X, Y and Z axes.
+
+    :param df:
+        Data frame.
+    :param label:
+        Figure label.
+    :param title:
+        Figure title.
+    :param df_keyword:
+        The keyword in the df used to plot the figure.
+    :param output_directory:
+        The path to the directory where the file will be written.
+    :param figure_width:
+        Figure width
+    :param figure_height:
+        Figure height
+    :param bins:
+        Number of bins.
+    """
 
     for axis in ['X', 'Y', 'Z']:
 
@@ -319,9 +368,9 @@ def plot_average_profile(df,
         frame.axes.get_xaxis().set_visible(True)
         frame.axes.get_yaxis().set_visible(True)
 
-        if axis is 'X':
+        if axis == 'X':
             color = 'red'
-        elif axis is 'Y':
+        elif axis == 'Y':
             color = 'green'
         else:
             color = 'blue'

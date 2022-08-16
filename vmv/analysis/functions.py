@@ -107,6 +107,21 @@ def apply_analysis_kernel(morphology,
                           label,
                           color,
                           output_directory):
+    """Apply a given analysis function on the entire morphology.
+
+    :param morphology:
+        Input morphology.
+    :param function:
+        Analysis function.
+    :param title:
+        Figure title.
+    :param label:
+        Figure label.
+    :param color:
+        Figure color.
+    :param output_directory:
+        The directory where the results will be written.
+    """
 
     # Apply the function to the morphology object
     distribution = function(morphology)
@@ -136,6 +151,22 @@ def apply_xyz_analysis_kernel(morphology,
                               label,
                               keyword,
                               output_directory):
+    """Apply a given analysis function along the XYZ axes.
+
+    :param morphology:
+        Input morphology.
+    :param function:
+        Analysis function.
+    :param title:
+        Figure title.
+    :param label:
+        Figure label.
+    :param keyword:
+        Keyword used to plot the data from the resulting dataframe.
+    :type keyword:
+    :param output_directory:
+        The directory where the results will be written.
+    """
 
     # Apply the kernel to the morphology and compute the dataframe
     df = function(morphology)
@@ -149,6 +180,11 @@ def apply_xyz_analysis_kernel(morphology,
 # @analyze_morphology
 ####################################################################################################
 def analyze_morphology(morphology_object):
+    """Analyze a given morphology.
+
+    :param morphology_object:
+        Input morphology object.
+    """
 
     import time
     analysis_stated = time.time()
@@ -172,6 +208,13 @@ def analyze_morphology(morphology_object):
 ####################################################################################################
 def export_analysis_results(morphology,
                             output_directory):
+    """Exports the analysis results to files.
+
+    :param morphology:
+        Input morphology.
+    :param output_directory:
+        The directory where all the results will be written.
+    """
 
     analysis_items = [
 
@@ -212,16 +255,15 @@ def export_analysis_results(morphology,
          'section-volume'],
     ]
 
-    palette = pyplot.get_cmap('Spectral')
+    palette = pyplot.get_cmap('tab20')
     palette = palette(numpy.linspace(0, 1.0, len(analysis_items) + 1))
 
     for i, analysis_item in enumerate(analysis_items):
-
-        print('*\t%s' % analysis_item[1])
+        print('\t *%s' % analysis_item[1])
         apply_analysis_kernel(morphology=morphology,
                               function=analysis_item[0],
                               title=analysis_item[1],
-                              label=analysis_item[2],
+                              label='%s-%s' % (morphology.name, analysis_item[2]),
                               color=palette[i],
                               output_directory=output_directory)
 
@@ -250,12 +292,11 @@ def export_analysis_results(morphology,
     ]
 
     for i, analysis_item in enumerate(xyz_distributions):
-
-        print('*\t%s' % analysis_item[1])
+        print('\t *%s' % analysis_item[1])
         apply_xyz_analysis_kernel(morphology=morphology,
                                   function=analysis_item[0],
                                   title=analysis_item[1],
-                                  label=analysis_item[2],
+                                  label='%s-%s' % (morphology.name, analysis_item[2]),
                                   keyword=analysis_item[3],
                                   output_directory=output_directory)
 
