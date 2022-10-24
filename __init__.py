@@ -23,6 +23,8 @@ __maintainer__  = "Marwan Abdellah"
 __email__       = "marwan.abdellah@epfl.ch"
 __status__      = "Production"
 
+import time
+
 ####################################################################################################
 # Add-on information
 ####################################################################################################
@@ -57,12 +59,45 @@ bl_info = {
 # System imports
 import sys
 import os
-import imp
+import importlib
+import subprocess
 
 # Append the modules path to the system paths to be able to load the internal python modules
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
+
+####################################################################################################
+# @install_dependencies
+####################################################################################################
+def install_dependencies():
+    """Installs the dependencies of VMV on-the-fly using the internal Python of Blender.
+    """
+
+    # Dependencies list
+    pip_wheels = [['numpy', 'numpy'],
+                  ['matplotlib', 'matplotlib'],
+                  ['seaborn', 'seaborn'],
+                  ['pandas', 'pandas'],
+                  ['PIL', 'Pillow']]
+    print("* Validating Dependencies")
+    for wheel in pip_wheels:
+        try:
+            print("\t* Importing %s" % wheel[1])
+            importlib.import_module(wheel[0])
+            print("\t    * OK %s" % wheel[1])
+        except ImportError:
+            print("\t* Installing %s" % wheel[1])
+            command = '%s -m pip install %s' % (sys.executable, wheel[1])
+            subprocess.call(command, shell=True)
+
+
+####################################################################################################
+# @install_dependencies
+####################################################################################################
 if "bpy" in locals():
+
+    # Install the dependencies
+    install_dependencies()
 
     # Import the modules
     import vmv.interface.ui.io_panel
@@ -72,19 +107,22 @@ if "bpy" in locals():
     import vmv.interface.ui.about_panel
 
     # Reloading the modules
-    imp.reload(vmv.interface.ui.io_panel)
-    imp.reload(vmv.interface.ui.analysis_panel)
-    imp.reload(vmv.interface.ui.morphology_panel)
-    imp.reload(vmv.interface.ui.meshing_panel)
-    imp.reload(vmv.interface.ui.about_panel)
+
+    importlib.reload(vmv.interface.ui.io_panel)
+    importlib.reload(vmv.interface.ui.analysis_panel)
+    importlib.reload(vmv.interface.ui.morphology_panel)
+    importlib.reload(vmv.interface.ui.meshing_panel)
+    importlib.reload(vmv.interface.ui.about_panel)
 
     vmv.logger.header('Loading VessMorphoVis')
     vmv.logger.info('Version (%s)' % str(__version__))
     vmv.logger.info('Copyrights © Blue Brain Project (BBP) - EPFL')
     vmv.logger.info('Author(s): Marwan Abdellah')
 
-
 else:
+
+    # Install the dependencies
+    install_dependencies()
 
     # Import the modules
     import vmv.interface.ui.io_panel
