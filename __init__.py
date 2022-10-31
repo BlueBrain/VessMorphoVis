@@ -78,7 +78,9 @@ def install_dependencies():
                   ['matplotlib', 'matplotlib'],
                   ['seaborn', 'seaborn'],
                   ['pandas', 'pandas'],
-                  ['PIL', 'Pillow']]
+                  ['h5', 'h5py'],
+                  ['PIL', 'Pillow'],
+                  ['morphio', 'morphio']]
 
     # Ensuring Pipe
     shell_command = '%s -m ensurepip' % sys.executable
