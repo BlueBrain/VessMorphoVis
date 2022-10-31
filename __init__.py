@@ -79,6 +79,11 @@ def install_dependencies():
                   ['seaborn', 'seaborn'],
                   ['pandas', 'pandas'],
                   ['PIL', 'Pillow']]
+
+    # Ensuring Pipe
+    shell_command = '%s -m ensurepip' % sys.executable
+    subprocess.call(shell_command, shell=True)
+
     print("* Validating Dependencies")
     for wheel in pip_wheels:
         try:
@@ -87,8 +92,8 @@ def install_dependencies():
             print("\t    * OK %s" % wheel[1])
         except ImportError:
             print("\t* Installing %s" % wheel[1])
-            command = '%s -m pip install %s' % (sys.executable, wheel[1])
-            subprocess.call(command, shell=True)
+            shell_command = '%s -m pip install %s' % (sys.executable, wheel[1])
+            subprocess.call(shell_command, shell=True)
 
 
 ####################################################################################################
