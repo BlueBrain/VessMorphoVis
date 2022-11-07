@@ -57,6 +57,53 @@ def compute_segments_lengths(section):
 
 
 ####################################################################################################
+# @compute_segment_length_ratio
+####################################################################################################
+def compute_segment_length_ratio(section):
+    """Computes the length between the minimum segment length to the maximum segment length.
+
+    :param section:
+        A given section for analysis.
+    :return:
+        Length Ratio = Minimum Segment Length / Maximum Segment Length
+        If the Maximum Segment Length is zero, the result is zero.
+    """
+
+    # Initialize
+    min_segment_length = 1e32
+    max_segment_length = -1e32
+
+    # Do it sample by sample
+    for i in range(len(section.samples) - 1):
+
+        # Get every two points along the section that make a segment
+        p0 = section.samples[i].point
+        p1 = section.samples[i + 1].point
+
+        # Compute segment length
+        segment_length = (p0 - p1).length
+
+        if segment_length < min_segment_length:
+            min_segment_length = segment_length
+        if segment_length > max_segment_length:
+            max_segment_length = segment_length
+
+    # If the maximum sample radius is zero, then return 0
+    if max_segment_length < 1e-32:
+        return 0
+    # Otherwise, return the actual ratio
+    else:
+        return min_segment_length / max_segment_length
+
+
+def compute_segment_length_ratio_distribution(morphology_object):
+    data = list()
+    for i, section in enumerate(morphology_object.sections_list):
+        data.append([i, compute_segment_length_ratio(section=section)])
+    return pandas.DataFrame(data, columns=['Section Index', 'Length Ratio'])
+
+
+####################################################################################################
 # @compute_segment_surface_area
 ####################################################################################################
 def compute_segment_surface_area(sample_0,

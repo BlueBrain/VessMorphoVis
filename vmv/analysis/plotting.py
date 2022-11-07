@@ -29,10 +29,10 @@ import vmv.utilities
 
 
 ####################################################################################################
-# @verify_plotting_packages
+# @load_fonts
 ####################################################################################################
-def verify_plotting_packages():
-    """Verifies the paths of the fonts that are used for plotting the figures.
+def load_fonts():
+    """Imports all the fonts required for plotting.
     """
 
     # Import the fonts
@@ -74,6 +74,173 @@ def read_dist_file(file_path,
 
     # Return a list of the data read from the file
     return data
+
+
+####################################################################################################
+# @set_styles
+####################################################################################################
+def set_styles(font='Arial',
+               font_size=30,
+               axes_grid=False,
+               axes_linewidth=2):
+    """Sets the styles for plotting a figure.
+
+    :param font:
+        Font name.
+    :param font_size:
+        Font size, default 30.
+    :param axes_grid:
+        Whether the grid is on or off, default = False.
+    :param axes_linewidth:
+        The width of all lines in a figure, default 2.
+    """
+    pyplot.rcParams['axes.grid'] = axes_grid
+    pyplot.rcParams['font.family'] = font
+    pyplot.rcParams['axes.linewidth'] = axes_linewidth
+    pyplot.rcParams['axes.labelweight'] = 'regular'
+    pyplot.rcParams['axes.labelsize'] = font_size
+    pyplot.rcParams['xtick.labelsize'] = font_size
+    pyplot.rcParams['ytick.labelsize'] = font_size
+    pyplot.rcParams['legend.fontsize'] = font_size
+    pyplot.rcParams['axes.titlesize'] = font_size
+    pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
+
+
+####################################################################################################
+# @plot_histogram
+####################################################################################################
+def plot_histogram(df,
+                   data_key,
+                   label,
+                   title,
+                   output_directory,
+                   output_prefix,
+                   bins=50,
+                   color='r',
+                   font_size=30,
+                   figure_width=5,
+                   figure_height=10,
+                   spines_shift=10,
+                   line_width=2,
+                   dpi=300,
+                   save_pdf=False,
+                   save_svg=False):
+    """Plots the histogram of a given data from a dataframe indexed with the data_key parameter.
+
+    :param df:
+        Data frame.
+    :param data_key:
+        The key that is used to access the data to be drawn.
+    :param label:
+        The label of the data.
+    :param title:
+        The title of the figure.
+    :param output_directory:
+        The full path to the output directory where the figure will be written.
+    :param output_prefix:
+        The output prefix.
+    :param bins:
+        Number of bins, default 50.
+    :param color:
+        Figure color.
+    :param font_size:
+        Font size, default 30.
+    :param figure_width:
+        Figure width.
+    :param figure_height:
+        Figure height.
+    :param spines_shift:
+        The shift of the spines.
+    :param line_width:
+        The width of all the lines in the figure.
+    :param dpi:
+        Dot per inch, typically 300.
+    :param save_pdf:
+        Save the figure into a PDF file.
+    :param save_svg:
+        Save the figure into an SVG file.
+    """
+
+    # Set the default styles
+    set_styles(font_size=font_size, axes_linewidth=line_width)
+    pyplot.rcParams['grid.linestyle'] = '-'
+
+    # Create a new figure and adjust its size
+    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
+    fig.set_size_inches(figure_width, figure_height)
+
+    # Get the data, with which the histogram will be drawn
+    data = df[data_key]
+
+    # Plot the horizontal histogram
+    x, y, _ = ax1.hist(data, color=color, orientation='horizontal', bins=bins)
+
+    # Parameters
+    for spine in ['left', 'bottom']:
+        ax1.spines[spine].set_position(('outward', spines_shift))
+        ax1.spines[spine].set_color('black')
+        ax1.spines[spine].set_linewidth(2)
+    for spine in ['right', 'top']:
+        ax1.spines[spine].set_visible(False)
+    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True, left=True)
+    ax1.set_title(title, pad=25)
+
+    # X-axis bins, only two bins
+    xbins = [math.floor(min(x)), math.ceil(max(x))]
+    ax1.grid(axis='y')
+    ax1.set_xlim(0, max(x))
+    ax1.set_xticks(xbins)
+
+    # Yaxis
+    if 'ratio' in title or 'Ratio' in title:
+        ax1.set_ylim(0, 1.0)
+    ax1.set_ylabel(label, labelpad=15)
+
+    # Right box plot
+    bp = ax2.boxplot(data, showfliers=True,
+                     flierprops=dict(marker='o', markersize=5, alpha=0.5, markerfacecolor=color,
+                                     markeredgecolor=color))
+
+    # No visible spines
+    for spine in ['left', 'right', 'top', 'bottom']:
+        ax2.spines[spine].set_visible(False)
+
+    # Adjust the box-plot styles
+    for box in bp['boxes']:
+        box.set(color='r', linewidth=line_width)
+    for whisker in bp['whiskers']:
+        whisker.set(color=color, linewidth=line_width * 0.5)
+    for cap in bp['caps']:
+        cap.set(color=color, linewidth=line_width * 0.75, xdata=cap.get_xdata() + (-0.01, 0.01))
+    for median in bp['medians']:
+        median.set(color='k', linewidth=line_width * 0.75)
+
+    # Shift the position of the box plot for compacting the figure
+    bp_position = ax2.get_position()
+    bp_position.x0 = bp_position.x0 - 0.2
+    bp_position.x1 = bp_position.x1 - 0.2
+    ax2.set_position(bp_position)
+
+    # Set its transparency to zero
+    ax2.patch.set_alpha(0.0)
+
+    # No grid
+    ax2.grid(False)
+
+    # No x-axis labels
+    ax2.tick_params(labelbottom=False)
+
+    # Save PNG by default
+    pyplot.savefig('%s/distribution-%s.png' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight')
+
+    # Save PDF
+    pyplot.savefig('%s/distribution-%s.pdf' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight') if save_pdf else None
+
+    # Save SVG
+    pyplot.savefig('%s/distribution-%s.svg' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight') if save_svg else None
 
 
 ####################################################################################################
@@ -122,7 +289,7 @@ def plot_normalized_histogram(data,
         The dots per inch.
     """
 
-    verify_plotting_packages()
+    load_fonts()
 
     font_size = 30
     seaborn.set_style("whitegrid")
@@ -304,9 +471,9 @@ def plot_average_profile(df,
                          output_directory,
                          figure_width=3,
                          figure_height=10,
-                         bins=25):
+                         bins=50):
     """Plot average profile of a given data frame with respect X, Y and Z axes.
-
+@Mare
     :param df:
         Data frame.
     :param label:
@@ -330,7 +497,7 @@ def plot_average_profile(df,
         # Sort the data frame
         f = df.sort_values(by=[axis], inplace=False)
 
-        # Get the data
+        # Get the data, the Y-axis is the distance, the X-axis is the keyword
         x = list(f[axis])
         y = list(f[df_keyword])
 
@@ -389,3 +556,98 @@ def plot_average_profile(df,
         pyplot.clf()
         pyplot.cla()
         pyplot.close()
+
+
+def plot_distribution_with_range(df,
+                                 label,
+                                 title,
+                                 df_sorting_keyword,
+                                 df_average_keyword,
+                                 df_minimum_keyword,
+                                 df_maximum_keyword,
+                                 output_directory,
+                                 figure_width=5,
+                                 figure_height=20):
+    # Tight layout
+    pyplot.tight_layout()
+
+    # Set the font size
+    font_size = 30
+
+    # Adjusting the matplotlib parameters
+    pyplot.rcParams['axes.grid'] = 'False'
+    pyplot.rcParams['font.family'] = 'NimbusSanL'
+    pyplot.rcParams['axes.linewidth'] = 0
+    pyplot.rcParams['axes.labelsize'] = font_size
+    pyplot.rcParams['axes.labelweight'] = 'regular'
+    pyplot.rcParams['xtick.labelsize'] = font_size
+    pyplot.rcParams['ytick.labelsize'] = font_size
+    pyplot.rcParams['legend.fontsize'] = font_size
+    pyplot.rcParams['axes.titlesize'] = font_size
+    pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
+    pyplot.rcParams['axes.xmargin'] = 0
+    pyplot.rcParams['axes.ymargin'] = 0
+
+    # Sort the data frame
+    f = df.sort_values(by=[df_average_keyword], inplace=False)
+
+    # Get the minimum, maximum and average data arrays
+    data_minimum = list(f[df_minimum_keyword])
+    data_maximum = list(f[df_maximum_keyword])
+    data_average = list(f[df_average_keyword])
+
+    # A new figure with the given dimensions size
+    figure = pyplot.figure(figsize=(figure_width, figure_height))
+    ax = figure.add_subplot(111)
+
+    # Independent axis
+    independent_axis = f[df_average_keyword]
+
+    ax.set_xlim(left=math.floor(min(data_minimum)), right=math.ceil(max(data_maximum)))
+    # x_label_distance = (max_y - min_y) * 0.1
+    # ax.spines['left'].set_position(('data', -x_label_distance))
+
+    min_y = min(data_minimum)
+    max_y = max(data_maximum)
+    ax.set_xlim(left=0, right=math.ceil(max_y))
+    x_label_distance = (max_y - min_y) * 0.1
+    ax.spines['left'].set_position(('data', -x_label_distance))
+
+    ax.grid(False)
+
+    ax.spines["bottom"].set_color('black')
+    ax.spines["left"].set_color('black')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['bottom'].set_linewidth(2)
+    pyplot.tick_params(axis='both', width=2, which='both', bottom=True, left=True)
+
+    pyplot.tight_layout()
+
+    # Create a new frame for the plot to combine both
+    frame = pyplot.gca()
+
+    # Only plot the Y-axis
+    frame.axes.get_xaxis().set_visible(True)
+    frame.axes.get_yaxis().set_visible(True)
+
+    # Remove any labels
+    pyplot.xlabel(title)
+    pyplot.ylabel('Section Index', labelpad=20)
+    # pyplot.plot(data_average, independent_axis, '-', color='b')
+
+    variance = list()
+    for item1, item2 in zip(data_maximum, data_minimum):
+        variance.append(item1 - item2)
+
+    pyplot.errorbar(data_average, independent_axis, xerr=variance, fmt='.k')
+
+    # pyplot.fill_betweenx(independent_axis, data_maximum, data_minimum, color='r', alpha=0.2)
+
+    pyplot.savefig('%s/%s-%s.png' % (output_directory, label, 'R'), bbox_inches='tight')
+
+    # Close figure to reset
+    pyplot.clf()
+    pyplot.cla()
+    pyplot.close()
+
+

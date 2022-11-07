@@ -176,6 +176,27 @@ def apply_xyz_analysis_kernel(morphology,
                                       output_directory=output_directory)
 
 
+def apply_section_distribution_analysis_kernel(morphology,
+                                               function,
+                                               title,
+                                               label,
+                                               df_sorting_keyword,
+                                               df_average_keyword,
+                                               df_minimum_keyword,
+                                               df_maximum_keyword,
+                                               output_directory):
+
+    # Apply the kernel to the morphology and compute the dataframe
+    df = function(morphology)
+
+    # Plot the profile
+    vmv.analysis.plot_distribution_with_range(
+        df=df, title=title, label=label,
+        df_sorting_keyword=df_sorting_keyword, df_average_keyword=df_average_keyword,
+        df_minimum_keyword=df_minimum_keyword, df_maximum_keyword=df_maximum_keyword,
+        output_directory=output_directory)
+
+
 ####################################################################################################
 # @analyze_morphology
 ####################################################################################################
@@ -215,6 +236,8 @@ def export_analysis_results(morphology,
     :param output_directory:
         The directory where all the results will be written.
     """
+
+
 
     analysis_items = [
 
@@ -271,22 +294,22 @@ def export_analysis_results(morphology,
     xyz_distributions = [
 
         [vmv.analysis.compute_sample_radius_distribution_along_axes,
-         'Sample\nMean Radius (μm)',
+         'Sample Mean Radius (μm)',
          'sample-average-radius',
          'Radius'],
 
         [vmv.analysis.compute_segment_length_distribution_along_axes,
-         'Segment\nMean Length (μm)',
+         'Segment Mean Length (μm)',
          'segment-average-length',
          'Length'],
 
         [vmv.analysis.compute_segment_surface_area_distribution_along_axes,
-         'Segment\nMean Surface Area (μm²)',
+         'Segment Mean Surface Area (μm²)',
          'segment-average-surface-area',
          'Area'],
 
         [vmv.analysis.compute_segment_volume_distribution_along_axes,
-         'Segment\nMean Volume (μm³)',
+         'Segment Mean Volume (μm³)',
          'segment-average-volume',
          'Volume'],
     ]
@@ -299,6 +322,67 @@ def export_analysis_results(morphology,
                                   label='%s-%s' % (morphology.name, analysis_item[2]),
                                   keyword=analysis_item[3],
                                   output_directory=output_directory)
+
+    section_distributions = [
+        [vmv.analysis.compute_section_radius_distribution,
+         'Section Radius Distribution (μm)',
+         'section-radius-distribution',
+         'Section Index',
+         'Mean Sample Radius',
+         'Min. Sample Radius',
+         'Max. Sample Radius'],
+    ]
+
+    for i, analysis_item in enumerate(section_distributions):
+        print('\t *%s' % analysis_item[1])
+        apply_section_distribution_analysis_kernel(
+            morphology=morphology, function=analysis_item[0], title=analysis_item[1],
+            label='%s-%s' % (morphology.name, analysis_item[2]),
+            df_sorting_keyword=analysis_item[3],
+            df_average_keyword=analysis_item[4],
+            df_minimum_keyword=analysis_item[5],
+            df_maximum_keyword=analysis_item[6],
+            output_directory=output_directory)
+
+    # Histograms
+    histograms = [
+        [vmv.analysis.compute_section_radius_ratio_distribution,
+         'Radius Ratio Histogram',
+         'Radius Ratio',
+         'Radius Ratio',
+         'section-radius-ratio-distribution'],
+
+        [vmv.analysis.compute_segment_length_ratio_distribution,
+         'Segment Length Ratio Histogram',
+         'Length Ratio',
+         'Length Ratio',
+         'segment-length-ratio-distribution'],
+
+        [vmv.analysis.compute_number_of_samples_per_section_distribution_,
+         'Number of Samples / Section',
+         'Number of Samples / Section',
+         'Number Samples',
+         'number-samples-per-section-distribution'],
+
+    ]
+
+    for element in histograms:
+
+        # Apply the kernel to the morphology and compute the dataframe
+        function = element[0]
+        title = element[1]
+        label = element[2]
+        data_key = element[3]
+        output_prefix = element[4]
+
+        # Apply the function to the morphology and return the data frame
+        df = function(morphology)
+
+        # Plot the profile
+        vmv.analysis.plot_histogram(
+            df=df, data_key=data_key, title=title, label=label,
+            output_directory=output_directory, output_prefix=output_prefix, save_svg=True)
+
 
 
 

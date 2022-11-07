@@ -18,6 +18,8 @@
 # System imports
 import pandas
 
+import vmv
+
 
 ####################################################################################################
 # @compute_total_of_number_samples_from_sections_list
@@ -66,6 +68,39 @@ def compute_number_of_samples_in_section(section):
 
 
 ####################################################################################################
+# @compute_section_radius_ratio
+####################################################################################################
+def compute_section_radius_ratio(section):
+    """Computes the ratio between the minimum sample radius to the maximum sample radius.
+
+    :param section:
+        A given section for analysis.
+    :return:
+        Radius Ratio = Minimum Sample Radius / Maximum Sample Radius
+        If the Maximum Sample Radius is zero, the result is zero.
+    :rtype:
+    """
+
+    # Initialize
+    min_sample_radius = 1e32
+    max_sample_radius = -1e32
+
+    # Comparisons
+    for sample in section.samples:
+        if sample.radius < min_sample_radius:
+            min_sample_radius = sample.radius
+        if sample.radius > max_sample_radius:
+            max_sample_radius = sample.radius
+
+    # If the maximum sample radius is zero, then return 0
+    if max_sample_radius < 1e-32:
+        return 0
+    # Otherwise, return the actual ratio
+    else:
+        return min_sample_radius / max_sample_radius
+
+
+####################################################################################################
 # @compute_number_of_samples_per_section_distribution
 ####################################################################################################
 def compute_number_of_samples_per_section_distribution(morphology_object):
@@ -81,6 +116,21 @@ def compute_number_of_samples_per_section_distribution(morphology_object):
     for i_section in morphology_object.sections_list:
         data.append(len(i_section.samples))
     return data
+
+
+def compute_number_of_samples_per_section_distribution_(morphology_object):
+    """Computes the distribution of the number of samples per section along the morphology.
+
+    :param morphology_object:
+        A give morphology object.
+    :return:
+        A list containing the number of samples in all the sections.
+    """
+
+    data = list()
+    for i, i_section in enumerate(morphology_object.sections_list):
+        data.append([i, len(i_section.samples)])
+    return pandas.DataFrame(data, columns=['Section Index', 'Number Samples'])
 
 
 ####################################################################################################
@@ -123,6 +173,38 @@ def compute_sample_radius_distribution_along_axes(morphology_object):
 
     # Construct the data frame and return it
     return pandas.DataFrame(data, columns=['Radius', 'X', 'Y', 'Z'])
+
+
+def compute_section_radius_ratio_distribution(morphology_object):
+    data = list()
+    for i, section in enumerate(morphology_object.sections_list):
+        data.append([i, compute_section_radius_ratio(section=section)])
+    return pandas.DataFrame(data, columns=['Section Index', 'Radius Ratio'])
+
+
+def compute_section_radius_distribution(morphology_object):
+
+    data = list()
+    for i_section, section in enumerate(morphology_object.sections_list):
+        average_sample_radius = 0
+        minimum_sample_radius = 1e32
+        maximum_sample_radius = -1e32
+
+        for i_sample in section.samples:
+            average_sample_radius += i_sample.radius
+            if i_sample.radius < minimum_sample_radius:
+                minimum_sample_radius = i_sample.radius
+            if i_sample.radius > maximum_sample_radius:
+                maximum_sample_radius = i_sample.radius
+
+        average_sample_radius /= len(section.samples)
+
+        data.append([section.index, average_sample_radius, minimum_sample_radius, maximum_sample_radius])
+
+    return pandas.DataFrame(data, columns=['Section Index',
+                                           'Mean Sample Radius',
+                                           'Min. Sample Radius',
+                                           'Max. Sample Radius'])
 
 
 ####################################################################################################
