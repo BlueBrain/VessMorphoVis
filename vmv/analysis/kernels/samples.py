@@ -21,6 +21,23 @@ import pandas
 import vmv
 
 
+def compute_samples_density(morphology):
+
+    data = list()
+
+    # For every section
+    for section in morphology.sections_list:
+
+        # For every sample
+        for sample in section.samples:
+
+            # Append the data
+            data.append([sample.radius, sample.point[0], sample.point[1], sample.point[2]])
+
+    # Create and return the data frame
+    return pandas.DataFrame(data, columns=['Radius', 'X', 'Y', 'Z'])
+
+
 ####################################################################################################
 # @compute_total_of_number_samples_from_sections_list
 ####################################################################################################

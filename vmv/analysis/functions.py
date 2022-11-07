@@ -364,6 +364,18 @@ def export_analysis_results(morphology,
          'Number Samples',
          'number-samples-per-section-distribution'],
 
+        [vmv.analysis.compute_samples_density,
+         'Density',
+         'Density',
+         'X',
+         'density-x'],
+
+        [vmv.analysis.compute_samples_density,
+         'Density',
+         'Density',
+         'Y',
+         'density-y']
+
     ]
 
     for element in histograms:
@@ -378,10 +390,23 @@ def export_analysis_results(morphology,
         # Apply the function to the morphology and return the data frame
         df = function(morphology)
 
+
         # Plot the profile
         vmv.analysis.plot_histogram(
             df=df, data_key=data_key, title=title, label=label,
-            output_directory=output_directory, output_prefix=output_prefix, save_svg=True)
+            output_directory=output_directory, output_prefix=output_prefix, save_svg=False)
+        if ('Density' in title):
+            w = morphology.bounding_box.bounds[0]
+            h = morphology.bounding_box.bounds[1]
+
+            w_r = 1.0 * 10
+            h_r = (1.0 * h / w) * 10
+            vmv.analysis.plot_scatter(df=df, x_keyword='X', y_keyword='Y',
+                                      figure_width=w_r, figure_height=h_r)
+
+    # Density
+
+
 
 
 

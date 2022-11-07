@@ -54,6 +54,47 @@ def compute_section_length(section):
     return section_length
 
 
+def compute_section_center_point(section):
+
+    # If the section has a single sample
+    if len(section.samples) == 1:
+        return section.samples[0].point
+
+    # If the section has two samples
+    if len(section.samples) == 2:
+        return (section.samples[0].point + section.samples[1].point) * 0.5
+
+    # Note: If the section has more than two samples, the logic becomes more complex
+    # Compute the section half-length
+    section_half_length = compute_section_length(section=section) * 0.5
+
+    # Keeps track on the section length
+    current_length = 0
+    for i in range(len(section.samples) - 1):
+
+        # Get every two points along the section
+        p0 = section.samples[i].point
+        p1 = section.samples[i + 1].point
+
+        # If the current length is less than half the path length
+        if current_length < section_half_length:
+
+            # Compute segment length and update the current length
+            current_length += (p0 - p1).length
+
+            # If the current length becomes larger than half the path length
+            if current_length > section_half_length:
+
+                # Compute the difference
+                difference = current_length - section_half_length
+
+                # Compute the direction
+                direction = (p1 - p0).normal()
+
+                # Return the computed point
+                return p1 - (difference * direction)
+
+
 ####################################################################################################
 # @compute_section_average_radius
 ####################################################################################################
@@ -264,6 +305,7 @@ def compute_sections_length_distributions(morphology_object):
     for i_section in morphology_object.sections_list:
         data.append(vmv.analysis.compute_section_length(i_section))
     return data
+
 
 
 ####################################################################################################

@@ -186,9 +186,9 @@ def plot_histogram(df,
     ax1.set_title(title, pad=25)
 
     # X-axis bins, only two bins
-    xbins = [math.floor(min(x)), math.ceil(max(x))]
+    xbins = [0, math.ceil(max(x))]
     ax1.grid(axis='y')
-    ax1.set_xlim(0, max(x))
+    ax1.set_xlim(0, math.ceil(max(x)))
     ax1.set_xticks(xbins)
 
     # Yaxis
@@ -395,6 +395,20 @@ def plot_normalized_histogram(data,
 
     # Return a reference to the PNG image
     return output_prefix + '-distribution.png'
+
+
+def plot_scatter(df, x_keyword, y_keyword, figure_width, figure_height):
+
+    # Adjusting the figure size
+    fig, ax = pyplot.subplots(1)
+    fig.set_size_inches(figure_width, figure_height)
+
+    seaborn.scatterplot(data=df, x=x_keyword, y=y_keyword)
+
+    # Save SVG
+    pyplot.savefig('/home/abdellah/vessmorphovis-output/example.png')
+
+
 
 
 ####################################################################################################
