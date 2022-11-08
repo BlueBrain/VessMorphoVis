@@ -82,17 +82,17 @@ def compute_section_center_point(section):
             # Compute segment length and update the current length
             current_length += (p0 - p1).length
 
-            # If the current length becomes larger than half the path length
-            if current_length > section_half_length:
+        # If the current length becomes larger than half the path length
+        if current_length >= section_half_length:
 
-                # Compute the difference
-                difference = current_length - section_half_length
+            # Compute the difference
+            difference = current_length - section_half_length
 
-                # Compute the direction
-                direction = (p1 - p0).normal()
+            # Compute the direction
+            direction = (p1 - p0).normalized()
 
-                # Return the computed point
-                return p1 - (difference * direction)
+            # Return the computed point
+            return p1 - (difference * direction)
 
 
 ####################################################################################################

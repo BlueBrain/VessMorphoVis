@@ -18,7 +18,67 @@
 # System imports
 import pandas
 
-import vmv
+import vmv.analysis
+
+
+class VesselRadiusAnalysis:
+
+    @staticmethod
+    def rxyz_data(sections):
+
+        data = list()
+        for section in sections:
+            for sample in section.samples:
+                r = sample.radius
+                p = sample.point
+                data.append([r, p[0], p[1], p[2]])
+        return pandas.DataFrame(data, columns=['Vessel Radius', 'X', 'Y', 'Z'])
+
+    @staticmethod
+    def analyse_per_section_radius(sections):
+        data = list()
+        for section in sections:
+            section_min_radius = 1e32
+            section_mean_radius = 0
+            section_max_radius = -1e32
+            if len(section.samples) > 0:
+                for sample in section.samples:
+                    if sample.radius < section_min_radius:
+                        section_min_radius = sample.radius
+                    if sample.radius > section_max_radius:
+                        section_max_radius = sample.radius
+                    section_mean_radius += sample.radius
+                section_mean_radius /= len(section.samples)
+            p = vmv.analysis.compute_section_center_point(section)
+
+            if section_max_radius == 0:
+                section_radius_ratio = 0
+            else:
+                section_radius_ratio = section_min_radius / section_max_radius
+            data.append([section.index,
+                         section_min_radius, section_mean_radius, section_max_radius,
+                         section_radius_ratio, p[0], p[1], p[2]])
+        return pandas.DataFrame(data, columns=['Section Index',
+                                               'Vessel Min Radius',
+                                               'Vessel Mean Radius',
+                                               'Vessel Max Radius',
+                                               'Section Radius Ratio',
+                                               'X', 'Y', 'Z'])
+
+    @staticmethod
+    def zero_radius_samples(sections, threshold=1e-10):
+        data = list()
+        for i_section, section in enumerate(sections):
+            for i_sample, sample in enumerate(section.samples):
+                if sample.radius < threshold:
+                    p = sample.point
+                    data.append([section.index, i_sample, p[0], p[1], p[2]])
+        return pandas.DataFrame(data, columns=['Section Index', 'Sample Index',
+                                               'X', 'Y', 'Z'])
+
+
+
+
 
 
 def compute_samples_density(morphology):

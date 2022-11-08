@@ -237,6 +237,100 @@ def export_analysis_results(morphology,
         The directory where all the results will be written.
     """
 
+    # Radius
+    # Compute a data-frame for the vessel radii
+    # Radius, X, Y, Z
+
+    from matplotlib import cm
+    cmap = cm.get_cmap('viridis', 20)
+    cmap2 = cm.get_cmap('Set1')
+
+    # Radius Distribution (Radius Vs Count)
+    rxyz_data = vmv.VesselRadiusAnalysis.rxyz_data(morphology.sections_list)
+
+    # Vessel radius histogram
+    vmv.plot_histogram(df=rxyz_data,
+                       data_key='Vessel Radius',
+                       label=r'Vessel Radius ($\mu$m)',
+                       title='Vessel Radius Histogram',
+                       output_prefix='vessel-radius-histogram',
+                       output_directory=output_directory,
+                       color=cmap.colors[0])
+
+    # Samples density
+    vmv.plot_histogram(df=rxyz_data,
+                       data_key='X',
+                       label='Segment Density (X-axis)',
+                       title='Segment Density',
+                       output_prefix='segment-density-x-histogram',
+                       output_directory=output_directory,
+                       color=cmap2.colors[0])
+
+    # Samples density
+    vmv.plot_histogram(df=rxyz_data,
+                       data_key='Y',
+                       label='Segment Density (Y-axis)',
+                       title='Segment Density',
+                       output_prefix='segment-density-y-histogram',
+                       output_directory=output_directory,
+                       color=cmap2.colors[2])
+
+    # Samples density
+    vmv.plot_histogram(df=rxyz_data,
+                       data_key='Z',
+                       label='Segment Density (Z-axis)',
+                       title='Segment Density',
+                       output_prefix='segment-density-z-histogram',
+                       output_directory=output_directory,
+                       color=cmap2.colors[1])
+
+    # Vessel Mean Radius
+    per_section_radius_data = vmv.VesselRadiusAnalysis.analyse_per_section_radius(
+        morphology.sections_list)
+
+    # Vessel radius histogram
+    vmv.plot_histogram(df=per_section_radius_data,
+                       data_key='Vessel Mean Radius',
+                       label=r'Vessel Radius ($\mu$m)',
+                       title='Vessel Mean Radius',
+                       output_prefix='vessel-xx-histogram',
+                       output_directory=output_directory,
+                       color=cmap.colors[3])
+
+    vmv.plot_range_data_closeups(df=per_section_radius_data,
+                                 data_key='Section Index',
+                                 min_keyword='Vessel Min Radius',
+                                 mean_keyword='Vessel Mean Radius',
+                                 max_keyword='Vessel Max Radius',
+                                 label='Section Index',
+                                 output_prefix='vessel-xx',
+                                 output_directory=output_directory)
+
+    vmv.plot_range_data_xyz_with_closeups(df=per_section_radius_data,
+                                 min_keyword='Vessel Min Radius',
+                                 mean_keyword='Vessel Mean Radius',
+                                 max_keyword='Vessel Max Radius',
+                                 label='Distance',
+                                 output_prefix='vessel-xx',
+                                 output_directory=output_directory)
+
+    # Samples density
+    vmv.plot_histogram(df=per_section_radius_data,
+                       data_key='Section Radius Ratio',
+                       label='Section Radius Ratio',
+                       title='Radius Ratio',
+                       output_prefix='segment-radius-ratio-histogram',
+                       output_directory=output_directory,
+                       color=cmap2.colors[1])
+
+
+
+
+
+
+
+
+
 
 
     analysis_items = [
