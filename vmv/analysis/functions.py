@@ -246,6 +246,15 @@ def plot_analysis_samples_per_section(morphology,
     # Analyze and get the data-frame
     data_frame = vmv.analysis.analyze_samples_per_section(sections=morphology.sections_list)
 
+    vmv.analysis.plot_histogram(df=data_frame,
+                                data_key=[Keys.NUMBER_OF_SAMPLES],
+                                title='Number of Samples per Section',
+                                label=r'Number of Samples',
+                                figure_width=5, figure_height=10,
+                                output_prefix='number-samples-per-section-histogram',
+                                output_directory=output_directory,
+                                color=r_dark)
+
     # Number of Samples per section w.r.t the Section Index
     vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
                               ydata=data_frame[Keys.SECTION_INDEX],
@@ -274,7 +283,7 @@ def plot_analysis_samples_per_section(morphology,
                               figure_width=5, figure_height=10,
                               output_prefix='samples-per-section-y',
                               output_directory=output_directory,
-                              color=r_dark)
+                              color=g_dark)
 
     # Number of samples per section w.r.t the X-axis
     vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
@@ -284,7 +293,7 @@ def plot_analysis_samples_per_section(morphology,
                               figure_width=5, figure_height=10,
                               output_prefix='samples-per-section-z',
                               output_directory=output_directory,
-                              color=r_dark)
+                              color=b_dark)
 
     tow_samples_data = list()
     for index, row in data_frame.iterrows():
@@ -322,10 +331,67 @@ def plot_analysis_samples_per_section(morphology,
                                 output_directory=output_directory,
                                 color=b_dark)
 
-def analyze_vessel_radii(morphology,
-                         output_directory):
+    # Samples density w.r.t X-axis
+    vmv.plot_histogram(df=data_frame,
+                       data_key=Keys.X,
+                       label='Samples Density along X-axis',
+                       title='Samples Density',
+                       output_prefix='samples-density-x-histogram',
+                       output_directory=output_directory,
+                       color=r_dark)
 
-    pass
+    # Samples density w.r.t Y-axis
+    vmv.plot_histogram(df=data_frame,
+                       data_key=Keys.Y,
+                       label='Samples Density along Y-axis',
+                       title='Samples Density',
+                       output_prefix='samples-density-y-histogram',
+                       output_directory=output_directory,
+                       color=g_dark)
+
+    # Samples density w.r.t Z-axis
+    vmv.plot_histogram(df=data_frame,
+                       data_key=Keys.Z,
+                       label='Samples Density along Z-axis',
+                       title='Samples Density',
+                       output_prefix='samples-density-z-histogram',
+                       output_directory=output_directory,
+                       color=b_dark)
+
+
+def plot_analysis_radii(morphology,
+                        output_directory):
+    from matplotlib import cm
+    import pandas
+
+    light_colors = cm.get_cmap('Pastel1').colors
+    dark_colors = cm.get_cmap('Set1').colors
+
+    r_light = light_colors[0]
+    g_light = light_colors[2]
+    b_light = light_colors[1]
+    o_light = light_colors[4]
+
+    r_dark = dark_colors[0]
+    g_dark = dark_colors[2]
+    b_dark = dark_colors[1]
+    o_dark = dark_colors[4]
+
+    # Analyze and get the data-frame
+    data_frame = vmv.analysis.analyze_samples_radii_xyz(morphology.sections_list)
+
+    # Vessel radius histogram
+    vmv.plot_histogram(df=data_frame,
+                       data_key=Keys.SAMPLE_RADIUS,
+                       label=r'Vessel Radius ($\mu$m)',
+                       title='Vessel Radius Histogram',
+                       output_prefix='vessel-radius-histogram',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+
+
+
 
 ####################################################################################################
 # @export_analysis_results
@@ -341,6 +407,7 @@ def export_analysis_results(morphology,
     """
 
     plot_analysis_samples_per_section(morphology, output_directory)
+    plot_analysis_radii(morphology, output_directory)
     exit(0)
 
     # Radius

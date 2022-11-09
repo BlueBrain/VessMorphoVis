@@ -44,6 +44,20 @@ def analyze_samples_per_section(sections):
                                            Keys.X, Keys.Y, Keys.Z])
 
 
+def analyze_samples_radii_xyz(sections):
+    """
+
+    :param sections:
+    :return:
+    """
+
+    data = list()
+    for section in sections:
+        for sample in section.samples:
+            data.append([sample.radius, sample.point[0], sample.point[1], sample.point[2]])
+    return pandas.DataFrame(data, columns=[Keys.SAMPLE_RADIUS, Keys.X, Keys.Y, Keys.Z])
+
+
 class VesselRadiusAnalysis:
 
     @staticmethod

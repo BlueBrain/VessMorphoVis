@@ -32,6 +32,9 @@ class Keys:
     # Section index
     SECTION_INDEX = 'Section Index'
 
+    # Sample radius
+    SAMPLE_RADIUS = 'Sample Radius'
+
     # X-axis
     X = 'X'
 
