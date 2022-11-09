@@ -295,16 +295,16 @@ def plot_analysis_samples_per_section(morphology,
                               output_directory=output_directory,
                               color=b_dark)
 
-    tow_samples_data = list()
+    two_samples_data = list()
     for index, row in data_frame.iterrows():
         if row[Keys.NUMBER_OF_SAMPLES] == 2:
-            tow_samples_data.append(row)
+            two_samples_data.append(row)
 
-    tow_samples_data_frame = pandas.DataFrame(tow_samples_data,
+    two_samples_data_frame = pandas.DataFrame(two_samples_data,
                                               columns=[Keys.SECTION_INDEX, Keys.NUMBER_OF_SAMPLES,
                                                        Keys.X, Keys.Y, Keys.Z])
 
-    vmv.analysis.plot_histogram(df=tow_samples_data_frame,
+    vmv.analysis.plot_histogram(df=two_samples_data_frame,
                                 data_key=[Keys.X],
                                 title='Sections with 2 Samples',
                                 label=r'Distance along X-axis ($\mu$m)',
@@ -313,7 +313,7 @@ def plot_analysis_samples_per_section(morphology,
                                 output_directory=output_directory,
                                 color=r_dark)
 
-    vmv.analysis.plot_histogram(df=tow_samples_data_frame,
+    vmv.analysis.plot_histogram(df=two_samples_data_frame,
                                 data_key=[Keys.Y],
                                 title='Sections with 2 Samples',
                                 label=r'Distance along Y-axis ($\mu$m)',
@@ -322,7 +322,7 @@ def plot_analysis_samples_per_section(morphology,
                                 output_directory=output_directory,
                                 color=g_dark)
 
-    vmv.analysis.plot_histogram(df=tow_samples_data_frame,
+    vmv.analysis.plot_histogram(df=two_samples_data_frame,
                                 data_key=[Keys.Z],
                                 title='Sections with 2 Samples',
                                 label=r'Distance along Z-axis ($\mu$m)',
@@ -378,6 +378,7 @@ def plot_analysis_radii(morphology,
     o_dark = dark_colors[4]
 
     # Analyze and get the data-frame
+    # TODO: Zero-radius samples can be obtained from here 
     data_frame = vmv.analysis.analyze_samples_radii_xyz(morphology.sections_list)
 
     # Vessel radius histogram
@@ -389,6 +390,96 @@ def plot_analysis_radii(morphology,
                        output_directory=output_directory,
                        color=o_dark)
 
+    zero_radius_data = list()
+    for index, row in data_frame.iterrows():
+        if row[Keys.SAMPLE_RADIUS] < 1e-5:
+            zero_radius_data.append(row)
+
+    if len(zero_radius_data) > 0:
+        zero_radius_data_frame = pandas.DataFrame(zero_radius_data,
+                                                columns=[Keys.SAMPLE_RADIUS, Keys.X, Keys.Y, Keys.Z])
+
+        # Samples density w.r.t X-axis
+        vmv.plot_histogram(df=zero_radius_data_frame,
+                        data_key=Keys.X,
+                        label='Zero-radius Samples Density along X-axis',
+                        title='Samples with Zero Radius',
+                        output_prefix='zero-radius-samples-x-histogram',
+                        output_directory=output_directory,
+                        color=r_dark)
+
+        # Samples density w.r.t Y-axis
+        vmv.plot_histogram(df=zero_radius_data_frame,
+                        data_key=Keys.Y,
+                        label='Zero-radius Samples Density along Y-axis',
+                        title='Samples with Zero Radius',
+                        output_prefix='zero-radius-samples-y-histogram',
+                        output_directory=output_directory,
+                        color=g_dark)
+
+        # Samples density w.r.t Z-axis
+        vmv.plot_histogram(df=zero_radius_data_frame,
+                        data_key=Keys.Z,
+                        label='Zero-radius Samples Density along Z-axis',
+                        title='Samples with Zero Radius',
+                        output_prefix='zero-radius-samples-z-histogram',
+                        output_directory=output_directory,
+                        color=b_dark)
+    
+    data_frame = vmv.analysis.analyse_per_section_radius(morphology.sections_list)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.SECTION_INDEX,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label='Section Index',
+                                 output_prefix='section-radius-analysis',
+                                 output_directory=output_directory,
+                                 light_color=o_light,
+                                 dark_color=o_dark)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.X,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label=r'Distance along Z-axis ($\mu$m)',
+                                 output_prefix='section-radius-analysis-x',
+                                 output_directory=output_directory,
+                                 light_color=r_light,
+                                 dark_color=r_dark)
+    
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.Y,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label=r'Distance along Y-axis ($\mu$m)',
+                                 output_prefix='section-radius-analysis-y',
+                                 output_directory=output_directory,
+                                 light_color=g_light,
+                                 dark_color=g_dark)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.Z,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label=r'Distance along Z-axis ($\mu$m)',
+                                 output_prefix='section-radius-analysis-z',
+                                 output_directory=output_directory,
+                                 light_color=b_light,
+                                 dark_color=b_dark)
+
+
+                                 
+    
+    #vmv.plot_range_data_xyz_with_closeups(
+    #    df=per_section_radius_data, min_keyword='Vessel Min Radius',
+    #    mean_keyword='Vessel Mean Radius',
+    #    max_keyword='Vessel Max Radius',
+    #    label='Distance', output_prefix='vessel-xx', output_directory=output_directory)
 
 
 
@@ -430,32 +521,7 @@ def export_analysis_results(morphology,
                        output_directory=output_directory,
                        color=cmap.colors[0])
 
-    # Samples density
-    vmv.plot_histogram(df=rxyz_data,
-                       data_key='X',
-                       label='Segment Density (X-axis)',
-                       title='Segment Density',
-                       output_prefix='segment-density-x-histogram',
-                       output_directory=output_directory,
-                       color=cmap2.colors[0])
-
-    # Samples density
-    vmv.plot_histogram(df=rxyz_data,
-                       data_key='Y',
-                       label='Segment Density (Y-axis)',
-                       title='Segment Density',
-                       output_prefix='segment-density-y-histogram',
-                       output_directory=output_directory,
-                       color=cmap2.colors[2])
-
-    # Samples density
-    vmv.plot_histogram(df=rxyz_data,
-                       data_key='Z',
-                       label='Segment Density (Z-axis)',
-                       title='Segment Density',
-                       output_prefix='segment-density-z-histogram',
-                       output_directory=output_directory,
-                       color=cmap2.colors[1])
+    
 
     # Vessel Mean Radius
     per_section_radius_data = vmv.VesselRadiusAnalysis.analyse_per_section_radius(

@@ -29,12 +29,20 @@ class Keys:
     def __init__(self):
         pass
 
-    # Section index
+    # Section Index
     SECTION_INDEX = 'Section Index'
 
     # Sample radius
     SAMPLE_RADIUS = 'Sample Radius'
 
+    # Section Minimum, Mean and Maximum Radius
+    SECTION_MIN_RADIUS = 'Section Min. Radius'
+    SECTION_MEAN_RADIUS = 'Section Mean Radius'
+    SECTION_MAX_RADIUS = 'Section Max. Radius'
+
+    # Section Radius Ratio
+    SECTION_RADIUS_RATIO = 'Section Radius Ratio'
+    
     # X-axis
     X = 'X'
 

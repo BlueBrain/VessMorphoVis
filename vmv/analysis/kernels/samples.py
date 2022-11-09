@@ -58,6 +58,38 @@ def analyze_samples_radii_xyz(sections):
     return pandas.DataFrame(data, columns=[Keys.SAMPLE_RADIUS, Keys.X, Keys.Y, Keys.Z])
 
 
+def analyse_per_section_radius(sections):
+    data = list()
+    for section in sections:
+        section_min_radius = 1e32
+        section_mean_radius = 0
+        section_max_radius = -1e32
+        if len(section.samples) > 0:
+            for sample in section.samples:
+                if sample.radius < section_min_radius:
+                    section_min_radius = sample.radius
+                if sample.radius > section_max_radius:
+                    section_max_radius = sample.radius
+                section_mean_radius += sample.radius
+            section_mean_radius /= len(section.samples)
+        p = vmv.analysis.compute_section_center_point(section)
+
+        if section_max_radius == 0:
+            section_radius_ratio = 0
+        else:
+            section_radius_ratio = section_min_radius / section_max_radius
+        
+        data.append([section.index,
+                     section_min_radius, section_mean_radius, section_max_radius,
+                     section_radius_ratio, p[0], p[1], p[2]])
+    
+    return pandas.DataFrame(data, columns=[Keys.SECTION_INDEX, 
+                                           Keys.SECTION_MIN_RADIUS, 
+                                           Keys.SECTION_MEAN_RADIUS,
+                                           Keys.SECTION_MAX_RADIUS, 
+                                           Keys.SECTION_RADIUS_RATIO,
+                                           Keys.X, Keys.Y, Keys.Z])
+
 class VesselRadiusAnalysis:
 
     @staticmethod
