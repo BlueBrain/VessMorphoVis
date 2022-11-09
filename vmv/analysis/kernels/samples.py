@@ -19,9 +19,43 @@
 import pandas
 
 import vmv.analysis
+from vmv.consts import Keys
+
+
+####################################################################################################
+# @analyze_samples_per_section
+####################################################################################################
+def analyze_samples_per_section(sections):
+    """
+    NOTE: The section center is a good estimate of the section location in the morphology.
+
+    :param sections:
+        Morphology sections, for the analysis.
+    :return:
+        A data-frame containing the analysis results.
+        columns=[Keys.SECTION_INDEX, Keys.NUMBER_OF_SAMPLES, Keys.X, Keys.Y, Keys.Z].
+    """
+    data = list()
+    for section in sections:
+        center = vmv.analysis.compute_section_center_point(section)
+        data.append([section.index, len(section.samples), center[0], center[1], center[2]])
+    return pandas.DataFrame(data, columns=[Keys.SECTION_INDEX,
+                                           Keys.NUMBER_OF_SAMPLES,
+                                           Keys.X, Keys.Y, Keys.Z])
 
 
 class VesselRadiusAnalysis:
+
+    @staticmethod
+    def samples_per_section(sections):
+        data = list()
+        for section in sections:
+            number_samples = len(section.samples)
+            p = vmv.analysis.compute_section_center_point(section)
+            data.append([section.index, number_samples, p[0], p[1], p[2]])
+        return pandas.DataFrame(data, columns=['Section Index', 'Number Samples',
+                                               'X', 'Y', 'Z'])
+
 
     @staticmethod
     def rxyz_data(sections):

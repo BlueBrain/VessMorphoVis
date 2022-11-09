@@ -107,6 +107,58 @@ def set_styles(font='Arial',
     pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
 
 
+def plot_scatter(xdata, ydata,
+                 xlabel, ylabel,
+                 color='r',
+                 figure_width=8, figure_height=10,
+                 font_size=30, line_width=2, spines_shift=10,
+                 dpi=300,
+                 output_directory="",
+                 output_prefix="",
+                 save_pdf=False,
+                 save_svg=False):
+
+    # Set the default styles
+    set_styles(font_size=font_size, axes_linewidth=line_width)
+
+    # Create a new figure and adjust its size
+    fig, ax1 = pyplot.subplots(1, 1)
+    fig.set_size_inches(figure_width, figure_height)
+
+    # Plot
+    ax1.scatter(xdata, ydata, marker='+', color=color)
+
+    # Adjust the spine parameters
+    for spine in ['left', 'bottom']:
+        ax1.spines[spine].set_position(('outward', spines_shift))
+        ax1.spines[spine].set_color('black')
+        ax1.spines[spine].set_linewidth(line_width)
+    for spine in ['right', 'top']:
+        ax1.spines[spine].set_visible(False)
+    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
+                    left=True)
+    ax1.grid(False)
+    ax1.grid(axis='y')
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel)
+
+    # X-axis bins, only two bins
+    xbins = [math.floor(min(xdata)), math.ceil(max(xdata))]
+    ax1.set_xlim(0, math.ceil(max(xdata)))
+    ax1.set_xticks(xbins)
+
+    # Save PNG by default
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True)
+
+    # Save PDF
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
+
+    # Save SVG
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
+
 ####################################################################################################
 # @plot_histogram
 ####################################################################################################
@@ -230,6 +282,114 @@ def plot_histogram(df,
 
     # No x-axis labels
     ax2.tick_params(axis='both', which='both', left=False, bottom=False, labelbottom=False)
+
+    # Save PNG by default
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True)
+
+    # Save PDF
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
+
+    # Save SVG
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
+
+
+def plot_scatter_data_with_closeups(df,
+                                    idep_keyword,
+                                    dep_keyword,
+                                    idep_axis_label,
+                                    dep_axis_label,
+                                    font_size=30,
+                                    figure_width=8,
+                                    figure_height=10,
+                                    spines_shift=10,
+                                    line_width=2,
+                                    light_color='r',
+                                    dark_color='b',
+                                    output_directory="",
+                                    output_prefix="",
+                                    dpi=300,
+                                    save_pdf=False,
+                                    save_svg=False):
+
+    # Set the default styles
+    set_styles(font_size=font_size, axes_linewidth=line_width)
+
+    # Create a new figure and adjust its size
+    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
+    fig.set_size_inches(figure_width, figure_height)
+
+    # Sort the dataframe by the given axis
+    df_sorted = df.sort_values(by=[idep_keyword], inplace=False)
+
+    # Independent axis
+    indep = df_sorted[idep_keyword]
+
+    # Data
+    data = df_sorted[dep_keyword]
+
+    # Plot
+    ax1.errorbar(data, indep, fmt='+', color=light_color,
+                 ecolor=dark_color,
+                 alpha=0.75, zorder=1)
+
+    # Adjust the spine parameters
+    for spine in ['left', 'bottom']:
+        ax1.spines[spine].set_position(('outward', spines_shift))
+        ax1.spines[spine].set_color('black')
+        ax1.spines[spine].set_linewidth(2)
+    for spine in ['right', 'top']:
+        ax1.spines[spine].set_visible(False)
+    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
+                    left=True)
+    ax1.grid(False)
+    # ax1.set_ylabel(label, labelpad=5)
+
+    ax1.set_ylabel(idep_axis_label)
+    ax1.set_xlabel(dep_axis_label)
+
+    # X-axis bins, only two bins
+    xbins = [0, math.ceil(max(data))]
+    ax1.grid(axis='y')
+    ax1.set_xlim(0, math.ceil(max(data)))
+    ax1.set_xticks(xbins)
+
+    # Set the title
+    # ax1.set_title(title, pad=25)
+
+    # Add the closeup to the right
+    h21 = ax2.errorbar(data, indep, fmt='+', color=light_color, alpha=0.75, zorder=10,
+                       label='Mean Radius')
+
+    # Adjust the spine parameters
+    for spine in ['left', 'bottom']:
+        ax2.spines[spine].set_position(('outward', spines_shift))
+        ax2.spines[spine].set_color('black')
+        ax2.spines[spine].set_linewidth(2)
+    for spine in ['left', 'top', 'right']:
+        ax2.spines[spine].set_visible(False)
+    ax2.tick_params(axis='both', width=2, which='both', bottom=True, left=False)
+    ax2.set_xlim(left=-0.1, right=1.1)
+    ax2.axes.get_yaxis().set_visible(False)
+    ax2.grid(False)
+
+    if -1e-10 < min(indep) < 1e-10:
+        ax1.set_ylim(bottom=0)
+        ax2.set_ylim(bottom=0)
+
+    # Shift the closeup a little to the right
+    bp_position = ax2.get_position()
+    bp_position.x0 = bp_position.x0 + 0.025
+    bp_position.x1 = bp_position.x1 + 0.025
+    ax2.set_position(bp_position)
+
+    from matplotlib import patches
+    rectangle = patches.Rectangle((0, min(indep)), width=1.0, height=max(indep) - min(indep),
+                                  linewidth=2,
+                                  facecolor='white', edgecolor='black')
+    ax2.add_patch(rectangle)
 
     # Save PNG by default
     pyplot.savefig('%s/distribution-%s.png' % (output_directory, output_prefix),
@@ -660,7 +820,7 @@ def plot_normalized_histogram(data,
     return output_prefix + '-distribution.png'
 
 
-def plot_scatter(df, x_keyword, y_keyword, figure_width, figure_height):
+def plot_scatter_xx(df, x_keyword, y_keyword, figure_width, figure_height):
 
     # Adjusting the figure size
     fig, ax = pyplot.subplots(1)

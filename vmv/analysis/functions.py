@@ -21,6 +21,7 @@ import matplotlib.pyplot as pyplot
 
 # Internal imports
 import vmv.utilities
+from vmv.consts import Keys
 
 
 ####################################################################################################
@@ -224,6 +225,108 @@ def analyze_morphology(morphology_object):
         morphology_object.sections_list)
 
 
+def plot_analysis_samples_per_section(morphology,
+                                      output_directory):
+    from matplotlib import cm
+    import pandas
+
+    light_colors = cm.get_cmap('Pastel1').colors
+    dark_colors = cm.get_cmap('Set1').colors
+
+    r_light = light_colors[0]
+    g_light = light_colors[2]
+    b_light = light_colors[1]
+    o_light = light_colors[4]
+
+    r_dark = dark_colors[0]
+    g_dark = dark_colors[2]
+    b_dark = dark_colors[1]
+    o_dark = dark_colors[4]
+
+    # Analyze and get the data-frame
+    data_frame = vmv.analysis.analyze_samples_per_section(sections=morphology.sections_list)
+
+    # Number of Samples per section w.r.t the Section Index
+    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
+                              ydata=data_frame[Keys.SECTION_INDEX],
+                              xlabel='Number of Samples',
+                              ylabel='Section Index',
+                              figure_width=5, figure_height=10,
+                              output_prefix='number-samples-wrt-section-index',
+                              output_directory=output_directory,
+                              color=o_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
+                              ydata=data_frame[Keys.X],
+                              xlabel='Number of Samples',
+                              ylabel=r'Distance along X-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='samples-per-section-x',
+                              output_directory=output_directory,
+                              color=r_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
+                              ydata=data_frame[Keys.Y],
+                              xlabel='Number of Samples',
+                              ylabel=r'Distance along Y-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='samples-per-section-y',
+                              output_directory=output_directory,
+                              color=r_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
+                              ydata=data_frame[Keys.Z],
+                              xlabel='Number of Samples',
+                              ylabel=r'Distance along Z-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='samples-per-section-z',
+                              output_directory=output_directory,
+                              color=r_dark)
+
+    tow_samples_data = list()
+    for index, row in data_frame.iterrows():
+        if row[Keys.NUMBER_OF_SAMPLES] == 2:
+            tow_samples_data.append(row)
+
+    tow_samples_data_frame = pandas.DataFrame(tow_samples_data,
+                                              columns=[Keys.SECTION_INDEX, Keys.NUMBER_OF_SAMPLES,
+                                                       Keys.X, Keys.Y, Keys.Z])
+
+    vmv.analysis.plot_histogram(df=tow_samples_data_frame,
+                                data_key=[Keys.X],
+                                title='Sections with 2 Samples',
+                                label=r'Distance along X-axis ($\mu$m)',
+                                figure_width=5, figure_height=10,
+                                output_prefix='sections-with-2-samples-x',
+                                output_directory=output_directory,
+                                color=r_dark)
+
+    vmv.analysis.plot_histogram(df=tow_samples_data_frame,
+                                data_key=[Keys.Y],
+                                title='Sections with 2 Samples',
+                                label=r'Distance along Y-axis ($\mu$m)',
+                                figure_width=5, figure_height=10,
+                                output_prefix='sections-with-2-samples-y',
+                                output_directory=output_directory,
+                                color=g_dark)
+
+    vmv.analysis.plot_histogram(df=tow_samples_data_frame,
+                                data_key=[Keys.Z],
+                                title='Sections with 2 Samples',
+                                label=r'Distance along Z-axis ($\mu$m)',
+                                figure_width=5, figure_height=10,
+                                output_prefix='sections-with-2-samples-z',
+                                output_directory=output_directory,
+                                color=b_dark)
+
+def analyze_vessel_radii(morphology,
+                         output_directory):
+
+    pass
+
 ####################################################################################################
 # @export_analysis_results
 ####################################################################################################
@@ -236,6 +339,9 @@ def export_analysis_results(morphology,
     :param output_directory:
         The directory where all the results will be written.
     """
+
+    plot_analysis_samples_per_section(morphology, output_directory)
+    exit(0)
 
     # Radius
     # Compute a data-frame for the vessel radii
@@ -306,13 +412,11 @@ def export_analysis_results(morphology,
                                  output_prefix='vessel-xx',
                                  output_directory=output_directory)
 
-    vmv.plot_range_data_xyz_with_closeups(df=per_section_radius_data,
-                                 min_keyword='Vessel Min Radius',
-                                 mean_keyword='Vessel Mean Radius',
-                                 max_keyword='Vessel Max Radius',
-                                 label='Distance',
-                                 output_prefix='vessel-xx',
-                                 output_directory=output_directory)
+    vmv.plot_range_data_xyz_with_closeups(
+        df=per_section_radius_data, min_keyword='Vessel Min Radius',
+        mean_keyword='Vessel Mean Radius',
+        max_keyword='Vessel Max Radius',
+        label='Distance', output_prefix='vessel-xx', output_directory=output_directory)
 
     # Samples density
     vmv.plot_histogram(df=per_section_radius_data,
@@ -323,13 +427,126 @@ def export_analysis_results(morphology,
                        output_directory=output_directory,
                        color=cmap2.colors[1])
 
+    samples_per_section = vmv.VesselRadiusAnalysis.samples_per_section(morphology.sections_list)
+
+
+    # Samples number samples
+    vmv.plot_scatter(xdata=samples_per_section['Number Samples'],
+                     ydata=samples_per_section['Section Index'],
+                     xlabel='Number of Samples',
+                     ylabel='Section Index',
+                     output_prefix='samples-per-section-index',
+                     output_directory=output_directory,
+                     color=cmap2.colors[4])
+
+    # Samples number samples
+    vmv.plot_scatter(xdata=samples_per_section['Number Samples'],
+                     ydata=samples_per_section['X'],
+                     xlabel='Number of Samples',
+                     ylabel=r'Distance along X-axis ($\mu$m)',
+                     figure_width=5, figure_height=10,
+                     output_prefix='samples-per-section-x',
+                     output_directory=output_directory,
+                     color=cmap2.colors[0])
+
+    # Samples number samples
+    vmv.plot_scatter(xdata=samples_per_section['Number Samples'],
+                     xlabel='Number of Samples',
+                     ylabel=r'Distance along Y-axis ($\mu$m)',
+                     figure_width=5, figure_height=10,
+                     ydata=samples_per_section['Y'],
+                     output_prefix='samples-per-section-y',
+                     output_directory=output_directory,
+                     color=cmap2.colors[2])
+    # Samples number samples
+    vmv.plot_scatter(xdata=samples_per_section['Number Samples'],
+                     xlabel='Number of Samples',
+                     ylabel=r'Distance along Z-axis ($\mu$m)',
+                     ydata=samples_per_section['Z'],
+                     figure_width=5, figure_height=10,
+                     output_prefix='samples-per-section-z',
+                     output_directory=output_directory,
+                     color=cmap2.colors[1])
 
 
 
 
+    vmv.analysis.plot_histogram(
+        df=samples_per_section, data_key=['Number Samples'], title='# Samples / Section Hist',
+        label='Number Samples',
+        output_directory=output_directory, output_prefix='number-samples-histo',
+        save_svg=False)
+
+    for axis in ['X', 'Y', 'Z']:
+        vmv.analysis.plot_histogram(
+            df=samples_per_section, data_key=[axis], title='# Samples / Section Hist',
+            label=axis,
+            output_directory=output_directory, output_prefix='number-samples-histo-%s' % axis,
+            save_svg=False)
+
+    vmv.analysis.plot_histogram(
+        df=samples_per_section, data_key=['Number Samples'], title='# Samples / Section Hist',
+        label='Number Samples',
+        output_directory=output_directory, output_prefix='number-samples-histo',
+        save_svg=False)
+
+
+    two_samples_per_section = list()
+    for index, row in samples_per_section.iterrows():
+        if row['Number Samples'] == 2:
+            two_samples_per_section.append(row)
+
+    import pandas
+    two_samples_per_section = pandas.DataFrame(
+        two_samples_per_section, columns=['Section Index', 'Number Samples', 'X', 'Y', 'Z'])
+
+    # Samples number samples
+    vmv.plot_scatter(xdata=two_samples_per_section['Number Samples'],
+                     ydata=two_samples_per_section['X'],
+                     xlabel='Number of Samples',
+                     ylabel=r'Distance along X-axis ($\mu$m)',
+                     figure_width=5, figure_height=10,
+                     output_prefix='2-samples-per-section-x',
+                     output_directory=output_directory,
+                     color=cmap2.colors[0])
+
+    vmv.analysis.plot_histogram(
+        df=two_samples_per_section, data_key=['X'], title='2 Samples', label='X axis',
+        output_directory=output_directory, output_prefix='2-samples-per-section-x-histogram',
+        save_svg=False)
 
 
 
+    import matplotlib
+    pastel1 = matplotlib.cm.get_cmap('Set1')
+    light_colors = [pastel1.colors[0], pastel1.colors[2], pastel1.colors[1]]
+
+    vmv.plot_scatter_data_with_closeups(df=rxyz_data,
+                                        idep_axis_label=r'Distance along X-axis ($\mu$m)',
+                                        dep_axis_label=r'Sample Radius ($\mu$m)',
+                                        idep_keyword='X',
+                                        dep_keyword='Vessel Radius',
+                                        output_prefix='segment-radius-x',
+                                        light_color=light_colors[0],
+                                        output_directory=output_directory)
+
+    vmv.plot_scatter_data_with_closeups(df=rxyz_data,
+                                        idep_keyword='Y',
+                                        idep_axis_label=r'Distance along Y-axis ($\mu$m)',
+                                        dep_axis_label=r'Sample Radius ($\mu$m)',
+                                        dep_keyword='Vessel Radius',
+                                        output_prefix='segment-radius-y',
+                                        light_color=light_colors[2],
+                                        output_directory=output_directory)
+
+    vmv.plot_scatter_data_with_closeups(df=rxyz_data,
+                                        idep_keyword='Z',
+                                        idep_axis_label=r'Distance along Z-axis ($\mu$m)',
+                                        dep_axis_label=r'Sample Radius ($\mu$m)',
+                                        dep_keyword='Vessel Radius',
+                                        output_prefix='segment-radius-z',
+                                        light_color=light_colors[1],
+                                        output_directory=output_directory)
 
 
 
