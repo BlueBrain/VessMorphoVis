@@ -17,6 +17,7 @@
 
 # System imports
 import numpy
+import pandas
 import matplotlib.pyplot as pyplot
 
 # Internal imports
@@ -227,73 +228,55 @@ def analyze_morphology(morphology_object):
 
 def plot_analysis_samples_per_section(morphology,
                                       output_directory):
-    from matplotlib import cm
-    import pandas
-
-    light_colors = cm.get_cmap('Pastel1').colors
-    dark_colors = cm.get_cmap('Set1').colors
-
-    r_light = light_colors[0]
-    g_light = light_colors[2]
-    b_light = light_colors[1]
-    o_light = light_colors[4]
-
-    r_dark = dark_colors[0]
-    g_dark = dark_colors[2]
-    b_dark = dark_colors[1]
-    o_dark = dark_colors[4]
 
     # Analyze and get the data-frame
     data_frame = vmv.analysis.analyze_samples_per_section(sections=morphology.sections_list)
 
-    vmv.analysis.plot_histogram(df=data_frame,
-                                data_key=[Keys.NUMBER_OF_SAMPLES],
-                                title='Number of Samples per Section',
-                                label=r'Number of Samples',
-                                figure_width=5, figure_height=10,
-                                output_prefix='number-samples-per-section-histogram',
-                                output_directory=output_directory,
-                                color=r_dark)
+    # Number of Samples per section histogram
+    vmv.analysis.plot_histogram(
+        data_frame=data_frame,
+        data_key=[Keys.NUMBER_OF_SAMPLES],
+        title='# Samples (per Section)\n Histogram',
+        label='Number of Samples / Section',
+        figure_width=6, figure_height=10,
+        output_prefix='number-samples-per-section-histogram',
+        output_directory=output_directory,
+        color=vmv.consts.Color.CM_RED_DARK)
 
-    # Number of Samples per section w.r.t the Section Index
-    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
-                              ydata=data_frame[Keys.SECTION_INDEX],
-                              xlabel='Number of Samples',
-                              ylabel='Section Index',
-                              figure_width=5, figure_height=10,
-                              output_prefix='number-samples-wrt-section-index',
-                              output_directory=output_directory,
-                              color=o_dark)
+    # Number of samples per section w.r.t index and XYZ
+    for i in ['section-index', 'x', 'y', 'z']:
+        if i == 'section-index':
+            y_key = Keys.SECTION_INDEX
+            y_axis_label = 'Section Index'
+            title = '# Samples (per Section) Distribution'
+            color = vmv.consts.Color.CM_ORANGE_DARK
+        elif i == 'x':
+            y_key = Keys.X
+            y_axis_label = r'Distance along X-axis ($\mu$m)'
+            title = '# Samples (per Section) Distribution'
+            color = vmv.consts.Color.CM_RED_DARK
+        elif i == 'y':
+            y_key = Keys.Y
+            y_axis_label = r'Distance along Y-axis ($\mu$m)'
+            title = '# Samples (per Section) Distribution'
+            color = vmv.consts.Color.CM_GREEN_DARK
+        elif i == 'z':
+            y_key = Keys.Z
+            y_axis_label = r'Distance along Z-axis ($\mu$m)'
+            title = '# Samples (per Section) Distribution'
+            color = vmv.consts.Color.CM_BLUE_DARK
 
-    # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
-                              ydata=data_frame[Keys.X],
-                              xlabel='Number of Samples',
-                              ylabel=r'Distance along X-axis ($\mu$m)',
-                              figure_width=5, figure_height=10,
-                              output_prefix='samples-per-section-x',
-                              output_directory=output_directory,
-                              color=r_dark)
+        vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
+                                  ydata=data_frame[y_key],
+                                  xlabel='Number of Samples / Section',
+                                  ylabel=y_axis_label,
+                                  title=title,
+                                  figure_width=6, figure_height=10,
+                                  output_prefix='number-samples-per-section-%s' % i,
+                                  output_directory=output_directory,
+                                  color=color)
 
-    # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
-                              ydata=data_frame[Keys.Y],
-                              xlabel='Number of Samples',
-                              ylabel=r'Distance along Y-axis ($\mu$m)',
-                              figure_width=5, figure_height=10,
-                              output_prefix='samples-per-section-y',
-                              output_directory=output_directory,
-                              color=g_dark)
 
-    # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
-                              ydata=data_frame[Keys.Z],
-                              xlabel='Number of Samples',
-                              ylabel=r'Distance along Z-axis ($\mu$m)',
-                              figure_width=5, figure_height=10,
-                              output_prefix='samples-per-section-z',
-                              output_directory=output_directory,
-                              color=b_dark)
 
     two_samples_data = list()
     for index, row in data_frame.iterrows():
@@ -304,7 +287,7 @@ def plot_analysis_samples_per_section(morphology,
                                               columns=[Keys.SECTION_INDEX, Keys.NUMBER_OF_SAMPLES,
                                                        Keys.X, Keys.Y, Keys.Z])
 
-    vmv.analysis.plot_histogram(df=two_samples_data_frame,
+    vmv.analysis.plot_histogram(data_frame=two_samples_data_frame,
                                 data_key=[Keys.X],
                                 title='Sections with 2 Samples',
                                 label=r'Distance along X-axis ($\mu$m)',
@@ -313,7 +296,7 @@ def plot_analysis_samples_per_section(morphology,
                                 output_directory=output_directory,
                                 color=r_dark)
 
-    vmv.analysis.plot_histogram(df=two_samples_data_frame,
+    vmv.analysis.plot_histogram(data_frame=two_samples_data_frame,
                                 data_key=[Keys.Y],
                                 title='Sections with 2 Samples',
                                 label=r'Distance along Y-axis ($\mu$m)',
@@ -322,7 +305,7 @@ def plot_analysis_samples_per_section(morphology,
                                 output_directory=output_directory,
                                 color=g_dark)
 
-    vmv.analysis.plot_histogram(df=two_samples_data_frame,
+    vmv.analysis.plot_histogram(data_frame=two_samples_data_frame,
                                 data_key=[Keys.Z],
                                 title='Sections with 2 Samples',
                                 label=r'Distance along Z-axis ($\mu$m)',
@@ -332,7 +315,7 @@ def plot_analysis_samples_per_section(morphology,
                                 color=b_dark)
 
     # Samples density w.r.t X-axis
-    vmv.plot_histogram(df=data_frame,
+    vmv.plot_histogram(data_frame=data_frame,
                        data_key=Keys.X,
                        label='Samples Density along X-axis',
                        title='Samples Density',
@@ -341,7 +324,7 @@ def plot_analysis_samples_per_section(morphology,
                        color=r_dark)
 
     # Samples density w.r.t Y-axis
-    vmv.plot_histogram(df=data_frame,
+    vmv.plot_histogram(data_frame=data_frame,
                        data_key=Keys.Y,
                        label='Samples Density along Y-axis',
                        title='Samples Density',
@@ -350,7 +333,7 @@ def plot_analysis_samples_per_section(morphology,
                        color=g_dark)
 
     # Samples density w.r.t Z-axis
-    vmv.plot_histogram(df=data_frame,
+    vmv.plot_histogram(data_frame=data_frame,
                        data_key=Keys.Z,
                        label='Samples Density along Z-axis',
                        title='Samples Density',
@@ -812,10 +795,10 @@ def export_analysis_results(morphology,
         The directory where all the results will be written.
     """
 
-    #plot_analysis_samples_per_section(morphology, output_directory)
+    plot_analysis_samples_per_section(morphology, output_directory)
     #plot_analysis_radii(morphology, output_directory)
-    plot_length_analysis_statistics(morphology, output_directory)
-    plot_volume_analysis_statistics(morphology, output_directory)
+    #plot_length_analysis_statistics(morphology, output_directory)
+    #plot_volume_analysis_statistics(morphology, output_directory)
     exit(0)
 
     # Radius

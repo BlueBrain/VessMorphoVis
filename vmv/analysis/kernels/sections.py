@@ -28,6 +28,9 @@ from vmv.consts import Keys
 # @SectionStatsResult
 ####################################################################################################
 class SectionStatsResult:
+    """
+
+    """
     def __init__(self, total=0.0, minimum_value=0.0, mean_value=0.0, maximum_value=0.0, ratio=0.0):
         self.total = total
         self.min = minimum_value
@@ -261,10 +264,6 @@ def compute_section_surface_area(section):
 
     # Return the section surface area
     return section_surface_area
-
-
-
-
 
 
 ####################################################################################################

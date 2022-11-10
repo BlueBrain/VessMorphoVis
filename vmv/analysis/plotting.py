@@ -96,6 +96,7 @@ def set_styles(font='Arial',
         The width of all lines in a figure, default 2.
     """
     pyplot.rcParams['axes.grid'] = axes_grid
+    pyplot.rcParams['grid.linestyle'] = '-'
     pyplot.rcParams['font.family'] = font
     pyplot.rcParams['axes.linewidth'] = axes_linewidth
     pyplot.rcParams['axes.labelweight'] = 'regular'
@@ -105,199 +106,6 @@ def set_styles(font='Arial',
     pyplot.rcParams['legend.fontsize'] = font_size
     pyplot.rcParams['axes.titlesize'] = font_size
     pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
-
-
-def plot_scatter(xdata, ydata,
-                 xlabel, ylabel,
-                 color='r',
-                 figure_width=8, figure_height=10,
-                 font_size=30, line_width=2, spines_shift=10,
-                 dpi=300,
-                 output_directory="",
-                 output_prefix="",
-                 save_pdf=False,
-                 save_svg=False):
-
-    # Set the default styles
-    set_styles(font_size=font_size, axes_linewidth=line_width)
-
-    # Create a new figure and adjust its size
-    fig, ax1 = pyplot.subplots(1, 1)
-    fig.set_size_inches(figure_width, figure_height)
-
-    # Plot
-    ax1.scatter(xdata, ydata, marker='+', color=color)
-
-    # Adjust the spine parameters
-    for spine in ['left', 'bottom']:
-        ax1.spines[spine].set_position(('outward', spines_shift))
-        ax1.spines[spine].set_color('black')
-        ax1.spines[spine].set_linewidth(line_width)
-    for spine in ['right', 'top']:
-        ax1.spines[spine].set_visible(False)
-    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
-                    left=True)
-    ax1.grid(False)
-    ax1.grid(axis='y')
-    ax1.set_xlabel(xlabel)
-    ax1.set_ylabel(ylabel)
-
-    # X-axis bins, only two bins
-    xbins = [math.floor(min(xdata)), math.ceil(max(xdata))]
-    ax1.set_xlim(0, math.ceil(max(xdata)))
-    ax1.set_xticks(xbins)
-
-    # Save PNG by default
-    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True)
-
-    # Save PDF
-    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
-
-    # Save SVG
-    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
-
-####################################################################################################
-# @plot_histogram
-####################################################################################################
-def plot_histogram(df,
-                   data_key,
-                   label,
-                   title,
-                   output_directory,
-                   output_prefix,
-                   bins=50,
-                   color='r',
-                   font_size=30,
-                   figure_width=5,
-                   figure_height=10,
-                   spines_shift=10,
-                   line_width=2,
-                   dpi=300,
-                   save_pdf=False,
-                   save_svg=False):
-    """Plots the histogram of a given data from a dataframe indexed with the data_key parameter.
-
-    :param df:
-        Data frame.
-    :param data_key:
-        The key that is used to access the data to be drawn.
-    :param label:
-        The label of the data.
-    :param title:
-        The title of the figure.
-    :param output_directory:
-        The full path to the output directory where the figure will be written.
-    :param output_prefix:
-        The output prefix.
-    :param bins:
-        Number of bins, default 50.
-    :param color:
-        Figure color.
-    :param font_size:
-        Font size, default 30.
-    :param figure_width:
-        Figure width.
-    :param figure_height:
-        Figure height.
-    :param spines_shift:
-        The shift of the spines.
-    :param line_width:
-        The width of all the lines in the figure.
-    :param dpi:
-        Dot per inch, typically 300.
-    :param save_pdf:
-        Save the figure into a PDF file.
-    :param save_svg:
-        Save the figure into an SVG file.
-    """
-
-    # Set the default styles
-    set_styles(font_size=font_size, axes_linewidth=line_width)
-    pyplot.rcParams['grid.linestyle'] = '-'
-
-    # Create a new figure and adjust its size
-    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
-    fig.set_size_inches(figure_width, figure_height)
-
-    # Get the data, with which the histogram will be drawn
-    data = df[data_key]
-
-    # Plot the horizontal histogram
-    x, y, _ = ax1.hist(data, color=color, orientation='horizontal', edgecolor='white', bins=bins)
-
-    # Parameters
-    for spine in ['left', 'bottom']:
-        ax1.spines[spine].set_position(('outward', spines_shift))
-        ax1.spines[spine].set_color('black')
-        ax1.spines[spine].set_linewidth(2)
-    for spine in ['right', 'top']:
-        ax1.spines[spine].set_visible(False)
-    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True, left=True)
-    ax1.set_title(title, pad=25)
-
-    # X-axis bins, only two bins
-    xbins = [0, math.ceil(max(x))]
-    ax1.grid(axis='y')
-    ax1.set_xlim(0, math.ceil(max(x)))
-    ax1.set_xticks(xbins)
-
-    # Yaxis
-    if 'ratio' in title or 'Ratio' in title:
-        ax1.set_ylim(0, 1.0)
-    else:
-        ax1.set_ylim(bottom=0.0)
-
-    ax1.set_xlabel('Count')
-    ax1.set_ylabel(label, labelpad=15)
-
-    # Right box plot
-    bp = ax2.boxplot(data, showfliers=True,
-                     flierprops=dict(marker='o', markersize=5, alpha=0.5, markerfacecolor=color,
-                                     markeredgecolor=color))
-
-    # No visible spines
-    for spine in ['left', 'right', 'top', 'bottom']:
-        ax2.spines[spine].set_visible(False)
-
-    # Adjust the box-plot styles
-    for box in bp['boxes']:
-        box.set(color=color, linewidth=line_width * 0.75)
-    for whisker in bp['whiskers']:
-        whisker.set(color=color, linewidth=line_width * 0.5)
-    for cap in bp['caps']:
-        cap.set(color=color, linewidth=line_width * 0.75, xdata=cap.get_xdata() + (-0.01, 0.01))
-    for median in bp['medians']:
-        median.set(color='k', linewidth=line_width * 0.75)
-
-    # Shift the position of the box plot for compacting the figure
-    bp_position = ax2.get_position()
-    bp_position.x0 = bp_position.x0 - 0.1
-    bp_position.x1 = bp_position.x1 - 0.1
-    ax2.set_position(bp_position)
-
-    # Set its transparency to zero
-    ax2.patch.set_alpha(0.0)
-
-    # No grid
-    ax2.grid(False)
-
-    # No x-axis labels
-    ax2.tick_params(axis='both', which='both', left=False, bottom=False, labelbottom=False)
-
-    # Save PNG by default
-    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True)
-
-    # Save PDF
-    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
-
-    # Save SVG
-    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
 
 
 def plot_scatter_data_with_closeups(df,
@@ -1095,3 +903,161 @@ def plot_distribution_with_range(df,
     pyplot.close()
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+# @plot_histogram
+####################################################################################################
+def plot_histogram(data_frame, data_key,
+                   label, title,
+                   output_directory, output_prefix,
+                   top_limit=None, figure_width=5, figure_height=10,
+                   bins=50, color='r', font_size=30, line_width=1, padding=0, x_label='Count',
+                   dpi=300, save_pdf=False, save_svg=False):
+
+    # Set the default styles
+    set_styles(font_size=font_size, axes_linewidth=line_width)
+
+    # Create a new figure and adjust its size
+    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
+    fig.set_size_inches(figure_width, figure_height)
+
+    # Get the data, with which the histogram will be drawn
+    data = data_frame[data_key]
+
+    # Plot the horizontal histogram (ax1)
+    x, y, _ = ax1.hist(data, color=color, orientation='horizontal', edgecolor='white', bins=bins)
+    for spine in ['left', 'bottom']:
+        ax1.spines[spine].set_position(('outward', 10))
+        ax1.spines[spine].set_color('black')
+        ax1.spines[spine].set_linewidth(line_width)
+    for spine in ['right', 'top']:
+        ax1.spines[spine].set_visible(False)
+    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True, left=True)
+    ax1.set_title(title)
+
+    # X-axis bins, only two bins
+    max_x = max(x)
+    x_limit = math.ceil(max_x)
+    x_ticks = [0, x_limit]
+    ax1.set_xlim(0, x_limit)
+    ax1.set_xticks(x_ticks)
+
+    # TODO: Grid only for the Y axis
+    ax1.grid(axis='y')
+
+    if top_limit is None:
+        ax1.set_ylim(bottom=0.0)
+    else:
+        ax1.set_ylim(bottom=0.0, top=top_limit)
+
+    ax1.set_xlabel(x_label)
+    ax1.set_ylabel(label, labelpad=padding)
+
+    # Right box plot (ax2)
+    bp = ax2.boxplot(data, showfliers=True,
+                     flierprops=dict(marker='o', markersize=5, alpha=0.5,
+                                     markerfacecolor=color, markeredgecolor=color))
+
+    # No visible spines
+    for spine in ['left', 'right', 'top', 'bottom']:
+        ax2.spines[spine].set_visible(False)
+
+    # Adjust the box-plot styles
+    for box in bp['boxes']:
+        box.set(color=color, linewidth=line_width * 0.6)
+    for whisker in bp['whiskers']:
+        whisker.set(color=color, linewidth=line_width * 0.5)
+    for cap in bp['caps']:
+        cap.set(color=color, linewidth=line_width * 0.65, xdata=cap.get_xdata() + (-0.01, 0.01))
+    for median in bp['medians']:
+        median.set(color='k', linewidth=line_width * 0.65)
+
+    # Shift the position of the box plot for compacting the figure
+    bp_position = ax2.get_position()
+    bp_position.x0 = bp_position.x0 - 0.1
+    bp_position.x1 = bp_position.x1 - 0.1
+    ax2.set_position(bp_position)
+
+    # Set its transparency to zero
+    ax2.patch.set_alpha(0.0)
+    ax2.tick_params(axis='both', which='both', left=False, bottom=False, labelbottom=False)
+    ax2.grid(False)
+
+    # Save PNG by default, PDF and SVG if needed
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True)
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
+
+    # Close figure to reset
+    pyplot.clf()
+    pyplot.cla()
+    pyplot.close()
+
+
+def plot_scatter(xdata, ydata,
+                 xlabel, ylabel, title,
+                 output_directory, output_prefix,
+                 top_limit=None, figure_width=5, figure_height=10, spines_shift=10,
+                 bins=50, color='r', font_size=30, line_width=1, padding=0, x_label='Count',
+                 dpi=300, save_pdf=False, save_svg=False):
+
+    # Set the default styles
+    set_styles(font_size=font_size, axes_linewidth=line_width)
+
+    # Create a new figure and adjust its size
+    fig, ax1 = pyplot.subplots(1, 1)
+    fig.set_size_inches(figure_width, figure_height)
+
+    # Plot
+    ax1.scatter(xdata, ydata, marker='+', color=color)
+
+    # Adjust the spine parameters
+    for spine in ['left', 'bottom']:
+        ax1.spines[spine].set_position(('outward', spines_shift))
+        ax1.spines[spine].set_color('black')
+        ax1.spines[spine].set_linewidth(line_width)
+    for spine in ['right', 'top']:
+        ax1.spines[spine].set_visible(False)
+    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
+                    left=True)
+    ax1.grid(False)
+    ax1.grid(axis='y')
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel)
+    ax1.set_title(title, pad=25)
+
+    # X-axis bins, only two bins
+    x_ticks = [math.floor(min(xdata)), math.ceil(max(xdata))]
+    ax1.set_xlim(0, math.ceil(max(xdata)))
+    ax1.set_xticks(x_ticks)
+
+    if int(math.ceil(min(ydata))) == 0:
+        ax1.set_ylim(bottom=0)
+
+    # Save PNG by default, PDF and SVG if needed
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True)
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
+
+    # Close figure to reset
+    pyplot.clf()
+    pyplot.cla()
+    pyplot.close()

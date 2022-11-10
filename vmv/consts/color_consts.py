@@ -15,6 +15,9 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+from matplotlib import cm
+
 # Blender imports
 from mathutils import Vector
 
@@ -64,3 +67,17 @@ class Color:
 
     # NUmber of colors in the colormap
     COLORMAP_RESOLUTION = 16
+
+    # Plotting colormaps
+    LIGHT_COLORS = cm.get_cmap('Pastel1').colors
+    DARK_COLORS = cm.get_cmap('Set1').colors
+
+    # CM colors
+    CM_RED_LIGHT = LIGHT_COLORS[0]
+    CM_GREEN_LIGHT = LIGHT_COLORS[2]
+    CM_BLUE_LIGHT = LIGHT_COLORS[1]
+    CM_ORANGE_LIGHT = LIGHT_COLORS[4]
+    CM_RED_DARK = DARK_COLORS[0]
+    CM_GREEN_DARK = DARK_COLORS[2]
+    CM_BLUE_DARK = DARK_COLORS[1]
+    CM_ORANGE_DARK = DARK_COLORS[4]
