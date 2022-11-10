@@ -470,10 +470,7 @@ def plot_analysis_radii(morphology,
                                  output_prefix='section-radius-analysis-z',
                                  output_directory=output_directory,
                                  light_color=b_light,
-                                 dark_color=b_dark)
-
-
-                                 
+                                 dark_color=b_dark)                                 
     
     #vmv.plot_range_data_xyz_with_closeups(
     #    df=per_section_radius_data, min_keyword='Vessel Min Radius',
@@ -481,8 +478,17 @@ def plot_analysis_radii(morphology,
     #    max_keyword='Vessel Max Radius',
     #    label='Distance', output_prefix='vessel-xx', output_directory=output_directory)
 
+def plot_analysis_surface_area():
+    pass 
 
+def plot_analysis_volume():
+    pass 
 
+def plot_analysis_angles():
+    pass
+
+def plot_analysis_branching():
+    pass 
 
 ####################################################################################################
 # @export_analysis_results
