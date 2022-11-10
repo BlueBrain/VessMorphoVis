@@ -29,28 +29,49 @@ class Keys:
     def __init__(self):
         pass
 
+    # Axes
+    X = 'X'
+    Y = 'Y'
+    Z = 'Z'
+
     # Section Index
     SECTION_INDEX = 'Section Index'
 
-    # Sample radius
-    SAMPLE_RADIUS = 'Sample Radius'
-
-    # Section Minimum, Mean and Maximum Radius
-    SECTION_MIN_RADIUS = 'Section Min. Radius'
-    SECTION_MEAN_RADIUS = 'Section Mean Radius'
-    SECTION_MAX_RADIUS = 'Section Max. Radius'
-
-    # Section Radius Ratio
-    SECTION_RADIUS_RATIO = 'Section Radius Ratio'
-    
-    # X-axis
-    X = 'X'
-
-    # Y-axis
-    Y = 'Y'
-
-    # Z-axis
-    Z = 'Z'
+    # Section Center
+    SECTION_CENTER = 'Section Center '
 
     # Number of samples
     NUMBER_OF_SAMPLES = 'Number Samples'
+
+    # Radius
+    SAMPLE_RADIUS = 'Sample Radius'
+    SECTION_MIN_RADIUS = 'Section Min. Radius'
+    SECTION_MEAN_RADIUS = 'Section Mean Radius'
+    SECTION_MAX_RADIUS = 'Section Max. Radius'
+    SECTION_RADIUS_RATIO = 'Section Radius Ratio'
+
+    # Length
+    SECTION_LENGTH = 'Section Length'
+    SEGMENT_MIN_LENGTH = 'Segment Min. Length'
+    SEGMENT_MEAN_LENGTH = 'Segment Mean Length'
+    SEGMENT_MAX_LENGTH = 'Segment Max. Length'
+    SEGMENT_LENGTH_RATIO = 'Segment Length Ratio'
+    SECTION_THICKNESS_TO_LENGTH_RATIO = 'Section Thickness to Length Ratio'
+
+    # Surface Area
+    SECTION_SURFACE_AREA = 'Section Surface Area'
+    SEGMENT_MIN_SURFACE_AREA = 'Segment Min. Surface Area'
+    SEGMENT_MEAN_SURFACE_AREA = 'Segment Mean Surface Area'
+    SEGMENT_MAX_SURFACE_AREA = 'Segment Max. Surface Area'
+    SEGMENT_SURFACE_AREA_RATIO = 'Segment Surface Area Ratio'
+
+    # Volume
+    SECTION_VOLUME = 'Section Volume'
+    SEGMENT_MIN_VOLUME = 'Segment Min. Volume'
+    SEGMENT_MEAN_VOLUME = 'Segment Mean Volume'
+    SEGMENT_MAX_VOLUME = 'Segment Max. Volume'
+    SEGMENT_VOLUME_RATIO = 'Segment Volume Ratio'
+    
+
+
+

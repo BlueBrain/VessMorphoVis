@@ -247,6 +247,10 @@ def plot_histogram(df,
     # Yaxis
     if 'ratio' in title or 'Ratio' in title:
         ax1.set_ylim(0, 1.0)
+    else:
+        ax1.set_ylim(bottom=0.0)
+
+    ax1.set_xlabel('Count')
     ax1.set_ylabel(label, labelpad=15)
 
     # Right box plot
@@ -480,6 +484,12 @@ def plot_range_data_closeups(df,
     ax1.grid(False)
     ax1.set_ylabel(label, labelpad=5)
 
+    min_x = min(dmin)
+    max_x = max(dmax)
+    range_ = max_x - min_x
+    if 0.1 * range_ > min_x > 0:
+        ax1.set_xlim(left=0)
+
     # Set the title
     ax1.set_title(title, pad=25)
 
@@ -488,10 +498,10 @@ def plot_range_data_closeups(df,
                        label='Mean Radius')
     h22 = ax2.errorbar(dmin, indep, fmt='+', color=light_color, alpha=0.75, zorder=10,
                        label='Minimum Radius')
-    ax2.legend(loc='upper left', numpoints=1)
-    ax2.legend(bbox_to_anchor=(0, 1.05, 1., .102), loc=0, labelspacing=0.25,
-               handlelength=0.2, handletextpad=0.5, frameon=False,
-               fontsize=int(font_size * 0.75))
+    ax2.legend(numpoints=1, facecolor='white', framealpha=0.75,
+               bbox_to_anchor=(0, 0.9, 1., .102), loc=0, labelspacing=0.25,
+               handlelength=0.2, handletextpad=0.5, frameon=True,
+               fontsize=int(font_size * 0.75)).set_zorder(100)
 
     # Adjust the spine parameters
     for spine in ['left', 'bottom']:
@@ -515,24 +525,21 @@ def plot_range_data_closeups(df,
     bp_position.x1 = bp_position.x1 + 0.025
     ax2.set_position(bp_position)
 
-    # Add the inset
-    x1, y1 = [-0.1, -0.1], [0, max(indep)]
-    x2, y2 = [1.1, 1.1], [0, max(indep)]
-    x3, y3 = [-0.1, 1.1], [0, 0]
-    x4, y4 = [-0.1, 1.1], [max(indep), max(indep)]
-    pyplot.plot(x1, y1, x2, y2, linestyle='dashed', color='k', linewidth=2)
-    pyplot.plot(x3, y3, x4, y4, linestyle='dashed', color='k', linewidth=2)
+    from matplotlib import patches
+    rectangle = patches.Rectangle((0, min(indep)), width=1.0, height=max(indep) - min(indep),
+                                  linewidth=1, facecolor='white', edgecolor='black')
+    ax2.add_patch(rectangle)
 
     # Save PNG by default
-    pyplot.savefig('%s/distribution-%s.png' % (output_directory, output_prefix),
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
                    dpi=dpi, bbox_inches='tight', transparent=True)
 
     # Save PDF
-    pyplot.savefig('%s/distribution-%s.pdf' % (output_directory, output_prefix),
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
                    dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
 
     # Save SVG
-    pyplot.savefig('%s/distribution-%s.svg' % (output_directory, output_prefix),
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
                    dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
 
 

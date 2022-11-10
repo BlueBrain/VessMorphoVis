@@ -478,10 +478,319 @@ def plot_analysis_radii(morphology,
     #    max_keyword='Vessel Max Radius',
     #    label='Distance', output_prefix='vessel-xx', output_directory=output_directory)
 
-def plot_analysis_surface_area():
-    pass 
+def plot_length_analysis_statistics(morphology,
+                                    output_directory,
+                                    sections_centers=None):
+    from matplotlib import cm
+    import pandas
 
-def plot_analysis_volume():
+    light_colors = cm.get_cmap('Pastel1').colors
+    dark_colors = cm.get_cmap('Set1').colors
+
+    r_light = light_colors[0]
+    g_light = light_colors[2]
+    b_light = light_colors[1]
+    o_light = light_colors[4]
+
+    r_dark = dark_colors[0]
+    g_dark = dark_colors[2]
+    b_dark = dark_colors[1]
+    o_dark = dark_colors[4]
+
+    length_df = vmv.analysis.perform_length_analysis(sections=morphology.sections_list,
+                                                     sections_centers=sections_centers)
+
+    vmv.plot_histogram(df=length_df,
+                       data_key=Keys.SECTION_LENGTH,
+                       label=r'Section Length ($\mu$m)',
+                       title='Section Length Histogram',
+                       output_prefix='section-length',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    vmv.plot_histogram(df=length_df,
+                       data_key=Keys.SEGMENT_MEAN_LENGTH,
+                       label=r'Segments Mean Length ($\mu$m)',
+                       title='Segments Mean Length Histogram',
+                       output_prefix='segments-mean-length',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    vmv.plot_range_data_closeups(df=length_df,
+                                 data_key=Keys.SECTION_INDEX,
+                                 min_keyword=Keys.SEGMENT_MIN_LENGTH,
+                                 mean_keyword=Keys.SEGMENT_MEAN_LENGTH,
+                                 max_keyword=Keys.SEGMENT_MAX_LENGTH,
+                                 label='Section Index',
+                                 output_prefix='section-length-analysis',
+                                 output_directory=output_directory,
+                                 light_color=o_light,
+                                 dark_color=o_dark)
+
+    vmv.plot_range_data_closeups(df=length_df,
+                                 data_key=Keys.X,
+                                 min_keyword=Keys.SEGMENT_MIN_LENGTH,
+                                 mean_keyword=Keys.SEGMENT_MEAN_LENGTH,
+                                 max_keyword=Keys.SEGMENT_MAX_LENGTH,
+                                 label=r'Distance along X-axis ($\mu$m)',
+                                 output_prefix='section-length-analysis-x',
+                                 output_directory=output_directory,
+                                 light_color=r_light,
+                                 dark_color=r_dark)
+
+    vmv.plot_range_data_closeups(df=length_df,
+                                 data_key=Keys.Y,
+                                 min_keyword=Keys.SEGMENT_MIN_LENGTH,
+                                 mean_keyword=Keys.SEGMENT_MEAN_LENGTH,
+                                 max_keyword=Keys.SEGMENT_MAX_LENGTH,
+                                 label=r'Distance along Y-axis ($\mu$m)',
+                                 output_prefix='section-length-analysis-y',
+                                 output_directory=output_directory,
+                                 light_color=g_light,
+                                 dark_color=g_dark)
+
+    vmv.plot_range_data_closeups(df=length_df,
+                                 data_key=Keys.Z,
+                                 min_keyword=Keys.SEGMENT_MIN_LENGTH,
+                                 mean_keyword=Keys.SEGMENT_MEAN_LENGTH,
+                                 max_keyword=Keys.SEGMENT_MAX_LENGTH,
+                                 label=r'Distance along Z-axis ($\mu$m)',
+                                 output_prefix='section-length-analysis-z',
+                                 output_directory=output_directory,
+                                 light_color=b_light,
+                                 dark_color=b_dark)
+
+    vmv.plot_histogram(df=length_df,
+                       data_key=Keys.SEGMENT_LENGTH_RATIO,
+                       label='Segment Length Ratio (per Section)',
+                       title='Segment Length Ratio Histogram',
+                       output_prefix='segments-length-ratio',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    # Number of Samples per section w.r.t the Section Index
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SEGMENT_LENGTH_RATIO],
+                              ydata=length_df[Keys.SECTION_INDEX],
+                              xlabel='Segment Length Ratio',
+                              ylabel='Section Index',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-length-ratio-by-section',
+                              output_directory=output_directory,
+                              color=o_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SEGMENT_LENGTH_RATIO],
+                              ydata=length_df[Keys.X],
+                              xlabel='Segment Length Ratio',
+                              ylabel=r'Distance along X-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-length-ratio-x',
+                              output_directory=output_directory,
+                              color=r_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SEGMENT_LENGTH_RATIO],
+                              ydata=length_df[Keys.Y],
+                              xlabel='Segment Length Ratio',
+                              ylabel=r'Distance along Y-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-length-ratio-y',
+                              output_directory=output_directory,
+                              color=g_dark)
+
+    # Number of samples per section w.r.t the Z-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SEGMENT_LENGTH_RATIO],
+                              ydata=length_df[Keys.Z],
+                              xlabel='Segment Length Ratio',
+                              ylabel=r'Distance along Z-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-length-ratio-z',
+                              output_directory=output_directory,
+                              color=b_dark)
+
+    vmv.plot_histogram(df=length_df,
+                       data_key=Keys.SECTION_THICKNESS_TO_LENGTH_RATIO,
+                       label='Thickness to Length (per Section)',
+                       title='Thickness to Length Histogram',
+                       output_prefix='section-thickness-to-length-ratio',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+                              ydata=length_df[Keys.SECTION_INDEX],
+                              xlabel='Thickness to Length (per Section)',
+                              ylabel='Section Index',
+                              figure_width=5, figure_height=10,
+                              output_prefix='section-thickness-to-length-by-index',
+                              output_directory=output_directory,
+                              color=o_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+                              ydata=length_df[Keys.X],
+                              xlabel='Thickness to Length (per Section)',
+                              ylabel=r'Distance along X-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='section-thickness-to-length-ratio-x',
+                              output_directory=output_directory,
+                              color=r_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+                              ydata=length_df[Keys.Y],
+                              xlabel='Thickness to Length (per Section)',
+                              ylabel=r'Distance along Y-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='section-thickness-to-length-ratio-y',
+                              output_directory=output_directory,
+                              color=g_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+                              ydata=length_df[Keys.Z],
+                              xlabel='Thickness to Length (per Section)',
+                              ylabel=r'Distance along Z-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='section-thickness-to-length-ratio-z',
+                              output_directory=output_directory,
+                              color=b_dark)
+
+
+def plot_analysis_surface_area():
+    pass
+
+
+def plot_volume_analysis_statistics(morphology,
+                                    output_directory,
+                                    sections_centers=None):
+    from matplotlib import cm
+    import pandas
+
+    light_colors = cm.get_cmap('Pastel1').colors
+    dark_colors = cm.get_cmap('Set1').colors
+
+    r_light = light_colors[0]
+    g_light = light_colors[2]
+    b_light = light_colors[1]
+    o_light = light_colors[4]
+
+    r_dark = dark_colors[0]
+    g_dark = dark_colors[2]
+    b_dark = dark_colors[1]
+    o_dark = dark_colors[4]
+
+    volume_df = vmv.analysis.perform_volume_analysis(sections=morphology.sections_list,
+                                                     sections_centers=sections_centers)
+
+    vmv.plot_histogram(df=volume_df,
+                       data_key=Keys.SECTION_VOLUME,
+                       label=r'Section Volume ($\mu$m³)',
+                       title='Section Volume Histogram',
+                       output_prefix='section-volume',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    vmv.plot_histogram(df=volume_df,
+                       data_key=Keys.SEGMENT_MEAN_VOLUME,
+                       label=r'Segment Mean Volume ($\mu$m³)',
+                       title='Segment Mean Volume Histogram',
+                       output_prefix='segments-mean-volume',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    vmv.plot_range_data_closeups(df=volume_df,
+                                 data_key=Keys.SECTION_INDEX,
+                                 min_keyword=Keys.SEGMENT_MIN_VOLUME,
+                                 mean_keyword=Keys.SEGMENT_MEAN_VOLUME,
+                                 max_keyword=Keys.SEGMENT_MAX_VOLUME,
+                                 label='Section Index',
+                                 output_prefix='section-volume-analysis',
+                                 output_directory=output_directory,
+                                 light_color=o_light,
+                                 dark_color=o_dark)
+
+    vmv.plot_range_data_closeups(df=volume_df,
+                                 data_key=Keys.X,
+                                 min_keyword=Keys.SEGMENT_MIN_VOLUME,
+                                 mean_keyword=Keys.SEGMENT_MEAN_VOLUME,
+                                 max_keyword=Keys.SEGMENT_MAX_VOLUME,
+                                 label=r'Distance along X-axis ($\mu$m)',
+                                 output_prefix='section-volume-analysis-x',
+                                 output_directory=output_directory,
+                                 light_color=r_light,
+                                 dark_color=r_dark)
+
+    vmv.plot_range_data_closeups(df=volume_df,
+                                 data_key=Keys.Y,
+                                 min_keyword=Keys.SEGMENT_MIN_VOLUME,
+                                 mean_keyword=Keys.SEGMENT_MEAN_VOLUME,
+                                 max_keyword=Keys.SEGMENT_MAX_VOLUME,
+                                 label=r'Distance along Y-axis ($\mu$m)',
+                                 output_prefix='section-volume-analysis-y',
+                                 output_directory=output_directory,
+                                 light_color=g_light,
+                                 dark_color=g_dark)
+
+    vmv.plot_range_data_closeups(df=volume_df,
+                                 data_key=Keys.Z,
+                                 min_keyword=Keys.SEGMENT_MIN_VOLUME,
+                                 mean_keyword=Keys.SEGMENT_MEAN_VOLUME,
+                                 max_keyword=Keys.SEGMENT_MAX_VOLUME,
+                                 label=r'Distance along Z-axis ($\mu$m)',
+                                 output_prefix='section-volume-analysis-z',
+                                 output_directory=output_directory,
+                                 light_color=b_light,
+                                 dark_color=b_dark)
+
+    vmv.plot_histogram(df=volume_df,
+                       data_key=Keys.SEGMENT_VOLUME_RATIO,
+                       label='Segment Volume Ratio',
+                       title='Segment Volume Ratio Histogram',
+                       output_prefix='segments-volume-ratio',
+                       output_directory=output_directory,
+                       color=o_dark)
+
+    # Number of Samples per section w.r.t the Section Index
+    vmv.analysis.plot_scatter(xdata=volume_df[Keys.SEGMENT_VOLUME_RATIO],
+                              ydata=volume_df[Keys.SECTION_INDEX],
+                              xlabel='Segment Volume Ratio',
+                              ylabel='Section Index',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-volume-ratio-by-section',
+                              output_directory=output_directory,
+                              color=o_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=volume_df[Keys.SEGMENT_VOLUME_RATIO],
+                              ydata=volume_df[Keys.X],
+                              xlabel='Segment Volume Ratio',
+                              ylabel=r'Distance along X-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-volume-ratio-x',
+                              output_directory=output_directory,
+                              color=r_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=volume_df[Keys.SEGMENT_VOLUME_RATIO],
+                              ydata=volume_df[Keys.Y],
+                              xlabel='Segment Volume Ratio',
+                              ylabel=r'Distance along Y-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-volume-ratio-y',
+                              output_directory=output_directory,
+                              color=g_dark)
+
+    # Number of samples per section w.r.t the X-axis
+    vmv.analysis.plot_scatter(xdata=volume_df[Keys.SEGMENT_VOLUME_RATIO],
+                              ydata=volume_df[Keys.Z],
+                              xlabel='Segment Volume Ratio',
+                              ylabel=r'Distance along Z-axis ($\mu$m)',
+                              figure_width=5, figure_height=10,
+                              output_prefix='segment-volume-ratio-Z',
+                              output_directory=output_directory,
+                              color=b_dark)
+
     pass 
 
 def plot_analysis_angles():
@@ -503,8 +812,10 @@ def export_analysis_results(morphology,
         The directory where all the results will be written.
     """
 
-    plot_analysis_samples_per_section(morphology, output_directory)
-    plot_analysis_radii(morphology, output_directory)
+    #plot_analysis_samples_per_section(morphology, output_directory)
+    #plot_analysis_radii(morphology, output_directory)
+    plot_length_analysis_statistics(morphology, output_directory)
+    plot_volume_analysis_statistics(morphology, output_directory)
     exit(0)
 
     # Radius
