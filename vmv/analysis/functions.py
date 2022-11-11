@@ -100,6 +100,47 @@ def compute_average_profile_from_arranged_data(x,
     return x_range, numpy.array(y_average), numpy.array(y_range), y_samples
 
 
+
+
+
+def draw_scatter_plots_index_x_y_z(data_frame, title, 
+                                   x_axis_label, 
+                                   output_prefix, output_directory):
+
+    # Number of samples per section w.r.t index and XYZ
+    for i in ['section-index', 'x', 'y', 'z']:
+        if i == 'section-index':
+            y_key = Keys.SECTION_INDEX
+            y_axis_label = 'Section Index'
+            title = '%s\nDistribution w.r.t Section Index' % title
+            color = vmv.consts.Color.CM_ORANGE_DARK
+        elif i == 'x':
+            y_key = Keys.X
+            y_axis_label = r'Distance along X-axis ($\mu$m)'
+            title = '%s\nDistribution w.r.t X-axis' % title
+            color = vmv.consts.Color.CM_RED_DARK
+        elif i == 'y':
+            y_key = Keys.Y
+            y_axis_label = r'Distance along Y-axis ($\mu$m)'
+            title = '%s\nDistribution w.r.t Y-axis' % title
+            color = vmv.consts.Color.CM_GREEN_DARK
+        elif i == 'z':
+            y_key = Keys.Z
+            y_axis_label = r'Distance along Z-axis ($\mu$m)'
+            title = '%s\nDistribution w.r.t Z-axis' % title
+            color = vmv.consts.Color.CM_BLUE_DARK
+
+        # Number of Samples per section w.r.t the Section Index
+        vmv.analysis.plot_scatter(xdata=data_frame[Keys.SEGMENT_LENGTH_RATIO],
+                                  ydata=data_frame[y_key],
+                                  xlabel=x_axis_label,
+                                  ylabel=y_axis_label,
+                                  title=title,
+                                  figure_width=6, figure_height=10,
+                                  output_prefix='%s-%s' % (output_prefix, i),
+                                  output_directory=output_directory,
+                                  color=color)
+
 ####################################################################################################
 # @apply_analysis_kernel
 ####################################################################################################
@@ -232,12 +273,28 @@ def plot_analysis_samples_per_section(morphology,
     # Analyze and get the data-frame
     data_frame = vmv.analysis.analyze_samples_per_section(sections=morphology.sections_list)
 
+    from matplotlib.colors import BoundaryNorm
+    from matplotlib.ticker import MaxNLocator
+    import numpy
+    cmap = pyplot.colormaps['PiYG']
+    
+    
+    Z, xedges, yedges = numpy.histogram2d(x=data_frame[Keys.X], y=data_frame[Keys.Y], 
+        weights=data_frame[Keys.NUMBER_OF_SAMPLES], bins=[25, 25])
+    levels = MaxNLocator(nbins=15).tick_values(Z.min(), Z.max())
+    norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+    fig = pyplot.figure(figsize=(9,10))
+    ax1 = fig.add_subplot(111)
+    im = ax1.pcolormesh(xedges, yedges, Z.T, cmap=cmap)
+    fig.colorbar(im, ax=ax1)
+    fig.savefig('%s/example.png' % output_directory)
+
     # Number of Samples per section histogram
     vmv.analysis.plot_histogram(
         data_frame=data_frame,
         data_key=[Keys.NUMBER_OF_SAMPLES],
-        title='# Samples (per Section)\n Histogram',
-        label='Number of Samples / Section',
+        title='# Samples per Section\n Histogram',
+        label='# Samples / Section',
         figure_width=6, figure_height=10,
         output_prefix='number-samples-per-section-histogram',
         output_directory=output_directory,
@@ -248,27 +305,27 @@ def plot_analysis_samples_per_section(morphology,
         if i == 'section-index':
             y_key = Keys.SECTION_INDEX
             y_axis_label = 'Section Index'
-            title = '# Samples (per Section) Distribution'
+            title = '# Samples per Section\nDistribution w.r.t Section Index'
             color = vmv.consts.Color.CM_ORANGE_DARK
         elif i == 'x':
             y_key = Keys.X
             y_axis_label = r'Distance along X-axis ($\mu$m)'
-            title = '# Samples (per Section) Distribution'
+            title = '# Samples per Section\nDistribution w.r.t X-axis'
             color = vmv.consts.Color.CM_RED_DARK
         elif i == 'y':
             y_key = Keys.Y
             y_axis_label = r'Distance along Y-axis ($\mu$m)'
-            title = '# Samples (per Section) Distribution'
+            title = '# Samples per Section\nDistribution w.r.t Y-axis'
             color = vmv.consts.Color.CM_GREEN_DARK
         elif i == 'z':
             y_key = Keys.Z
             y_axis_label = r'Distance along Z-axis ($\mu$m)'
-            title = '# Samples (per Section) Distribution'
+            title = '# Samples per Section\nDistribution w.r.t Z-axis'
             color = vmv.consts.Color.CM_BLUE_DARK
 
         vmv.analysis.plot_scatter(xdata=data_frame[Keys.NUMBER_OF_SAMPLES],
                                   ydata=data_frame[y_key],
-                                  xlabel='Number of Samples / Section',
+                                  xlabel='# Samples / Section',
                                   ylabel=y_axis_label,
                                   title=title,
                                   figure_width=6, figure_height=10,
@@ -276,8 +333,7 @@ def plot_analysis_samples_per_section(morphology,
                                   output_directory=output_directory,
                                   color=color)
 
-
-
+    return 
     two_samples_data = list()
     for index, row in data_frame.iterrows():
         if row[Keys.NUMBER_OF_SAMPLES] == 2:
@@ -344,25 +400,24 @@ def plot_analysis_samples_per_section(morphology,
 
 def plot_analysis_radii(morphology,
                         output_directory):
-    from matplotlib import cm
-    import pandas
+    
 
-    light_colors = cm.get_cmap('Pastel1').colors
-    dark_colors = cm.get_cmap('Set1').colors
-
-    r_light = light_colors[0]
-    g_light = light_colors[2]
-    b_light = light_colors[1]
-    o_light = light_colors[4]
-
-    r_dark = dark_colors[0]
-    g_dark = dark_colors[2]
-    b_dark = dark_colors[1]
-    o_dark = dark_colors[4]
-
-    # Analyze and get the data-frame
-    # TODO: Zero-radius samples can be obtained from here 
     data_frame = vmv.analysis.analyze_samples_radii_xyz(morphology.sections_list)
+
+   
+
+    # Number of Samples per section histogram
+    vmv.analysis.plot_histogram(
+        data_frame=data_frame,
+        data_key=[Keys.NUMBER_OF_SAMPLES],
+        title='# Samples per Section\n Histogram',
+        label='# Samples / Section',
+        figure_width=6, figure_height=10,
+        output_prefix='number-samples-per-section-histogram',
+        output_directory=output_directory,
+        color=vmv.consts.Color.CM_RED_DARK)
+
+    
 
     # Vessel radius histogram
     vmv.plot_histogram(df=data_frame,
@@ -461,44 +516,126 @@ def plot_analysis_radii(morphology,
     #    max_keyword='Vessel Max Radius',
     #    label='Distance', output_prefix='vessel-xx', output_directory=output_directory)
 
+
+
 def plot_length_analysis_statistics(morphology,
                                     output_directory,
                                     sections_centers=None):
-    from matplotlib import cm
-    import pandas
 
-    light_colors = cm.get_cmap('Pastel1').colors
-    dark_colors = cm.get_cmap('Set1').colors
+    data_frame = vmv.analysis.perform_length_analysis(sections=morphology.sections_list,
+                                                      sections_centers=sections_centers)
+    # Number of Samples per section histogram
+    vmv.analysis.plot_histogram(
+        data_frame=data_frame,
+        data_key=[Keys.SECTION_LENGTH],
+        title='Section Length\nHistogram',
+        label=r'Section Length ($\mu$m)',
+        figure_width=6, figure_height=10,
+        output_prefix='section-length-histogram',
+        output_directory=output_directory,
+        color=vmv.consts.Color.CM_RED_DARK)
 
-    r_light = light_colors[0]
-    g_light = light_colors[2]
-    b_light = light_colors[1]
-    o_light = light_colors[4]
+    vmv.analysis.plot_histogram(
+        data_frame=data_frame,
+        data_key=[Keys.SEGMENT_MEAN_LENGTH],
+        title='Segments Mean Length\nHistogram (per Section)',
+        label=r'Segments Mean Length ($\mu$m)',
+        figure_width=6, figure_height=10,
+        output_prefix='segment-mean-length-histogram',
+        output_directory=output_directory,
+        color=vmv.consts.Color.CM_RED_DARK)
 
-    r_dark = dark_colors[0]
-    g_dark = dark_colors[2]
-    b_dark = dark_colors[1]
-    o_dark = dark_colors[4]
+    vmv.analysis.plot_histogram(
+        data_frame=data_frame,
+        data_key=Keys.SEGMENT_LENGTH_RATIO,
+        title='Segment Length Ratio\nHistogram (per Section)',
+        label='Segment Length Ratio',
+        output_prefix='segments-length-ratio',
+        output_directory=output_directory,
+        color=vmv.consts.Color.CM_RED_DARK)
 
-    length_df = vmv.analysis.perform_length_analysis(sections=morphology.sections_list,
-                                                     sections_centers=sections_centers)
+    # Number of samples per section w.r.t index and XYZ
+    for i in ['section-index', 'x', 'y', 'z']:
+        if i == 'section-index':
+            y_key = Keys.SECTION_INDEX
+            y_axis_label = 'Section Index'
+            title = 'Segment Length Ratio\nDistribution w.r.t Section Index'
+            color = vmv.consts.Color.CM_ORANGE_DARK
+        elif i == 'x':
+            y_key = Keys.X
+            y_axis_label = r'Distance along X-axis ($\mu$m)'
+            title = 'Segment Length Ratio\nDistribution w.r.t X-axis'
+            color = vmv.consts.Color.CM_RED_DARK
+        elif i == 'y':
+            y_key = Keys.Y
+            y_axis_label = r'Distance along Y-axis ($\mu$m)'
+            title = 'Segment Length Ratio\nDistribution w.r.t Y-axis'
+            color = vmv.consts.Color.CM_GREEN_DARK
+        elif i == 'z':
+            y_key = Keys.Z
+            y_axis_label = r'Distance along Z-axis ($\mu$m)'
+            title = 'Segment Length Ratio\nDistribution w.r.t Z-axis'
+            color = vmv.consts.Color.CM_BLUE_DARK
 
-    vmv.plot_histogram(df=length_df,
-                       data_key=Keys.SECTION_LENGTH,
-                       label=r'Section Length ($\mu$m)',
-                       title='Section Length Histogram',
-                       output_prefix='section-length',
-                       output_directory=output_directory,
-                       color=o_dark)
+        # Number of Samples per section w.r.t the Section Index
+        vmv.analysis.plot_scatter(xdata=data_frame[Keys.SEGMENT_LENGTH_RATIO],
+                                  ydata=data_frame[y_key],
+                                  xlabel='Segment Length Ratio',
+                                  ylabel=y_axis_label,
+                                  title=title,
+                                  figure_width=6, figure_height=10,
+                                  output_prefix='segment-length-ratio-%s' % i,
+                                  output_directory=output_directory,
+                                  color=color)
 
-    vmv.plot_histogram(df=length_df,
-                       data_key=Keys.SEGMENT_MEAN_LENGTH,
-                       label=r'Segments Mean Length ($\mu$m)',
-                       title='Segments Mean Length Histogram',
-                       output_prefix='segments-mean-length',
-                       output_directory=output_directory,
-                       color=o_dark)
+    ################################################################################
+    # Sampling density per section 
+    ################################################################################
+    vmv.analysis.plot_histogram(
+        data_frame=data_frame,
+        data_key=[Keys.SECTION_SAMPLING_DENSITY],
+        title='Sampling Density',
+        label=r'Section Sampling Density ($\mu$m$^{\mathrm{-1}}$)',
+        figure_width=6, figure_height=10,
+        output_prefix='section-sampling-density-histogram',
+        output_directory=output_directory,
+        color=vmv.consts.Color.CM_RED_DARK)
 
+    # Number of samples per section w.r.t index and XYZ
+    for i in ['section-index', 'x', 'y', 'z']:
+        if i == 'section-index':
+            y_key = Keys.SECTION_INDEX
+            y_axis_label = 'Section Index'
+            title = 'Sampling Density\nDistribution w.r.t Section Index'
+            color = vmv.consts.Color.CM_ORANGE_DARK
+        elif i == 'x':
+            y_key = Keys.X
+            y_axis_label = r'Distance along X-axis ($\mu$m)'
+            title = 'Sampling Density\nDistribution w.r.t X-axis'
+            color = vmv.consts.Color.CM_RED_DARK
+        elif i == 'y':
+            y_key = Keys.Y
+            y_axis_label = r'Distance along Y-axis ($\mu$m)'
+            title = 'Sampling Density\nDistribution w.r.t Y-axis'
+            color = vmv.consts.Color.CM_GREEN_DARK
+        elif i == 'z':
+            y_key = Keys.Z
+            y_axis_label = r'Distance along Z-axis ($\mu$m)'
+            title = 'Sampling Density\nDistribution w.r.t Z-axis'
+            color = vmv.consts.Color.CM_BLUE_DARK
+
+        # Number of Samples per section w.r.t the Section Index
+        vmv.analysis.plot_scatter(xdata=data_frame[Keys.SEGMENT_LENGTH_RATIO],
+                                  ydata=data_frame[y_key],
+                                  xlabel=r'Section Sampling Density ($\mu$m$^{\mathrm{-1}}$)',
+                                  ylabel=y_axis_label,
+                                  title=title,
+                                  figure_width=6, figure_height=10,
+                                  output_prefix='section-sampling-density-%s' % i,
+                                  output_directory=output_directory,
+                                  color=color)
+
+    return
     vmv.plot_range_data_closeups(df=length_df,
                                  data_key=Keys.SECTION_INDEX,
                                  min_keyword=Keys.SEGMENT_MIN_LENGTH,
@@ -796,8 +933,9 @@ def export_analysis_results(morphology,
     """
 
     plot_analysis_samples_per_section(morphology, output_directory)
+    
     #plot_analysis_radii(morphology, output_directory)
-    #plot_length_analysis_statistics(morphology, output_directory)
+    plot_length_analysis_statistics(morphology, output_directory)
     #plot_volume_analysis_statistics(morphology, output_directory)
     exit(0)
 

@@ -579,7 +579,8 @@ def perform_length_analysis(sections,
                      result.mean,
                      result.max,
                      result.ratio,
-                     radius_sum / result.total])
+                     radius_sum / result.total,
+                     len(section.samples) / result.total if result.total > 0 else 0])
 
     # Construct the data frame
     return pandas.DataFrame(data, columns=[Keys.SECTION_INDEX,
@@ -589,7 +590,8 @@ def perform_length_analysis(sections,
                                            Keys.SEGMENT_MEAN_LENGTH,
                                            Keys.SEGMENT_MAX_LENGTH,
                                            Keys.SEGMENT_LENGTH_RATIO,
-                                           Keys.SECTION_THICKNESS_TO_LENGTH_RATIO])
+                                           Keys.SECTION_THICKNESS_TO_LENGTH_RATIO,
+                                           Keys.SECTION_SAMPLING_DENSITY])
 
 
 ####################################################################################################

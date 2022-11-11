@@ -57,6 +57,7 @@ class Keys:
     SEGMENT_MAX_LENGTH = 'Segment Max. Length'
     SEGMENT_LENGTH_RATIO = 'Segment Length Ratio'
     SECTION_THICKNESS_TO_LENGTH_RATIO = 'Section Thickness to Length Ratio'
+    SECTION_SAMPLING_DENSITY = 'Section Sampling Density'
 
     # Surface Area
     SECTION_SURFACE_AREA = 'Section Surface Area'
