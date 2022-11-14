@@ -114,7 +114,7 @@ def plot_scatter_data_with_closeups(df,
                                     idep_axis_label,
                                     dep_axis_label,
                                     font_size=30,
-                                    figure_width=8,
+                                    figure_width=10,
                                     figure_height=10,
                                     spines_shift=10,
                                     line_width=2,
@@ -923,7 +923,7 @@ def plot_histogram(data_frame, data_key,
                    label, title,
                    output_directory, output_prefix,
                    top_limit=None, figure_width=5, figure_height=10,
-                   bins=50, color='r', font_size=30, line_width=1, padding=0, x_label='Count',
+                   bins=50, color='r', font_size=30, line_width=1, padding=10, x_label='Count',
                    dpi=300, save_pdf=False, save_svg=False):
 
     # Set the default styles
@@ -945,7 +945,7 @@ def plot_histogram(data_frame, data_key,
     for spine in ['right', 'top']:
         ax1.spines[spine].set_visible(False)
     ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True, left=True)
-    ax1.set_title(title)
+    ax1.set_title(title, pad=25)
 
     # X-axis bins, only two bins
     max_x = max(x)
