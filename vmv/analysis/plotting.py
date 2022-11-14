@@ -922,7 +922,7 @@ def plot_distribution_with_range(df,
 def plot_histogram(data_frame, data_key,
                    label, title,
                    output_directory, output_prefix,
-                   top_limit=None, figure_width=5, figure_height=10,
+                   top_limit=None, figure_width=6, figure_height=10,
                    bins=50, color='r', font_size=30, line_width=1, padding=10, x_label='Count',
                    dpi=300, save_pdf=False, save_svg=False):
 
