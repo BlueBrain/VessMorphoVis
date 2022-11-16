@@ -100,9 +100,6 @@ def compute_average_profile_from_arranged_data(x,
     return x_range, numpy.array(y_average), numpy.array(y_range), y_samples
 
 
-
-
-
 def draw_scatter_plots_index_x_y_z(data_frame,
                                    x_key,
                                    title,
@@ -117,21 +114,25 @@ def draw_scatter_plots_index_x_y_z(data_frame,
             y_key = Keys.SECTION_INDEX
             y_axis_label = 'Section Index'
             fig_title = '%s\nDistribution w.r.t Section Index' % title
+            prefix = '%s-section-index' % output_prefix
             color = vmv.consts.Color.CM_ORANGE_DARK
         elif i == 'x':
             y_key = Keys.X
             y_axis_label = r'Distance along X-axis ($\mu$m)'
             fig_title = '%s\nDistribution w.r.t X-axis' % title
+            prefix = '%s-x' % output_prefix
             color = vmv.consts.Color.CM_RED_DARK
         elif i == 'y':
             y_key = Keys.Y
             y_axis_label = r'Distance along Y-axis ($\mu$m)'
             fig_title = '%s\nDistribution w.r.t Y-axis' % title
+            prefix = '%s-y' % output_prefix
             color = vmv.consts.Color.CM_GREEN_DARK
         elif i == 'z':
             y_key = Keys.Z
             y_axis_label = r'Distance along Z-axis ($\mu$m)'
             fig_title = '%s\nDistribution w.r.t Z-axis' % title
+            prefix = '%s-z' % output_prefix
             color = vmv.consts.Color.CM_BLUE_DARK
 
         if show_closeup:
@@ -141,7 +142,7 @@ def draw_scatter_plots_index_x_y_z(data_frame,
                                                 idep_keyword=y_key,
                                                 dep_keyword=x_key,
                                                 figure_width=6, figure_height=10,
-                                                output_prefix=fig_title,
+                                                output_prefix=prefix,
                                                 output_directory=output_directory,
                                                 light_color=color)
         else:
@@ -151,7 +152,7 @@ def draw_scatter_plots_index_x_y_z(data_frame,
                                       xlabel=x_axis_label,
                                       ylabel=y_axis_label,
                                       figure_width=6, figure_height=10,
-                                      output_prefix=fig_title,
+                                      output_prefix=prefix,
                                       output_directory=output_directory,
                                       color=color)
 
@@ -419,6 +420,12 @@ def plot_analysis_radii(morphology,
 
     data_frame = vmv.analysis.analyze_samples_radii_xyz(morphology.sections_list)
 
+    vmv.plotting.plot_average_profile_with_range(df=data_frame,
+                                                 indep_keyword='X', dep_kepword=vmv.consts.Keys.SAMPLE_RADIUS,
+                                                 x_label='Radius', y_label='Distance',
+                                                 output_prefix='radiis-x',
+                                                 output_directory=output_directory
+                                                 )
    
 
     # Number of Samples per section histogram
@@ -792,10 +799,72 @@ def plot_length_analysis_statistics(morphology,
                               color=b_dark)
 
 
-def plot_analysis_surface_area():
-    pass
+def plot_surface_area_analysis_statistics(morphology,
+                                          output_directory,
+                                          sections_centers=None):
+
+    # Collect the volume data frame
+    data_frame = vmv.analysis.perform_surface_area_analysis(sections=morphology.sections_list,
+                                                            sections_centers=sections_centers)
+
+    # Section volume histogram
+    vmv.plot_histogram(data_frame=data_frame,
+                       data_key=Keys.SECTION_SURFACE_AREA,
+                       label=r'Section Surface Area ($\mu$m²)',
+                       title='Histogram',
+                       output_prefix='section-surface-area',
+                       output_directory=output_directory,
+                       color=vmv.consts.Color.CM_RED_DARK)
+
+    # Section volume
+    draw_scatter_plots_index_x_y_z(data_frame=data_frame,
+                                   x_key=Keys.SECTION_SURFACE_AREA,
+                                   title='Section Surface Area',
+                                   x_axis_label=r'Section Surface Area ($\mu$m)²',
+                                   output_prefix='section-surface-area',
+                                   output_directory=output_directory,
+                                   show_closeup=True)
+
+    # Segment mean volume histogram
+    vmv.plot_histogram(data_frame=data_frame,
+                       data_key=Keys.SEGMENT_MEAN_SURFACE_AREA,
+                       label=r'Segment Mean Surface Area ($\mu$m²)',
+                       title='Histogram',
+                       output_prefix='segment-mean-surface-area',
+                       output_directory=output_directory,
+                       color=vmv.consts.Color.CM_RED_DARK)
+
+    # Segment mean volume distribution
+    draw_scatter_plots_index_x_y_z(data_frame=data_frame,
+                                   x_key=Keys.SEGMENT_MEAN_SURFACE_AREA,
+                                   title='Segment Mean Surface Area',
+                                   x_axis_label=r'Segment Mean Surface Area ($\mu$m²)',
+                                   output_prefix='segment-mean-surface-area',
+                                   output_directory=output_directory,
+                                   show_closeup=True)
+
+    # Segment volume ratio histogram, per section
+    vmv.plot_histogram(data_frame=data_frame,
+                       data_key=Keys.SEGMENT_SURFACE_AREA_RATIO,
+                       label='Segment Surface Area Ratio',
+                       title='Histogram',
+                       output_prefix='segment-surface-area-ratio',
+                       output_directory=output_directory,
+                       color=vmv.consts.Color.CM_RED_DARK)
+
+    # Segment volume ratio distribution, per section
+    draw_scatter_plots_index_x_y_z(data_frame=data_frame,
+                                   x_key=Keys.SEGMENT_SURFACE_AREA_RATIO,
+                                   title='Segment Surface Area Ratio',
+                                   x_axis_label='Segment Surface Area Ratio',
+                                   output_prefix='segment-surface-area-ratio',
+                                   output_directory=output_directory,
+                                   show_closeup=False)
 
 
+####################################################################################################
+# plot_volume_analysis_statistics
+####################################################################################################
 def plot_volume_analysis_statistics(morphology,
                                     output_directory,
                                     sections_centers=None):
@@ -879,10 +948,12 @@ def export_analysis_results(morphology,
         The directory where all the results will be written.
     """
 
-    plot_analysis_samples_per_section(morphology, output_directory)
+    # plot_analysis_samples_per_section(morphology, output_directory)
     
-    #plot_analysis_radii(morphology, output_directory)
+    plot_analysis_radii(morphology, output_directory)
+
     # plot_length_analysis_statistics(morphology, output_directory)
+    plot_surface_area_analysis_statistics(morphology, output_directory)
     plot_volume_analysis_statistics(morphology, output_directory)
     exit(0)
 

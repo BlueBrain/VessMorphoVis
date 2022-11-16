@@ -107,7 +107,6 @@ def set_styles(font='Arial',
     pyplot.rcParams['axes.titlesize'] = font_size
     pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
 
-
 def plot_scatter_data_with_closeups(df,
                                     idep_keyword,
                                     dep_keyword,
@@ -122,7 +121,7 @@ def plot_scatter_data_with_closeups(df,
                                     dark_color='b',
                                     output_directory="",
                                     output_prefix="",
-                                    dpi=300,
+                                    dpi=92,
                                     save_pdf=False,
                                     save_svg=False):
 
@@ -130,8 +129,9 @@ def plot_scatter_data_with_closeups(df,
     set_styles(font_size=font_size, axes_linewidth=line_width)
 
     # Create a new figure and adjust its size
-    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
+    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, gridspec_kw={'width_ratios': [2, 1]})
     fig.set_size_inches(figure_width, figure_height)
+    fig.set_tight_layout('w_pad')
 
     # Sort the dataframe by the given axis
     df_sorted = df.sort_values(by=[idep_keyword], inplace=False)
@@ -143,9 +143,7 @@ def plot_scatter_data_with_closeups(df,
     data = df_sorted[dep_keyword]
 
     # Plot
-    ax1.errorbar(data, indep, fmt='+', color=light_color,
-                 ecolor=dark_color,
-                 alpha=0.75, zorder=1)
+    ax1.scatter(data, indep, marker='+', linewidth=2, color=light_color)
 
     # Adjust the spine parameters
     for spine in ['left', 'bottom']:
@@ -154,7 +152,7 @@ def plot_scatter_data_with_closeups(df,
         ax1.spines[spine].set_linewidth(2)
     for spine in ['right', 'top']:
         ax1.spines[spine].set_visible(False)
-    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
+    ax1.tick_params(axis='both', width=line_width, length=10, which='both', bottom=True,
                     left=True)
     ax1.grid(False)
     # ax1.set_ylabel(label, labelpad=5)
@@ -182,19 +180,19 @@ def plot_scatter_data_with_closeups(df,
         ax2.spines[spine].set_linewidth(2)
     for spine in ['left', 'top', 'right']:
         ax2.spines[spine].set_visible(False)
-    ax2.tick_params(axis='both', width=2, which='both', bottom=True, left=False)
+    ax2.tick_params(axis='both', width=line_width, length=10, which='both', bottom=True, left=False)
     ax2.set_xlim(left=-0.1, right=1.1)
     ax2.axes.get_yaxis().set_visible(False)
     ax2.grid(False)
 
     if -1e-10 < min(indep) < 1e-10:
-        ax1.set_ylim(bottom=0)
-        ax2.set_ylim(bottom=0)
+        ax1.set_ylim(bottom=-2)
+        ax2.set_ylim(bottom=-2)
 
     # Shift the closeup a little to the right
     bp_position = ax2.get_position()
-    bp_position.x0 = bp_position.x0 + 0.025
-    bp_position.x1 = bp_position.x1 + 0.025
+    #bp_position.x0 = bp_position.x0 + 0.025
+    #bp_position.x1 = bp_position.x1 + 0.025
     ax2.set_position(bp_position)
 
     from matplotlib import patches
@@ -204,15 +202,15 @@ def plot_scatter_data_with_closeups(df,
     ax2.add_patch(rectangle)
 
     # Save PNG by default
-    pyplot.savefig('%s/distribution-%s.png' % (output_directory, output_prefix),
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
                    dpi=dpi, bbox_inches='tight', transparent=True)
 
     # Save PDF
-    pyplot.savefig('%s/distribution-%s.pdf' % (output_directory, output_prefix),
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
                    dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
 
     # Save SVG
-    pyplot.savefig('%s/distribution-%s.svg' % (output_directory, output_prefix),
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
                    dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
 
 
@@ -713,6 +711,86 @@ def plot_range(avg_value,
     pyplot.close()
 
 
+import pandas
+def plot_average_profile_with_range(df,
+                                      indep_keyword, dep_kepword,
+                                    x_label, y_label,
+                                      bins=50,
+                                      figure_width=6, figure_height=10,
+                                      light_color='blue', dark_color='red',
+                                        spines_shift=10,
+                                        line_width=2,
+                                    font_size=30, 
+                                        dpi=300,
+                                        output_directory="",
+                                        output_prefix="",
+                                        save_pdf=False,
+                                        save_svg=False
+                                    ):
+    # Set the default styles
+    set_styles(font_size=font_size, axes_linewidth=line_width)
+
+    # Sort the data-frame by the indep. axis
+    df = df.sort_values(by=[indep_keyword])
+
+    # Construct the groups
+    groups = df.groupby(pandas.cut(df[indep_keyword], bins=bins))
+
+    # Construct the groups
+    _mean = groups.mean()
+    _min = groups.min()
+    _max = groups.max()
+
+    # Construct the range
+    p_min = _min[dep_kepword].values
+    p_max = _max[dep_kepword].values
+
+    # Construct the figure
+    fig, ax = pyplot.subplots(1, 1)
+    fig.set_size_inches(figure_width, figure_height)
+
+    # Plot the data
+    ax.plot(_mean[dep_kepword].values, _mean[indep_keyword].values)
+    ax.fill_betweenx(_mean[indep_keyword].values, p_max, p_min, alpha=0.25)
+
+    # Adjust the spine parameters
+    for spine in ['left', 'bottom']:
+        ax.spines[spine].set_position(('outward', spines_shift))
+        ax.spines[spine].set_color('black')
+        ax.spines[spine].set_linewidth(line_width)
+    for spine in ['right', 'top']:
+        ax.spines[spine].set_visible(False)
+    ax.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
+                    left=True)
+    ax.grid(False)
+    ax.grid(axis='y')
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    #ax.set_title(title, pad=25)
+
+    # X-axis bins, only two bins
+    x_ticks = [math.floor(min(_min[dep_kepword].values)), math.ceil(max(_max[dep_kepword].values))]
+    ax.set_xlim(0, math.ceil(max(_max[dep_kepword].values)))
+    ax.set_xticks(x_ticks)
+
+    #if int(math.ceil(min(ydata))) == 0:
+    #    ax1.set_ylim(bottom=0)
+
+    # Save PNG by default, PDF and SVG if needed
+    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True)
+    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
+    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
+                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
+
+    # Close figure to reset
+    pyplot.clf()
+    pyplot.cla()
+    pyplot.close()
+
+
+
 ####################################################################################################
 # @plot_average_profile
 ####################################################################################################
@@ -1014,7 +1092,7 @@ def plot_scatter(xdata, ydata,
                  output_directory, output_prefix,
                  top_limit=None, figure_width=5, figure_height=10, spines_shift=10,
                  bins=50, color='r', font_size=30, line_width=1, padding=0, x_label='Count',
-                 dpi=300, save_pdf=False, save_svg=False):
+                 dpi=92, save_pdf=False, save_svg=False):
 
     # Set the default styles
     set_styles(font_size=font_size, axes_linewidth=line_width)
