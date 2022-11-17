@@ -31,3 +31,6 @@ class Prefix:
 
     # Morphology suffix
     VESSEL_RADIUS = 'vessel-radius'
+
+    # Zero-radius samples
+    ZERO_RADIUS_SAMPLES = 'zero-radius-samples'

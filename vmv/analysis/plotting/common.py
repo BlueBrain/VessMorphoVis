@@ -35,6 +35,7 @@ def set_plotting_styles(plot_styles):
     pyplot.rcParams['legend.fontsize'] = plot_styles.font_size
     pyplot.rcParams['axes.titlesize'] = plot_styles.font_size
     pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
+    pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
 
 
 ####################################################################################################

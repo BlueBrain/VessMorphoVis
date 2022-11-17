@@ -25,7 +25,7 @@ import matplotlib.pyplot as pyplot
 import matplotlib.cm as colormap
 
 # Internal imports
-import vmv.consts
+from vmv.consts import Keys, Prefix
 import vmv.utilities
 import vmv.analysis.plotting as vmv_plotting
 
@@ -61,7 +61,7 @@ def plot_histogram_with_box_plot(data_frame,
 
     # Add the histogram (ax1)
     x, y, _ = ax1.hist(data, color=dark_color, orientation='horizontal', edgecolor='white',
-                       bins=bins)
+                       bins=bins, zorder=3)
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)
@@ -103,3 +103,32 @@ def plot_histogram_with_box_plot(data_frame,
 
     # Reset to clean
     vmv_plotting.reset_matplotlib()
+
+
+####################################################################################################
+# plot_histograms_along_x_y_z
+####################################################################################################
+def plot_histograms_along_x_y_z(data_frame,
+                                output_prefix,
+                                output_directory,
+                                x_label='Count',
+                                title=None,
+                                bins=50,
+                                fig_size=(6, 10),
+                                dpi=150,
+                                plot_styles=vmv.utilities.PlotStyle(),
+                                save_pdf=False,
+                                save_svg=False):
+
+    for i, axis in enumerate(vmv.consts.Keys.AXES):
+        plot_histogram_with_box_plot(
+            data_frame=data_frame,
+            data_key=axis,
+            output_prefix=output_prefix + '-%s-histogram' % axis,
+            output_directory=output_directory,
+            y_label=r'Distance along %s-axis ($\mu$m)' % axis,
+            title=title, x_label=x_label,
+            bins=bins, fig_size=fig_size, dpi=dpi, plot_styles=plot_styles,
+            light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
+            dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
+            save_svg=save_svg, save_pdf=save_pdf)

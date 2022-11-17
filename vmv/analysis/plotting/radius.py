@@ -15,10 +15,32 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import pandas
+
 # Internal imports
 import vmv
 import vmv.analysis.plotting as vmv_plotting
 from vmv.consts import Keys, Prefix
+
+
+def plot_radius_analysis_statistics_for_zero_radius_samples(data_frame, output_directory):
+
+    # Verify if the dataset has any zero-radius samples
+    zero_radius_data = list()
+    for index, row in data_frame.iterrows():
+        if row[Keys.SAMPLE_RADIUS] < 1e-5:
+            zero_radius_data.append(row)
+
+    # If True, then construct the data-frame and plot the distributions
+    if len(zero_radius_data) > 0:
+        zero_radius_data_frame = pandas.DataFrame(zero_radius_data,
+                                                  columns=[Keys.SAMPLE_RADIUS, Keys.X, Keys.Y,
+                                                           Keys.Z])
+
+        vmv_plotting.plot_histograms_along_x_y_z(data_frame=zero_radius_data_frame,
+                                                 output_prefix=Prefix.ZERO_RADIUS_SAMPLES,
+                                                 output_directory=output_directory)
 
 
 ####################################################################################################
@@ -38,9 +60,20 @@ def plot_radius_analysis_statistics(morphology,
         x_axis_label=r'Vessel Mean Radius ($\mu$m)',
         output_prefix=Prefix.VESSEL_RADIUS, output_directory=output_directory)
 
+    # Radius scatter index, x, y, z
+    # if no data between 0 and one then use full spectrum ...
+
+
+
+
     # Vessel radius histogram
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SAMPLE_RADIUS,
         output_prefix='%s-histogram' % Prefix.VESSEL_RADIUS, output_directory=output_directory,
         y_label=r'Vessel Radius ($\mu$m)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+    # Zero-radius samples
+    plot_radius_analysis_statistics_for_zero_radius_samples(
+        data_frame=data_frame, output_directory=output_directory)
+

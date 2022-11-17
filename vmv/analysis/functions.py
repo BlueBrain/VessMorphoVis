@@ -41,51 +41,7 @@ def plot_radius_analysisss_statistics(morphology, output_directory):
         output_directory=output_directory,
         color=vmv.consts.Color.CM_RED_DARK)
 
-    # Vessel radius histogram
-    vmv.plot_histogram(df=data_frame,
-                       data_key=Keys.SAMPLE_RADIUS,
-                       label=r'Vessel Radius ($\mu$m)',
-                       title='Vessel Radius Histogram',
-                       output_prefix='vessel-radius-histogram',
-                       output_directory=output_directory,
-                       color=o_dark)
 
-    zero_radius_data = list()
-    for index, row in data_frame.iterrows():
-        if row[Keys.SAMPLE_RADIUS] < 1e-5:
-            zero_radius_data.append(row)
-
-    if len(zero_radius_data) > 0:
-        zero_radius_data_frame = pandas.DataFrame(zero_radius_data,
-                                                  columns=[Keys.SAMPLE_RADIUS, Keys.X, Keys.Y,
-                                                           Keys.Z])
-
-        # Samples density w.r.t X-axis
-        vmv.plot_histogram(df=zero_radius_data_frame,
-                           data_key=Keys.X,
-                           label='Zero-radius Samples Density along X-axis',
-                           title='Samples with Zero Radius',
-                           output_prefix='zero-radius-samples-x-histogram',
-                           output_directory=output_directory,
-                           color=r_dark)
-
-        # Samples density w.r.t Y-axis
-        vmv.plot_histogram(df=zero_radius_data_frame,
-                           data_key=Keys.Y,
-                           label='Zero-radius Samples Density along Y-axis',
-                           title='Samples with Zero Radius',
-                           output_prefix='zero-radius-samples-y-histogram',
-                           output_directory=output_directory,
-                           color=g_dark)
-
-        # Samples density w.r.t Z-axis
-        vmv.plot_histogram(df=zero_radius_data_frame,
-                           data_key=Keys.Z,
-                           label='Zero-radius Samples Density along Z-axis',
-                           title='Samples with Zero Radius',
-                           output_prefix='zero-radius-samples-z-histogram',
-                           output_directory=output_directory,
-                           color=b_dark)
 
     data_frame = vmv.analysis.analyse_per_section_radius(morphology.sections_list)
 
