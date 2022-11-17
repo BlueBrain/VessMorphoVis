@@ -68,7 +68,7 @@ def plot_radius_analysis_from_samples_list(morphology,
         output_directory=output_directory)
 
     # Radius scatter x, y, z
-    vmv_plotting.plot_scatter_along_x_y_z(
+    vmv_plotting.plot_scatter_data_with_closeups_if_needed_along_x_y_z(
         data_frame=data_frame, x_keyword=vmv.consts.Keys.SAMPLE_RADIUS,
         x_label=r'Vessel Radius ($\mu$m)',
         output_prefix='%s-%s-scatter' % (morphology.name, Prefix.VESSEL_RADIUS),
@@ -95,49 +95,57 @@ def plot_radius_analysis_from_sections_list(morphology,
 
     data_frame = vmv.analysis.analyse_per_section_radius(morphology.sections_list)
 
-    vmv.plot_range_data_closeups(df=data_frame,
-                                 data_key=Keys.SECTION_INDEX,
-                                 min_keyword=Keys.SECTION_MIN_RADIUS,
-                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
-                                 max_keyword=Keys.SECTION_MAX_RADIUS,
-                                 label='Section Index',
-                                 output_prefix='section-radius-analysis',
-                                 output_directory=output_directory,
-                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
-                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+    # Section radius range
+    vmv_plotting.plot_range_data_along_xyz(data_frame=data_frame,
+                                           min_keyword=Keys.SECTION_MIN_RADIUS,
+                                           mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                           max_keyword=Keys.SECTION_MAX_RADIUS,
+                                           x_label=r'Radius Range per Section ($\mu$m)',
+                                           output_prefix='section-radius-distribution',
+                                           output_directory=output_directory)
 
-    vmv.plot_range_data_closeups(df=data_frame,
-                                 data_key=Keys.X,
-                                 min_keyword=Keys.SECTION_MIN_RADIUS,
-                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
-                                 max_keyword=Keys.SECTION_MAX_RADIUS,
-                                 label=r'Distance along Z-axis ($\mu$m)',
-                                 output_prefix='section-radius-analysis-x',
-                                 output_directory=output_directory,
-                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
-                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+    # Mean section radius histogram
+    vmv_plotting.plot_histogram_with_box_plot(
+        data_frame=data_frame, data_key=Keys.SECTION_MEAN_RADIUS,
+        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
+        output_directory=output_directory,
+        y_label=r'Mean Section Radius ($\mu$m)',
+        light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
 
-    vmv.plot_range_data_closeups(df=data_frame,
-                                 data_key=Keys.Y,
-                                 min_keyword=Keys.SECTION_MIN_RADIUS,
-                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
-                                 max_keyword=Keys.SECTION_MAX_RADIUS,
-                                 label=r'Distance along Y-axis ($\mu$m)',
-                                 output_prefix='section-radius-analysis-y',
-                                 output_directory=output_directory,
-                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
-                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+    # Mean section radius profile
+    vmv_plotting.plot_average_profiles_along_x_y_z(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.SECTION_MEAN_RADIUS,
+        x_axis_label=r'Section Mean Radius ($\mu$m)',
+        output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
+        output_directory=output_directory)
 
-    vmv.plot_range_data_closeups(df=data_frame,
-                                 data_key=Keys.Z,
-                                 min_keyword=Keys.SECTION_MIN_RADIUS,
-                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
-                                 max_keyword=Keys.SECTION_MAX_RADIUS,
-                                 label=r'Distance along Z-axis ($\mu$m)',
-                                 output_prefix='section-radius-analysis-z',
-                                 output_directory=output_directory,
-                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
-                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+    # Distribution of mean section radius
+    vmv_plotting.plot_scatter_data_with_closeups_if_needed_along_x_y_z(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.SECTION_MEAN_RADIUS,
+        x_label=r'Section Mean Radius ($\mu$m)',
+        output_prefix='%s-%s-scatter' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
+        output_directory=output_directory)
+
+    # Radius ratio per section histogram
+    vmv_plotting.plot_histogram_with_box_plot(
+        data_frame=data_frame, data_key=Keys.SECTION_RADIUS_RATIO,
+        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SECTION_RADIUS_RATIO),
+        output_directory=output_directory,
+        y_label=r'Section Radius Ratio',
+        light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+    vmv_plotting.plot_average_profiles_along_x_y_z(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.SECTION_RADIUS_RATIO,
+        x_axis_label=r'Section Mean Radius ($\mu$m)',
+        output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_RADIUS_RATIO),
+        output_directory=output_directory)
+
+    # Distribution of radius ratio per section
+    vmv_plotting.plot_scatter_data_along_x_y_z(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.SECTION_RADIUS_RATIO,
+        x_label=r'Radius Ratio (per section)',
+        output_prefix='%s-%s-scatter' % (morphology.name, Prefix.SECTION_RADIUS_RATIO),
+        output_directory=output_directory)
 
 
 ####################################################################################################

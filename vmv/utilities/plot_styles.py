@@ -37,7 +37,7 @@ class PlotStyle:
                  box_plot_marker='o',
                  box_plot_marker_size=5,
                  box_plot_alpha=0.5,
-                 scatter_plot_marker='x'):
+                 scatter_plot_marker='+'):
 
         self.axes_grid = axes_grid
         self.title_pad = title_pad

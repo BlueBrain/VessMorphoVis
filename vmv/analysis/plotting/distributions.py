@@ -156,24 +156,54 @@ def plot_scatter_data_with_closeups_if_needed(data_frame,
 
 
 ####################################################################################################
-# plot_histograms_along_x_y_z
+# plot_scatter_data_along_x_y_z
 ####################################################################################################
-def plot_scatter_along_x_y_z(data_frame,
-                             x_keyword,
-                             output_prefix,
-                             output_directory,
-                             x_label,
-                             title=None,
-                             fig_size=(6, 10),
-                             dpi=150,
-                             light_color=vmv.consts.Color.CM_BLUE_LIGHT,
-                             dark_color=vmv.consts.Color.CM_BLUE_DARK,
-                             plot_styles=vmv.utilities.PlotStyle(),
-                             save_pdf=False,
-                             save_svg=False):
+def plot_scatter_data_along_x_y_z(data_frame,
+                                  x_keyword,
+                                  output_prefix,
+                                  output_directory,
+                                  x_label,
+                                  title=None,
+                                  fig_size=(6, 10),
+                                  dpi=150,
+                                  light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+                                  dark_color=vmv.consts.Color.CM_BLUE_DARK,
+                                  plot_styles=vmv.utilities.PlotStyle(),
+                                  save_pdf=False,
+                                  save_svg=False):
 
     for i, axis in enumerate(vmv.consts.Keys.AXES):
+        plot_scatter(
+            data_frame=data_frame,
+            x_keyword=x_keyword, y_keyword=axis,
+            x_label=x_label, y_label=r'Distance along %s-axis ($\mu$m)' % axis,
+            output_prefix=output_prefix + '-%s' % axis,
+            output_directory=output_directory,
+            title=title, fig_size=fig_size, dpi=dpi,
+            light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
+            dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
+            plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)
 
+
+####################################################################################################
+# plot_scatter_data_with_closeups_if_needed_along_x_y_z
+####################################################################################################
+def plot_scatter_data_with_closeups_if_needed_along_x_y_z(
+        data_frame,
+        x_keyword,
+        output_prefix,
+        output_directory,
+        x_label,
+        title=None,
+        fig_size=(6, 10),
+        dpi=150,
+        light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+        dark_color=vmv.consts.Color.CM_BLUE_DARK,
+        plot_styles=vmv.utilities.PlotStyle(),
+        save_pdf=False,
+        save_svg=False):
+
+    for i, axis in enumerate(vmv.consts.Keys.AXES):
         plot_scatter_data_with_closeups_if_needed(
             data_frame=data_frame,
             x_keyword=x_keyword, y_keyword=axis,
@@ -184,3 +214,104 @@ def plot_scatter_along_x_y_z(data_frame,
             light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
             dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
             plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)
+
+
+####################################################################################################
+# @plot_range_data
+####################################################################################################
+def plot_range_data(data_frame,
+                    y_key,
+                    min_keyword,
+                    mean_keyword,
+                    max_keyword,
+                    x_label,
+                    y_label,
+                    output_prefix,
+                    output_directory,
+                    title=None,
+                    fig_size=(6, 10),
+                    dpi=150,
+                    light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+                    dark_color=vmv.consts.Color.CM_BLUE_DARK,
+                    plot_styles=vmv.utilities.PlotStyle(),
+                    save_pdf=False,
+                    save_svg=False):
+
+    # Sort the data-frame by the given axis
+    df_sorted = data_frame.sort_values(by=[y_key], inplace=False)
+
+    # Independent axis
+    ydata = df_sorted[y_key]
+
+    # Data: minimum, average and maximum
+    xdata_min = df_sorted[min_keyword]
+    xdata_avg = df_sorted[mean_keyword]
+    xdata_max = df_sorted[max_keyword]
+
+    # Construct the error bars
+    error_min = list()
+    error_max = list()
+    for i_avg, i_max, i_min in zip(xdata_avg, xdata_max, xdata_min):
+        error_max.append(i_max - i_avg)
+        error_min.append(i_avg - i_min)
+    asymmetric_error = [error_min, error_max]
+
+    # Set the styles
+    vmv_plotting.set_plotting_styles(plot_styles=plot_styles)
+
+    # Construct the figure
+    fig, ax = pyplot.subplots(1, 1)
+    fig.set_size_inches(fig_size[0], fig_size[1])
+    fig.set_tight_layout('w_pad')
+
+    # Plot
+    ax.errorbar(xdata_avg, ydata, xerr=asymmetric_error, fmt='.',
+                color=light_color, ecolor=dark_color, alpha=0.75, zorder=1)
+
+    # Set the axis style
+    vmv_plotting.add_default_axis_styles(ax=ax, plot_styles=plot_styles)
+
+    # Text
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(title, pad=plot_styles.title_pad) if title is not None else None
+
+    # Save the figure
+    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+                             dpi=dpi, svg=save_svg, pdf=save_pdf)
+
+    # Reset to clean
+    vmv_plotting.reset_matplotlib()
+
+
+####################################################################################################
+# plot_range_data_along_xyz
+####################################################################################################
+def plot_range_data_along_xyz(data_frame,
+                              min_keyword,
+                              mean_keyword,
+                              max_keyword,
+                              x_label,
+                              output_prefix,
+                              output_directory,
+                              title=None,
+                              fig_size=(6, 10),
+                              dpi=150,
+                              plot_styles=vmv.utilities.PlotStyle(),
+                              save_pdf=False,
+                              save_svg=False):
+
+    for i, axis in enumerate(vmv.consts.Keys.AXES):
+
+        plot_range_data(data_frame,
+                        y_key=axis,
+                        min_keyword=min_keyword,
+                        mean_keyword=mean_keyword,
+                        max_keyword=max_keyword,
+                        x_label=x_label, y_label=r'Distance along %s-axis ($\mu$m)' % axis,
+                        output_prefix=output_prefix + '-%s' % axis,
+                        output_directory=output_directory,
+                        title=title, fig_size=fig_size, dpi=dpi,
+                        light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
+                        dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
+                        plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)

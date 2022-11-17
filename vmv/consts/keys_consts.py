@@ -41,8 +41,11 @@ class Keys:
     # Section Center
     SECTION_CENTER = 'Section Center '
 
-    # Number of samples
-    NUMBER_OF_SAMPLES = 'Number Samples'
+    # Number of Samples (per Section)
+    NUMBER_SAMPLES_PER_SECTION = 'Number Samples per Section'
+
+    # Number of Segments (per Section)
+    NUMBER_SEGMENTS_PER_SECTION = 'Number Segments per Section'
 
     # Radius
     SAMPLE_RADIUS = 'Sample Radius'
@@ -57,7 +60,7 @@ class Keys:
     SEGMENT_MEAN_LENGTH = 'Segment Mean Length'
     SEGMENT_MAX_LENGTH = 'Segment Max. Length'
     SEGMENT_LENGTH_RATIO = 'Segment Length Ratio'
-    SECTION_THICKNESS_TO_LENGTH_RATIO = 'Section Thickness to Length Ratio'
+    SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO = 'Section Thickness to Length Ratio'
     SECTION_SAMPLING_DENSITY = 'Section Sampling Density'
 
     # Surface Area

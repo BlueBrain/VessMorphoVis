@@ -38,9 +38,10 @@ def analyze_samples_per_section(sections):
     data = list()
     for section in sections:
         center = vmv.analysis.compute_section_center_point(section)
-        data.append([section.index, len(section.samples), center[0], center[1], center[2]])
+        data.append([section.index, len(section.samples), len(section.samples) - 1, center[0], center[1], center[2]])
     return pandas.DataFrame(data, columns=[Keys.SECTION_INDEX,
-                                           Keys.NUMBER_OF_SAMPLES,
+                                           Keys.NUMBER_SAMPLES_PER_SECTION,
+                                           Keys.NUMBER_SEGMENTS_PER_SECTION,
                                            Keys.X, Keys.Y, Keys.Z])
 
 

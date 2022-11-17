@@ -590,7 +590,7 @@ def perform_length_analysis(sections,
                                            Keys.SEGMENT_MEAN_LENGTH,
                                            Keys.SEGMENT_MAX_LENGTH,
                                            Keys.SEGMENT_LENGTH_RATIO,
-                                           Keys.SECTION_THICKNESS_TO_LENGTH_RATIO,
+                                           Keys.SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO,
                                            Keys.SECTION_SAMPLING_DENSITY])
 
 

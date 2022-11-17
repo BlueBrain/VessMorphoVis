@@ -15,12 +15,22 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .common import *
-from .histograms import *
-from .profiles import *
-from .distributions import *
-from .radius import *
-from .length import *
-from .structure import *
-from .surface_area import *
-from .volume import *
+# System imports
+import pandas
+
+# Internal imports
+import vmv
+import vmv.analysis.plotting as vmv_plotting
+from vmv.consts import Keys, Prefix
+
+
+
+def plot_surface_area_analysis_statistics(morphology,
+                                          output_directory,
+                                          sections_centers=None):
+
+    # Collect the data frame
+    data_frame = vmv.analysis.perform_surface_area_analysis(
+        sections=morphology.sections_list, sections_centers=sections_centers)
+
+    pass

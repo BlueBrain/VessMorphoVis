@@ -102,8 +102,16 @@ def plot_radius_analysisss_statistics(morphology, output_directory):
 def export_analysis_results(morphology,
                             output_directory):
 
+    vmv_plotting.plot_structure_analysis_statistics(morphology, output_directory)
+
     vmv_plotting.plot_radius_analysis_statistics(morphology, output_directory)
 
+    vmv_plotting.plot_length_analysis_statistics(morphology, output_directory)
+
+    vmv_plotting.plot_surface_area_analysis_statistics(morphology, output_directory)
+
+
+    vmv_plotting.plot_volume_analysis_statistics(morphology, output_directory)
 
 
 ####################################################################################################
@@ -713,7 +721,7 @@ def plot_length_analysis_statistics(morphology,
                               color=b_dark)
 
     vmv.plot_histogram(df=length_df,
-                       data_key=Keys.SECTION_THICKNESS_TO_LENGTH_RATIO,
+                       data_key=Keys.SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO,
                        label='Thickness to Length (per Section)',
                        title='Thickness to Length Histogram',
                        output_prefix='section-thickness-to-length-ratio',
@@ -721,7 +729,7 @@ def plot_length_analysis_statistics(morphology,
                        color=o_dark)
 
     # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO],
                               ydata=length_df[Keys.SECTION_INDEX],
                               xlabel='Thickness to Length (per Section)',
                               ylabel='Section Index',
@@ -731,7 +739,7 @@ def plot_length_analysis_statistics(morphology,
                               color=o_dark)
 
     # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO],
                               ydata=length_df[Keys.X],
                               xlabel='Thickness to Length (per Section)',
                               ylabel=r'Distance along X-axis ($\mu$m)',
@@ -741,7 +749,7 @@ def plot_length_analysis_statistics(morphology,
                               color=r_dark)
 
     # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO],
                               ydata=length_df[Keys.Y],
                               xlabel='Thickness to Length (per Section)',
                               ylabel=r'Distance along Y-axis ($\mu$m)',
@@ -751,7 +759,7 @@ def plot_length_analysis_statistics(morphology,
                               color=g_dark)
 
     # Number of samples per section w.r.t the X-axis
-    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_THICKNESS_TO_LENGTH_RATIO],
+    vmv.analysis.plot_scatter(xdata=length_df[Keys.SECTION_TERMINALS_THICKNESS_TO_LENGTH_RATIO],
                               ydata=length_df[Keys.Z],
                               xlabel='Thickness to Length (per Section)',
                               ylabel=r'Distance along Z-axis ($\mu$m)',

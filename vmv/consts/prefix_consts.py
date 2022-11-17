@@ -34,3 +34,26 @@ class Prefix:
 
     # Zero-radius samples
     ZERO_RADIUS_SAMPLES = 'zero-radius-samples'
+
+    # Section mean radius
+    SECTION_MEAN_RADIUS = 'section-mean-radius'
+
+    # Section radius ratio
+    SECTION_RADIUS_RATIO = 'section-radius-ratio'
+
+
+    SECTION_LENGTH = 'section-length'
+    SEGMENT_MEAN_LENGTH = 'segment-mean-length'
+    SEGMENT_LENGTH_RATIO = 'segment-length-ratio'
+
+    NUMBER_SAMPLES_PER_SECTION = 'number-samples-per-section'
+    NUMBER_SEGMENTS_PER_SECTION = 'number-segments-per-section'
+
+    SECTIONS_WITH_SINGLE_SEGMENTS = 'sections-with-single-segments'
+
+    SHORT_SECTIONS = 'short-sections'
+
+    SECTION_VOLUME = 'section-volume'
+    SEGMENT_MEAN_VOLUME = 'segment-mean-volume'
+
+    SEGMENT_VOLUME_RATIO = 'segment-volume-ratio'
