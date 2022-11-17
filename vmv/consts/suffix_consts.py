@@ -34,3 +34,11 @@ class Suffix:
 
     # Mesh suffix
     MESH_SUFFIX = '_Mesh'
+
+    PROFILE = '_profile'
+
+    RANGE = '_range'
+
+    HISTOGRAM = '_histogram'
+
+    SCATTER = '_scatter'

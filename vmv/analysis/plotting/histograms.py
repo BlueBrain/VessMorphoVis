@@ -25,7 +25,7 @@ import matplotlib.pyplot as pyplot
 import matplotlib.cm as colormap
 
 # Internal imports
-from vmv.consts import Keys, Prefix
+from vmv.consts import Suffix
 import vmv.utilities
 import vmv.analysis.plotting as vmv_plotting
 
@@ -99,7 +99,8 @@ def plot_histogram_with_box_plot(data_frame,
     ax2.grid(False)
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.HISTOGRAM),
+                             output_directory=output_directory,
                              dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
@@ -125,7 +126,7 @@ def plot_histograms_along_x_y_z(data_frame,
         plot_histogram_with_box_plot(
             data_frame=data_frame,
             data_key=axis,
-            output_prefix=output_prefix + '-%s-histogram' % axis,
+            output_prefix=output_prefix + '-%s' % axis,
             output_directory=output_directory,
             y_label=r'Distance along %s-axis ($\mu$m)' % axis,
             title=title, x_label=x_label,

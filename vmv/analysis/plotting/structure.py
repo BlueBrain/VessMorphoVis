@@ -36,7 +36,7 @@ def plot_structure_analysis_statistics(morphology,
     # Number of Samples per Section
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.NUMBER_SAMPLES_PER_SECTION,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.NUMBER_SAMPLES_PER_SECTION),
+        output_prefix='%s-%s' % (morphology.name, Prefix.NUMBER_SAMPLES_PER_SECTION),
         output_directory=output_directory,
         y_label='# Samples (per Section)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT,
@@ -59,7 +59,7 @@ def plot_structure_analysis_statistics(morphology,
     # segments per section
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.NUMBER_SEGMENTS_PER_SECTION,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.NUMBER_SEGMENTS_PER_SECTION),
+        output_prefix='%s-%s' % (morphology.name, Prefix.NUMBER_SEGMENTS_PER_SECTION),
         output_directory=output_directory,
         y_label='# Segments (per Section)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT,
@@ -78,7 +78,7 @@ def plot_structure_analysis_statistics(morphology,
 
     vmv_plotting.plot_histograms_along_x_y_z(
         data_frame=sections_with_single_segment_data_frame,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SECTIONS_WITH_SINGLE_SEGMENTS),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SECTIONS_WITH_SINGLE_SEGMENTS),
         output_directory=output_directory)
 
 

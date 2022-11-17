@@ -37,7 +37,7 @@ def plot_radius_analysisss_statistics(morphology, output_directory):
         title='# Samples per Section\n Histogram',
         label='# Samples / Section',
         figure_width=6, figure_height=10,
-        output_prefix='number-samples-per-section-histogram',
+        output_prefix='number-samples-per-section',
         output_directory=output_directory,
         color=vmv.consts.Color.CM_RED_DARK)
 
@@ -403,7 +403,7 @@ def plot_analysis_samples_per_section(morphology,
         title='# Samples per Section\n Histogram',
         label='# Samples / Section',
         figure_width=6, figure_height=10,
-        output_prefix='number-samples-per-section-histogram',
+        output_prefix='number-samples-per-section',
         output_directory=output_directory,
         color=vmv.consts.Color.CM_RED_DARK)
 
@@ -482,7 +482,7 @@ def plot_analysis_samples_per_section(morphology,
                        data_key=Keys.X,
                        label='Samples Density along X-axis',
                        title='Samples Density',
-                       output_prefix='samples-density-x-histogram',
+                       output_prefix='samples-density-x',
                        output_directory=output_directory,
                        color=r_dark)
 
@@ -491,7 +491,7 @@ def plot_analysis_samples_per_section(morphology,
                        data_key=Keys.Y,
                        label='Samples Density along Y-axis',
                        title='Samples Density',
-                       output_prefix='samples-density-y-histogram',
+                       output_prefix='samples-density-y',
                        output_directory=output_directory,
                        color=g_dark)
 
@@ -500,7 +500,7 @@ def plot_analysis_samples_per_section(morphology,
                        data_key=Keys.Z,
                        label='Samples Density along Z-axis',
                        title='Samples Density',
-                       output_prefix='samples-density-z-histogram',
+                       output_prefix='samples-density-z',
                        output_directory=output_directory,
                        color=b_dark)
 
@@ -523,7 +523,7 @@ def plot_length_analysis_statistics(morphology,
         title='Section Length\nHistogram',
         label=r'Section Length ($\mu$m)',
         figure_width=6, figure_height=10,
-        output_prefix='section-length-histogram',
+        output_prefix='section-length',
         output_directory=output_directory,
         color=vmv.consts.Color.CM_RED_DARK)
 
@@ -533,7 +533,7 @@ def plot_length_analysis_statistics(morphology,
         title='Segments Mean Length\nHistogram (per Section)',
         label=r'Segments Mean Length ($\mu$m)',
         figure_width=6, figure_height=10,
-        output_prefix='segment-mean-length-histogram',
+        output_prefix='segment-mean-length',
         output_directory=output_directory,
         color=vmv.consts.Color.CM_RED_DARK)
 
@@ -589,7 +589,7 @@ def plot_length_analysis_statistics(morphology,
         title='Sampling Density',
         label=r'Section Sampling Density ($\mu$m$^{\mathrm{-1}}$)',
         figure_width=6, figure_height=10,
-        output_prefix='section-sampling-density-histogram',
+        output_prefix='section-sampling-density',
         output_directory=output_directory,
         color=vmv.consts.Color.CM_RED_DARK)
 
@@ -952,7 +952,7 @@ def export_analysis_results_(morphology,
                        data_key='Vessel Radius',
                        label=r'Vessel Radius ($\mu$m)',
                        title='Vessel Radius Histogram',
-                       output_prefix='vessel-radius-histogram',
+                       output_prefix='vessel-radius',
                        output_directory=output_directory,
                        color=cmap.colors[0])
 
@@ -967,7 +967,7 @@ def export_analysis_results_(morphology,
                        data_key='Vessel Mean Radius',
                        label=r'Vessel Radius ($\mu$m)',
                        title='Vessel Mean Radius',
-                       output_prefix='vessel-xx-histogram',
+                       output_prefix='vessel-xx',
                        output_directory=output_directory,
                        color=cmap.colors[3])
 
@@ -991,7 +991,7 @@ def export_analysis_results_(morphology,
                        data_key='Section Radius Ratio',
                        label='Section Radius Ratio',
                        title='Radius Ratio',
-                       output_prefix='segment-radius-ratio-histogram',
+                       output_prefix='segment-radius-ratio',
                        output_directory=output_directory,
                        color=cmap2.colors[1])
 
@@ -1080,7 +1080,7 @@ def export_analysis_results_(morphology,
 
     vmv.analysis.plot_histogram(
         df=two_samples_per_section, data_key=['X'], title='2 Samples', label='X axis',
-        output_directory=output_directory, output_prefix='2-samples-per-section-x-histogram',
+        output_directory=output_directory, output_prefix='2-samples-per-section-x',
         save_svg=False)
 
 

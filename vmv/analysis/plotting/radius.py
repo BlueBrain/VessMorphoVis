@@ -77,7 +77,7 @@ def plot_radius_analysis_from_samples_list(morphology,
     # Vessel radius histogram
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SAMPLE_RADIUS,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.VESSEL_RADIUS),
+        output_prefix='%s-%s' % (morphology.name, Prefix.VESSEL_RADIUS),
         output_directory=output_directory,
         y_label=r'Vessel Radius ($\mu$m)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
@@ -107,7 +107,7 @@ def plot_radius_analysis_from_sections_list(morphology,
     # Mean section radius histogram
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SECTION_MEAN_RADIUS,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
         output_directory=output_directory,
         y_label=r'Mean Section Radius ($\mu$m)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
@@ -129,7 +129,7 @@ def plot_radius_analysis_from_sections_list(morphology,
     # Radius ratio per section histogram
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SECTION_RADIUS_RATIO,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SECTION_RADIUS_RATIO),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_RADIUS_RATIO),
         output_directory=output_directory,
         y_label=r'Section Radius Ratio',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)

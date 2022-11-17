@@ -37,7 +37,7 @@ def plot_length_analysis_statistics(morphology,
     # Section Length
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SECTION_LENGTH,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SECTION_LENGTH),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_LENGTH),
         output_directory=output_directory,
         y_label=r'Section Length ($\mu$m)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
@@ -60,7 +60,7 @@ def plot_length_analysis_statistics(morphology,
     # Segment mean Length
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SEGMENT_MEAN_LENGTH,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SEGMENT_MEAN_LENGTH),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SEGMENT_MEAN_LENGTH),
         output_directory=output_directory,
         y_label=r'Segment Mean Length ($\mu$m)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
@@ -91,7 +91,7 @@ def plot_length_analysis_statistics(morphology,
     # Segment length ratio
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SEGMENT_LENGTH_RATIO,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SEGMENT_LENGTH_RATIO),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SEGMENT_LENGTH_RATIO),
         output_directory=output_directory,
         y_label=r'Segment Length Ratio (per Section)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
@@ -129,7 +129,7 @@ def plot_length_analysis_statistics(morphology,
 
     vmv_plotting.plot_histograms_along_x_y_z(
         data_frame=short_sections_data_frame,
-        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.SHORT_SECTIONS),
+        output_prefix='%s-%s' % (morphology.name, Prefix.SHORT_SECTIONS),
         output_directory=output_directory)
 
     vmv_plotting.plot_scatter_data_with_closeups_if_needed_along_x_y_z(

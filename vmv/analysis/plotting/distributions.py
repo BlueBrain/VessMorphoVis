@@ -20,6 +20,7 @@ import math
 from matplotlib import pyplot, patches
 
 # Internal imports
+from vmv.consts import Suffix
 import vmv.analysis.plotting as vmv_plotting
 import vmv.utilities
 
@@ -65,7 +66,8 @@ def plot_scatter(data_frame,
     ax.set_title(title, pad=plot_styles.title_pad) if title is not None else None
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.SCATTER),
+                             output_directory=output_directory,
                              dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
@@ -148,7 +150,8 @@ def plot_scatter_data_with_closeups_if_needed(data_frame,
                                     facecolor='white', edgecolor='black', zorder=0))
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.SCATTER),
+                             output_directory=output_directory,
                              dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
@@ -277,7 +280,8 @@ def plot_range_data(data_frame,
     ax.set_title(title, pad=plot_styles.title_pad) if title is not None else None
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.RANGE),
+                             output_directory=output_directory,
                              dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean

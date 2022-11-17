@@ -23,6 +23,7 @@ import pandas
 # Internal imports
 import vmv.analysis.plotting as vmv_plotting
 import vmv.utilities
+from vmv.consts import Suffix
 
 
 ####################################################################################################
@@ -85,7 +86,8 @@ def plot_average_profile_with_range(data_frame,
     ax.set_xticks(x_ticks)
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.PROFILE),
+                             output_directory=output_directory,
                              dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
