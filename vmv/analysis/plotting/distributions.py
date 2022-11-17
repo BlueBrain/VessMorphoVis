@@ -1,0 +1,186 @@
+####################################################################################################
+# Copyright (c) 2019 - 2022, EPFL / Blue Brain Project
+# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
+#
+# This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, version 3 of the License.
+#
+# This Blender-based tool is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program.
+# If not, see <http://www.gnu.org/licenses/>.
+####################################################################################################
+
+# System imports
+import math
+from matplotlib import pyplot, patches
+
+# Internal imports
+import vmv.analysis.plotting as vmv_plotting
+import vmv.utilities
+
+
+####################################################################################################
+# @plot_scatter
+####################################################################################################
+def plot_scatter(data_frame,
+                 x_keyword,
+                 y_keyword,
+                 x_label,
+                 y_label,
+                 output_prefix,
+                 output_directory,
+                 title=None,
+                 fig_size=(6, 10),
+                 dpi=150,
+                 light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+                 dark_color=vmv.consts.Color.CM_BLUE_DARK,
+                 plot_styles=vmv.utilities.PlotStyle(),
+                 save_pdf=False,
+                 save_svg=False):
+
+    # Set the styles
+    vmv_plotting.set_plotting_styles(plot_styles=plot_styles)
+
+    # Construct the figure
+    fig, ax = pyplot.subplots(1, 1)
+    fig.set_size_inches(fig_size[0], fig_size[1])
+    fig.set_tight_layout('w_pad')
+
+    # Plot
+    xdata = data_frame[x_keyword]
+    ydata = data_frame[y_keyword]
+    ax.scatter(xdata, ydata, marker='+', color=dark_color)
+
+    # Set the axis style
+    vmv_plotting.add_default_axis_styles(ax=ax, plot_styles=plot_styles)
+
+    # Text
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(title, pad=plot_styles.title_pad) if title is not None else None
+
+    # Save the figure
+    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+                             dpi=dpi, svg=save_svg, pdf=save_pdf)
+
+    # Reset to clean
+    vmv_plotting.reset_matplotlib()
+
+
+####################################################################################################
+# @plot_scatter_data_with_closeups
+####################################################################################################
+def plot_scatter_data_with_closeups_if_needed(data_frame,
+                                              x_keyword,
+                                              y_keyword,
+                                              x_label,
+                                              y_label,
+                                              output_prefix,
+                                              output_directory,
+                                              title=None,
+                                              fig_size=(6, 10),
+                                              dpi=150,
+                                              light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+                                              dark_color=vmv.consts.Color.CM_BLUE_DARK,
+                                              plot_styles=vmv.utilities.PlotStyle(),
+                                              save_pdf=False,
+                                              save_svg=False):
+
+    # Set the styles
+    vmv_plotting.set_plotting_styles(plot_styles=plot_styles)
+
+    # Get the data columns
+    xdata = data_frame[x_keyword]
+    ydata = data_frame[y_keyword]
+
+    # Check if the X-data has points between 0 and 1
+    number_points = 0
+    for x in xdata:
+        if 1 > x > 0:
+            number_points += 1
+
+    # Use the normal scatter plot. Otherwise, use the closeups to show the data
+    if number_points == 0:
+        plot_scatter(x_keyword=x_keyword, y_keyword=y_keyword, x_label=x_label, y_label=y_label,
+                     output_prefix=output_prefix, output_directory=output_directory,
+                     title=title,  fig_size=fig_size, dpi=dpi,
+                     light_color=light_color, dark_color=dark_color,
+                     plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)
+        return
+
+    # Construct the figure
+    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, gridspec_kw={'width_ratios': [3, 1]})
+    fig.set_size_inches(fig_size[0], fig_size[1])
+    fig.set_tight_layout('w_pad')
+
+    # Plot
+    ax1.scatter(xdata, ydata, marker='+', linewidth=1, color=dark_color, alpha=0.5)
+
+    # Set the axis style
+    vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)
+    ax1.grid(axis='y')
+
+    # Text
+    ax1.set_xlabel(x_label)
+    ax1.set_ylabel(y_label)
+    ax1.set_title(title, pad=plot_styles.title_pad) if title is not None else None
+
+    # X-axis bins, only two bins
+    xbins = [0, math.ceil(max(xdata))]
+    ax1.set_xlim(0, math.ceil(max(xdata)))
+    ax1.set_xticks(xbins)
+
+    # Add the closeup to the right
+    ax2.scatter(xdata, ydata,
+                marker=plot_styles.scatter_plot_marker, linewidth=1,
+                color=dark_color, alpha=0.75, zorder=10)
+
+    # Adding the plot style for the patch
+    vmv_plotting.add_patch_styles(ax=ax2, plot_styles=plot_styles)
+    ax2.add_patch(patches.Rectangle((0, min(ydata)),
+                                    width=1.0, height=max(ydata) - min(ydata),
+                                    linewidth=plot_styles.line_width,
+                                    facecolor='white', edgecolor='black', zorder=0))
+
+    # Save the figure
+    vmv_plotting.save_figure(output_prefix=output_prefix, output_directory=output_directory,
+                             dpi=dpi, svg=save_svg, pdf=save_pdf)
+
+    # Reset to clean
+    vmv_plotting.reset_matplotlib()
+
+
+####################################################################################################
+# plot_histograms_along_x_y_z
+####################################################################################################
+def plot_scatter_along_x_y_z(data_frame,
+                             x_keyword,
+                             output_prefix,
+                             output_directory,
+                             x_label,
+                             title=None,
+                             fig_size=(6, 10),
+                             dpi=150,
+                             light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+                             dark_color=vmv.consts.Color.CM_BLUE_DARK,
+                             plot_styles=vmv.utilities.PlotStyle(),
+                             save_pdf=False,
+                             save_svg=False):
+
+    for i, axis in enumerate(vmv.consts.Keys.AXES):
+
+        plot_scatter_data_with_closeups_if_needed(
+            data_frame=data_frame,
+            x_keyword=x_keyword, y_keyword=axis,
+            x_label=x_label, y_label=r'Distance along %s-axis ($\mu$m)' % axis,
+            output_prefix=output_prefix + '-%s' % axis,
+            output_directory=output_directory,
+            title=title, fig_size=fig_size, dpi=dpi,
+            light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
+            dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
+            plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)

@@ -29,7 +29,7 @@ class Prefix:
     def __init__(self):
         pass
 
-    # Morphology suffix
+    # Vessel radius
     VESSEL_RADIUS = 'vessel-radius'
 
     # Zero-radius samples

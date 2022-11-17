@@ -55,6 +55,7 @@ def plot_histogram_with_box_plot(data_frame,
     # Create a new figure and adjust its size
     fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, gridspec_kw={'width_ratios': [3, 1]})
     fig.set_size_inches(fig_size[0], fig_size[1])
+    fig.set_tight_layout('w_pad')
 
     # Get the data, with which the histogram will be drawn
     data = data_frame[data_key]

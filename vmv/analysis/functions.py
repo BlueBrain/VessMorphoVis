@@ -103,7 +103,6 @@ def export_analysis_results(morphology,
                             output_directory):
 
     vmv_plotting.plot_radius_analysis_statistics(morphology, output_directory)
-    exit(0)
 
 
 

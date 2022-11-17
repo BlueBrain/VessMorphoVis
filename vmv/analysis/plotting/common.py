@@ -51,10 +51,28 @@ def add_default_axis_styles(ax,
     for spine in ['right', 'top']:
         ax.spines[spine].set_visible(False)
     ax.tick_params(axis='both', which='both', bottom=True, left=True,
-                   width=plot_styles.line_width,
-                   length=plot_styles.tick_length)
+                   width=plot_styles.line_width, length=plot_styles.tick_length)
     ax.grid(axis='y')
 
+
+####################################################################################################
+# @add_patch_styles
+####################################################################################################
+def add_patch_styles(ax,
+                     plot_styles):
+
+    # Adjust the spine parameters
+    for spine in ['left', 'bottom']:
+        ax.spines[spine].set_position(('outward', plot_styles.spines_shift))
+        ax.spines[spine].set_color('black')
+        ax.spines[spine].set_linewidth(2)
+    for spine in ['left', 'top', 'right']:
+        ax.spines[spine].set_visible(False)
+    ax.tick_params(axis='both', which='both', bottom=True, left=False,
+                   width=plot_styles.line_width, length=plot_styles.tick_length)
+    ax.set_xlim(left=0, right=1)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.grid(False)
 
 ####################################################################################################
 # save_figure

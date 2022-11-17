@@ -24,7 +24,12 @@ import vmv.analysis.plotting as vmv_plotting
 from vmv.consts import Keys, Prefix
 
 
-def plot_radius_analysis_statistics_for_zero_radius_samples(data_frame, output_directory):
+####################################################################################################
+# @plot_radius_analysis_statistics_for_zero_radius_samples
+####################################################################################################
+def plot_radius_analysis_statistics_for_zero_radius_samples(data_frame,
+                                                            output_prefix,
+                                                            output_directory):
 
     # Verify if the dataset has any zero-radius samples
     zero_radius_data = list()
@@ -38,16 +43,17 @@ def plot_radius_analysis_statistics_for_zero_radius_samples(data_frame, output_d
                                                   columns=[Keys.SAMPLE_RADIUS, Keys.X, Keys.Y,
                                                            Keys.Z])
 
-        vmv_plotting.plot_histograms_along_x_y_z(data_frame=zero_radius_data_frame,
-                                                 output_prefix=Prefix.ZERO_RADIUS_SAMPLES,
-                                                 output_directory=output_directory)
+        vmv_plotting.plot_histograms_along_x_y_z(
+            data_frame=zero_radius_data_frame,
+            output_prefix='%s-%s' % (output_prefix, Prefix.ZERO_RADIUS_SAMPLES),
+            output_directory=output_directory)
 
 
 ####################################################################################################
-# @plot_radius_analysis_statistics
+# @plot_radius_analysis_from_samples_list
 ####################################################################################################
-def plot_radius_analysis_statistics(morphology,
-                                    output_directory):
+def plot_radius_analysis_from_samples_list(morphology,
+                                           output_directory):
 
     # Analyze the radii of the samples only
     # TODO: Use the samples_list instead of the sections_list
@@ -58,22 +64,88 @@ def plot_radius_analysis_statistics(morphology,
     vmv_plotting.plot_average_profiles_along_x_y_z(
         data_frame=data_frame, x_keyword=vmv.consts.Keys.SAMPLE_RADIUS,
         x_axis_label=r'Vessel Mean Radius ($\mu$m)',
-        output_prefix=Prefix.VESSEL_RADIUS, output_directory=output_directory)
+        output_prefix='%s-%s' % (morphology.name, Prefix.VESSEL_RADIUS),
+        output_directory=output_directory)
 
-    # Radius scatter index, x, y, z
-    # if no data between 0 and one then use full spectrum ...
-
-
-
+    # Radius scatter x, y, z
+    vmv_plotting.plot_scatter_along_x_y_z(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.SAMPLE_RADIUS,
+        x_label=r'Vessel Radius ($\mu$m)',
+        output_prefix='%s-%s-scatter' % (morphology.name, Prefix.VESSEL_RADIUS),
+        output_directory=output_directory)
 
     # Vessel radius histogram
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SAMPLE_RADIUS,
-        output_prefix='%s-histogram' % Prefix.VESSEL_RADIUS, output_directory=output_directory,
+        output_prefix='%s-%s-histogram' % (morphology.name, Prefix.VESSEL_RADIUS),
+        output_directory=output_directory,
         y_label=r'Vessel Radius ($\mu$m)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
 
     # Zero-radius samples
     plot_radius_analysis_statistics_for_zero_radius_samples(
-        data_frame=data_frame, output_directory=output_directory)
+        data_frame=data_frame, output_prefix=morphology.name, output_directory=output_directory)
 
+
+####################################################################################################
+# @plot_radius_analysis_from_sections_list
+####################################################################################################
+def plot_radius_analysis_from_sections_list(morphology,
+                                            output_directory):
+
+    data_frame = vmv.analysis.analyse_per_section_radius(morphology.sections_list)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.SECTION_INDEX,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label='Section Index',
+                                 output_prefix='section-radius-analysis',
+                                 output_directory=output_directory,
+                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
+                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.X,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label=r'Distance along Z-axis ($\mu$m)',
+                                 output_prefix='section-radius-analysis-x',
+                                 output_directory=output_directory,
+                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
+                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.Y,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label=r'Distance along Y-axis ($\mu$m)',
+                                 output_prefix='section-radius-analysis-y',
+                                 output_directory=output_directory,
+                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
+                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+    vmv.plot_range_data_closeups(df=data_frame,
+                                 data_key=Keys.Z,
+                                 min_keyword=Keys.SECTION_MIN_RADIUS,
+                                 mean_keyword=Keys.SECTION_MEAN_RADIUS,
+                                 max_keyword=Keys.SECTION_MAX_RADIUS,
+                                 label=r'Distance along Z-axis ($\mu$m)',
+                                 output_prefix='section-radius-analysis-z',
+                                 output_directory=output_directory,
+                                 light_color=vmv.consts.Color.CM_ORANGE_DARK,
+                                 dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+
+####################################################################################################
+# @plot_radius_analysis_statistics
+####################################################################################################
+def plot_radius_analysis_statistics(morphology,
+                                    output_directory):
+
+    plot_radius_analysis_from_samples_list(morphology, output_directory)
+
+    plot_radius_analysis_from_sections_list(morphology, output_directory)

@@ -36,7 +36,8 @@ class PlotStyle:
                  spines_shift=10,
                  box_plot_marker='o',
                  box_plot_marker_size=5,
-                 box_plot_alpha=0.5):
+                 box_plot_alpha=0.5,
+                 scatter_plot_marker='x'):
 
         self.axes_grid = axes_grid
         self.title_pad = title_pad
@@ -50,3 +51,4 @@ class PlotStyle:
         self.box_plot_marker = box_plot_marker
         self.box_plot_marker_size = box_plot_marker_size
         self.box_plot_alpha = box_plot_alpha
+        self.scatter_plot_marker = scatter_plot_marker

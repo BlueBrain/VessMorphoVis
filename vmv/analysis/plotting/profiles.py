@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2022, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -65,6 +65,7 @@ def plot_average_profile_with_range(data_frame,
     # Construct the figure
     fig, ax = pyplot.subplots(1, 1)
     fig.set_size_inches(fig_size[0], fig_size[1])
+    fig.set_tight_layout('w_pad')
 
     # Plot the data
     ax.plot(_mean[x_keyword].values, _mean[y_keyword].values, color=dark_color)

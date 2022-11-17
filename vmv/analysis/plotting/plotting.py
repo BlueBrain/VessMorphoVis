@@ -176,7 +176,7 @@ def plot_range_data_closeups(df,
     #    dark_color = dark_colors[ii]
 
     # Set the default styles
-    set_styles(font_size=font_size, axes_linewidth=line_width)
+    #set_styles(font_size=font_size, axes_linewidth=line_width)
 
     # Create a new figure and adjust its size
     fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
@@ -840,57 +840,3 @@ def plot_distribution_with_range(df,
 
 
 
-
-
-def plot_scatter(xdata, ydata,
-                 xlabel, ylabel, title,
-                 output_directory, output_prefix,
-                 top_limit=None, figure_width=5, figure_height=10, spines_shift=10,
-                 bins=50, color='r', font_size=30, line_width=1, padding=0, x_label='Count',
-                 dpi=92, save_pdf=False, save_svg=False):
-
-    # Set the default styles
-    set_styles(font_size=font_size, axes_linewidth=line_width)
-
-    # Create a new figure and adjust its size
-    fig, ax1 = pyplot.subplots(1, 1)
-    fig.set_size_inches(figure_width, figure_height)
-
-    # Plot
-    ax1.scatter(xdata, ydata, marker='+', color=color)
-
-    # Adjust the spine parameters
-    for spine in ['left', 'bottom']:
-        ax1.spines[spine].set_position(('outward', spines_shift))
-        ax1.spines[spine].set_color('black')
-        ax1.spines[spine].set_linewidth(line_width)
-    for spine in ['right', 'top']:
-        ax1.spines[spine].set_visible(False)
-    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
-                    left=True)
-    ax1.grid(False)
-    ax1.grid(axis='y')
-    ax1.set_xlabel(xlabel)
-    ax1.set_ylabel(ylabel)
-    ax1.set_title(title, pad=25)
-
-    # X-axis bins, only two bins
-    x_ticks = [math.floor(min(xdata)), math.ceil(max(xdata))]
-    ax1.set_xlim(0, math.ceil(max(xdata)))
-    ax1.set_xticks(x_ticks)
-
-    if int(math.ceil(min(ydata))) == 0:
-        ax1.set_ylim(bottom=0)
-
-    # Save PNG by default, PDF and SVG if needed
-    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True)
-    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
-    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
-
-    # Close figure to reset
-    pyplot.clf()
-    pyplot.cla()
-    pyplot.close()
