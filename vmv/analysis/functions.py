@@ -413,19 +413,47 @@ def plot_analysis_samples_per_section(morphology,
                        output_directory=output_directory,
                        color=b_dark)
 
+import vmv.consts
+
+def draw_average_profiles_along_x_y_z(data_frame,
+                                      x_key,
+                                      title,
+                                      x_axis_label, 
+                                      output_prefix,
+                                      output_directory):
+
+    for axis in ['x', 'y', 'z']:
+        if axis == 'x':
+            y_keyword = vmv.consts.Keys.X
+            prefix = '%s-%s'% (output_prefix, axis)
+        elif axis == 'y':
+            y_keyword = vmv.consts.Keys.Y
+            prefix = '%s-%s'% (output_prefix, axis)
+        elif axis == 'z':
+            y_keyword = vmv.consts.Keys.Z
+            prefix = '%s-%s'% (output_prefix, axis)
+
+        vmv.plotting.plot_average_profile_with_range(
+            data_frame=data_frame,
+            indep_keyword=y_keyword, 
+            dep_kepword=x_key,
+            x_label=x_axis_label, 
+            y_label=r'Distance along %s-axis ($\mu$m)' % y_keyword,
+            output_prefix=prefix,
+            output_directory=output_directory)  
 
 def plot_analysis_radii(morphology,
                         output_directory):
     
-
+    # Analyze the radii of the samples only 
     data_frame = vmv.analysis.analyze_samples_radii_xyz(morphology.sections_list)
 
+    # Plot the average profiles along XYZ
     vmv.plotting.plot_average_profile_with_range(df=data_frame,
                                                  indep_keyword='X', dep_kepword=vmv.consts.Keys.SAMPLE_RADIUS,
                                                  x_label='Radius', y_label='Distance',
                                                  output_prefix='radiis-x',
-                                                 output_directory=output_directory
-                                                 )
+                                                 output_directory=output_directory)
    
 
     # Number of Samples per section histogram

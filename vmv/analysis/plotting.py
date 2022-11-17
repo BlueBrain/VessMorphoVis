@@ -20,6 +20,7 @@ import os
 import math
 import numpy
 import seaborn
+import pandas
 import matplotlib.pyplot as pyplot
 import matplotlib.font_manager as font_manager
 import matplotlib.cm as colormap
@@ -711,30 +712,31 @@ def plot_range(avg_value,
     pyplot.close()
 
 
-import pandas
-def plot_average_profile_with_range(df,
-                                      indep_keyword, dep_kepword,
+
+def plot_average_profile_with_range(dataframe, 
+                                    indep_keyword, dep_kepword,
                                     x_label, y_label,
-                                      bins=50,
-                                      figure_width=6, figure_height=10,
-                                      light_color='blue', dark_color='red',
-                                        spines_shift=10,
-                                        line_width=2,
+                                    bins=50,
+                                    figure_width=6, 
+                                    figure_height=10,
+                                    light_color='blue', dark_color='red',
+                                    spines_shift=10,
+                                    line_width=2,
                                     font_size=30, 
-                                        dpi=300,
-                                        output_directory="",
-                                        output_prefix="",
-                                        save_pdf=False,
-                                        save_svg=False
+                                    dpi=300,
+                                    output_directory="",
+                                    output_prefix="",
+                                    save_pdf=False,
+                                    save_svg=False
                                     ):
     # Set the default styles
     set_styles(font_size=font_size, axes_linewidth=line_width)
 
     # Sort the data-frame by the indep. axis
-    df = df.sort_values(by=[indep_keyword])
+    dataframe = dataframe.sort_values(by=[indep_keyword])
 
     # Construct the groups
-    groups = df.groupby(pandas.cut(df[indep_keyword], bins=bins))
+    groups = dataframe.groupby(pandas.cut(dataframe[indep_keyword], bins=bins))
 
     # Construct the groups
     _mean = groups.mean()
