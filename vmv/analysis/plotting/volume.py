@@ -65,6 +65,12 @@ def plot_volume_analysis_statistics(morphology,
 
 
 
+    vmv_plotting.plot_scatter_with_range_along_x_y_z(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.SECTION_VOLUME,
+        x_label='Segment Volume Range\nper Section' + r' ($\mu$m³)',
+        output_prefix='%s_%s_%s-test' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_MEAN_VOLUME),
+        output_directory=output_directory)
+
 
     # Volume ratio per section
     vmv_plotting.plot_histogram_with_box_plot(
