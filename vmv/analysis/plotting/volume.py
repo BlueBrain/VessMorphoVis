@@ -71,7 +71,7 @@ def plot_volume_analysis_statistics(morphology,
         data_frame=data_frame, data_key=Keys.SEGMENT_VOLUME_RATIO,
         output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_VOLUME_RATIO),
         output_directory=output_directory,
-        y_label='Segment Volume Ratio\n(per Section)',
+        y_label='Segment Volume Ratio (per Section)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
 
     vmv_plotting.plot_average_profiles_along_x_y_z(
@@ -81,7 +81,7 @@ def plot_volume_analysis_statistics(morphology,
         output_directory=output_directory)
 
     # Radius scatter x, y, z
-    vmv_plotting.plot_scatter_data_with_closeups_if_needed_along_x_y_z(
+    vmv_plotting.plot_scatter_data_along_x_y_z(
         data_frame=data_frame, x_keyword=vmv.consts.Keys.SEGMENT_VOLUME_RATIO,
         x_label='Segment Volume Ratio\n(per Section)',
         output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_VOLUME_RATIO),

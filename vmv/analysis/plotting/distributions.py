@@ -108,7 +108,8 @@ def plot_scatter_data_with_closeups_if_needed(data_frame,
 
     # Use the normal scatter plot. Otherwise, use the closeups to show the data
     if number_points == 0:
-        plot_scatter(x_keyword=x_keyword, y_keyword=y_keyword, x_label=x_label, y_label=y_label,
+        plot_scatter(data_frame=data_frame,
+                     x_keyword=x_keyword, y_keyword=y_keyword, x_label=x_label, y_label=y_label,
                      output_prefix=output_prefix, output_directory=output_directory,
                      title=title,  fig_size=fig_size, dpi=dpi,
                      light_color=light_color, dark_color=dark_color,

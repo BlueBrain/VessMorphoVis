@@ -58,8 +58,11 @@ class Prefix:
 
     SEGMENT_VOLUME_RATIO = 'segment-volume-ratio'
 
+    SECTION_SURFACE_AREA = 'section-surface-area'
 
+    SEGMENT_MEAN_SURFACE_AREA = 'segment-mean-surface-area'
 
+    SEGMENT_SURFACE_AREA_RATIO = 'segment-surface-area-ratio'
     STRUCTURE = 'structure'
     RADIUS = 'radius'
     LENGTH = 'length'
