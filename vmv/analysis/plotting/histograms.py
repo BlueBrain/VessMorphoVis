@@ -63,6 +63,7 @@ def plot_histogram_with_box_plot(data_frame,
     # Add the histogram (ax1)
     x, y, _ = ax1.hist(data, color=dark_color, orientation='horizontal', edgecolor='white',
                        bins=bins, zorder=3)
+    ax1.set_xlim(left=0)
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)

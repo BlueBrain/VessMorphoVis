@@ -59,6 +59,7 @@ def plot_scatter(data_frame,
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax, plot_styles=plot_styles)
+    ax.set_xlim(left=0)
 
     # Text
     ax.set_xlabel(x_label)
@@ -123,6 +124,7 @@ def plot_scatter_data_with_closeups_if_needed(data_frame,
 
     # Plot
     ax1.scatter(xdata, ydata, marker='+', linewidth=1, color=dark_color, alpha=0.5)
+    ax1.set_xlim(left=0)
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)
@@ -271,6 +273,7 @@ def plot_range_data(data_frame,
     # Plot
     ax.errorbar(xdata_avg, ydata, xerr=asymmetric_error, fmt='.',
                 color=light_color, ecolor=dark_color, alpha=0.75, zorder=1)
+    ax.set_xlim(left=0)
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax, plot_styles=plot_styles)

@@ -71,6 +71,7 @@ def plot_average_profile_with_range(data_frame,
     # Plot the data
     ax.plot(_mean[x_keyword].values, _mean[y_keyword].values, color=dark_color)
     ax.fill_betweenx(_mean[y_keyword].values, p_max, p_min, color=light_color, alpha=0.25)
+    ax.set_xlim(left=0)
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax, plot_styles=plot_styles)
