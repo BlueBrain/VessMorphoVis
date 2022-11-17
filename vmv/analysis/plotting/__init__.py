@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2022, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -15,16 +15,8 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .bevel_consts import *
-from .color_consts import *
-from .image_consts import *
-from .geometry_conts import *
-from .math_consts import *
-from .meshing_consts import *
-from .messages_consts import *
-from .rendering_planes import *
-from .path_consts import *
-from .skeleton_consts import *
-from .suffix_consts import *
-from .keys_consts import *
-from .prefix_consts import *
+from .common import *
+from .histograms import *
+from .profiles import *
+from .distributions import *
+from .radius import *

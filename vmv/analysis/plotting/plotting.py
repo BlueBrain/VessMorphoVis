@@ -22,7 +22,6 @@ import numpy
 import seaborn
 import pandas
 import matplotlib.pyplot as pyplot
-import matplotlib.font_manager as font_manager
 import matplotlib.cm as colormap
 
 # Internal imports
@@ -30,83 +29,11 @@ import vmv.consts
 import vmv.utilities
 
 
-####################################################################################################
-# @load_fonts
-####################################################################################################
-def load_fonts():
-    """Imports all the fonts required for plotting.
-    """
-
-    # Import the fonts
-    font_dirs = [os.path.dirname(vmv.consts.Paths.FONTS_DIRECTORY)]
-    font_dirs.extend([os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'])
-    font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
-    for font_file in font_files:
-        font_manager.fontManager.addfont(font_file)
 
 
-####################################################################################################
-# @read_dist_file
-####################################################################################################
-def read_dist_file(file_path,
-                   invert=False):
-    """Reads the distribution file into a list.
-
-    :param file_path:
-        The path to the input file.
-    :param invert:
-        If set to True, invert the read values.
-    :return:
-    """
-
-    # Data list
-    data = list()
-
-    # Open the file
-    f = open(file_path, 'r')
-    for line in f:
-        if 'inf' in line:
-            continue
-        content = line.strip(' ').split(' ')
-        value = float(content[1])
-        if invert:
-            value = 1.0 / value
-        data.append(value)
-    f.close()
-
-    # Return a list of the data read from the file
-    return data
 
 
-####################################################################################################
-# @set_styles
-####################################################################################################
-def set_styles(font='Arial',
-               font_size=30,
-               axes_grid=False,
-               axes_linewidth=2):
-    """Sets the styles for plotting a figure.
 
-    :param font:
-        Font name.
-    :param font_size:
-        Font size, default 30.
-    :param axes_grid:
-        Whether the grid is on or off, default = False.
-    :param axes_linewidth:
-        The width of all lines in a figure, default 2.
-    """
-    pyplot.rcParams['axes.grid'] = axes_grid
-    pyplot.rcParams['grid.linestyle'] = '-'
-    pyplot.rcParams['font.family'] = font
-    pyplot.rcParams['axes.linewidth'] = axes_linewidth
-    pyplot.rcParams['axes.labelweight'] = 'regular'
-    pyplot.rcParams['axes.labelsize'] = font_size
-    pyplot.rcParams['xtick.labelsize'] = font_size
-    pyplot.rcParams['ytick.labelsize'] = font_size
-    pyplot.rcParams['legend.fontsize'] = font_size
-    pyplot.rcParams['axes.titlesize'] = font_size
-    pyplot.rcParams['axes.autolimit_mode'] = 'round_numbers'
 
 def plot_scatter_data_with_closeups(df,
                                     idep_keyword,
@@ -713,86 +640,6 @@ def plot_range(avg_value,
 
 
 
-def plot_average_profile_with_range(dataframe, 
-                                    indep_keyword, dep_kepword,
-                                    x_label, y_label,
-                                    bins=50,
-                                    figure_width=6, 
-                                    figure_height=10,
-                                    light_color='blue', dark_color='red',
-                                    spines_shift=10,
-                                    line_width=2,
-                                    font_size=30, 
-                                    dpi=300,
-                                    output_directory="",
-                                    output_prefix="",
-                                    save_pdf=False,
-                                    save_svg=False
-                                    ):
-    # Set the default styles
-    set_styles(font_size=font_size, axes_linewidth=line_width)
-
-    # Sort the data-frame by the indep. axis
-    dataframe = dataframe.sort_values(by=[indep_keyword])
-
-    # Construct the groups
-    groups = dataframe.groupby(pandas.cut(dataframe[indep_keyword], bins=bins))
-
-    # Construct the groups
-    _mean = groups.mean()
-    _min = groups.min()
-    _max = groups.max()
-
-    # Construct the range
-    p_min = _min[dep_kepword].values
-    p_max = _max[dep_kepword].values
-
-    # Construct the figure
-    fig, ax = pyplot.subplots(1, 1)
-    fig.set_size_inches(figure_width, figure_height)
-
-    # Plot the data
-    ax.plot(_mean[dep_kepword].values, _mean[indep_keyword].values)
-    ax.fill_betweenx(_mean[indep_keyword].values, p_max, p_min, alpha=0.25)
-
-    # Adjust the spine parameters
-    for spine in ['left', 'bottom']:
-        ax.spines[spine].set_position(('outward', spines_shift))
-        ax.spines[spine].set_color('black')
-        ax.spines[spine].set_linewidth(line_width)
-    for spine in ['right', 'top']:
-        ax.spines[spine].set_visible(False)
-    ax.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True,
-                    left=True)
-    ax.grid(False)
-    ax.grid(axis='y')
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
-    #ax.set_title(title, pad=25)
-
-    # X-axis bins, only two bins
-    x_ticks = [math.floor(min(_min[dep_kepword].values)), math.ceil(max(_max[dep_kepword].values))]
-    ax.set_xlim(0, math.ceil(max(_max[dep_kepword].values)))
-    ax.set_xticks(x_ticks)
-
-    #if int(math.ceil(min(ydata))) == 0:
-    #    ax1.set_ylim(bottom=0)
-
-    # Save PNG by default, PDF and SVG if needed
-    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True)
-    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
-    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
-
-    # Close figure to reset
-    pyplot.clf()
-    pyplot.cla()
-    pyplot.close()
-
-
-
 ####################################################################################################
 # @plot_average_profile
 ####################################################################################################
@@ -993,100 +840,6 @@ def plot_distribution_with_range(df,
 
 
 
-
-
-
-####################################################################################################
-# @plot_histogram
-####################################################################################################
-def plot_histogram(data_frame, data_key,
-                   label, title,
-                   output_directory, output_prefix,
-                   top_limit=None, figure_width=6, figure_height=10,
-                   bins=50, color='r', font_size=30, line_width=1, padding=10, x_label='Count',
-                   dpi=300, save_pdf=False, save_svg=False):
-
-    # Set the default styles
-    set_styles(font_size=font_size, axes_linewidth=line_width)
-
-    # Create a new figure and adjust its size
-    fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True)
-    fig.set_size_inches(figure_width, figure_height)
-
-    # Get the data, with which the histogram will be drawn
-    data = data_frame[data_key]
-
-    # Plot the horizontal histogram (ax1)
-    x, y, _ = ax1.hist(data, color=color, orientation='horizontal', edgecolor='white', bins=bins)
-    for spine in ['left', 'bottom']:
-        ax1.spines[spine].set_position(('outward', 10))
-        ax1.spines[spine].set_color('black')
-        ax1.spines[spine].set_linewidth(line_width)
-    for spine in ['right', 'top']:
-        ax1.spines[spine].set_visible(False)
-    ax1.tick_params(axis='both', width=line_width, length=5, which='both', bottom=True, left=True)
-    ax1.set_title(title, pad=25)
-
-    # X-axis bins, only two bins
-    max_x = max(x)
-    x_limit = math.ceil(max_x)
-    x_ticks = [0, x_limit]
-    ax1.set_xlim(0, x_limit)
-    ax1.set_xticks(x_ticks)
-
-    # TODO: Grid only for the Y axis
-    ax1.grid(axis='y')
-
-    if top_limit is None:
-        ax1.set_ylim(bottom=0.0)
-    else:
-        ax1.set_ylim(bottom=0.0, top=top_limit)
-
-    ax1.set_xlabel(x_label)
-    ax1.set_ylabel(label, labelpad=padding)
-
-    # Right box plot (ax2)
-    bp = ax2.boxplot(data, showfliers=True,
-                     flierprops=dict(marker='o', markersize=5, alpha=0.5,
-                                     markerfacecolor=color, markeredgecolor=color))
-
-    # No visible spines
-    for spine in ['left', 'right', 'top', 'bottom']:
-        ax2.spines[spine].set_visible(False)
-
-    # Adjust the box-plot styles
-    for box in bp['boxes']:
-        box.set(color=color, linewidth=line_width * 0.6)
-    for whisker in bp['whiskers']:
-        whisker.set(color=color, linewidth=line_width * 0.5)
-    for cap in bp['caps']:
-        cap.set(color=color, linewidth=line_width * 0.65, xdata=cap.get_xdata() + (-0.01, 0.01))
-    for median in bp['medians']:
-        median.set(color='k', linewidth=line_width * 0.65)
-
-    # Shift the position of the box plot for compacting the figure
-    bp_position = ax2.get_position()
-    bp_position.x0 = bp_position.x0 - 0.1
-    bp_position.x1 = bp_position.x1 - 0.1
-    ax2.set_position(bp_position)
-
-    # Set its transparency to zero
-    ax2.patch.set_alpha(0.0)
-    ax2.tick_params(axis='both', which='both', left=False, bottom=False, labelbottom=False)
-    ax2.grid(False)
-
-    # Save PNG by default, PDF and SVG if needed
-    pyplot.savefig('%s/%s.png' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True)
-    pyplot.savefig('%s/%s.pdf' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_pdf else None
-    pyplot.savefig('%s/%s.svg' % (output_directory, output_prefix),
-                   dpi=dpi, bbox_inches='tight', transparent=True) if save_svg else None
-
-    # Close figure to reset
-    pyplot.clf()
-    pyplot.cla()
-    pyplot.close()
 
 
 def plot_scatter(xdata, ydata,

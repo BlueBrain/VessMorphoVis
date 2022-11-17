@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2022, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -15,16 +15,19 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .bevel_consts import *
-from .color_consts import *
-from .image_consts import *
-from .geometry_conts import *
-from .math_consts import *
-from .meshing_consts import *
-from .messages_consts import *
-from .rendering_planes import *
-from .path_consts import *
-from .skeleton_consts import *
-from .suffix_consts import *
-from .keys_consts import *
-from .prefix_consts import *
+
+####################################################################################################
+# Meshing
+####################################################################################################
+class Prefix:
+    """Prefix constants
+    """
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+        pass
+
+    # Morphology suffix
+    VESSEL_RADIUS = 'vessel-radius'

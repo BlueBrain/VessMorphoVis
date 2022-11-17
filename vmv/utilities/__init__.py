@@ -25,3 +25,4 @@ from .time_line import *
 from .timer import *
 from .version import *
 from .math import *
+from .plot_styles import *

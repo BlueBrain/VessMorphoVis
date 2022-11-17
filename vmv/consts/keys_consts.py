@@ -33,6 +33,7 @@ class Keys:
     X = 'X'
     Y = 'Y'
     Z = 'Z'
+    AXES = [X, Y, Z]
 
     # Section Index
     SECTION_INDEX = 'Section Index'

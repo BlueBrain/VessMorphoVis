@@ -17,5 +17,6 @@
 
 from .kernels import * 
 from .items import *
-from .plotting import *
+from vmv.analysis.plotting.plotting import *
 from .functions import *
+from .plotting import *

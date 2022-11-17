@@ -1,6 +1,6 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
-# Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
+# Copyright (c) 2016 - 2022, EPFL / Blue Brain Project
+#               Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
 #
@@ -15,16 +15,24 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .bevel_consts import *
-from .color_consts import *
-from .image_consts import *
-from .geometry_conts import *
-from .math_consts import *
-from .meshing_consts import *
-from .messages_consts import *
-from .rendering_planes import *
-from .path_consts import *
-from .skeleton_consts import *
-from .suffix_consts import *
-from .keys_consts import *
-from .prefix_consts import *
+# System imports
+import os
+import matplotlib.font_manager as font_manager
+
+# Internal imports
+import vmv.consts
+
+
+####################################################################################################
+# @load_fonts
+####################################################################################################
+def load_fonts():
+    """Load all the fonts required for plotting.
+    """
+
+    # Import the fonts
+    font_dirs = [os.path.dirname(vmv.consts.Paths.FONTS_DIRECTORY)]
+    font_dirs.extend([os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'])
+    font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+    for font_file in font_files:
+        font_manager.fontManager.addfont(font_file)
