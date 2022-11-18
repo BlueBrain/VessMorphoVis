@@ -54,8 +54,9 @@ class Prefix:
     SHORT_SECTIONS = 'short-sections'
 
     SECTION_VOLUME = 'section-volume'
+    SEGMENT_VOLUME = 'segment-volume'
     SEGMENT_MEAN_VOLUME = 'segment-mean-volume'
-
+    SEGMENT_VOLUME_RANGE = 'segment-volume-range'
     SEGMENT_VOLUME_RATIO = 'segment-volume-ratio'
 
     SECTION_SURFACE_AREA = 'section-surface-area'

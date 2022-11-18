@@ -65,6 +65,7 @@ class Keys:
 
     # Surface Area
     SECTION_SURFACE_AREA = 'Section Surface Area'
+    SEGMENT_SURFACE_AREA = 'Segment Surface Area'
     SEGMENT_MIN_SURFACE_AREA = 'Segment Min. Surface Area'
     SEGMENT_MEAN_SURFACE_AREA = 'Segment Mean Surface Area'
     SEGMENT_MAX_SURFACE_AREA = 'Segment Max. Surface Area'
@@ -72,6 +73,7 @@ class Keys:
 
     # Volume
     SECTION_VOLUME = 'Section Volume'
+    SEGMENT_VOLUME = 'Segment Volume'
     SEGMENT_MIN_VOLUME = 'Segment Min. Volume'
     SEGMENT_MEAN_VOLUME = 'Segment Mean Volume'
     SEGMENT_MAX_VOLUME = 'Segment Max. Volume'

@@ -42,3 +42,5 @@ class Suffix:
     HISTOGRAM = '_histogram'
 
     SCATTER = '_scatter'
+
+    DISTRIBUTION = '_distribution'

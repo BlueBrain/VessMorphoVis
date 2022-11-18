@@ -102,13 +102,13 @@ def plot_radius_analysisss_statistics(morphology, output_directory):
 def export_analysis_results(morphology,
                             output_directory):
 
-    vmv_plotting.plot_structure_analysis_statistics(morphology, output_directory)
+    #vmv_plotting.plot_structure_analysis_statistics(morphology, output_directory)
 
-    vmv_plotting.plot_radius_analysis_statistics(morphology, output_directory)
+    #vmv_plotting.plot_radius_analysis_statistics(morphology, output_directory)
 
-    vmv_plotting.plot_length_analysis_statistics(morphology, output_directory)
+    #vmv_plotting.plot_length_analysis_statistics(morphology, output_directory)
 
-    vmv_plotting.plot_surface_area_analysis_statistics(morphology, output_directory)
+    #vmv_plotting.plot_surface_area_analysis_statistics(morphology, output_directory)
 
 
     vmv_plotting.plot_volume_analysis_statistics(morphology, output_directory)

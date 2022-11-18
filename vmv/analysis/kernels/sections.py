@@ -629,6 +629,28 @@ def perform_surface_area_analysis(sections,
                                            Keys.SEGMENT_SURFACE_AREA_RATIO])
 
 
+####################################################################################################
+# @perform_volume_analysis
+####################################################################################################
+def perform_per_segment_volume_analysis(sections):
+
+    data = list()
+
+    for section in sections:
+        for i in range(len(section.samples) - 1):
+            p0 = section.samples[i].point
+            p1 = section.samples[i + 1].point
+            center = 0.5 * (p0 + p1)
+            r0 = section.samples[i].radius
+            r1 = section.samples[i + 1].radius
+            segment_volume = (1.0 / 3.0) * math.pi * (p0 - p1).length * (
+                        r0 * r0 + r0 * r1 + r1 * r1)
+            data.append([center[0], center[1], center[2], segment_volume])
+
+    # Construct the data frame
+    return pandas.DataFrame(data, columns=[Keys.X, Keys.Y, Keys.Z, Keys.SEGMENT_VOLUME])
+
+
 
 
 ####################################################################################################

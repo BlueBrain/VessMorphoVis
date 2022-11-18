@@ -17,6 +17,7 @@
 
 # System imports
 import math
+import pandas
 from matplotlib import pyplot, patches
 
 # Internal imports
@@ -303,7 +304,7 @@ def plot_range_data_along_xyz(data_frame,
                               output_prefix,
                               output_directory,
                               title=None,
-                              fig_size=(6, 10),
+                              fig_size=(10, 10),
                               dpi=150,
                               plot_styles=vmv.utilities.PlotStyle(),
                               save_pdf=False,
@@ -325,83 +326,93 @@ def plot_range_data_along_xyz(data_frame,
                         plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)
 
 
-
 ####################################################################################################
 # @plot_scatter
 ####################################################################################################
-def plot_scatter_with_range(data_frame,
-                            x_keyword,
-                            y_keyword,
-                            x_label,
-                            y_label,
+def plot_range_and_scatter_combined(data_frame,
+                                    x_keyword,
+                                    y_keyword,
+                                    x_label,
+                                    y_label,
 
-                            output_prefix,
-                            output_directory,
-                            title=None,
-                            fig_size=(10, 10),
-                            dpi=150,
-                            light_color=vmv.consts.Color.CM_BLUE_LIGHT,
-                            dark_color=vmv.consts.Color.CM_BLUE_DARK,
-                            plot_styles=vmv.utilities.PlotStyle(),
-                            save_pdf=False,
-                            save_svg=False):
+                                    output_prefix,
+                                    output_directory,
+                                    title=None,
+                                    bins=50,
+                                    fig_size=(10, 10),
+                                    dpi=150,
+                                    light_color=vmv.consts.Color.CM_BLUE_LIGHT,
+                                    dark_color=vmv.consts.Color.CM_BLUE_DARK,
+                                    plot_styles=vmv.utilities.PlotStyle(),
+                                    save_pdf=False,
+                                    save_svg=False):
 
     # Set the styles
     vmv_plotting.set_plotting_styles(plot_styles=plot_styles)
 
-    # Construct the figure
-    fig, (ax1, ax2, ax3) = pyplot.subplots(1, 3, sharey=True, gridspec_kw={'width_ratios': [3, 1, 3]})
-    fig.set_size_inches(fig_size[0], fig_size[1])
-    fig.set_tight_layout('w_pad')
-
-    # Plot
-    xdata = data_frame[x_keyword]
-    ydata = data_frame[y_keyword]
-    ax1.scatter(xdata, ydata, marker='+', color=dark_color)
-
-    # Set the axis style
-    vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)
-    ax1.set_xlim(left=0)
-
-    # Text
-    ax1.set_xlabel(x_label)
-    ax1.set_ylabel(y_label)
-    ax1.set_title(title, pad=plot_styles.title_pad) if title is not None else None
-
-    # Add the closeup to the right
-    ax2.scatter(xdata, ydata,
-                marker=plot_styles.scatter_plot_marker, linewidth=1,
-                color=dark_color, alpha=0.75, zorder=10)
-
-    # Adding the plot style for the patch
-    vmv_plotting.add_patch_styles(ax=ax2, plot_styles=plot_styles)
-    ax2.add_patch(patches.Rectangle((0, min(ydata)),
-                                    width=1.0, height=max(ydata) - min(ydata),
-                                    linewidth=plot_styles.line_width,
-                                    facecolor='white', edgecolor='black', zorder=0))
-
-     # Sort the data-frame by the Y-axis
+    # Sort the data-frame by the Y-axis
     data_frame = data_frame.sort_values(by=[y_keyword])
 
-    # Construct the groups
-    import pandas
-    groups = data_frame.groupby(pandas.cut(data_frame[y_keyword], bins=50))
+    # Get references to the X and Y data, for the scatter plots
+    xdata = data_frame[x_keyword]
+    ydata = data_frame[y_keyword]
 
     # Construct the groups
+    groups = data_frame.groupby(pandas.cut(data_frame[y_keyword],
+                                           bins=len(ydata) if len(ydata) < 50 else bins))
     _mean = groups.mean()
     _min = groups.min()
     _max = groups.max()
-
-    # Construct the range
     p_min = _min[x_keyword].values
     p_max = _max[x_keyword].values
 
-    # Plot the data
-    ax3.plot(_mean[x_keyword].values, _mean[y_keyword].values, color=dark_color)
-    ax3.fill_betweenx(_mean[y_keyword].values, p_max, p_min, color=light_color, alpha=0.25)
+    # Do we need an inset for the closeup between 0 and 1
+    min_x_value = min(xdata)
+    if min_x_value < 1.0:
+        fig, (ax1, ax2, ax3) = pyplot.subplots(1, 3, sharey=True,
+                                               gridspec_kw={'width_ratios': [3, 3, 1]})
+    else:
+        # Construct the figure
+        fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True,
+                                          gridspec_kw={'width_ratios': [1, 1]})
+
+    # Figure size
+    fig.set_size_inches(fig_size[0], fig_size[1])
+    fig.set_tight_layout('w_pad')
+
+    # Plot the range data and set the styles
+    ax1.plot(_mean[x_keyword].values, _mean[y_keyword].values, color=dark_color)
+    ax1.fill_betweenx(_mean[y_keyword].values, p_max, p_min, color=light_color, alpha=0.75)
+    vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)
+    ax1.set_xlim(left=0)
+
+    # Plot the scatter data and set the styles
+    xdata = data_frame[x_keyword]
+    ydata = data_frame[y_keyword]
+    ax2.scatter(xdata, ydata, marker='+', color=dark_color)
+    vmv_plotting.add_default_axis_styles(ax=ax2, plot_styles=plot_styles)
+    ax2.set_xlim(left=0)
+
+    # Add the closeup to the right, if needed
+    if min_x_value < 1.0:
+        ax3.scatter(xdata, ydata,
+                    marker=plot_styles.scatter_plot_marker, linewidth=1,
+                    color=dark_color, alpha=0.75, zorder=10)
+
+        # Adding the plot style for the patch
+        vmv_plotting.add_patch_styles(ax=ax3, plot_styles=plot_styles)
+        ax3.add_patch(patches.Rectangle((0, min(ydata)),
+                                        width=1.0, height=max(ydata) - min(ydata),
+                                        linewidth=plot_styles.line_width,
+                                        facecolor='white', edgecolor='black', zorder=0))
+
+    # Text
+    fig.text(0.5, -0.05, x_label, ha='center', va='center', fontsize=plot_styles.font_size)
+    ax1.set_ylabel(y_label)
+    ax1.set_title(title, pad=plot_styles.title_pad) if title is not None else None
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.SCATTER),
+    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.DISTRIBUTION),
                              output_directory=output_directory,
                              dpi=dpi, svg=save_svg, pdf=save_pdf)
 
@@ -410,33 +421,29 @@ def plot_scatter_with_range(data_frame,
 
 
 ####################################################################################################
-# plot_scatter_data_with_closeups_if_needed_along_x_y_z
+# plot_range_and_scatter_combined_along_xyz
 ####################################################################################################
-def plot_scatter_with_range_along_x_y_z(
-        data_frame,
-        x_keyword,
-        
-
-        output_prefix,
-        output_directory,
-        x_label,
-        title=None,
-        fig_size=(6, 10),
-        dpi=150,
-        light_color=vmv.consts.Color.CM_BLUE_LIGHT,
-        dark_color=vmv.consts.Color.CM_BLUE_DARK,
-        plot_styles=vmv.utilities.PlotStyle(),
-        save_pdf=False,
-        save_svg=False):
+def plot_range_and_scatter_combined_along_xyz(data_frame,
+                                              x_keyword,
+                                              output_prefix,
+                                              output_directory,
+                                              x_label,
+                                              title=None,
+                                              bins=50,
+                                              fig_size=(10, 10),
+                                              dpi=150,
+                                              plot_styles=vmv.utilities.PlotStyle(),
+                                              save_pdf=False,
+                                              save_svg=False):
 
     for i, axis in enumerate(vmv.consts.Keys.AXES):
-        plot_scatter_with_range(
+        plot_range_and_scatter_combined(
             data_frame=data_frame,
             x_keyword=x_keyword, y_keyword=axis,
             x_label=x_label, y_label=r'Distance along %s-axis ($\mu$m)' % axis,
             output_prefix=output_prefix + '-%s' % axis,
             output_directory=output_directory,
-            title=title, fig_size=fig_size, dpi=dpi,
+            title=title, bins=bins, fig_size=fig_size, dpi=dpi,
             light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
             dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
             plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)

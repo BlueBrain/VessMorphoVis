@@ -70,7 +70,7 @@ def add_patch_styles(ax,
         ax.spines[spine].set_visible(False)
     ax.tick_params(axis='both', which='both', bottom=True, left=False,
                    width=plot_styles.line_width, length=plot_styles.tick_length)
-    ax.set_xlim(left=0, right=1)
+    ax.set_xlim(left=-0.05, right=1.05)
     ax.axes.get_yaxis().set_visible(False)
     ax.grid(False)
 
