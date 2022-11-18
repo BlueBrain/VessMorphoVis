@@ -63,7 +63,20 @@ def plot_histogram_with_box_plot(data_frame,
     # Add the histogram (ax1)
     x, y, _ = ax1.hist(data, color=dark_color, orientation='horizontal', edgecolor='white',
                        bins=bins, zorder=3)
-    ax1.set_xlim(left=0)
+
+    # X-axis ticks
+    left = 0
+    right = math.ceil(max(x))
+    ax1.set_xlim(left=left, right=right)
+    ax1.set_xticks([left, right])
+
+    # Y-axis ticks
+    max_y = max(y)
+    min_y = min(y)
+    if 1 >= min_y >= 0 and 0 <= max_y <= 1:
+        ax1.set_ylim(bottom=0, top=1)
+    else:
+        ax1.set_ylim(bottom=math.floor(min_y), top=math.ceil(max_y))
 
     # Set the axis style
     vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)

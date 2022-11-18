@@ -56,7 +56,7 @@ def plot_volume_analysis_statistics(morphology,
 
     vmv_plotting.plot_range_and_scatter_combined_along_xyz(
         data_frame=data_frame, x_keyword=vmv.consts.Keys.SEGMENT_MEAN_VOLUME,
-        x_label='Segment Mean Volume \nper Section' + r' ($\mu$m³)',
+        x_label='Segment Mean Volume per Section' + r' ($\mu$m³)',
         output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_MEAN_VOLUME),
         output_directory=output_directory)
 
@@ -80,7 +80,7 @@ def plot_volume_analysis_statistics(morphology,
 
     vmv_plotting.plot_range_and_scatter_combined_along_xyz(
         data_frame=data_frame, x_keyword=vmv.consts.Keys.SEGMENT_VOLUME_RATIO,
-        x_label='Section Volume' + r' ($\mu$m³)',
+        x_label='Segment Volume Ratio per Section',
         output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_VOLUME_RATIO),
         output_directory=output_directory)
 

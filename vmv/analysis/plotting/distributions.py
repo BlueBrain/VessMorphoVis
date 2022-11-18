@@ -368,7 +368,8 @@ def plot_range_and_scatter_combined(data_frame,
 
     # Do we need an inset for the closeup between 0 and 1
     min_x_value = min(xdata)
-    if min_x_value < 1.0:
+    max_x_value = max(xdata)
+    if min_x_value < 1.0 and max_x_value > 1.0:
         fig, (ax1, ax2, ax3) = pyplot.subplots(1, 3, sharey=True,
                                                gridspec_kw={'width_ratios': [3, 3, 1]})
     else:
@@ -385,6 +386,7 @@ def plot_range_and_scatter_combined(data_frame,
     ax1.fill_betweenx(_mean[y_keyword].values, p_max, p_min, color=light_color, alpha=0.75)
     vmv_plotting.add_default_axis_styles(ax=ax1, plot_styles=plot_styles)
     ax1.set_xlim(left=0)
+    ax1.set_xlim(right=1.0) if max_x_value <= 1.0 else None
 
     # Plot the scatter data and set the styles
     xdata = data_frame[x_keyword]
@@ -392,9 +394,10 @@ def plot_range_and_scatter_combined(data_frame,
     ax2.scatter(xdata, ydata, marker='+', color=dark_color)
     vmv_plotting.add_default_axis_styles(ax=ax2, plot_styles=plot_styles)
     ax2.set_xlim(left=0)
+    ax2.set_xlim(right=1.0) if max_x_value <= 1.0 else None
 
     # Add the closeup to the right, if needed
-    if min_x_value < 1.0:
+    if min_x_value < 1.0 and max_x_value > 1.0:
         ax3.scatter(xdata, ydata,
                     marker=plot_styles.scatter_plot_marker, linewidth=1,
                     color=dark_color, alpha=0.75, zorder=10)
