@@ -29,41 +29,64 @@ from vmv.consts import Keys, Prefix
 ####################################################################################################
 def plot_structure_analysis_statistics(morphology,
                                        output_directory):
+    # Collect the data frame
+    data_frame = vmv.analysis.analyze_samples_radii_xyz(sections=morphology.sections_list)
 
-    # Analyze and get the data-frame
+    vmv_plotting.plot_histograms_along_x_y_z(
+        data_frame=data_frame,
+        title=r'Samples Density (per $\mu$m)',
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.SAMPLES_DENSITY),
+        output_directory=output_directory)
+
+    # Collect the data frame
     data_frame = vmv.analysis.analyze_samples_per_section(sections=morphology.sections_list)
 
-    # Number of Samples per Section
+    # Number of Samples per Section ################################################################
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.NUMBER_SAMPLES_PER_SECTION,
-        output_prefix='%s-%s' % (morphology.name, Prefix.NUMBER_SAMPLES_PER_SECTION),
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.NUMBER_SAMPLES_PER_SECTION),
         output_directory=output_directory,
-        y_label='# Samples (per Section)',
+        y_label='Number of Samples (per Section)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT,
         dark_color=vmv.consts.Color.CM_ORANGE_DARK)
 
-    # Distribution of radius ratio per section
-    vmv_plotting.plot_scatter_data_along_x_y_z(
-        data_frame=data_frame, x_keyword=vmv.consts.Keys.NUMBER_SAMPLES_PER_SECTION,
-        x_label=r'# Samples (per section)',
-        output_prefix='%s-%s-scatter' % (morphology.name, Prefix.NUMBER_SAMPLES_PER_SECTION),
+    vmv_plotting.plot_range_and_scatter_combined(
+        data_frame=data_frame,
+        x_keyword=vmv.consts.Keys.NUMBER_SAMPLES_PER_SECTION, y_keyword=Keys.SECTION_INDEX,
+        x_label='Number of Samples (per Section)',  y_label='Section Index',
+        light_color=vmv.consts.Color.CM_ORANGE_LIGHT,
+        dark_color=vmv.consts.Color.CM_ORANGE_DARK,
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.NUMBER_SAMPLES_PER_SECTION),
         output_directory=output_directory)
 
-    # Distribution of radius ratio per section
-    vmv_plotting.plot_scatter_data_along_x_y_z(
-        data_frame=data_frame, x_keyword=vmv.consts.Keys.NUMBER_SEGMENTS_PER_SECTION,
-        x_label=r'# Segments (per section)',
-        output_prefix='%s-%s-scatter' % (morphology.name, Prefix.NUMBER_SEGMENTS_PER_SECTION),
-        output_directory=output_directory)
 
-    # segments per section
+
+
     vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.NUMBER_SEGMENTS_PER_SECTION,
-        output_prefix='%s-%s' % (morphology.name, Prefix.NUMBER_SEGMENTS_PER_SECTION),
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.NUMBER_SEGMENTS_PER_SECTION),
         output_directory=output_directory,
-        y_label='# Segments (per Section)',
+        y_label='Number of Segments (per Section)',
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT,
         dark_color=vmv.consts.Color.CM_ORANGE_DARK)
+
+    vmv_plotting.plot_range_and_scatter_combined_along_xyz(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.NUMBER_SAMPLES_PER_SECTION,
+        x_label='Number of Samples (per Section)',
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.NUMBER_SAMPLES_PER_SECTION),
+        output_directory=output_directory)
+
+    vmv_plotting.plot_range_and_scatter_combined_along_xyz(
+        data_frame=data_frame, x_keyword=vmv.consts.Keys.NUMBER_SEGMENTS_PER_SECTION,
+        x_label='Number of Segments (per Section)',
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.NUMBER_SEGMENTS_PER_SECTION),
+        output_directory=output_directory)
 
     # Find the data frame with sections that have single segments only
     sections_with_single_segment = list()
@@ -78,7 +101,9 @@ def plot_structure_analysis_statistics(morphology,
 
     vmv_plotting.plot_histograms_along_x_y_z(
         data_frame=sections_with_single_segment_data_frame,
-        output_prefix='%s-%s' % (morphology.name, Prefix.SECTIONS_WITH_SINGLE_SEGMENTS),
+        title='# Sections with 1 Segment',
+        output_prefix='%s_%s_%s' % (morphology.name, Prefix.STRUCTURE,
+                                    Prefix.SECTIONS_WITH_SINGLE_SEGMENTS),
         output_directory=output_directory)
 
 

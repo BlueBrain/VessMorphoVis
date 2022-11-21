@@ -50,7 +50,7 @@ class Prefix:
     NUMBER_SEGMENTS_PER_SECTION = 'number-segments-per-section'
 
     SECTIONS_WITH_SINGLE_SEGMENTS = 'sections-with-single-segments'
-
+    SAMPLES_DENSITY = 'samples-density'
     SHORT_SECTIONS = 'short-sections'
 
     SECTION_VOLUME = 'section-volume'
