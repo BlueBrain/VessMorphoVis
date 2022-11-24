@@ -22,3 +22,5 @@ from .morphology import *
 from .length import *
 from .surface_area import *
 from .volume import *
+from .radius import *
+from .structure import *

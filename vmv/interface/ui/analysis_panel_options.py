@@ -18,16 +18,20 @@
 # Blender imports
 import bpy
 
-# Total morphology length
-bpy.types.Scene.MorphologyTotalLength = bpy.props.FloatProperty(
-    name='Total Length',
-    description='The total length of the morphology skeleton',
-    subtype='FACTOR', min=0, max=1e32, precision=5)
+# Number of unique samples
+bpy.types.Scene.NumberUniqueSamples = bpy.props.IntProperty(
+    name='Total # Unique Samples',
+    description='The total number of unique samples in the morphology skeleton. This number '
+                'represents the actual number of non-duplicated samples at the section terminals',
+    default=0, subtype='FACTOR')
 
-# Number of samples
+# Number of unique samples
 bpy.types.Scene.NumberSamples = bpy.props.IntProperty(
     name='Total # Samples',
-    description='The total number of samples in the morphology skeleton',
+    description='The total number of samples in the morphology skeleton including duplicates '
+                'located at each section terminals. If this number is similar to the value of '
+                'Total # Unique Samples, this means that the samples are already duplicated in the '
+                'morphology file itself',
     default=0, subtype='FACTOR')
 
 # Number of segments
@@ -43,9 +47,24 @@ bpy.types.Scene.NumberSections = bpy.props.IntProperty(
     default=0, subtype='FACTOR')
 
 # Number of sections with two samples only
-bpy.types.Scene.NumberSectionsWithTwoSamples = bpy.props.IntProperty(
-    name='# Sections with 2 Samples',
-    description='The number of sections that have only two samples',
+bpy.types.Scene.NumberSectionsWithOneSegment = bpy.props.IntProperty(
+    name='# Sections with 1 Segment',
+    description='The number of sections that have only one segment (i.e. composed of two samples)',
+    default=0, subtype='FACTOR')
+
+bpy.types.Scene.MinimumNumberSamplerPerSection = bpy.props.IntProperty(
+    name='Min. # Samples / Section',
+    description='Minimum number of samples per section',
+    default=0, subtype='FACTOR')
+
+bpy.types.Scene.MaximumNumberSamplerPerSection = bpy.props.IntProperty(
+    name='Max. # Samples / Section',
+    description='Maximum number of samples per section',
+    default=0, subtype='FACTOR')
+
+bpy.types.Scene.MeanNumberSamplerPerSection = bpy.props.IntProperty(
+    name='Mean # Samples / Section',
+    description='Mean number of samples per section for the entire morphology',
     default=0, subtype='FACTOR')
 
 # Number of loops
@@ -211,10 +230,48 @@ bpy.types.Scene.MorphologyAnalysisTime = bpy.props.FloatProperty(
 
 
 
+# Radius Analysis
+bpy.types.Scene.MinimumSampleRadius = bpy.props.FloatProperty(
+    name='Min. Sample Radius',
+    description='The radius of the smallest segment in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
 
+bpy.types.Scene.MinimumNonZeroSampleRadius = bpy.props.FloatProperty(
+    name='Smallest (non-zero) Sample Radius',
+    description='The radius of the smallest \'valid\' sample (that has no zero-radius) in the '
+                'morphology skeleton (in µm). Normally, the value of this quantity should be '
+                'similar to the Min. Sample Radius. '
+                'Nevertheless If this value is zero, this means that all the samples in the '
+                'morphology have zero radii',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
 
+bpy.types.Scene.MaximumSampleRadius = bpy.props.FloatProperty(
+    name='Max. Sample Radius',
+    description='The radius of the largest sample in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
 
-#
+bpy.types.Scene.MeanSampleRadius = bpy.props.FloatProperty(
+    name='Mean Sample Radius',
+    description='The mean sample radius of all the samples in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSampleRadiusRatio = bpy.props.FloatProperty(
+    name='Global Samples Radius Ratio',
+    description='The ratio between the radius of the smallest (valid) sample to that of the '
+                'largest sample in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSampleRadiusRatioFactor = bpy.props.FloatProperty(
+    name='Global Sample Radius Ratio Factor',
+    description='The scale factor representing the ratio between the radius of the largest '
+                'sample to that of the smallest sample in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroRadiusSamples = bpy.props.IntProperty(
+    name='# Zero-radius Samples',
+    description='The number of the zero-radius samples in the morphology',
+    default=0, subtype='FACTOR')
+
 # Length Analysis ##################################################################################
 bpy.types.Scene.TotalLength = bpy.props.FloatProperty(
     name='Total Length',
@@ -224,7 +281,7 @@ bpy.types.Scene.TotalLength = bpy.props.FloatProperty(
 
 bpy.types.Scene.MinimumSegmentLength = bpy.props.FloatProperty(
     name='Min. Segment Length',
-    description='The Length of the shortest segment in the morphology skeleton (in µm)',
+    description='The length of the shortest segment in the morphology skeleton (in µm)',
     subtype='FACTOR', min=0, max=1e32, precision=5)
 
 bpy.types.Scene.SmallestSegmentLength = bpy.props.FloatProperty(

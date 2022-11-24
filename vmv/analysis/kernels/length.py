@@ -19,7 +19,6 @@
 import math
 import pandas
 
-
 # Internal imports
 import vmv.analysis
 import vmv.utilities

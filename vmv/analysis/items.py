@@ -104,6 +104,49 @@ class AnalysisItems:
 
 
 ####################################################################################################
+# @StructureAnalysisItems
+####################################################################################################
+class StructureAnalysisItems:
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+
+        self.number_unique_samples = 0
+        self.number_samples = 0
+        self.number_segments = 0
+        self.number_sections = 0
+        self.number_sections_with_one_segment = 0
+        self.minimum_number_samples_per_section = 0
+        self.maximum_number_samples_per_section = 0
+        self.mean_number_samples_per_section = 0
+        self.mean_sampling_density_x = 0
+        self.mean_sampling_density_y = 0
+        self.mean_sampling_density_z = 0
+
+
+####################################################################################################
+# @RadiusAnalysisItems
+####################################################################################################
+class RadiusAnalysisItems:
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+
+        self.minimum_sample_radius = 0
+        self.minimum_non_zero_sample_radius = 0
+        self.maximum_sample_radius = 0
+        self.mean_sample_radius = 0
+        self.global_sample_radius_ratio = 0
+        self.global_sample_radius_ratio_factor = 0
+        self.number_samples_with_zero_radius = 0
+        self.number_sections_with_zero_radius_samples = 0
+
+
+####################################################################################################
 # @LengthAnalysisItems
 ####################################################################################################
 class LengthAnalysisItems:

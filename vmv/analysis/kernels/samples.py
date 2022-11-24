@@ -24,6 +24,9 @@ from vmv.consts import Keys
 
 
 
+
+
+
 ####################################################################################################
 # @analyze_samples_per_section
 ####################################################################################################
@@ -185,6 +188,27 @@ def compute_samples_density(morphology):
 
 
 ####################################################################################################
+# @compute_morphology_structure_counts
+####################################################################################################
+def compute_morphology_structure_counts(sections_list):
+    total_number_samples = 0
+    total_number_segments = 0
+    total_number_sections = len(sections_list)
+    total_number_of_sections_composed_of_1_segment = 0
+
+    for section in sections_list:
+        number_samples_in_section = compute_number_of_samples_in_section(section=section)
+        if number_samples_in_section == 2:
+            total_number_of_sections_composed_of_1_segment += 1
+        total_number_samples += number_samples_in_section
+        total_number_segments += number_samples_in_section - 1
+    return total_number_samples, \
+        total_number_segments, \
+        total_number_sections, \
+        total_number_of_sections_composed_of_1_segment
+
+
+####################################################################################################
 # @compute_total_of_number_samples_from_sections_list
 ####################################################################################################
 def compute_total_of_number_samples_from_sections_list(sections_list):
@@ -198,20 +222,10 @@ def compute_total_of_number_samples_from_sections_list(sections_list):
         samples along the branching points.
     """
 
-    # Morphology total number of samples
-    morphology_total_number_of_samples = 0
-
-    # Do it section by section
+    total_number_samples = 0
     for section in sections_list:
-
-        # Compute section length
-        number_of_samples_in_section = compute_number_of_samples_in_section(section=section)
-
-        # Append the result to the total
-        morphology_total_number_of_samples += number_of_samples_in_section
-
-    # Return the total length
-    return morphology_total_number_of_samples
+        total_number_samples += compute_number_of_samples_in_section(section=section)
+    return total_number_samples
 
 
 ####################################################################################################

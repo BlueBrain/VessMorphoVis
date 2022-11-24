@@ -68,26 +68,22 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # The area where the results will be shown
         results_area = layout.column()
 
-        # Number of samples
+        # Counts
+        results_area.label(text='Counts')
+        results_area.prop(scene, 'NumberUniqueSamples')
         results_area.prop(scene, 'NumberSamples')
+        results_area.prop(scene, 'NumberSegments')
+        results_area.prop(scene, 'NumberSections')
+        results_area.prop(scene, 'NumberSectionsWithOneSegment')
 
-        # Minimum sample radius
-        results_area.prop(scene, 'MinimumSampleRadius')
+        results_area.prop(scene, 'MinimumNumberSamplerPerSection')
+        results_area.prop(scene, 'MaximumNumberSamplerPerSection')
+        results_area.prop(scene, 'MeanNumberSamplerPerSection')
 
-        # Maximum sample radius
-        results_area.prop(scene, 'MaximumSampleRadius')
-
-        # Average sample radius
-        results_area.prop(scene, 'AverageSampleRadius')
-
-        # Number of zero-radius samples
-        results_area.prop(scene, 'NumberZeroRadiusSamples')
 
         # Number of duplicated samples
         results_area.prop(scene, 'NumberDuplicatedSamples')
 
-        # Number of segments
-        results_area.prop(scene, 'NumberSegments')
 
         # Minimum segment length
         results_area.prop(scene, 'MinimumSegmentLength')
@@ -98,14 +94,13 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # Average segment length
         results_area.prop(scene, 'AverageSegmentLength')
 
-        # Number of sections
-        results_area.prop(scene, 'NumberSections')
+
 
         # Number of short sections
         results_area.prop(scene, 'NumberShortSections')
 
         # Number of short sections with two samples
-        results_area.prop(scene, 'NumberSectionsWithTwoSamples')
+
 
         # Minimum section length
         results_area.prop(scene, 'MinimumSectionLength')
@@ -133,6 +128,16 @@ class VMV_AnalysisPanel(bpy.types.Panel):
 
         # Segment length in Y
         results_area.prop(scene, 'SegmentLengthZ')
+
+        # Radius analysis
+        results_area.label(text='Radius Analysis')
+        results_area.prop(scene, 'MinimumSampleRadius')
+        results_area.prop(scene, 'MinimumNonZeroSampleRadius')
+        results_area.prop(scene, 'MaximumSampleRadius')
+        results_area.prop(scene, 'MeanSampleRadius')
+        results_area.prop(scene, 'GlobalSampleRadiusRatio')
+        results_area.prop(scene, 'GlobalSampleRadiusRatioFactor')
+        results_area.prop(scene, 'NumberZeroRadiusSamples')
 
         # Length analysis
         results_area.label(text='Length Analysis')
@@ -197,8 +202,6 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # Number of components in the morphology
         results_area.prop(scene, 'NumberComponents')
 
-        # Morphology total length
-        results_area.prop(scene, 'MorphologyTotalLength')
 
         # Draw the bounding Box
         bounding_box_p_row = layout.row()
@@ -282,35 +285,22 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         # Just to make the line shorter
         scene = context.scene
 
-        # Total number of samples
-        vmv.logger.info('Samples')
-        total_number_samples = vmv.analysis.compute_total_of_number_samples_from_sections_list(
-            vmv.interface.MorphologyObject.sections_list)
-        scene.NumberSamples = total_number_samples
-
-        # Morphology total length
-        vmv.logger.info('Total length')
-        morphology_total_length = vmv.analysis.compute_total_morphology_length(
-            vmv.interface.MorphologyObject.sections_list)
-        scene.MorphologyTotalLength = morphology_total_length
+        # Counts ###################################################################################
+        vmv.logger.info('Structure')
 
 
+        structure_items = vmv.analysis.compute_structure_analysis_items(
+            vmv.interface.MorphologyObject)
 
-        # Total number of segments
-        vmv.logger.info('Segments')
-        scene.NumberSegments = total_number_samples - 1
+        scene.NumberUniqueSamples = structure_items.number_unique_samples
+        scene.NumberSamples = structure_items.number_samples
+        scene.NumberSegments = structure_items.number_segments
+        scene.NumberSections = structure_items.number_sections
+        scene.NumberSectionsWithOneSegment = structure_items.number_sections_with_one_segment
 
-        # Total number of sections
-        vmv.logger.info('Sections')
-        total_number_sections = vmv.analysis.compute_total_number_sections(
-            vmv.interface.MorphologyObject.sections_list)
-        scene.NumberSections = total_number_sections
-
-        # Sections with two samples
-        vmv.logger.info('Sections with two samples')
-        number_section_with_two_samples = vmv.analysis.compute_number_of_sections_with_two_samples(
-            vmv.interface.MorphologyObject.sections_list)
-        scene.NumberSectionsWithTwoSamples = number_section_with_two_samples
+        scene.MinimumNumberSamplerPerSection = structure_items.minimum_number_samples_per_section
+        scene.MaximumNumberSamplerPerSection = structure_items.maximum_number_samples_per_section
+        scene.MeanNumberSamplerPerSection = structure_items.mean_number_samples_per_section
 
         # Number of short sections
         vmv.logger.info('Short sections')
@@ -318,33 +308,24 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
             vmv.interface.MorphologyObject.sections_list)
         scene.NumberShortSections = number_short_sections
 
-        # Samples radius stats.
-        vmv.logger.info('Radii')
-        minimum_sample_radius, maximum_sample_radius, average_sample_radius, zero_radii_sample = \
-            vmv.analysis.analyze_samples_radii(vmv.interface.MorphologyObject.sections_list)
-        scene.MinimumSampleRadius = minimum_sample_radius
-        scene.MaximumSampleRadius = maximum_sample_radius
-        scene.AverageSampleRadius = average_sample_radius
-        scene.NumberZeroRadiusSamples = zero_radii_sample
 
-        vmv.logger.info('Repair Zero-radii')
-        vmv.analysis.correct_samples_with_zero_radii(vmv.interface.MorphologyObject.sections_list)
 
-        # Segments length stats.
-        vmv.logger.info('Segments lengths')
-        minimum_segment_length, maximum_segment_length, average_segment_length = \
-            vmv.analysis.analyze_segments_length(vmv.interface.MorphologyObject.sections_list)
-        scene.MinimumSegmentLength = minimum_segment_length
-        scene.MaximumSegmentLength = maximum_segment_length
-        scene.AverageSegmentLength = average_segment_length
 
-        # Section length stats.
-        vmv.logger.info('Sections lengths')
-        minimum_section_length, maximum_section_length, average_section_length = \
-            vmv.analysis.analyze_sections_length(vmv.interface.MorphologyObject.sections_list)
-        scene.MinimumSectionLength = minimum_section_length
-        scene.MaximumSectionLength = maximum_section_length
-        scene.AverageSectionLength = average_section_length
+
+        # Radius ###################################################################################
+        r_items = vmv.analysis.compute_radius_analysis_items(
+            sections=vmv.interface.MorphologyObject.sections_list)
+
+        # Sample
+        scene.MinimumSampleRadius = r_items.minimum_sample_radius
+        scene.MinimumNonZeroSampleRadius = r_items.minimum_non_zero_sample_radius
+        scene.MaximumSampleRadius = r_items.maximum_sample_radius
+        scene.MeanSampleRadius = r_items.mean_sample_radius
+
+        scene.GlobalSampleRadiusRatio = r_items.global_sample_radius_ratio
+        scene.GlobalSampleRadiusRatioFactor = r_items.global_sample_radius_ratio_factor
+        scene.NumberZeroRadiusSamples = r_items.number_samples_with_zero_radius
+
 
         # Length ###################################################################################
         l_items = vmv.analysis.compute_length_analysis_items(
