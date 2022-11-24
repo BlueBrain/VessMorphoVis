@@ -104,6 +104,41 @@ class AnalysisItems:
 
 
 ####################################################################################################
+# @LengthAnalysisItems
+####################################################################################################
+class LengthAnalysisItems:
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+
+        # Morphology
+        self.total_morphology_length = 0
+
+        # Segment
+        self.minimum_segment_length = 0
+        self.minimum_non_zero_segment_length = 0
+        self.maximum_segment_length = 0
+        self.mean_segment_length = 0
+        self.global_segment_length_ratio = 0
+        self.global_segment_length_ratio_factor = 0
+
+        # Section
+        self.minimum_section_length = 0
+        self.maximum_section_length = 0
+        self.mean_section_length = 0
+        self.global_section_length_ratio = 0
+        self.minimum_segment_length_ratio_per_section = 0
+        self.maximum_segment_length_ratio_per_section = 0
+        self.mean_segment_length_ratio_per_section = 0
+
+        # Numbers
+        self.number_segments_with_zero_length = 0
+        self.number_sections_with_zero_length = 0
+
+
+####################################################################################################
 # @SurfaceAreaAnalysisItems
 ####################################################################################################
 class SurfaceAreaAnalysisItems:

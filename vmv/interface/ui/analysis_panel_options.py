@@ -208,6 +208,116 @@ bpy.types.Scene.MorphologyAnalysisTime = bpy.props.FloatProperty(
     default=0, min=0, max=1000000)
 
 
+
+
+
+
+
+
+#
+# Length Analysis ##################################################################################
+bpy.types.Scene.TotalLength = bpy.props.FloatProperty(
+    name='Total Length',
+    description='The total length of the morphology computed from individual segments in the '
+                'morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MinimumSegmentLength = bpy.props.FloatProperty(
+    name='Min. Segment Length',
+    description='The Length of the shortest segment in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.SmallestSegmentLength = bpy.props.FloatProperty(
+    name='Smallest (non-zero) Segment Length',
+    description='The length of the shortest \'valid\' segment (that has no zero-length) in the '
+                'morphology skeleton (in µm). Normally, the value of this quantity should be '
+                'similar to the Min. Segment Length. '
+                'Nevertheless If this value is zero, this means that all the segments in the '
+                'morphology have zero length',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MaximumSegmentLength = bpy.props.FloatProperty(
+    name='Max. Segment Length',
+    description='The length of the longest segment in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MeanSegmentLength = bpy.props.FloatProperty(
+    name='Mean Segment Volume',
+    description='The mean segment length in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSegmentLengthRatio = bpy.props.FloatProperty(
+    name='Global Segment Length Ratio',
+    description='The ratio between the length of the shortest (valid) segment to that of the '
+                'longest segment in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSegmentLengthRatioFactor = bpy.props.FloatProperty(
+    name='Global Segment Length Ratio Factor',
+    description='The scale factor representing the ratio between the length of the longest '
+                'segment to that of the shortest segment in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroLengthSegments = bpy.props.IntProperty(
+    name='# Zero-length Segments',
+    description='The number of the zero-length segments in the morphology',
+    default=0, subtype='FACTOR')
+
+bpy.types.Scene.MinimumSectionLength = bpy.props.FloatProperty(
+    name='Min. Section Length',
+    description='The length of the shortest section in the morphology skeleton (in µm).'
+                'Note that this value could be zero if the section is composed of segments with '
+                'zero length',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.SmallestSectionLength = bpy.props.FloatProperty(
+    name='Shortest (non-zero) Section Length',
+    description='The length of the shortest \'valid\' section (that has no zero-length segments) '
+                'in the morphology skeleton (in µm). Normally, the value of this '
+                'quantity should be similar to the Min. Section Length.'
+                'Nevertheless If this value is zero, this means that all the sections in the '
+                'morphology have zero length',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MaximumSectionLength = bpy.props.FloatProperty(
+    name='Max. Section Length',
+    description='The length of the longest section in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MeanSectionLength = bpy.props.FloatProperty(
+    name='Mean Section Length',
+    description='The mean section length in the morphology skeleton (in µm)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSectionLengthRatio = bpy.props.FloatProperty(
+    name='Global Section Length Ratio',
+    description='The ratio between the length of the shortest (valid) section to that of the '
+                'longest section in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSectionLengthRatioFactor = bpy.props.FloatProperty(
+    name='Global Section Length Ratio Factor',
+    description='The scale factor representing the ratio between the length of the longest '
+                'section to that of the shortest section in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroLengthSections = bpy.props.IntProperty(
+    name='# Zero-length Sections',
+    description='The number of the zero-length sections in the morphology',
+    default=0, subtype='FACTOR')
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Surface Area Analysis ############################################################################
 bpy.types.Scene.TotalSurfaceArea = bpy.props.FloatProperty(
     name='Total Surface Area',

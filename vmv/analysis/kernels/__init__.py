@@ -19,5 +19,6 @@ from .samples import *
 from .segments import *
 from .sections import *
 from .morphology import *
+from .length import *
 from .surface_area import *
 from .volume import *

@@ -134,7 +134,26 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # Segment length in Y
         results_area.prop(scene, 'SegmentLengthZ')
 
-        # Volume analysis
+        # Length analysis
+        results_area.label(text='Length Analysis')
+        results_area.prop(scene, 'TotalLength')
+        results_area.prop(scene, 'MinimumSegmentLength')
+        results_area.prop(scene, 'SmallestSegmentLength')
+        results_area.prop(scene, 'MaximumSegmentLength')
+        results_area.prop(scene, 'MeanSegmentLength')
+        results_area.prop(scene, 'GlobalSegmentLengthRatio')
+        results_area.prop(scene, 'GlobalSegmentLengthRatioFactor')
+        results_area.prop(scene, 'NumberZeroLengthSegments')
+
+        results_area.prop(scene, 'MinimumSectionLength')
+        results_area.prop(scene, 'SmallestSectionLength')
+        results_area.prop(scene, 'MaximumSectionLength')
+        results_area.prop(scene, 'MeanSectionLength')
+        results_area.prop(scene, 'GlobalSectionLengthRatio')
+        results_area.prop(scene, 'GlobalSectionLengthRatioFactor')
+        results_area.prop(scene, 'NumberZeroLengthSections')
+
+        # Surface Area analysis
         results_area.label(text='Surface Area Analysis')
         results_area.prop(scene, 'TotalSurfaceArea')
         results_area.prop(scene, 'MinimumSegmentSurfaceArea')
@@ -326,6 +345,31 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         scene.MinimumSectionLength = minimum_section_length
         scene.MaximumSectionLength = maximum_section_length
         scene.AverageSectionLength = average_section_length
+
+        # Length ###################################################################################
+        l_items = vmv.analysis.compute_length_analysis_items(
+            sections=vmv.interface.MorphologyObject.sections_list)
+
+        # Total
+        scene.TotalLength = l_items.total_morphology_length
+
+        # Segment
+        scene.MinimumSegmentLength = l_items.minimum_segment_length
+        scene.SmallestSegmentLength = l_items.minimum_non_zero_segment_length
+        scene.MaximumSegmentLength = l_items.maximum_segment_length
+        scene.MeanSegmentLength = l_items.mean_segment_length
+        scene.GlobalSegmentLengthRatio = l_items.global_segment_length_ratio
+        scene.GlobalSegmentLengthRatioFactor = l_items.global_segment_length_ratio_factor
+        scene.NumberZeroLengthSegments = l_items.number_segments_with_zero_length
+
+        # Section
+        scene.MinimumSectionLength = l_items.minimum_section_length
+        scene.SmallestSectionLength = l_items.minimum_non_zero_section_length
+        scene.MaximumSectionLength = l_items.maximum_section_length
+        scene.MeanSectionLength = l_items.mean_section_length
+        scene.GlobalSectionLengthRatio = l_items.global_section_length_ratio
+        scene.GlobalSectionLengthRatioFactor = l_items.global_section_length_ratio_factor
+        scene.NumberZeroLengthSections = l_items.number_sections_with_zero_length
 
         # Surface Area #############################################################################
         sa_items = vmv.analysis.compute_surface_area_analysis_items(

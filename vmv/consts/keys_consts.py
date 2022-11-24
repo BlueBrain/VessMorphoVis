@@ -55,6 +55,7 @@ class Keys:
     SECTION_RADIUS_RATIO = 'Section Radius Ratio'
 
     # Length
+    SEGMENT_LENGTH = 'Segment Length'
     SECTION_LENGTH = 'Section Length'
     SEGMENT_MIN_LENGTH = 'Segment Min. Length'
     SEGMENT_MEAN_LENGTH = 'Segment Mean Length'
