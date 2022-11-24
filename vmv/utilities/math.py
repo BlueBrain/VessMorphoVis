@@ -133,7 +133,14 @@ def equal(arg1, arg2, epsilon=1e-5):
 ####################################################################################################
 def mean(input_list):
 
-    return sum(input_list) / (1. * len(input_list))
+    sum_value = 0.
+    for i in input_list:
+        if math.isnan(i):
+            continue
+        else:
+            sum_value += i
+
+    return sum_value / (1. * len(input_list))
 
 
 ####################################################################################################

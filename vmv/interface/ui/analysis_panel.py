@@ -69,65 +69,17 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         results_area = layout.column()
 
         # Counts
-        results_area.label(text='Counts')
+        results_area.label(text='Structure')
         results_area.prop(scene, 'NumberUniqueSamples')
         results_area.prop(scene, 'NumberSamples')
         results_area.prop(scene, 'NumberSegments')
         results_area.prop(scene, 'NumberSections')
         results_area.prop(scene, 'NumberSectionsWithOneSegment')
-
         results_area.prop(scene, 'MinimumNumberSamplerPerSection')
         results_area.prop(scene, 'MaximumNumberSamplerPerSection')
         results_area.prop(scene, 'MeanNumberSamplerPerSection')
-
-
-        # Number of duplicated samples
-        results_area.prop(scene, 'NumberDuplicatedSamples')
-
-
-        # Minimum segment length
-        results_area.prop(scene, 'MinimumSegmentLength')
-
-        # Maximum segment length
-        results_area.prop(scene, 'MaximumSegmentLength')
-
-        # Average segment length
-        results_area.prop(scene, 'AverageSegmentLength')
-
-
-
-        # Number of short sections
         results_area.prop(scene, 'NumberShortSections')
 
-        # Number of short sections with two samples
-
-
-        # Minimum section length
-        results_area.prop(scene, 'MinimumSectionLength')
-
-        # Maximum section length
-        results_area.prop(scene, 'MaximumSectionLength')
-
-        # Average section length
-        results_area.prop(scene, 'AverageSectionLength')
-
-        # Minimum segment length
-        results_area.prop(scene, 'MinimumSegmentLength')
-
-        # Maximum segment length
-        results_area.prop(scene, 'MaximumSegmentLength')
-
-        # Average segment length
-        results_area.prop(scene, 'AverageSegmentLength')
-
-        # Segment length in X
-        results_area.prop(scene, 'SegmentLengthX')
-
-        # Segment length in Y
-        results_area.prop(scene, 'SegmentLengthY')
-
-        # Segment length in Y
-        results_area.prop(scene, 'SegmentLengthZ')
 
         # Radius analysis
         results_area.label(text='Radius Analysis')
@@ -157,6 +109,12 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         results_area.prop(scene, 'GlobalSectionLengthRatio')
         results_area.prop(scene, 'GlobalSectionLengthRatioFactor')
         results_area.prop(scene, 'NumberZeroLengthSections')
+
+        # Segment length in X
+        results_area.label(text='Segments Orientation Analysis')
+        results_area.prop(scene, 'SegmentLengthX')
+        results_area.prop(scene, 'SegmentLengthY')
+        results_area.prop(scene, 'SegmentLengthZ')
 
         # Surface Area analysis
         results_area.label(text='Surface Area Analysis')
@@ -301,16 +259,7 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         scene.MinimumNumberSamplerPerSection = structure_items.minimum_number_samples_per_section
         scene.MaximumNumberSamplerPerSection = structure_items.maximum_number_samples_per_section
         scene.MeanNumberSamplerPerSection = structure_items.mean_number_samples_per_section
-
-        # Number of short sections
-        vmv.logger.info('Short sections')
-        number_short_sections = vmv.analysis.compute_number_of_short_sections(
-            vmv.interface.MorphologyObject.sections_list)
-        scene.NumberShortSections = number_short_sections
-
-
-
-
+        scene.NumberShortSections = structure_items.number_short_sections
 
         # Radius ###################################################################################
         r_items = vmv.analysis.compute_radius_analysis_items(
@@ -321,7 +270,7 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         scene.MinimumNonZeroSampleRadius = r_items.minimum_non_zero_sample_radius
         scene.MaximumSampleRadius = r_items.maximum_sample_radius
         scene.MeanSampleRadius = r_items.mean_sample_radius
-
+        print(scene.MeanSampleRadius)
         scene.GlobalSampleRadiusRatio = r_items.global_sample_radius_ratio
         scene.GlobalSampleRadiusRatioFactor = r_items.global_sample_radius_ratio_factor
         scene.NumberZeroRadiusSamples = r_items.number_samples_with_zero_radius

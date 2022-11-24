@@ -17,6 +17,7 @@
 
 # System imports
 import math
+import numpy
 import pandas
 
 # Internal imports
@@ -69,7 +70,7 @@ def compute_radius_analysis_items(sections):
     items.minimum_sample_radius = min(samples_radius_list)
     items.minimum_non_zero_sample_radius = vmv.utilities.get_non_zero_minimum_value(
         samples_radius_list)
-    items.maximum_sample_radius = max(samples_radius_list)
+    items.maximum_sample_radius = numpy.nanmax(numpy.array(samples_radius_list))
     items.mean_sample_radius = vmv.utilities.mean(input_list=samples_radius_list)
 
     items.global_sample_radius_ratio = \

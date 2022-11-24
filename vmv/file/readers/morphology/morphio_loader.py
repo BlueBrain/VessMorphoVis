@@ -158,7 +158,10 @@ class MorphIOLoader:
                         point[2] -= self.bounding_box.center[2]
 
                     # Build the sample
-                    sample = vmv.skeleton.Sample(point=point, radius=section_morphio[0].radii[i])
+                    sample_radius = section_morphio[0].radii[i]
+                    if numpy.isnan(sample_radius):
+                        sample_radius = 0
+                    sample = vmv.skeleton.Sample(point=point, radius=sample_radius)
 
                     # Add it to the samples list
                     samples.append(sample)

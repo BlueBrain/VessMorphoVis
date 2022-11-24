@@ -20,6 +20,8 @@ import vmv.analysis
 import vmv.utilities
 
 
+
+
 ####################################################################################################
 # @compute_structure_analysis_items
 ####################################################################################################
@@ -53,6 +55,9 @@ def compute_structure_analysis_items(morphology):
 
         items.number_samples += number_samples_in_section
         items.number_segments += number_samples_in_section - 1
+
+        if vmv.analysis.is_short_section(section):
+            items.number_short_sections += 1
 
     items.mean_number_samples_per_section = \
         int(aggregate_number_samples_per_section / len(morphology.sections_list))

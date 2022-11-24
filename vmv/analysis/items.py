@@ -118,6 +118,7 @@ class StructureAnalysisItems:
         self.number_segments = 0
         self.number_sections = 0
         self.number_sections_with_one_segment = 0
+        self.number_short_sections = 0
         self.minimum_number_samples_per_section = 0
         self.maximum_number_samples_per_section = 0
         self.mean_number_samples_per_section = 0

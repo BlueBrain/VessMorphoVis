@@ -124,11 +124,11 @@ def compute_section_average_radius(section):
 
 
 ####################################################################################################
-# @is_short_sections
+# @is_short_section
 ####################################################################################################
 def is_short_section(section):
-    """Analyze the short sections, which have their length shorter than the sum of their
-    initial and final diameters.
+    """Detect the short sections, which have their length shorter than the sum of the sum of the
+    samples composing the terminals.
 
     :param section:
         A given section to get analyzed.

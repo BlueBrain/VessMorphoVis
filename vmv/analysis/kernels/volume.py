@@ -17,8 +17,8 @@
 
 # System imports
 import math
+import numpy
 import pandas
-
 
 # Internal imports
 import vmv.analysis
@@ -177,7 +177,7 @@ def compute_volume_analysis_items(sections):
     items.number_sections_with_zero_volume = vmv.utilities.compute_zero_elements_count(
         input_list=sections_volume_list)
 
-    items.total_morphology_volume = sum(sections_volume_list)
+    items.total_morphology_volume = numpy.nansum(numpy.array(sections_volume_list))
 
     # Return the results
     return items
