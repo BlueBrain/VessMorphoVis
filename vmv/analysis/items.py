@@ -37,8 +37,19 @@ class AnalysisItems:
         # Number of duplicated samples
         self.number_duplicated_samples = 0
 
+        # Number of samples per section
+        self.minimum_number_samples_per_section = 0
+        self.maximum_number_samples_per_section = 0
+        self.mean_number_samples_per_section = 0
+        self.global_ratio_number_samples_per_section = 0
+
         # Number of samples with the zero radii
         self.number_samples_with_zero_radius = 0
+
+        # Sampling distance
+        self.minimum_sampling_distance = 0
+        self.maximum_sampling_distance = 0
+        self.mean_sampling_distance = 0
 
         # Minimum sample radius
         self.minimum_sample_radius = 0.0
@@ -91,3 +102,72 @@ class AnalysisItems:
         # Morphology bounding box
         self.bounding_box = None
 
+
+####################################################################################################
+# @SurfaceAreaAnalysisItems
+####################################################################################################
+class SurfaceAreaAnalysisItems:
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+
+        # Morphology
+        self.total_morphology_surface_area = 0
+
+        # Segment
+        self.minimum_segment_surface_area = 0
+        self.minimum_non_zero_segment_surface_area = 0
+        self.maximum_segment_surface_area = 0
+        self.mean_segment_surface_area = 0
+        self.global_segment_surface_area_ratio = 0
+        self.global_segment_surface_area_ratio_factor = 0
+
+        # Section
+        self.minimum_section_surface_area = 0
+        self.maximum_section_surface_area = 0
+        self.mean_section_surface_area = 0
+        self.global_section_surface_area_ratio = 0
+        self.minimum_segment_surface_area_ratio_per_section = 0
+        self.maximum_segment_surface_area_ratio_per_section = 0
+        self.mean_segment_surface_area_ratio_per_section = 0
+
+        # Numbers
+        self.number_segments_with_zero_surface_area = 0
+        self.number_sections_with_zero_surface_area = 0
+
+
+####################################################################################################
+# @VolumeAnalysisItems
+####################################################################################################
+class VolumeAnalysisItems:
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+
+        # Morphology
+        self.total_morphology_volume = 0
+
+        # Segment
+        self.minimum_segment_volume = 0
+        self.minimum_non_zero_segment_volume = 0
+        self.maximum_segment_volume = 0
+        self.mean_segment_volume = 0
+        self.global_segment_volume_ratio = 0
+        self.global_segment_volume_ratio_factor = 0
+
+        # Section
+        self.minimum_section_volume = 0
+        self.maximum_section_volume = 0
+        self.mean_section_volume = 0
+        self.global_section_volume_ratio = 0
+        self.minimum_segment_volume_ratio_per_section = 0
+        self.maximum_segment_volume_ratio_per_section = 0
+        self.mean_segment_volume_ratio_per_section = 0
+
+        # Numbers
+        self.number_segments_with_zero_volume = 0
+        self.number_sections_with_zero_volume = 0

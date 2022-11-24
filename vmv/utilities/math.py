@@ -126,3 +126,51 @@ def equal(arg1, arg2, epsilon=1e-5):
     if math.fabs(arg1 - arg2) < epsilon:
         return True
     return False
+
+
+####################################################################################################
+# @mean
+####################################################################################################
+def mean(input_list):
+
+    return sum(input_list) / (1. * len(input_list))
+
+
+####################################################################################################
+# @get_non_zero_minimum_value
+####################################################################################################
+def get_non_zero_minimum_value(input_list):
+
+    # Initially, a large value
+    value = 1e32
+
+    # Check every item in the list
+    for item in input_list:
+
+        # The value in the list must be greater than zero
+        if item > 0:
+
+            # The item must be smaller than the current value
+            if item < value:
+                value = item
+
+    # If the value has not changed, return zero as a flag
+    if value == 1e32:
+        return 0
+
+    # Otherwise, return the actual value found in the list
+    return value
+
+
+####################################################################################################
+# @get_non_zero_minimum_value
+####################################################################################################
+def compute_zero_elements_count(input_list,
+                                epsilon=1e-10):
+
+    count = 0
+    for item in input_list:
+        if item < epsilon:
+            count += 1
+
+    return count

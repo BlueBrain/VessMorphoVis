@@ -134,6 +134,44 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # Segment length in Y
         results_area.prop(scene, 'SegmentLengthZ')
 
+        # Volume analysis
+        results_area.label(text='Surface Area Analysis')
+        results_area.prop(scene, 'TotalSurfaceArea')
+        results_area.prop(scene, 'MinimumSegmentSurfaceArea')
+        results_area.prop(scene, 'SmallestSegmentSurfaceArea')
+        results_area.prop(scene, 'MaximumSegmentSurfaceArea')
+        results_area.prop(scene, 'MeanSegmentSurfaceArea')
+        results_area.prop(scene, 'GlobalSegmentSurfaceAreaRatio')
+        results_area.prop(scene, 'GlobalSegmentSurfaceAreaRatioFactor')
+        results_area.prop(scene, 'NumberZeroSurfaceAreaSegments')
+
+        results_area.prop(scene, 'MinimumSectionSurfaceArea')
+        results_area.prop(scene, 'SmallestSectionSurfaceArea')
+        results_area.prop(scene, 'MaximumSectionSurfaceArea')
+        results_area.prop(scene, 'MeanSectionSurfaceArea')
+        results_area.prop(scene, 'GlobalSectionSurfaceAreaRatio')
+        results_area.prop(scene, 'GlobalSectionSurfaceAreaRatioFactor')
+        results_area.prop(scene, 'NumberZeroSurfaceAreaSections')
+
+        # Volume analysis
+        results_area.label(text='Volume Analysis')
+        results_area.prop(scene, 'TotalVolume')
+        results_area.prop(scene, 'MinimumSegmentVolume')
+        results_area.prop(scene, 'SmallestSegmentVolume')
+        results_area.prop(scene, 'MaximumSegmentVolume')
+        results_area.prop(scene, 'MeanSegmentVolume')
+        results_area.prop(scene, 'GlobalSegmentVolumeRatio')
+        results_area.prop(scene, 'GlobalSegmentVolumeRatioFactor')
+        results_area.prop(scene, 'NumberZeroVolumeSegments')
+
+        results_area.prop(scene, 'MinimumSectionVolume')
+        results_area.prop(scene, 'SmallestSectionVolume')
+        results_area.prop(scene, 'MaximumSectionVolume')
+        results_area.prop(scene, 'MeanSectionVolume')
+        results_area.prop(scene, 'GlobalSectionVolumeRatio')
+        results_area.prop(scene, 'GlobalSectionVolumeRatioFactor')
+        results_area.prop(scene, 'NumberZeroVolumeSections')
+
         # Number of loops
         results_area.prop(scene, 'NumberLoops')
 
@@ -222,48 +260,53 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         vmv.logger.header('Analyzing morphology')
         analysis_stated = time.time()
 
-        # Morphology total length
-        vmv.logger.info('Total length')
-        morphology_total_length = vmv.analysis.compute_total_morphology_length(
-            vmv.interface.MorphologyObject.sections_list)
-        context.scene.MorphologyTotalLength = morphology_total_length
+        # Just to make the line shorter
+        scene = context.scene
 
         # Total number of samples
         vmv.logger.info('Samples')
         total_number_samples = vmv.analysis.compute_total_of_number_samples_from_sections_list(
             vmv.interface.MorphologyObject.sections_list)
-        context.scene.NumberSamples = total_number_samples
+        scene.NumberSamples = total_number_samples
+
+        # Morphology total length
+        vmv.logger.info('Total length')
+        morphology_total_length = vmv.analysis.compute_total_morphology_length(
+            vmv.interface.MorphologyObject.sections_list)
+        scene.MorphologyTotalLength = morphology_total_length
+
+
 
         # Total number of segments
         vmv.logger.info('Segments')
-        context.scene.NumberSegments = total_number_samples - 1
+        scene.NumberSegments = total_number_samples - 1
 
         # Total number of sections
         vmv.logger.info('Sections')
         total_number_sections = vmv.analysis.compute_total_number_sections(
             vmv.interface.MorphologyObject.sections_list)
-        context.scene.NumberSections = total_number_sections
+        scene.NumberSections = total_number_sections
 
         # Sections with two samples
         vmv.logger.info('Sections with two samples')
         number_section_with_two_samples = vmv.analysis.compute_number_of_sections_with_two_samples(
             vmv.interface.MorphologyObject.sections_list)
-        context.scene.NumberSectionsWithTwoSamples = number_section_with_two_samples
+        scene.NumberSectionsWithTwoSamples = number_section_with_two_samples
 
         # Number of short sections
         vmv.logger.info('Short sections')
         number_short_sections = vmv.analysis.compute_number_of_short_sections(
             vmv.interface.MorphologyObject.sections_list)
-        context.scene.NumberShortSections = number_short_sections
+        scene.NumberShortSections = number_short_sections
 
         # Samples radius stats.
         vmv.logger.info('Radii')
         minimum_sample_radius, maximum_sample_radius, average_sample_radius, zero_radii_sample = \
             vmv.analysis.analyze_samples_radii(vmv.interface.MorphologyObject.sections_list)
-        context.scene.MinimumSampleRadius = minimum_sample_radius
-        context.scene.MaximumSampleRadius = maximum_sample_radius
-        context.scene.AverageSampleRadius = average_sample_radius
-        context.scene.NumberZeroRadiusSamples = zero_radii_sample
+        scene.MinimumSampleRadius = minimum_sample_radius
+        scene.MaximumSampleRadius = maximum_sample_radius
+        scene.AverageSampleRadius = average_sample_radius
+        scene.NumberZeroRadiusSamples = zero_radii_sample
 
         vmv.logger.info('Repair Zero-radii')
         vmv.analysis.correct_samples_with_zero_radii(vmv.interface.MorphologyObject.sections_list)
@@ -272,58 +315,112 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         vmv.logger.info('Segments lengths')
         minimum_segment_length, maximum_segment_length, average_segment_length = \
             vmv.analysis.analyze_segments_length(vmv.interface.MorphologyObject.sections_list)
-        context.scene.MinimumSegmentLength = minimum_segment_length
-        context.scene.MaximumSegmentLength = maximum_segment_length
-        context.scene.AverageSegmentLength = average_segment_length
+        scene.MinimumSegmentLength = minimum_segment_length
+        scene.MaximumSegmentLength = maximum_segment_length
+        scene.AverageSegmentLength = average_segment_length
 
         # Section length stats.
         vmv.logger.info('Sections lengths')
         minimum_section_length, maximum_section_length, average_section_length = \
             vmv.analysis.analyze_sections_length(vmv.interface.MorphologyObject.sections_list)
-        context.scene.MinimumSectionLength = minimum_section_length
-        context.scene.MaximumSectionLength = maximum_section_length
-        context.scene.AverageSectionLength = average_section_length
+        scene.MinimumSectionLength = minimum_section_length
+        scene.MaximumSectionLength = maximum_section_length
+        scene.AverageSectionLength = average_section_length
+
+        # Surface Area #############################################################################
+        sa_items = vmv.analysis.compute_surface_area_analysis_items(
+            sections=vmv.interface.MorphologyObject.sections_list)
+
+        # Total
+        scene.TotalSurfaceArea = sa_items.total_morphology_surface_area
+
+        # Segment
+        scene.MinimumSegmentSurfaceArea = sa_items.minimum_segment_surface_area
+        scene.SmallestSegmentSurfaceArea = sa_items.minimum_non_zero_segment_surface_area
+        scene.MaximumSegmentSurfaceArea = sa_items.maximum_segment_surface_area
+        scene.MeanSegmentSurfaceArea = sa_items.mean_segment_surface_area
+        scene.GlobalSegmentSurfaceAreaRatio = sa_items.global_segment_surface_area_ratio
+        scene.GlobalSegmentSurfaceAreaRatioFactor = sa_items.global_segment_surface_area_ratio_factor
+        scene.NumberZeroSurfaceAreaSegments = sa_items.number_segments_with_zero_surface_area
+
+        # Section
+        scene.MinimumSectionSurfaceArea = sa_items.minimum_section_surface_area
+        scene.SmallestSectionSurfaceArea = sa_items.minimum_non_zero_section_surface_area
+        scene.MaximumSectionSurfaceArea = sa_items.maximum_section_surface_area
+        scene.MeanSectionSurfaceArea = sa_items.mean_section_surface_area
+        scene.GlobalSectionSurfaceAreaRatio = sa_items.global_section_surface_area_ratio
+        scene.GlobalSectionSurfaceAreaRatioFactor = sa_items.global_section_surface_area_ratio_factor
+        scene.NumberZeroSurfaceAreaSections = sa_items.number_sections_with_zero_surface_area
+
+        # Volume ###################################################################################
+        v_items = vmv.analysis.compute_volume_analysis_items(
+            sections=vmv.interface.MorphologyObject.sections_list)
+
+        # Total
+        scene.TotalVolume = v_items.total_morphology_volume
+
+        # Segment
+        scene.MinimumSegmentVolume = v_items.minimum_segment_volume
+        scene.SmallestSegmentVolume = v_items.minimum_non_zero_segment_volume
+        scene.MaximumSegmentVolume = v_items.maximum_segment_volume
+        scene.MeanSegmentVolume = v_items.mean_segment_volume
+        scene.GlobalSegmentVolumeRatio = v_items.global_segment_volume_ratio
+        scene.GlobalSegmentVolumeRatioFactor = \
+            v_items.global_segment_volume_ratio_factor
+        scene.NumberZeroVolumeSegments = v_items.number_segments_with_zero_volume
+
+        # Section
+        scene.MinimumSectionVolume = v_items.minimum_section_volume
+        scene.SmallestSectionVolume = v_items.minimum_non_zero_section_volume
+        scene.MaximumSectionVolume = v_items.maximum_section_volume
+        scene.MeanSectionVolume = v_items.mean_section_volume
+        scene.GlobalSectionVolumeRatio = v_items.global_section_volume_ratio
+        scene.GlobalSectionVolumeRatioFactor = v_items.global_section_volume_ratio_factor
+        scene.NumberZeroVolumeSections = v_items.number_sections_with_zero_volume
+
+
+
 
         # Alignment stats.
         vmv.logger.info('Alignment')
         x_segment_length, y_segment_length, z_segment_length = \
             vmv.analysis.analyze_segments_alignment_length(
                 vmv.interface.MorphologyObject.sections_list)
-        context.scene.SegmentLengthX = x_segment_length
-        context.scene.SegmentLengthY = y_segment_length
-        context.scene.SegmentLengthZ = z_segment_length
+        scene.SegmentLengthX = x_segment_length
+        scene.SegmentLengthY = y_segment_length
+        scene.SegmentLengthZ = z_segment_length
 
         vmv.logger.info('Loops')
         number_loops = vmv.analysis.compute_number_of_loops(
             vmv.interface.MorphologyObject.sections_list)
-        context.scene.NumberLoops = number_loops
+        scene.NumberLoops = number_loops
 
         vmv.logger.info('Components')
         number_components = vmv.analysis.compute_number_of_components(
             vmv.interface.MorphologyObject.sections_list)
-        context.scene.NumberComponents = number_components
+        scene.NumberComponents = number_components
 
         # Bounding box data
         vmv.logger.info('Bounding box')
         if vmv.interface.MorphologyObject.bounding_box is None:
             vmv.interface.MorphologyObject.bounding_box = \
                 vmv.interface.MorphologyObject.compute_bounding_box()
-        context.scene.BBoxCenterX = vmv.interface.MorphologyObject.bounding_box.center[0]
-        context.scene.BBoxCenterY = vmv.interface.MorphologyObject.bounding_box.center[1]
-        context.scene.BBoxCenterZ = vmv.interface.MorphologyObject.bounding_box.center[2]
-        context.scene.BoundsX = vmv.interface.MorphologyObject.bounding_box.bounds[0]
-        context.scene.BoundsY = vmv.interface.MorphologyObject.bounding_box.bounds[1]
-        context.scene.BoundsZ = vmv.interface.MorphologyObject.bounding_box.bounds[2]
-        context.scene.BBoxPMinX = vmv.interface.MorphologyObject.bounding_box.p_min[0]
-        context.scene.BBoxPMinY = vmv.interface.MorphologyObject.bounding_box.p_min[1]
-        context.scene.BBoxPMinZ = vmv.interface.MorphologyObject.bounding_box.p_min[2]
-        context.scene.BBoxPMaxX = vmv.interface.MorphologyObject.bounding_box.p_max[0]
-        context.scene.BBoxPMaxY = vmv.interface.MorphologyObject.bounding_box.p_max[1]
-        context.scene.BBoxPMaxZ = vmv.interface.MorphologyObject.bounding_box.p_max[2]
+        scene.BBoxCenterX = vmv.interface.MorphologyObject.bounding_box.center[0]
+        scene.BBoxCenterY = vmv.interface.MorphologyObject.bounding_box.center[1]
+        scene.BBoxCenterZ = vmv.interface.MorphologyObject.bounding_box.center[2]
+        scene.BoundsX = vmv.interface.MorphologyObject.bounding_box.bounds[0]
+        scene.BoundsY = vmv.interface.MorphologyObject.bounding_box.bounds[1]
+        scene.BoundsZ = vmv.interface.MorphologyObject.bounding_box.bounds[2]
+        scene.BBoxPMinX = vmv.interface.MorphologyObject.bounding_box.p_min[0]
+        scene.BBoxPMinY = vmv.interface.MorphologyObject.bounding_box.p_min[1]
+        scene.BBoxPMinZ = vmv.interface.MorphologyObject.bounding_box.p_min[2]
+        scene.BBoxPMaxX = vmv.interface.MorphologyObject.bounding_box.p_max[0]
+        scene.BBoxPMaxY = vmv.interface.MorphologyObject.bounding_box.p_max[1]
+        scene.BBoxPMaxZ = vmv.interface.MorphologyObject.bounding_box.p_max[2]
 
         # Update the analysis stats.
         analysis_done = time.time()
-        context.scene.MorphologyAnalysisTime = analysis_done - analysis_stated
+        scene.MorphologyAnalysisTime = analysis_done - analysis_stated
 
         # Done
         return {'FINISHED'}

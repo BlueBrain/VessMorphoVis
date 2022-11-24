@@ -206,3 +206,190 @@ bpy.types.Scene.BoundsZ = bpy.props.FloatProperty(
 bpy.types.Scene.MorphologyAnalysisTime = bpy.props.FloatProperty(
     name='Analysis Time (Sec)',
     default=0, min=0, max=1000000)
+
+
+# Surface Area Analysis ############################################################################
+bpy.types.Scene.TotalSurfaceArea = bpy.props.FloatProperty(
+    name='Total Surface Area',
+    description='The total surface area of the morphology computed from individual segments in the '
+                'morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MinimumSegmentSurfaceArea = bpy.props.FloatProperty(
+    name='Min. Segment Surface Area',
+    description='The surface area of the smallest segment in the morphology skeleton (in µm²).'
+                'Note that this value could be zero if the segment has zero radius or zero length',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.SmallestSegmentSurfaceArea = bpy.props.FloatProperty(
+    name='Smallest (non-zero) Segment Surface Area',
+    description='The surface area of the smallest \'valid\' segment (that has no zero-radius nor '
+                'zero-length) in the morphology skeleton (in µm²). Normally, the value of this '
+                'quantity should be similar to the Min. Segment Surface Area. '
+                'Nevertheless If this value is zero, this means that all the segments in the '
+                'morphology have zero surface areas',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MaximumSegmentSurfaceArea = bpy.props.FloatProperty(
+    name='Max. Segment Surface Area',
+    description='The surface area of the largest segment in the morphology skeleton (in µm²)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MeanSegmentSurfaceArea = bpy.props.FloatProperty(
+    name='Mean Segment Surface Area',
+    description='The mean segment surface area in the morphology skeleton (in µm²)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSegmentSurfaceAreaRatio = bpy.props.FloatProperty(
+    name='Global Segment Surface Area Ratio',
+    description='The ratio between the surface area of the smallest (valid, or non-zero) segment '
+                'to that of the largest segment in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSegmentSurfaceAreaRatioFactor = bpy.props.FloatProperty(
+    name='Global Segment Surface Area Ratio Factor',
+    description='The scale factor representing the ratio between the surface area of the largest '
+                'segment to that of the smallest segment in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroSurfaceAreaSegments = bpy.props.IntProperty(
+    name='# Sections with Zero Surface Area',
+    description='The number of  segments in the morphology',
+    default=0, subtype='FACTOR')
+
+bpy.types.Scene.MinimumSectionSurfaceArea = bpy.props.FloatProperty(
+    name='Min. Section Surface Area',
+    description='The surface area of the smallest section in the morphology skeleton (in µm²).'
+                'Note that this value could be zero if the section is composed of segments with '
+                'zero surface area',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.SmallestSectionSurfaceArea = bpy.props.FloatProperty(
+    name='Smallest (non-zero) Section Surface Area',
+    description='The volume of the smallest \'valid\' section (that has no zero-surface-area '
+                'segments) in the morphology skeleton (in µm²). Normally, the value of this '
+                'quantity should be similar to the Min. Section Surface Area.'
+                'Nevertheless If this value is zero, this means that all the sections in the '
+                'morphology have zero surface area',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MaximumSectionSurfaceArea = bpy.props.FloatProperty(
+    name='Max. Section Surface Area',
+    description='The surface area of the largest section in the morphology skeleton (in µm²)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MeanSectionSurfaceArea = bpy.props.FloatProperty(
+    name='Mean Section Surface Area',
+    description='The mean section surface area in the morphology skeleton (in µm²)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSectionSurfaceAreaRatio = bpy.props.FloatProperty(
+    name='Global Section Surface Area Ratio',
+    description='The ratio between the surface area of the smallest (valid) section to that of the '
+                'largest section in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSectionSurfaceAreaRatioFactor = bpy.props.FloatProperty(
+    name='Global Section Surface Area Ratio Factor',
+    description='The scale factor representing the ratio between the surface area of the largest '
+                'section to that of the smallest section in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroSurfaceAreaSections = bpy.props.IntProperty(
+    name='# Sections with Zero Surface Area',
+    description='The number of sections with zero surface area in the morphology',
+    default=0, subtype='FACTOR')
+
+# Volume Analysis ##################################################################################
+bpy.types.Scene.TotalVolume = bpy.props.FloatProperty(
+    name='Total Volume',
+    description='The total volume of the morphology computed from individual segments in the '
+                'morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MinimumSegmentVolume = bpy.props.FloatProperty(
+    name='Min. Segment Volume',
+    description='The volume of the smallest segment in the morphology skeleton (in µm³).'
+                'Note that this value could be zero if the segment has zero radius or zero length',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.SmallestSegmentVolume = bpy.props.FloatProperty(
+    name='Smallest (non-zero) Segment Volume',
+    description='The volume of the smallest \'valid\' segment (that has no zero-radius nor '
+                'zero-length) in the morphology skeleton (in µm³). Normally, the value of this '
+                'quantity should be similar to the Min. Segment Volume. '
+                'Nevertheless If this value is zero, this means that all the segments in the '
+                'morphology have zero volumes',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MaximumSegmentVolume = bpy.props.FloatProperty(
+    name='Max. Segment Volume',
+    description='The volume of the largest segment in the morphology skeleton (in µm³)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MeanSegmentVolume = bpy.props.FloatProperty(
+    name='Mean Segment Volume',
+    description='The mean segment volume in the morphology skeleton (in µm³)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSegmentVolumeRatio = bpy.props.FloatProperty(
+    name='Global Segment Volume Ratio',
+    description='The ratio between the volume of the smallest (valid) segment to that of the '
+                'largest segment in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSegmentVolumeRatioFactor = bpy.props.FloatProperty(
+    name='Global Segment Volume Ratio Factor',
+    description='The scale factor representing the ratio between the volume of the largest '
+                'segment to that of the smallest segment in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroVolumeSegments = bpy.props.IntProperty(
+    name='# Zero-volume Segments',
+    description='The number of the zero-volume segments in the morphology',
+    default=0, subtype='FACTOR')
+
+bpy.types.Scene.MinimumSectionVolume = bpy.props.FloatProperty(
+    name='Min. Section Volume',
+    description='The volume of the smallest section in the morphology skeleton (in µm³).'
+                'Note that this value could be zero if the section is composed of segments with '
+                'zero volume',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.SmallestSectionVolume = bpy.props.FloatProperty(
+    name='Smallest (non-zero) Section Volume',
+    description='The volume of the smallest \'valid\' section (that has no zero-volume segments) '
+                'in the morphology skeleton (in µm³). Normally, the value of this '
+                'quantity should be similar to the Min. Section Volume.'
+                'Nevertheless If this value is zero, this means that all the sections in the '
+                'morphology have zero volumes',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MaximumSectionVolume = bpy.props.FloatProperty(
+    name='Max. Section Volume',
+    description='The volume of the largest section in the morphology skeleton (in µm³)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.MeanSectionVolume = bpy.props.FloatProperty(
+    name='Mean Section Volume',
+    description='The mean section volume in the morphology skeleton (in µm³)',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSectionVolumeRatio = bpy.props.FloatProperty(
+    name='Global Section Volume Ratio',
+    description='The ratio between the volume of the smallest (valid) section to that of the '
+                'largest section in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.GlobalSectionVolumeRatioFactor = bpy.props.FloatProperty(
+    name='Global Section Volume Ratio Factor',
+    description='The scale factor representing the ratio between the volume of the largest '
+                'section to that of the smallest section in the morphology',
+    subtype='FACTOR', min=0, max=1e32, precision=5)
+
+bpy.types.Scene.NumberZeroVolumeSections = bpy.props.IntProperty(
+    name='# Zero-volume Sections',
+    description='The number of the zero-volume sections in the morphology',
+    default=0, subtype='FACTOR')
+
+
