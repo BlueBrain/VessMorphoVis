@@ -29,7 +29,7 @@ class PlotStyle:
                  title_pad=25,
                  font_type='Arial',
                  font_weight='regular',
-                 font_size=40,
+                 font_size=30,
                  line_style='-',
                  line_width=2,
                  tick_length=5,

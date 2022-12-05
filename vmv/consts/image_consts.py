@@ -58,3 +58,6 @@ class Image:
 
     # The bounding box increment that will clean the edges around the images
     GAP_DELTA = 5.0
+
+    # Dot per inch - DPI
+    DPI = 92

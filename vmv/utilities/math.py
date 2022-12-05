@@ -21,6 +21,9 @@ import math
 # Blender Imports
 from mathutils import Vector
 
+# Internal imports
+from vmv.consts import Geometry
+
 
 ####################################################################################################
 # @interpolate_list
@@ -170,7 +173,7 @@ def get_non_zero_minimum_value(input_list):
 
 
 ####################################################################################################
-# @get_non_zero_minimum_value
+# @compute_zero_elements_count
 ####################################################################################################
 def compute_zero_elements_count(input_list,
                                 epsilon=1e-10):
@@ -181,3 +184,16 @@ def compute_zero_elements_count(input_list,
             count += 1
 
     return count
+
+
+####################################################################################################
+# @compute_x_starting_point
+####################################################################################################
+def compute_x_starting_point(figure_count, figure_number, ):
+
+    paper_x_margin = 2 * Geometry.PDF_PAGE_X_MARGIN
+    remaining_x = Geometry.PDF_PAGE_WIDTH - paper_x_margin
+    remaining_x = remaining_x - (Geometry.FIGURE_GAP_X * figure_count)
+    figure_width = int((1. * remaining_x) / figure_count)
+    x_start = Geometry.PDF_PAGE_X_MARGIN + (figure_number * (figure_width + Geometry.FIGURE_GAP_X))
+    return x_start

@@ -20,3 +20,4 @@ from .items import *
 from vmv.analysis.plotting.plotting import *
 from .functions import *
 from .plotting import *
+from .reports import *

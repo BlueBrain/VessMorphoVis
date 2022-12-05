@@ -18,6 +18,9 @@
 # System imports
 import matplotlib.pyplot as pyplot
 
+# Internal import
+import vmv.consts
+
 
 ####################################################################################################
 # @set_plotting_styles
@@ -80,7 +83,7 @@ def add_patch_styles(ax,
 ####################################################################################################
 def save_figure(output_prefix,
                 output_directory,
-                dpi=300,
+                dpi=vmv.consts.Image.DPI,
                 svg=False,
                 pdf=False):
 
@@ -91,6 +94,9 @@ def save_figure(output_prefix,
         pyplot.savefig('%s.svg' % file_path, dpi=dpi, bbox_inches='tight', transparent=True)
     if pdf:
         pyplot.savefig('%s.pdf' % file_path, dpi=dpi, bbox_inches='tight', transparent=True)
+
+    # Return the .PNG file of the figure
+    return '%s.png' % file_path
 
 
 ####################################################################################################

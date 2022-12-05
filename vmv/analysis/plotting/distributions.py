@@ -37,8 +37,8 @@ def plot_scatter(data_frame,
                  output_prefix,
                  output_directory,
                  title=None,
-                 fig_size=(6, 10),
-                 dpi=150,
+                 fig_size=(10, 10),
+                 dpi=vmv.consts.Image.DPI,
                  light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                  dark_color=vmv.consts.Color.CM_BLUE_DARK,
                  plot_styles=vmv.utilities.PlotStyle(),
@@ -85,8 +85,8 @@ def plot_scatter_data_along_x_y_z(data_frame,
                                   output_directory,
                                   x_label,
                                   title=None,
-                                  fig_size=(6, 10),
-                                  dpi=150,
+                                  fig_size=(10, 10),
+                                  dpi=vmv.consts.Image.DPI,
                                   light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                                   dark_color=vmv.consts.Color.CM_BLUE_DARK,
                                   plot_styles=vmv.utilities.PlotStyle(),
@@ -117,8 +117,8 @@ def plot_scatter_data_with_closeups_if_needed(data_frame,
                                               output_prefix,
                                               output_directory,
                                               title=None,
-                                              fig_size=(6, 10),
-                                              dpi=150,
+                                              fig_size=(10, 10),
+                                              dpi=vmv.consts.Image.DPI,
                                               light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                                               dark_color=vmv.consts.Color.CM_BLUE_DARK,
                                               plot_styles=vmv.utilities.PlotStyle(),
@@ -202,8 +202,8 @@ def plot_scatter_data_with_closeups_if_needed_along_x_y_z(
         output_directory,
         x_label,
         title=None,
-        fig_size=(6, 10),
-        dpi=150,
+        fig_size=(10, 10),
+        dpi=vmv.consts.Image.DPI,
         light_color=vmv.consts.Color.CM_BLUE_LIGHT,
         dark_color=vmv.consts.Color.CM_BLUE_DARK,
         plot_styles=vmv.utilities.PlotStyle(),
@@ -236,8 +236,8 @@ def plot_range_data(data_frame,
                     output_prefix,
                     output_directory,
                     title=None,
-                    fig_size=(6, 10),
-                    dpi=150,
+                    fig_size=(10, 10),
+                    dpi=vmv.consts.Image.DPI,
                     light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                     dark_color=vmv.consts.Color.CM_BLUE_DARK,
                     plot_styles=vmv.utilities.PlotStyle(),
@@ -285,12 +285,14 @@ def plot_range_data(data_frame,
     ax.set_title(title, pad=plot_styles.title_pad) if title is not None else None
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.RANGE),
-                             output_directory=output_directory,
-                             dpi=dpi, svg=save_svg, pdf=save_pdf)
+    png_image_path = vmv_plotting.save_figure(
+        output_prefix='%s%s' % (output_prefix, Suffix.RANGE), output_directory=output_directory,
+        dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
     vmv_plotting.reset_matplotlib()
+
+    return png_image_path
 
 
 ####################################################################################################
@@ -305,14 +307,16 @@ def plot_range_data_along_xyz(data_frame,
                               output_directory,
                               title=None,
                               fig_size=(10, 10),
-                              dpi=150,
+                              dpi=vmv.consts.Image.DPI,
                               plot_styles=vmv.utilities.PlotStyle(),
                               save_pdf=False,
                               save_svg=False):
+    # A list that will contain the paths of the resulting imagers
+    results = list()
 
     for i, axis in enumerate(vmv.consts.Keys.AXES):
 
-        plot_range_data(data_frame,
+        results.append(plot_range_data(data_frame,
                         y_key=axis,
                         min_keyword=min_keyword,
                         mean_keyword=mean_keyword,
@@ -323,7 +327,8 @@ def plot_range_data_along_xyz(data_frame,
                         title=title, fig_size=fig_size, dpi=dpi,
                         light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
                         dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
-                        plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)
+                        plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg))
+    return results
 
 
 ####################################################################################################
@@ -340,7 +345,7 @@ def plot_range_and_scatter_combined(data_frame,
                                     title=None,
                                     bins=50,
                                     fig_size=(10, 10),
-                                    dpi=150,
+                                    dpi=vmv.consts.Image.DPI,
                                     light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                                     dark_color=vmv.consts.Color.CM_BLUE_DARK,
                                     plot_styles=vmv.utilities.PlotStyle(),
@@ -415,12 +420,14 @@ def plot_range_and_scatter_combined(data_frame,
     ax1.set_title(title, pad=plot_styles.title_pad) if title is not None else None
 
     # Save the figure
-    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.DISTRIBUTION),
-                             output_directory=output_directory,
-                             dpi=dpi, svg=save_svg, pdf=save_pdf)
+    png_image_path = vmv_plotting.save_figure(
+        output_prefix='%s%s' % (output_prefix, Suffix.DISTRIBUTION),
+        output_directory=output_directory, dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
     vmv_plotting.reset_matplotlib()
+
+    return png_image_path
 
 
 ####################################################################################################
@@ -434,13 +441,16 @@ def plot_range_and_scatter_combined_along_xyz(data_frame,
                                               title=None,
                                               bins=50,
                                               fig_size=(10, 10),
-                                              dpi=150,
+                                              dpi=vmv.consts.Image.DPI,
                                               plot_styles=vmv.utilities.PlotStyle(),
                                               save_pdf=False,
                                               save_svg=False):
 
+    # A list that will contain the paths of the resulting imagers
+    results = list()
+
     for i, axis in enumerate(vmv.consts.Keys.AXES):
-        plot_range_and_scatter_combined(
+        results.append(plot_range_and_scatter_combined(
             data_frame=data_frame,
             x_keyword=x_keyword, y_keyword=axis,
             x_label=x_label, y_label=r'Distance along %s-axis ($\mu$m)' % axis,
@@ -449,4 +459,6 @@ def plot_range_and_scatter_combined_along_xyz(data_frame,
             title=title, bins=bins, fig_size=fig_size, dpi=dpi,
             light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
             dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
-            plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg)
+            plot_styles=plot_styles, save_pdf=save_pdf, save_svg=save_svg))
+
+    return results

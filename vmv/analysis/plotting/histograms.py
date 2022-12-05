@@ -41,8 +41,8 @@ def plot_horizontal_histogram_with_box_plot(data_frame,
                                             y_label='Count',
                                             title=None,
                                             bins=50,
-                                            fig_size=(10, 6),
-                                            dpi=150,
+                                            fig_size=(10, 10),
+                                            dpi=vmv.consts.Image.DPI,
                                             light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                                             dark_color=vmv.consts.Color.CM_BLUE_DARK,
                                             plot_styles=vmv.utilities.PlotStyle(),
@@ -148,8 +148,8 @@ def plot_horizontal_histogram_along_x_y_z(data_frame,
                                           label='Count',
                                           title=None,
                                           bins=50,
-                                          fig_size=(10, 6),
-                                          dpi=150,
+                                          fig_size=(10, 10),
+                                          dpi=vmv.consts.Image.DPI,
                                           plot_styles=vmv.utilities.PlotStyle(),
                                           save_pdf=False,
                                           save_svg=False):
@@ -178,8 +178,8 @@ def plot_histogram_with_box_plot(data_frame,
                                  x_label='Count',
                                  title=None,
                                  bins=50,
-                                 fig_size=(6, 10),
-                                 dpi=150,
+                                 fig_size=(10, 10),
+                                 dpi=vmv.consts.Image.DPI,
                                  light_color=vmv.consts.Color.CM_BLUE_LIGHT,
                                  dark_color=vmv.consts.Color.CM_BLUE_DARK,
                                  plot_styles=vmv.utilities.PlotStyle(),
@@ -249,13 +249,16 @@ def plot_histogram_with_box_plot(data_frame,
     ax2.tick_params(axis='both', which='both', left=False, bottom=False, labelbottom=False)
     ax2.grid(False)
 
-    # Save the figure
-    vmv_plotting.save_figure(output_prefix='%s%s' % (output_prefix, Suffix.HISTOGRAM),
-                             output_directory=output_directory,
-                             dpi=dpi, svg=save_svg, pdf=save_pdf)
+    # Save the figure and return the path of the resulting PNG image
+    png_image_path = vmv_plotting.save_figure(
+        output_prefix='%s%s' % (output_prefix, Suffix.HISTOGRAM), output_directory=output_directory,
+        dpi=dpi, svg=save_svg, pdf=save_pdf)
 
     # Reset to clean
     vmv_plotting.reset_matplotlib()
+
+    # Return the path to the PNG image
+    return png_image_path
 
 
 ####################################################################################################
@@ -267,8 +270,8 @@ def plot_histograms_along_x_y_z(data_frame,
                                 x_label='Count',
                                 title=None,
                                 bins=50,
-                                fig_size=(6, 10),
-                                dpi=150,
+                                fig_size=(10, 10),
+                                dpi=vmv.consts.Image.DPI,
                                 plot_styles=vmv.utilities.PlotStyle(),
                                 save_pdf=False,
                                 save_svg=False):

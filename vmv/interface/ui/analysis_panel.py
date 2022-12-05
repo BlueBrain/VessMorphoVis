@@ -246,7 +246,6 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         # Counts ###################################################################################
         vmv.logger.info('Structure')
 
-
         structure_items = vmv.analysis.compute_structure_analysis_items(
             vmv.interface.MorphologyObject)
 
@@ -270,11 +269,9 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
         scene.MinimumNonZeroSampleRadius = r_items.minimum_non_zero_sample_radius
         scene.MaximumSampleRadius = r_items.maximum_sample_radius
         scene.MeanSampleRadius = r_items.mean_sample_radius
-        print(scene.MeanSampleRadius)
         scene.GlobalSampleRadiusRatio = r_items.global_sample_radius_ratio
         scene.GlobalSampleRadiusRatioFactor = r_items.global_sample_radius_ratio_factor
         scene.NumberZeroRadiusSamples = r_items.number_samples_with_zero_radius
-
 
         # Length ###################################################################################
         l_items = vmv.analysis.compute_length_analysis_items(

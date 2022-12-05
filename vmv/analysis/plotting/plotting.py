@@ -157,7 +157,7 @@ def plot_range_data_closeups(df,
                               figure_height=10,
                               spines_shift=10,
                               line_width=2,
-                              dpi=300,
+                              dpi=vmv.consts.Image.DPI,
                               light_color='r',
                               dark_color='b',
                               output_directory="",
@@ -294,7 +294,7 @@ def plot_normalized_histogram(data,
                               bin_width=0.95,
                               save_pdf=False,
                               save_svg=False,
-                              dpi=150):
+                              dpi=vmv.consts.Image.DPI):
     """Plot normalized histograms of the input data.
 
     :param data:

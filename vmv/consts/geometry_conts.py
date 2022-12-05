@@ -40,3 +40,21 @@ class Geometry:
 
     # Scale bar thickness (in blender units)
     SCALE_BAR_THICKNESS = 0.025
+
+    # The page width of a PDF
+    PDF_PAGE_WIDTH = 210
+
+    PDF_PAGE_X_MARGIN = 10
+
+    # The height of a cell in a table
+    TABLE_CELL_HEIGHT = 8
+
+
+    PAPER_START_Y = 10
+    DELTA_Y_TEXT = 5
+
+    DELTA_Y_FIGURE = 65
+
+    FIGURE_GAP_X = 5
+
+    FIGURE_HEIGHT = 60
