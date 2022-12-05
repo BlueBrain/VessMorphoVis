@@ -42,27 +42,27 @@ def plot_volume_analysis_statistics(morphology,
         current_y = 30
 
         pdf_report.add_default_table_cell(
-            quantity='Total volume',
+            quantity='Total volume (µm³)',
             value=v_items.total_morphology_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Minimum segment volume',
+            quantity='Minimum segment volume (µm³)',
             value=v_items.minimum_segment_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Smallest (non-zero) segment volume',
+            quantity='Smallest (non-zero) segment volume (µm³)',
             value=v_items.minimum_non_zero_segment_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Maximum segment volume',
+            quantity='Maximum segment volume (µm³)',
             value=v_items.maximum_segment_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Mean segment volume',
+            quantity='Mean segment volume (µm³)',
             value=v_items.mean_segment_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
@@ -77,17 +77,17 @@ def plot_volume_analysis_statistics(morphology,
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Minimum segment volume ratio (minimum-to-maximum) per section',
+            quantity='Minimum segment volume ratio per section (minimum-to-maximum)',
             value=v_items.minimum_segment_volume_ratio_per_section, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Maximum segment volume ratio (minimum-to-maximum) per section',
+            quantity='Maximum segment volume ratio per section (minimum-to-maximum)',
             value=v_items.maximum_segment_volume_ratio_per_section, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Mean segment volume ratio (minimum-to-maximum) per section',
+            quantity='Mean segment volume ratio per section (minimum-to-maximum)',
             value=v_items.mean_segment_volume_ratio_per_section, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
@@ -97,23 +97,28 @@ def plot_volume_analysis_statistics(morphology,
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Minimum section volume',
+            quantity='Minimum section volume (µm³)',
             value=v_items.minimum_section_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Maximum section volume',
+            quantity='Maximum section volume (µm³)',
             value=v_items.maximum_section_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
-            quantity='Mean section volume',
+            quantity='Mean section volume (µm³)',
             value=v_items.mean_section_volume, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
             quantity='Global section volume ratio (minimum-to-maximum)',
             value=v_items.global_section_volume_ratio, y_start=current_y)
+        current_y += Geometry.TABLE_CELL_HEIGHT
+
+        pdf_report.add_default_table_cell(
+            quantity='Global section volume ratio (maximum-to-minimum)',
+            value=1./v_items.global_section_volume_ratio, y_start=current_y)
         current_y += Geometry.TABLE_CELL_HEIGHT
 
         pdf_report.add_default_table_cell(
@@ -155,16 +160,6 @@ def plot_volume_analysis_statistics(morphology,
         output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_MEAN_VOLUME),
         output_directory=output_directory)
 
-    # Segment Volume Range #########################################################################
-    segment_volume_range_xyz = vmv_plotting.plot_range_data_along_xyz(
-        data_frame=data_frame,
-        min_keyword=Keys.SEGMENT_MIN_VOLUME,
-        mean_keyword=Keys.SEGMENT_MEAN_VOLUME,
-        max_keyword=Keys.SEGMENT_MAX_VOLUME,
-        x_label='Segment Volume Range\nper Section' + r' ($\mu$m³)',
-        output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_VOLUME_RANGE),
-        output_directory=output_directory)
-
     # Segment Volume Ratio #########################################################################
     segment_volume_ratio_histogram = vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SEGMENT_VOLUME_RATIO,
@@ -183,7 +178,7 @@ def plot_volume_analysis_statistics(morphology,
         sections=morphology.sections_list)
 
     # Segment Mean Volume ##########################################################################
-    segment_volume_histogram =  vmv_plotting.plot_histogram_with_box_plot(
+    segment_volume_histogram = vmv_plotting.plot_histogram_with_box_plot(
         data_frame=per_segment_data_frame, data_key=Keys.SEGMENT_VOLUME,
         output_prefix='%s_%s_%s' % (morphology.name, Prefix.VOLUME, Prefix.SEGMENT_VOLUME),
         output_directory=output_directory,

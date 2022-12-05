@@ -15,40 +15,28 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
 from fpdf import FPDF
 
+# Internal imports
 import vmv.consts
 
 
 ####################################################################################################
-# @compute_structure_analysis_items
+# @PDFReport
 ####################################################################################################
-class ReportPDF(FPDF):
+class PDFReport(FPDF):
 
     def header(self):
-        # Logo
-        # Arial bold 15
         self.set_font('Arial', 'B', 15)
-
-        # Move to the right
-        self.cell(80)
-
-        # Title
         self.cell(30, 10, '', 0, 0, 'C')
-        # Line break
 
-    # Page footer
     def footer(self):
-
-        # Position at 1.5 cm from bottom
         self.set_y(-8)
-
-        # Arial italic 8
         self.set_font('Arial', 'I', 8)
-
-        # Page number
         self.cell(0, 8, 'This report is automatically generated with VessMorphoVis, Page ' + str(
-            self.page_no()) + ' / {nb}', 0, 0, 'C')
+            self.page_no()) + ' / {nb}', 0, 0, 'C',
+                  link='https://github.com/BlueBrain/VessMorphoVis')
 
     def add_central_title(self, text, x_start=0, y_start=20):
         self.set_x(x_start)
@@ -88,7 +76,7 @@ class ReportPDF(FPDF):
                   border=0, align='R', fill=True)
         self.set_fill_color(235, 235, 235)
         self.cell(value_cell_width, cell_height, '  ' + value_string,
-                  border=0, align='L', fill=True)
+                  border=0, align='C', fill=True)
 
     def save_report(self, path):
         self.output(path + '.pdf', 'F')
