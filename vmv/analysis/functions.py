@@ -105,17 +105,20 @@ def export_analysis_results(morphology,
     # Create the PDF report
     pdf_report = vmv.analysis.PDFReport()
 
-    #vmv_plotting.plot_structure_analysis_statistics(morphology, output_directory)
+    vmv_plotting.plot_structure_analysis_statistics(
+        morphology, output_directory, pdf_report=pdf_report)
 
-    #vmv_plotting.plot_radius_analysis_statistics(morphology, output_directory)
+    vmv_plotting.plot_radius_analysis_statistics(
+        morphology, output_directory, pdf_report=pdf_report)
 
-    #vmv_plotting.plot_length_analysis_statistics(morphology, output_directory)
+    vmv_plotting.plot_length_analysis_statistics(
+        morphology, output_directory, pdf_report=pdf_report)
 
-    vmv_plotting.plot_surface_area_analysis_statistics(morphology, output_directory,
-                                                       pdf_report=pdf_report)
+    vmv_plotting.plot_surface_area_analysis_statistics(
+        morphology, output_directory, pdf_report=pdf_report)
 
-    vmv_plotting.plot_volume_analysis_statistics(morphology, output_directory,
-                                                 pdf_report=pdf_report)
+    vmv_plotting.plot_volume_analysis_statistics(
+        morphology, output_directory, pdf_report=pdf_report)
 
     # Export the PDF report
     pdf_report.save_report('/home/abdellah/REPORT')

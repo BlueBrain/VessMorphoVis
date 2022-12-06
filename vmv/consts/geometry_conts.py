@@ -44,6 +44,8 @@ class Geometry:
     # The page width of a PDF
     PDF_PAGE_WIDTH = 210
 
+    PDF_PAGE_Y_START = 30
+
     PDF_PAGE_X_MARGIN = 10
 
     # The height of a cell in a table
@@ -58,3 +60,4 @@ class Geometry:
     FIGURE_GAP_X = 5
 
     FIGURE_HEIGHT = 60
+

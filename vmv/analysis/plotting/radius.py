@@ -21,7 +21,54 @@ import pandas
 # Internal imports
 import vmv
 import vmv.analysis.plotting as vmv_plotting
-from vmv.consts import Keys, Prefix
+from vmv.consts import Keys, Prefix, Geometry
+
+
+def add_radius_analysis_table_to_pdf_report(radius_items,
+                                            pdf_report):
+
+    # Create a new page in the PDF report
+    pdf_report.alias_nb_pages()
+    pdf_report.add_page()
+
+    # Title
+    pdf_report.add_central_title(text='Radius Analysis')
+    current_y = Geometry.PDF_PAGE_Y_START
+
+    pdf_report.add_default_table_cell(
+        quantity='Minimum sample radius (µm)',
+        value=radius_items.minimum_sample_radius, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
+
+    pdf_report.add_default_table_cell(
+        quantity='Smallest (non-zero) sample radius (µm)',
+        value=radius_items.minimum_non_zero_sample_radius, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
+
+    pdf_report.add_default_table_cell(
+        quantity='Maximum sample radius (µm)',
+        value=radius_items.maximum_sample_radius, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
+
+    pdf_report.add_default_table_cell(
+        quantity='Mean sample radius (µm)',
+        value=radius_items.mean_sample_radius, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
+
+    pdf_report.add_default_table_cell(
+        quantity='Global radius ratio (minimum-to-maximum)',
+        value=radius_items.global_sample_radius_ratio, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
+
+    pdf_report.add_default_table_cell(
+        quantity='Global radius ratio folds (maximum-to-minimum)',
+        value=1./radius_items.global_sample_radius_ratio, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
+
+    pdf_report.add_default_table_cell(
+        quantity='Number of samples with zero radius',
+        value=radius_items.number_samples_with_zero_radius, y_start=current_y)
+    current_y += Geometry.TABLE_CELL_HEIGHT
 
 
 ####################################################################################################
@@ -53,7 +100,8 @@ def plot_radius_analysis_statistics_for_zero_radius_samples(data_frame,
 # @plot_radius_analysis_from_samples_list
 ####################################################################################################
 def plot_radius_analysis_from_samples_list(morphology,
-                                           output_directory):
+                                           output_directory,
+                                           pdf_report=None):
 
     # Analyze the radii of the samples only
     # TODO: Use the samples_list instead of the sections_list
@@ -91,7 +139,17 @@ def plot_radius_analysis_from_samples_list(morphology,
 # @plot_radius_analysis_from_sections_list
 ####################################################################################################
 def plot_radius_analysis_from_sections_list(morphology,
-                                            output_directory):
+                                            output_directory,
+                                            pdf_report=None):
+
+    if pdf_report is not None:
+
+        # Get the radius items
+        radius_items = vmv.analysis.compute_radius_analysis_items(morphology.sections_list)
+
+        # Add the results to the report
+        add_radius_analysis_table_to_pdf_report(
+            radius_items=radius_items, pdf_report=pdf_report)
 
     data_frame = vmv.analysis.analyse_per_section_radius(morphology.sections_list)
 
@@ -105,7 +163,7 @@ def plot_radius_analysis_from_sections_list(morphology,
                                            output_directory=output_directory)
 
     # Mean section radius histogram
-    vmv_plotting.plot_histogram_with_box_plot(
+    section_mean_radius_histogram = vmv_plotting.plot_histogram_with_box_plot(
         data_frame=data_frame, data_key=Keys.SECTION_MEAN_RADIUS,
         output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
         output_directory=output_directory,
@@ -113,7 +171,7 @@ def plot_radius_analysis_from_sections_list(morphology,
         light_color=vmv.consts.Color.CM_ORANGE_LIGHT, dark_color=vmv.consts.Color.CM_ORANGE_DARK)
 
     # Mean section radius profile
-    vmv_plotting.plot_average_profiles_along_x_y_z(
+    section_mean_radius_xyz = vmv_plotting.plot_average_profiles_along_x_y_z(
         data_frame=data_frame, x_keyword=vmv.consts.Keys.SECTION_MEAN_RADIUS,
         x_axis_label=r'Section Mean Radius ($\mu$m)',
         output_prefix='%s-%s' % (morphology.name, Prefix.SECTION_MEAN_RADIUS),
@@ -152,8 +210,11 @@ def plot_radius_analysis_from_sections_list(morphology,
 # @plot_radius_analysis_statistics
 ####################################################################################################
 def plot_radius_analysis_statistics(morphology,
-                                    output_directory):
+                                    output_directory,
+                                    pdf_report=None):
 
-    plot_radius_analysis_from_samples_list(morphology, output_directory)
+    plot_radius_analysis_from_samples_list(
+        morphology=morphology, output_directory=output_directory, pdf_report=pdf_report)
 
-    plot_radius_analysis_from_sections_list(morphology, output_directory)
+    plot_radius_analysis_from_sections_list(
+        morphology=morphology, output_directory=output_directory, pdf_report=pdf_report)

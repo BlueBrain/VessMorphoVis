@@ -60,7 +60,7 @@ class PDFReport(FPDF):
         value_cell_width = table_width - quantity_cell_width
 
         # Adjust the value format
-        value_string = ''
+        value_string = str(value)
         if isinstance(value, int):
             value_string = str(value)
         elif isinstance(value, float):

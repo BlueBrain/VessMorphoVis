@@ -276,8 +276,9 @@ def plot_histograms_along_x_y_z(data_frame,
                                 save_pdf=False,
                                 save_svg=False):
 
+    results = list()
     for i, axis in enumerate(vmv.consts.Keys.AXES):
-        plot_histogram_with_box_plot(
+        results.append(plot_histogram_with_box_plot(
             data_frame=data_frame,
             data_key=axis,
             output_prefix=output_prefix + '-%s' % axis,
@@ -287,4 +288,6 @@ def plot_histograms_along_x_y_z(data_frame,
             bins=bins, fig_size=fig_size, dpi=dpi, plot_styles=plot_styles,
             light_color=vmv.consts.Color.CM_LIGHT_COLORS[i],
             dark_color=vmv.consts.Color.CM_DARK_COLORS[i],
-            save_svg=save_svg, save_pdf=save_pdf)
+            save_svg=save_svg, save_pdf=save_pdf))
+
+    return results
