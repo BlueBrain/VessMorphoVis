@@ -209,22 +209,26 @@ def decimate_mesh_object(mesh_object,
     """
 
     # If the decimation ration is not within range, skip this operation
-    if 1.0 < decimation_ratio < 0.01:
+    if 1.0 < decimation_ratio < 0.005:
 
         # Return
         return
 
-    # select mesh_object1 and set it to be the active object
+    # Select mesh_object1 and set it to be the active object
     vmv.scene.ops.set_active_object(mesh_object)
 
-    # add a decimation modifier
+    # Add a decimation modifier
     bpy.ops.object.modifier_add(type='DECIMATE')
 
-    # set the decimation ratio
+    # Set the decimation ratio
     bpy.context.object.modifiers["Decimate"].ratio = decimation_ratio
 
-    # apply the modifier
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Decimate")
+    # Apply the modifier
+    if vmv.utilities.get_blender_version_major() > 2:
+        bpy.ops.object.modifier_apply(modifier="Decimate")
+    else:
+        bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Decimate")
+
 
 
 ####################################################################################################

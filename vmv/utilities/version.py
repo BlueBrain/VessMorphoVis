@@ -38,6 +38,45 @@ def get_blender_version():
 
 
 ####################################################################################################
+# @get_blender_version_major
+####################################################################################################
+def get_blender_version_major():
+    """Get the major version of Blender.
+
+    Returns:
+        The major version of Blender.
+    """
+
+    return get_blender_version()[0]
+
+
+####################################################################################################
+# @get_blender_version_minor
+####################################################################################################
+def get_blender_version_minor():
+    """Get the minor version of Blender.
+
+    Returns:
+        The minor version of Blender.
+    """
+
+    return get_blender_version()[1]
+
+
+####################################################################################################
+# @get_blender_version_patch
+####################################################################################################
+def get_blender_version_patch():
+    """Get the patch version of Blender.
+
+    Returns:
+        The patch version of Blender.
+    """
+
+    return get_blender_version()[2]
+    
+
+####################################################################################################
 # @get_blender_version_string
 ####################################################################################################
 def get_blender_version_string():
