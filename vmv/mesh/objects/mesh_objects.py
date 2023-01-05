@@ -229,24 +229,21 @@ def create_bezier_circle(radius=1,
 
     # Add the circle
     bpy.ops.curve.primitive_bezier_circle_add(location=location)
+    bezier_circle = bpy.context.active_object
 
-    # Get a reference to it
-    if vertices == 4:
-        bpy.context.object.data.resolution_u = 0
-    else:
-        bpy.context.object.data.resolution_u = math.ceil(vertices / 4)
-    circle_mesh = bpy.context.active_object
+    # Update the resolution
+    bezier_circle.data.bevel_resolution = int(0.5 * (vertices - 4))
 
     # Set the radius
-    circle_mesh.scale[0] = radius
-    circle_mesh.scale[1] = radius
-    circle_mesh.scale[2] = radius
+    bezier_circle.scale[0] = radius
+    bezier_circle.scale[1] = radius
+    bezier_circle.scale[2] = radius
 
     # Rename it
-    circle_mesh.name = name
+    bezier_circle.name = name
 
     # Return a reference to it
-    return circle_mesh
+    return bezier_circle
 
 
 ####################################################################################################

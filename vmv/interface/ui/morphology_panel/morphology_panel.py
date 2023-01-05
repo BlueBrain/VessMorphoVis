@@ -269,31 +269,17 @@ class VMV_MorphologyPanel(bpy.types.Panel):
 
         # Make sure that the morphology is in the scene
         if vmv.interface.is_vascular_morphology_in_scene():
-
-            # Get the bevel object
-            bevel_object = vmv.scene.get_object_by_name(
-                vmv.interface.MorphologyPolylineObject.data.bevel_object.name)
-
-            # Make sure that this bevel object is not None
-            if bevel_object is not None:
-
-                # Delete the old bevel object
-                vmv.scene.delete_object_in_scene(bevel_object)
-
-                # Create a new bevel object
-                bevel_object = vmv.mesh.create_bezier_circle(
-                    radius=1.0, vertices=context.scene.VMV_BevelSides, name='bevel')
-                vmv.interface.MorphologyPolylineObject.data.bevel_object = bevel_object
-                vmv.scene.hide_object(scene_object=bevel_object)
+            vmv.interface.MorphologyPolylineObject.data.bevel_resolution = \
+                int(0.5 * (context.scene.VMV_BevelSides - 4))
 
     ################################################################################################
     # Tube quality
     bpy.types.Scene.VMV_BevelSides = bpy.props.IntProperty(
         name='Sides',
         description='Number of sides of the cross-section of each segment along the drawn tube.'
-                    'The minimum is 4, maximum 128 and default is 8. High value is required for '
+                    'The minimum is 4, maximum 128 and default is 6. High value is required for '
                     'closeups and low value is sufficient for far-away visualizations.',
-        default=8, min=4, max=128,
+        default=6, min=4, max=128, step=2,
         update=update_bevel_object)
 
     # Options that require an @update function #####################################################
@@ -485,7 +471,7 @@ class VMV_ReconstructMorphology(bpy.types.Operator):
         scale = float(context.scene.VMV_MaximumValue) - float(context.scene.VMV_MinimumValue)
         delta = scale / float(vmv.consts.Color.COLORMAP_RESOLUTION)
 
-        # Fill the list of colors
+        # Fill in the list of colors
         for color_index in range(vmv.consts.Color.COLORMAP_RESOLUTION):
             r0_value = float(context.scene.VMV_MinimumValue) + (color_index * delta)
             r1_value = float(context.scene.VMV_MinimumValue) + ((color_index + 1) * delta)

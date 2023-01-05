@@ -238,6 +238,7 @@ def create_poly_lines_object_base(name='poly_lines',
     # The thickness of the line should be by default set to 1.0. This value will be scaled later
     # at the two points of the line.
     poly_lines_object.bevel_depth = 1.0
+    poly_lines_object.bevel_resolution = bevel_object.data.bevel_resolution
 
     # Adjust the texture coordinates of the poly-line
     # NOTE: The value 5 has been chosen after trial-and-error
@@ -248,10 +249,6 @@ def create_poly_lines_object_base(name='poly_lines',
 
     # Use caps if requested
     poly_lines_object.use_fill_caps = caps
-
-    # If a bevel object is given, use it for scaling the diameter of the poly-line
-    if bevel_object is not None:
-        poly_lines_object.bevel_object = bevel_object
 
     # Return a reference to the created object
     return poly_lines_object
