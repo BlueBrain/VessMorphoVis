@@ -33,7 +33,6 @@ class Sample:
     def __init__(self,
                  point,
                  radius,
-                 index=None,
                  parent_index=None):
         """Constructor
 
@@ -41,8 +40,6 @@ class Sample:
             Sample position in the cartesian space, Vector((x, y, z)).
         :param radius:
             Sample radius.
-        @param index:
-            Sample unique index.
         @param parent_index:
             The index of the parent sample, if exists. Used for tracking and connectivity.
         """
@@ -52,9 +49,6 @@ class Sample:
 
         # Sample radius
         self.radius = radius
-
-        # Sample unique index
-        self.index = index
 
         # Sample's parent index
         self.parent_index = parent_index

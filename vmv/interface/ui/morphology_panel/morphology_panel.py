@@ -279,7 +279,7 @@ class VMV_MorphologyPanel(bpy.types.Panel):
         description='Number of sides of the cross-section of each segment along the drawn tube.'
                     'The minimum is 4, maximum 128 and default is 6. High value is required for '
                     'closeups and low value is sufficient for far-away visualizations.',
-        default=6, min=4, max=128, step=2,
+        default=4, min=4, max=128, step=2,
         update=update_bevel_object)
 
     # Options that require an @update function #####################################################

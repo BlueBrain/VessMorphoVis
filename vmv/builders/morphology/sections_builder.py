@@ -27,7 +27,7 @@ from .base import MorphologyBuilder
 # @SectionsBuilder
 ####################################################################################################
 class SectionsBuilder(MorphologyBuilder):
-    """The builder reconstructs a an object composed of a series of disconnected sections, where 
+    """The builder reconstructs an object composed of a series of disconnected sections, where
     each section is drawn as an independent object.
     """
 

@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -15,6 +15,7 @@
 # if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 ####################################################################################################
+import random
 
 # Blender imports
 import bpy
@@ -303,7 +304,6 @@ def append_poly_line_to_poly_lines_object(poly_lines_object,
 
     # Define the number of samples of the poly-line object
     # NOTE: Use n-1 points because once the poly-line is created it has already one point added
-
     poly_line_object.points.add(len(poly_line_data.samples) - 1)
 
     # Define the material for this poly-line
@@ -377,7 +377,10 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
         poly_lines_object.materials.append(material)
 
     # For each poly-line in the poly-lines list, create an object and append it to the aggregate one
-    for poly_line_data in poly_lines_data:
+    for i, poly_line_data in enumerate(poly_lines_data):
+
+        if 0.5 < random.uniform(0, 1.0):
+            continue
         append_poly_line_to_poly_lines_object(
             poly_lines_object=poly_lines_object, poly_line_data=poly_line_data,
             poly_line_type=poly_line_type)

@@ -30,4 +30,4 @@ class Bevel:
         pass
 
     # Default sides of a bevel object
-    BEVEL_OBJECT_SIDES = 6
+    BEVEL_OBJECT_SIDES = 4

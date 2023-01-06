@@ -141,35 +141,29 @@ class VMVReader:
             Returns the loaded data from the file in the form of a list that is easier to index.
         """
 
-        # Open the morphology file
-        file_handler = open(self.morphology_file, 'r')
-
         # Load the file into a LIST where it would make it easier to search and index
         data = list()
 
-        # Get the data sizes from the file
-        for line in file_handler:
+        with open(self.morphology_file, 'r') as file_handler:
+            for line in file_handler:
 
-            # Ignore comments
-            if '#' in line:
-                continue
+                # Ignore comments
+                if '#' in line:
+                    continue
 
-            # Ignore empty lines
-            if not line.strip():
-                continue
+                # Ignore empty lines
+                if not line.strip():
+                    continue
 
-            # Replace multiple spaces with a single space
-            line = ' '.join(line.split())
+                # Replace multiple spaces with a single space
+                line = ' '.join(line.split())
 
-            # Replace the '\n' with empty
-            line = line.replace('\n', '')
+                # Replace the '\n' with empty
+                line = line.replace('\n', '')
 
-            # # Add the filtered line to the data list, if it is not an empty line
-            if len(line) > 0:
-                data.append(line)
-
-        # Close the file
-        file_handler.close()
+                # # Add the filtered line to the data list, if it is not an empty line
+                if len(line) > 0:
+                    data.append(line)
 
         # Return a reference to the data
         return data
@@ -305,7 +299,7 @@ class VMVReader:
             radius = float(vertex_entry[4])
 
             # Add this point to the points list with the position and radius
-            self.points_list.append([x, y, z, index])
+            self.points_list.append([x, y, z])
 
             # Radii
             self.radii_list.append(radius)
@@ -369,8 +363,7 @@ class VMVReader:
 
                 # Construct a sample
                 sample = vmv.skeleton.Sample(point=Vector((point[0], point[1], point[2])),
-                                             radius=radius,
-                                             index=point[3])
+                                             radius=radius)
 
                 # Add the sample to the samples list
                 samples_list.append(sample)
