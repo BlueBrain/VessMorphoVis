@@ -379,8 +379,8 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     # For each poly-line in the poly-lines list, create an object and append it to the aggregate one
     for i, poly_line_data in enumerate(poly_lines_data):
 
-        if 0.5 < random.uniform(0, 1.0):
-            continue
+        #if 0.5 < random.uniform(0, 1.0):
+        #    continue
         append_poly_line_to_poly_lines_object(
             poly_lines_object=poly_lines_object, poly_line_data=poly_line_data,
             poly_line_type=poly_line_type)

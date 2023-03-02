@@ -51,6 +51,30 @@ def create_vertex(location=(0, 0, 0)):
 
 
 ####################################################################################################
+# @create_vertices
+####################################################################################################
+def create_vertices(locations):
+    """Create a list of vertices from a list of XYZ locations (point cloud).
+
+    :param locations:
+        An XYZ list of a point cloud.
+    :return:
+        A bmesh object.
+    """
+
+    # Create a new bmesh object
+    bmesh_object = bmesh.new()
+
+    for loc in locations:
+        bmesh_object.verts.new(loc)
+
+    bmesh_object.verts.index_update()
+    bmesh_object.verts.ensure_lookup_table()
+
+    return bmesh_object
+
+
+####################################################################################################
 # @add_new_vertex_to_bmesh
 ####################################################################################################
 def add_new_vertex_to_bmesh(bmesh_object,

@@ -109,7 +109,7 @@ def create_ico_sphere(radius=1,
     vmv.scene.ops.deselect_all()
 
     # Add new ico-sphere mesh object
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, size=radius, location=location)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, radius=radius, location=location)
 
     # Get a reference to it, from the current active objects
     ico_sphere_mesh = bpy.context.active_object

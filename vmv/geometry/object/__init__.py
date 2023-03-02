@@ -19,3 +19,4 @@ from .curve import *
 from .line import *
 from .sphere import *
 from .vertex import *
+from .particle_system import *

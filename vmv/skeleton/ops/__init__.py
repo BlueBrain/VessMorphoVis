@@ -15,7 +15,8 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# Internal imports 
+# Internal imports
+from .samples_ops import *
 from .segments_construction_ops import *
 from .sections_construction_ops import *
 from .skeleton_drawing_ops import *

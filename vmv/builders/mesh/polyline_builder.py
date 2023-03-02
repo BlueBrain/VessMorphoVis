@@ -68,7 +68,7 @@ class PolylineBuilder(MeshBuilder):
     # @build
     ################################################################################################
     def build_mesh(self):
-        """Reconstructs the neuronal mesh using meta objects.
+        """Reconstructs the neuronal mesh.
         """
 
         # Verify and repair the morphology
