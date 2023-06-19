@@ -1,3 +1,9 @@
+[![DOI](https://zenodo.org/badge/DOI/10.1093/bib.btaa461.svg)](https://doi.org/10.1093/bioinformatics/btaa461)
+
+<p align="center">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-banner.jpeg" width="800">
+</p>
+
 # Introduction 
 
 _VessMorphoVis_ is an integrated suite of toolboxes for interactive visualization and analysis of 
@@ -7,10 +13,6 @@ establish an integrated, extensible and domain-specific framework capable of int
 visualization, analysis, repair, high-fidelity meshing and high-quality rendering of vascular 
 morphologies. _VessMorphoVis_ is developed as an extension to its sister 
 [_NeuroMorphoVis_](https://github.com/BlueBrain/NeuroMorphoVis). 
-
-<p align="center">
-	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-banner.jpeg" width="800">
-</p>
 
 ## Features
 
