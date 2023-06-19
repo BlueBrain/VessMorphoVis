@@ -9,7 +9,7 @@ morphologies. _VessMorphoVis_ is developed as an extension to its sister
 [_NeuroMorphoVis_](https://github.com/BlueBrain/NeuroMorphoVis). 
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-logo.png" width="600">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-banner.jpeg" width="600">
 </p>
 
 ## Features
