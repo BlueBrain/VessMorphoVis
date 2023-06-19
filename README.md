@@ -170,10 +170,11 @@ with [markdown-toc](http://ecotrust-canada.github.io/markdown-toc/).
 For more information on _VessMorphoVis_, comments or suggestions, please contact:
 
 __Marwan Abdellah__  
-Scientific Visualiation Expert
-Computing Division 
+Scientific Visualiation Expert  
+Visualization Team, Computing Division  
 Blue Brain Project  
-[marwan.abdellah@epfl.ch](marwan.abdellah@epfl.ch) 
+[marwan.abdellah@epfl.ch](marwan.abdellah@epfl.ch)  
+[marwan-abdellah.com](http://marwan-abdellah.com)  
 
 <p align="center">
 	<img src="https://github.com/BlueBrain/VessMorphoVis/wiki/images/logos/epfl-logo.png" width=200>
