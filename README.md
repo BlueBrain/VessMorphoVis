@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.1093/bib.btaa461.svg)](https://doi.org/10.1093/bioinformatics/btaa461)
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-banner.jpeg" width="800">
+	<img src="https://raw.githubusercontent.com/wiki/BlueBrain/VessMorphoVis/images/logos/vmv-banner.jpeg" width="1200">
 </p>
 
 # Introduction 
