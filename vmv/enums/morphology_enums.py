@@ -246,11 +246,15 @@ class Morphology:
 
             (FIXED,
              'At a Fixed Radii',
-             'Set all the tubes to a fixed radius for enhanced visualization'),
+             'Set all the vessels to a fixed radius for enhanced visualization'),
 
             (SCALED,
              'With Scale Factor',
-             'Scale all the tubes using a specified scale factor')
+             'Scale the radii of all the vessels with a user-specified scale factor'),
+
+            (MINIMUM,
+             'Minimum Radius',
+             'Set the minimum radius to a user-specified value')
         ]
 
         ############################################################################################

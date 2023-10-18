@@ -86,6 +86,11 @@ bpy.types.Scene.VMV_RadiusScaleValue = bpy.props.FloatProperty(
     description='A scale factor for scaling the radii of the tubes between (0.01 and 5.0).',
     default=1.0, min=0.01, max=5.0)
 
+# Tubes radius scale value
+bpy.types.Scene.VMV_MinimumRadiusValue = bpy.props.FloatProperty(
+    name='Min. Value',
+    description='The minimum value of the radius of the sample',
+    default=0.1, min=0.001, max=5.0)
 
 # Shading parameters ###############################################################################
 # Segments color-coding

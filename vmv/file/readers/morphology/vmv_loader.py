@@ -347,6 +347,11 @@ class VMVReader:
         # Iterate on the data list only within the strand indices
         for i in range(starting_strand_index, end_strand_index):
 
+            #import random
+            #value = random.uniform(0, 1.0)
+            #if value > 0.10:
+            #    continue
+
             # Split the entry
             strand_entry = data[i].split(' ')
 

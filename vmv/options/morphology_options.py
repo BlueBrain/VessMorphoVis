@@ -66,7 +66,7 @@ class MorphologyOptions:
         # The minimum radius of the samples
         self.sections_radii_minimum = 0.5
 
-        # Threshold radius, where any section with lower radius values will not drawn
+        # Threshold radius, where any section with lower radius values will not be drawn
         self.threshold_radius = vmv.consts.Math.INFINITY
 
         # Load the morphology at the global coordinates, otherwise center it at the origin

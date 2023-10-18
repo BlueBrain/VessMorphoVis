@@ -401,15 +401,27 @@ def add_radii_options(layout,
 
     # Scaled diameter
     elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.SCALED:
-        scaled_diameter_row = layout.row()
-        scaled_diameter_row.label(text='Radius Scale Factor')
-        scaled_diameter_row.prop(scene, 'VMV_RadiusScaleValue')
+        scaled_radius_row = layout.row()
+        scaled_radius_row.label(text='Radius Scale Factor')
+        scaled_radius_row.prop(scene, 'VMV_RadiusScaleValue')
 
         # Pass options from UI to system
         options.morphology.radii = vmv.enums.Morphology.Radii.SCALED
         options.morphology.scale_sections_radii = True
         options.morphology.unify_sections_radii = False
         options.morphology.sections_radii_scale = scene.VMV_RadiusScaleValue
+
+    # Minimum radius
+    elif scene.VMV_SectionsRadii == vmv.enums.Morphology.Radii.MINIMUM:
+        minimum_radius_row = layout.row()
+        minimum_radius_row.label(text='Minimum Radius')
+        minimum_radius_row.prop(scene, 'VMV_MinimumRadiusValue')
+
+        # Pass options from UI to system
+        options.morphology.radii = vmv.enums.Morphology.Radii.MINIMUM
+        options.morphology.scale_sections_radii = False
+        options.morphology.unify_sections_radii = False
+        options.morphology.sections_radii_minimum = scene.VMV_MinimumRadiusValue
 
     else:
         vmv.logger.log('ERROR')
