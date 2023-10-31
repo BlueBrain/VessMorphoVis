@@ -17,3 +17,4 @@
 
 from .meta_builder import *
 from .polyline_builder import *
+from .skinning_builder import *

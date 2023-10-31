@@ -108,7 +108,8 @@ def create_uv_sphere(radius=1,
     bmesh_uv_sphere = bmesh.new()
 
     # Create a uv-sphere
-    bmesh.ops.create_uvsphere(bmesh_uv_sphere, u_segments=subdivisions, v_segments=subdivisions, diameter=radius)
+    bmesh.ops.create_uvsphere(bmesh_uv_sphere, u_segments=subdivisions, v_segments=subdivisions,
+                              radius=radius)
     # bmesh.ops.create_icosphere(bmesh_uv_sphere, subdivisions=subdivisions, diameter=radius)
 
     # Translate it to the specified position
@@ -140,7 +141,7 @@ def create_ico_sphere(radius=1,
     bmesh_ico_sphere = bmesh.new()
 
     # Create an ico-sphere
-    bmesh.ops.create_icosphere(bmesh_ico_sphere, subdivisions=subdivisions, diameter=radius)
+    bmesh.ops.create_icosphere(bmesh_ico_sphere, subdivisions=subdivisions, radius=radius)
 
     # Translate it to the specified position
     bmesh.ops.translate(bmesh_ico_sphere, verts=bmesh_ico_sphere.verts[:], vec=location)

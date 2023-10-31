@@ -42,6 +42,9 @@ class Meshing:
         # Meta balls-based meshing
         META_BALLS = 'MESHING_TECHNIQUE_META_BALLS'
 
+        # Skin-modifier based meshing
+        SKIN_MODIFIER = 'MESHING_TECHNIQUE_SKIN_MODIFIER'
+
         ############################################################################################
         # @__init__
         ############################################################################################
@@ -58,9 +61,13 @@ class Meshing:
             if argument == 'piecewise-watertight':
                 return Meshing.Technique.PIECEWISE_WATERTIGHT
 
-            # Bridging
+            # Metaballs
             elif argument == 'meta-balls':
                 return Meshing.Technique.META_BALLS
+
+            # Skinning modifier
+            elif argument == 'skin-modifier':
+                return Meshing.Technique.SKIN_MODIFIER
 
             # By default use piecewise-watertight
             else:
@@ -74,6 +81,10 @@ class Meshing:
              'as a single watertight mesh, but the whole mesh will not be watertight. '
              'This approach is relatively fast for large scale morphologies and us used to create '
              'a proxy mesh for visualization'),
+            (SKIN_MODIFIER,
+             'Skin Modifier',
+             'Use skin modifier to create a high quality mesh with smooth branching geometries '
+             'and nice topology'),
             (META_BALLS,
              'Meta Balls',
              'Creates watertight mesh models using the meta balls algorithm. '
