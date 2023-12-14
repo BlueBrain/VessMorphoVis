@@ -17,10 +17,9 @@
 
 # Blender imports
 import bpy
-from mathutils import Vector, Matrix
+from mathutils import Vector
 
 # Internal imports
-import vmv
 import vmv.scene
 
 
@@ -57,7 +56,7 @@ def draw_cyclic_curve_from_points(curve_name,
     curve.points.add(len(list_points) - 1)
     for i in range(len(list_points)):
         vector = list_points[i]
-        curve.points[i].co = ((vector[0], vector[1], vector[2])) + (1,)
+        curve.points[i].co = (vector[0], vector[1], vector[2]) + (1,)
 
     curve.order_u = len(curve.points) - 1
     curve.use_cyclic_u = True
@@ -72,7 +71,7 @@ def draw_cyclic_curve_from_points(curve_name,
 def draw_closed_circle(radius=1,
                        location=Vector((0, 0, 0)),
                        vertices=4,
-                       name='circle',
+                       name='Circle',
                        caps=True):
     """Create a local circle that doesn't account for the transformations applied on it.
 

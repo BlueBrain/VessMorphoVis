@@ -1,5 +1,5 @@
 ####################################################################################################
-#  Copyright (c) 2019 - 2020, EPFL / Blue Brain Project
+#  Copyright (c) 2019 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -17,12 +17,10 @@
 ####################################################################################################
 
 # System imports
-import math, random
+import math
+import random
 
-# Blender imports
-from mathutils import Vector, Matrix
-
-import vmv
+# Internal imports
 import vmv.geometry
 import vmv.mesh
 
@@ -48,7 +46,7 @@ def get_random_point_on_a_sphere(radius,
     x = radius * math.cos(theta) * math.sin(phi)
     y = radius * math.sin(theta) * math.sin(phi)
     z = radius * math.cos(phi)
-    point = Vector((x, y, z)) + location
+    point = (x, y, z) + location
     return point 
 
 

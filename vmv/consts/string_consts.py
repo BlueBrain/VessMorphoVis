@@ -15,15 +15,23 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .bevel_consts import *
-from .color_consts import *
-from .image_consts import *
-from .geometry_conts import *
-from .math_consts import *
-from .meshing_consts import *
-from .messages_consts import *
-from .rendering_planes import *
-from .path_consts import *
-from .skeleton_consts import *
-from .suffix_consts import *
-from .string_consts import *
+
+####################################################################################################
+# String
+####################################################################################################
+class String:
+    """String constants
+    """
+
+    ################################################################################################
+    # @__init__
+    ################################################################################################
+    def __init__(self):
+        pass
+
+    # The length of the TQDM progress bar
+    BAR_LEN = '25'
+
+    # The format of the TQDM progress bar
+    BAR_FORMAT = '{l_bar}{bar:%s}{r_bar}{bar:-%sb}' % (BAR_LEN, BAR_LEN)
+

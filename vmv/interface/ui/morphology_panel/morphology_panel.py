@@ -283,6 +283,7 @@ class VMV_MorphologyPanel(bpy.types.Panel):
                 # Create a new bevel object
                 bevel_object = vmv.mesh.create_bezier_circle(
                     radius=1.0, vertices=context.scene.VMV_BevelSides, name='bevel')
+                vmv.interface.MorphologyPolylineObject.data.bevel_mode = 'OBJECT'
                 vmv.interface.MorphologyPolylineObject.data.bevel_object = bevel_object
                 vmv.scene.hide_object(scene_object=bevel_object)
 
@@ -293,7 +294,7 @@ class VMV_MorphologyPanel(bpy.types.Panel):
         description='Number of sides of the cross-section of each segment along the drawn tube.'
                     'The minimum is 4, maximum 128 and default is 8. High value is required for '
                     'closeups and low value is sufficient for far-away visualizations.',
-        default=8, min=4, max=128,
+        default=8, min=4, max=128, step=4,
         update=update_bevel_object)
 
     # Options that require an @update function #####################################################
@@ -450,29 +451,33 @@ class VMV_ReconstructMorphology(bpy.types.Operator):
         # Starting the reconstruction timer
         start_reconstruction = time.time()
 
-        # Make sure that the morphology isn loaded and valid in memory
+        # Make sure that the morphology isn't loaded and valid in memory
         if not vmv.interface.MorphologyLoaded:
             print('ERROR: Morphology is not loaded')
 
-        # Construct the skeleton builder
-        if vmv.interface.Options.morphology.builder == vmv.enums.Morphology.Builder.SEGMENTS:
+        # Construct the builder object
+        _builder = vmv.interface.Options.morphology.builder
+        if _builder == vmv.enums.Morphology.Builder.SEGMENTS:
             self.morphology_builder = vmv.builders.SegmentsBuilder(
-                morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
-
-        # Disconnected sections builder
-        elif vmv.interface.Options.morphology.builder == vmv.enums.Morphology.Builder.SECTIONS:
-
-            self.morphology_builder = vmv.builders.SectionsBuilder(
                 morphology=vmv.interface.MorphologyObject,
                 options=vmv.interface.Options)
 
-        # Samples builder
-        elif vmv.interface.Options.morphology.builder == vmv.enums.Morphology.Builder.SAMPLES:
+        elif _builder == vmv.enums.Morphology.Builder.SECTIONS:
+            self.morphology_builder = vmv.builders.SectionsBuilder(
+                morphology=vmv.interface.MorphologyObject,
+                options=vmv.interface.Options,
+                use_smooth_curves=False)
 
+        elif _builder == vmv.enums.Morphology.Builder.SMOOTH_SECTIONS:
+            self.morphology_builder = vmv.builders.SectionsBuilder(
+                morphology=vmv.interface.MorphologyObject,
+                options=vmv.interface.Options,
+                use_smooth_curves=True)
+
+        elif _builder == vmv.enums.Morphology.Builder.SAMPLES:
             self.morphology_builder = vmv.builders.SamplesBuilder(
                 morphology=vmv.interface.MorphologyObject,
                 options=vmv.interface.Options)
-
         else:
             return {'FINISHED'}
 

@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2018 - 2019, EPFL / Blue Brain Project
+# Copyright (c) 2018 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -16,15 +16,9 @@
 ####################################################################################################
 
 # System imports
-import sys
 import copy
 
-# Blender imports
-import bpy
-from mathutils import Vector
-
 # Internal imports
-import vmv
 import vmv.geometry
 import vmv.mesh
 import vmv.consts
@@ -59,7 +53,7 @@ class MorphologyBuilder:
         self.morphology = morphology
 
         # All the options of the project
-        self.options = options
+        self.options = copy.deepcopy(options)
 
         # Skeleton materials
         self.materials = None
@@ -92,14 +86,13 @@ class MorphologyBuilder:
         """
 
         # Clear all the materials that are already present in the scene
-        for material in bpy.data.materials:
-            if 'morphology_skeleton' in material.name:
-                material.user_clear()
-                bpy.data.materials.remove(material)
+        for material in vmv.bops.get_materials_in_scene():
+            if 'Morphology Material' in material.name:
+                vmv.bops.delete_material_from_scene(material=material)
 
         # Skeleton materials
         self.materials = vmv.skeleton.ops.create_skeleton_materials(
-            name='morphology_skeleton', material_type=self.options.morphology.material,
+            name='Morphology Material', material_type=self.options.morphology.material,
             color=self.options.morphology.color)
 
     ################################################################################################

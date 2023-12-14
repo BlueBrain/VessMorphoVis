@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2022, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
-
-# System imports
-import pandas
 
 
 ####################################################################################################
@@ -122,6 +119,7 @@ def compute_sample_radius_distribution_along_axes(morphology_object):
             data.append([i_sample.radius, position[0], position[1], position[2]])
 
     # Construct the data frame and return it
+    import pandas
     return pandas.DataFrame(data, columns=['Radius', 'X', 'Y', 'Z'])
 
 

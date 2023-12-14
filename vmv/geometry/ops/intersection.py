@@ -19,9 +19,6 @@
 # System imports
 import math
 
-# Blender imports
-from mathutils import Vector, Matrix
-
 
 ####################################################################################################
 # @sphere_line
@@ -29,14 +26,17 @@ from mathutils import Vector, Matrix
 def sphere_point(sphere_center,
                  sphere_radius,
                  point):
-    """
-    Checks if a sphere intersects a point or not by verifying if the point is located inside the
+    """Checks if a sphere intersects a point or not by verifying if the point is located inside the
     sphere or not.
 
-    :param sphere_center: The center of the sphere.
-    :param sphere_radius: The radius of the sphere.
-    :param point: The coordinates of the point.
-    :return: True or False.
+    :param sphere_center:
+        The center of the sphere.
+    :param sphere_radius:
+        The radius of the sphere.
+    :param point:
+        The coordinates of the point.
+    :return:
+        True or False.
     """
     distance = (sphere_center - point).length
     if distance < sphere_radius:
@@ -51,14 +51,18 @@ def sphere_line(sphere_center,
                 sphere_radius,
                 point_1,
                 point_2):
-    """
-    Checks if sphere intersects with a line or not.
+    """Checks if sphere intersects with a line or not.
 
-    :param sphere_center: The center of the sphere.
-    :param sphere_radius: The radius of the sphere.
-    :param point_1: P1 of the line.
-    :param point_2: P2 of the line.
-    :return: True or False
+    :param sphere_center:
+        The center of the sphere.
+    :param sphere_radius:
+        The radius of the sphere.
+    :param point_1:
+        P1 of the line.
+    :param point_2:
+        P2 of the line.
+    :return:
+        True or False
     """
     difference = (point_2 - point_1)
     a = difference.dot(difference.normalized())
@@ -72,8 +76,7 @@ def sphere_line(sphere_center,
 
     # Check if the distances is before or after the two points
     d1 = -b + math.sqrt(root); d2 = -b - math.sqrt(root)
-    if (d1 < 0.0 or d1 > difference.length) and \
-        (d2 < 0.0 or d2 > difference.length):
+    if (d1 < 0.0 or d1 > difference.length) and (d2 < 0.0 or d2 > difference.length):
         return False
 
     # Otherwise, an intersection exists

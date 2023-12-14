@@ -15,20 +15,57 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-
-# System imports
-import math
-
 # Blender imports
 import bmesh
-from mathutils import Vector, Matrix
 
-# Internal modules
-#import intersection
 
-import vmv
-import vmv.consts
-import vmv.geometry
+####################################################################################################
+# @add_new_vertex_to_bmesh
+####################################################################################################
+def add_new_vertex_to_bmesh(bmesh_object,
+                            vertex_index,
+                            location=(0.0, 0.0, 0.0)):
+    """Adds a new vertex to the given bmesh object. This function is relatively slower than the
+    @add_vertex_to_bmesh_without_lookup function due to calling the lookup function that updates
+    the indices of the arrays of the bmesh object.
+
+    :param bmesh_object:
+        A given bmesh object to append a vertex to it.
+    :param vertex_index:
+        The index of the new vertex.
+    :param location:
+        The location of the input vertex.
+    """
+
+    # Create a new vertex
+    bmesh.ops.create_vert(bmesh_object)
+
+    # Update the bmesh vertices
+    bmesh_object.verts.ensure_lookup_table()
+
+    # Get a reference to the newly created vertex
+    vertex = bmesh_object.verts[vertex_index]
+
+    # Update the location of the newly created vertex
+    vertex.co = location
+
+
+####################################################################################################
+# @add_vertex_to_bmesh_without_lookup
+####################################################################################################
+def add_vertex_to_bmesh_without_lookup(bmesh_object,
+                                       location):
+    """Adds a new vertex to the given bmesh object at the given location. This function is much
+    faster that the normal @add_new_vertex_to_bmesh function because it does not require any lookup
+    function which kills the performance.
+
+    :param bmesh_object:
+        A given bmesh object to append a vertex to it.
+    :param location:
+        The location of the new vertex to be added to the object.
+    """
+
+    bmesh_object.verts.new(location)
 
 
 ####################################################################################################

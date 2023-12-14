@@ -17,38 +17,37 @@
 
 
 ####################################################################################################
-# Meshing
+# @EdgeSection
 ####################################################################################################
-class Meshing:
-    """Meshing constants
-    """
+class EdgeSection:
+    """The EdgeSection represents a simplified (or reduced) representation of the @Section. It
+    represents the section as an edge with two "terminal" points only. It simplifies constructing
+    the connectivity between the sections using edge-based operations."""
 
     ################################################################################################
     # @__init__
     ################################################################################################
-    def __init__(self):
-        pass
+    def __init__(self,
+                 index,
+                 sample_1,
+                 sample_2):
+        """Constructor
 
-    # Minimum tessellation level
-    MIN_TESSELLATION_LEVEL = 0.1
+        Parameters
+        ----------
+        index :
+            The index of the edge section. It MUST be similar to that of the original section.
+        sample_1 :
+            The first sample of the edge (first terminal sample of the section @.samples[0].
+        sample_2 :
+            The second sample of the edge (last terminal sample of the section @.samples[-1].
+        """
 
-    # Maximum tessellation level
-    MAX_TESSELLATION_LEVEL = 1.0
+        # The index of the section
+        self.index = index
 
-    # Default sides of a bevel object
-    BEVEL_OBJECT_SIDES = 16
+        # The first sample of the edge (first terminal sample of the section @.samples[0]
+        self.sample_1 = sample_1
 
-    # Meta-ball default resolution
-    META_RESOLUTION = 1.0
-
-    # Minimum meta ball resolution
-    MIN_META_BALL_RESOLUTION = 0.01
-
-    # Minimum meta ball resolution
-    MAX_META_BALL_RESOLUTION = 10.0
-
-    # Minimum decimation ratio
-    MIN_DECIMATION_RATIO = 0.001
-
-    # The maximum distance to remove duplicate vertices
-    DOUBLES_THRESHOLD = 0.001
+        # The second sample of the edge (last terminal sample of the section @.samples[-1]
+        self.sample_2 = sample_2

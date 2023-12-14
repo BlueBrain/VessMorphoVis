@@ -98,6 +98,15 @@ class VMV_AnalysisPanel(bpy.types.Panel):
         # Average segment length
         results_area.prop(scene, 'AverageSegmentLength')
 
+        # Segment length in X
+        results_area.prop(scene, 'SegmentLengthX')
+
+        # Segment length in Y
+        results_area.prop(scene, 'SegmentLengthY')
+
+        # Segment length in Y
+        results_area.prop(scene, 'SegmentLengthZ')
+
         # Number of sections
         results_area.prop(scene, 'NumberSections')
 
@@ -115,24 +124,6 @@ class VMV_AnalysisPanel(bpy.types.Panel):
 
         # Average section length
         results_area.prop(scene, 'AverageSectionLength')
-
-        # Minimum segment length
-        results_area.prop(scene, 'MinimumSegmentLength')
-
-        # Maximum segment length
-        results_area.prop(scene, 'MaximumSegmentLength')
-
-        # Average segment length
-        results_area.prop(scene, 'AverageSegmentLength')
-
-        # Segment length in X
-        results_area.prop(scene, 'SegmentLengthX')
-
-        # Segment length in Y
-        results_area.prop(scene, 'SegmentLengthY')
-
-        # Segment length in Y
-        results_area.prop(scene, 'SegmentLengthZ')
 
         # Number of loops
         results_area.prop(scene, 'NumberLoops')
@@ -300,7 +291,7 @@ class VMV_AnalyzeMorphology(bpy.types.Operator):
 
         vmv.logger.info('Components')
         number_components = vmv.analysis.compute_number_of_components(
-            vmv.interface.MorphologyObject.sections_list)
+            vmv.interface.MorphologyObject)
         context.scene.NumberComponents = number_components
 
         # Bounding box data

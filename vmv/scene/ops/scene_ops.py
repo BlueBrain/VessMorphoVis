@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -23,16 +23,16 @@ from mathutils import Vector
 
 # Internal imports
 import vmv.bbox
-import vmv.utilities
+import vmv.bops
 import vmv.mesh
+import vmv.utilities
 
 
 ####################################################################################################
 # @update_scene
 ####################################################################################################
 def update_scene():
-    """Updates the scene and the 3d view after any transformation.
-    """
+    """Updates the scene and the 3d view after any transformation."""
 
     bpy.context.view_layer.update()
 
@@ -41,24 +41,21 @@ def update_scene():
 # @view_axis
 ####################################################################################################
 def view_axis(axis='TOP'):
-    """View the axis in the view.
+    """Views the given axis (or projection) in the 3D viewport.
 
     :param axis:
         An enum in ['LEFT', 'RIGHT', 'BOTTOM', 'TOP', 'FRONT', 'BACK'].
     """
 
-    if vmv.utilities.is_blender_280():
-        bpy.ops.view3d.view_axis(type=axis)
-    else:
-        bpy.ops.view3d.viewnumpad(type=axis)
+    vmv.bops.view_axis(axis=axis)
 
 
 ####################################################################################################
 # @select_object
 ####################################################################################################
 def select_object(scene_object):
-    """Selects a given object in the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
+    """Selects a given object in the scene. If a previous object is already selected, both
+    objects will be selected.
 
     :param scene_object:
         A given scene object to be selected.
@@ -75,7 +72,6 @@ def select_object(scene_object):
 ####################################################################################################
 def deselect_object(scene_object):
     """Deselects a given object in the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
 
     :param scene_object:
         A given scene object to be deselected.
@@ -88,35 +84,51 @@ def deselect_object(scene_object):
 
 
 ####################################################################################################
+# @is_object_existing
+####################################################################################################
+def is_object_existing(scene_object):
+    """Verifies if a given object still exists in the scene or not.
+
+    :param scene_object:
+         A reference to the given scene object to verify its existence.
+    :return:
+        True if the object exists, False otherwise.
+    """
+
+    # None cannot exist in the system
+    if scene_object is None:
+        return False
+
+    for i_object in bpy.data.objects:
+        if i_object.name == scene_object.name:
+            return True
+    return False
+
+
+####################################################################################################
 # @is_object_deleted
 ####################################################################################################
 def is_object_deleted(scene_object):
-    """Checks if an object in the scene is deleted or not.
+    """Checks if an object indicated by the given reference is in the scene or not.
 
     :param scene_object:
-        A given scene object to check.
+        A reference to the given scene object to verify its deletion.
     :return:
-        True if the object is deleted, otherwise False.
+        True if the object is deleted, otherwise False and the object is still in the scene.
     """
 
-    return not (scene_object.name in bpy.data.objects)
+    return not is_object_existing(scene_object=scene_object)
 
 
 ####################################################################################################
 # @set_transparent_background
 ####################################################################################################
 def set_transparent_background():
-    """Sets the background image to transparent.
-    """
+    """Sets the background to transparent."""
 
-    # 2.80 or higher
     if vmv.utilities.is_blender_280():
-
-        # Transparency
         bpy.context.scene.render.film_transparent = True
         bpy.context.scene.render.image_settings.color_mode = 'RGBA'
-
-    # 2.79
     else:
         bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
         bpy.context.scene.render.image_settings.color_mode = 'RGBA'
@@ -126,8 +138,7 @@ def set_transparent_background():
 # @set_colors_to_raw
 ####################################################################################################
 def set_colors_to_raw():
-    """Use RAW colors with FLAT shading to lighten the results
-    """
+    """Use RAW colors with FLAT shading to lighten the results."""
 
     bpy.context.scene.view_settings.view_transform = 'Raw'
 
@@ -136,8 +147,7 @@ def set_colors_to_raw():
 # @set_colors_to_filimc
 ####################################################################################################
 def set_colors_to_filimc():
-    """Use filmic mode for rendering.
-    """
+    """Use filmic mode for rendering."""
 
     bpy.context.scene.view_settings.view_transform = 'Filmic'
 
@@ -156,7 +166,6 @@ def set_background_color(color,
         the color.
     """
 
-    # 2.80 or higher
     if vmv.utilities.is_blender_280():
 
         # Transparency
@@ -194,9 +203,8 @@ def set_background_color(color,
                 bg.inputs[0].default_value = (color[0], color[1], color[2], 1)
 
                 # Fix the WHITE BUG
-                # if color[0] > 0.9 and color[1] > 0.9 and color[2] > 0.9:
-                #    bg.inputs[0].default_value = (10, 10, 10, 1)
-    # 2.79
+                if color[0] > 0.9 and color[1] > 0.9 and color[2] > 0.9:
+                    bg.inputs[0].default_value = (10, 10, 10, 1)
     else:
 
         # Transparency background
@@ -244,7 +252,6 @@ def set_background_color(color,
 ####################################################################################################
 def get_active_object():
     """Returns a reference to the active object in the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
 
     :return:
         A reference to the active object in the scene.
@@ -261,10 +268,9 @@ def get_active_object():
 ####################################################################################################
 def link_object_to_scene(input_object):
     """Links a reconstructed object to the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
 
     :param input_object:
-        The given object that will be linked to the scene.
+        A reference to the given object that will be linked to the scene.
     """
 
     if vmv.utilities.is_blender_280():
@@ -278,10 +284,9 @@ def link_object_to_scene(input_object):
 ####################################################################################################
 def unlink_object_from_scene(scene_object):
     """Links a reconstructed object to the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
 
     :param scene_object:
-        A scene object to be unlinked from the scene.
+        A reference to the scene object to be unlinked from the scene.
     """
 
     if vmv.utilities.is_blender_280():
@@ -295,10 +300,9 @@ def unlink_object_from_scene(scene_object):
 ####################################################################################################
 def hide_object(scene_object):
     """Hides a shown object in the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
 
     :param scene_object:
-        A given object to be seen.
+        The reference to the given scene object to be hidden.
     """
 
     if vmv.utilities.is_blender_280():
@@ -312,10 +316,9 @@ def hide_object(scene_object):
 ####################################################################################################
 def unhide_object(scene_object):
     """Shows a hidden object in the scene.
-    NOTE: This function makes the code compatible with Blender 2.7 and 2.8.
 
     :param scene_object:
-        A given object to be shown.
+        The reference to the given scene object to be shown after it was hidden.
     """
 
     if vmv.utilities.is_blender_280():
@@ -328,19 +331,16 @@ def unhide_object(scene_object):
 # @clear_default_scene
 ####################################################################################################
 def clear_default_scene():
-    """Clear the default scene loaded in Blender: the ['Cube', 'Lamp' and 'Camera'].
-    """
+    """Clear the default scene loaded in Blender: the ['Cube', 'Lamp' and 'Camera']."""
 
     # Iterate over all the objects in the scene, and remove the 'Cube', 'Lamp' and 'Camera' if exist
     for scene_object in bpy.context.scene.objects:
 
         # Object selection
-        if scene_object.name == 'Cube' or \
-           scene_object.name == 'Lamp' or \
-           scene_object.name == 'Camera':
+        if scene_object.name == 'Cube' or scene_object.name == 'Lamp' or scene_object.name == 'Camera':
             select_object(scene_object)
 
-            # Delete the object
+            # Delete the object, quietly
             vmv.utilities.disable_std_output()
             bpy.ops.object.delete()
             vmv.utilities.enable_std_output()
@@ -350,14 +350,7 @@ def clear_default_scene():
 # @clear_scene
 ####################################################################################################
 def clear_scene():
-    """Clear a scene and remove all the existing objects in it and unlink their references.
-
-    NOTE: This function targets clearing meshes, curve, objects and materials.
-    """
-
-    # Adjust the clipping planes in case of perspective projection
-    # bpy.context.space_data.clip_start = 0.01
-    # bpy.context.space_data.clip_end = 10000
+    """Clears a scene, removes all existing objects in it and unlink their references."""
 
     # Make all the objects in the scene visible
     for scene_object in bpy.context.scene.objects:
@@ -408,14 +401,13 @@ def clear_scene():
 # @clear_lights
 ####################################################################################################
 def clear_lights():
-    """Clear the lights.
-    """
+    """Clears all the lights in the scene."""
 
-    # Iterate over all the objects in the scene, and remove the 'Cube', 'Lamp' and 'Camera' if exist
+    # Iterate over all the objects in the scene, and remove the objects of type LIGHT
     for scene_object in bpy.context.scene.objects:
 
-        # Object selection
-        if 'Lamp' in scene_object.name:
+        # Object selection, select by type
+        if 'LIGHT' in scene_object.type:
             select_object(scene_object)
 
             # Delete the object
@@ -474,10 +466,8 @@ def clear_material_with_name(name):
 # @select_all
 ####################################################################################################
 def select_all():
-    """Select all the objects in the scene.
-    """
+    """Selects all the objects in the scene."""
 
-    # Set the '.select' flag of all the objects in the scene to True.
     for scene_object in bpy.context.scene.objects:
         select_object(scene_object)
 
@@ -486,10 +476,8 @@ def select_all():
 # @deselect_all
 ####################################################################################################
 def deselect_all():
-    """Deselect all the objects in the scene.
-    """
+    """Deselects all the objects in the scene."""
 
-    # Set the '.select' flag of all the objects in the scene to False.
     for scene_object in bpy.context.scene.objects:
         deselect_object(scene_object)
 
@@ -498,28 +486,28 @@ def deselect_all():
 # @select_objects
 ####################################################################################################
 def select_objects(object_list):
-    """Select all the objects in a given list.
+    """Selects all the objects in a given list.
 
     :param object_list:
-        A list of objects that exist in the scene.
+        A list of objects that must exist in the scene.
     """
 
-    # Set the '.select' flag of all the objects in the scene to True
+    # For each object in the scene, verify its existence and then selects it
     for scene_object in object_list:
-        select_object(scene_object)
+        if is_object_existing(scene_object=scene_object):
+            select_object(scene_object=scene_object)
 
 
 ####################################################################################################
 # @select_object_by_name
 ####################################################################################################
 def select_object_by_name(object_name):
-    """Select an object in the scene given its name.
+    """Selects an object in the scene given its name.
 
     :param object_name:
         The name of object to be selected.
     """
 
-    # Set the '.select' flag of the object to True
     for scene_object in bpy.context.scene.objects:
         if scene_object.name == object_name:
             select_object(scene_object)
@@ -535,7 +523,6 @@ def select_object_containing_string(search_string):
         The name of first object that contains part of the given string.
     """
 
-    # Set the '.select' flag of the object to True
     for scene_object in bpy.context.scene.objects:
         if search_string in scene_object.name:
             select_object(scene_object)
@@ -546,7 +533,7 @@ def select_object_containing_string(search_string):
 # @deselect_object_by_name
 ####################################################################################################
 def deselect_object_by_name(object_name):
-    """Deselect an object in the scene given its name.
+    """Deselects an object in the scene given its name.
 
     :param object_name:
         The name of object to be deselected.
@@ -562,13 +549,12 @@ def deselect_object_by_name(object_name):
 # @select_all_meshes_in_scene
 ####################################################################################################
 def select_all_meshes_in_scene():
-    """Select all the mesh objects (those of type 'MESH') in the scene.
-    """
+    """Selects all the mesh objects (those of type 'MESH') in the scene."""
 
     # Deselect all the objects in the scene
     deselect_all()
 
-    # Select only the objects of type meshes
+    # Select only the objects of type MESH
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'MESH':
             select_object(scene_object)
@@ -578,10 +564,9 @@ def select_all_meshes_in_scene():
 # @deselect_all_meshes_in_scene
 ####################################################################################################
 def deselect_all_meshes_in_scene():
-    """Deselect all the mesh objects (those of type 'MESH') in the scene.
-    """
+    """Deselect all the mesh objects (those of type 'MESH') in the scene."""
 
-    # Select only the objects of type meshes
+    # Deselect only the objects of type MESH
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'MESH':
             deselect_object(scene_object)
@@ -591,13 +576,12 @@ def deselect_all_meshes_in_scene():
 # @select_all_curves_in_scene
 ####################################################################################################
 def select_all_curves_in_scene():
-    """Selects all the curve objects (those of type 'CURVE') in the scene.
-    """
+    """Selects all the curve objects (those of type 'CURVE') in the scene."""
 
     # Deselect all the objects in the scene
     deselect_all()
 
-    # Deselect only the objects of type curves
+    # Deselect only the objects of type CURVE
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'CURVE':
             select_object(scene_object)
@@ -607,10 +591,9 @@ def select_all_curves_in_scene():
 # @deselect_all_curves_in_scene
 ####################################################################################################
 def deselect_all_curves_in_scene():
-    """Deselects all the curve objects (those of type 'CURVE') in the scene.
-    """
+    """Deselects all the curve objects (those of type 'CURVE') in the scene."""
 
-    # Deselect only the objects of type curves
+    # Deselect only the objects of type CURVE
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'CURVE':
             deselect_object(scene_object)
@@ -626,10 +609,8 @@ def get_list_of_meshes_in_scene():
         A list of references to all the meshes (objects of type 'MESH') in the scene.
     """
 
-    # Mesh list
+    # Select only the objects of type MESH, and append their references to the list
     mesh_list = list()
-
-    # Select only the objects of type meshes, and append their references to the list
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'MESH':
             mesh_list.append(scene_object)
@@ -648,10 +629,8 @@ def get_list_of_curves_in_scene():
         A list of references to all the curves (objects of type 'CURVE') in the scene
     """
 
-    # Curve list
+    # Select only the objects of type CURVE, and append their references to the list
     curve_list = list()
-
-    # Select only the objects of type meshes, and append their references to the list
     for scene_object in bpy.context.scene.objects:
         if scene_object.type == 'CURVE':
             curve_list.append(scene_object)
@@ -670,10 +649,8 @@ def get_list_of_objects_in_scene():
         A list of references to all the objects in the scene
     """
 
-    # A list of all the objects in the scene
-    object_list = list()
-
     # Simply add all the objects
+    object_list = list()
     for scene_object in bpy.context.scene.objects:
         object_list.append(scene_object)
 
@@ -699,10 +676,48 @@ def get_reference_to_object_by_name(object_name):
 
 
 ####################################################################################################
+# @get_list_of_objects_containing_string
+####################################################################################################
+def get_list_of_objects_containing_string(search_string):
+    """Gets a list of objects whose names contain the given search string.
+
+    :param search_string:
+        A search string used to query the objects in the scene.
+    :return:
+        A list of scene objects whose names contain the given search string.
+    """
+
+    objects_list = list()
+    for scene_object in bpy.context.scene.objects:
+        if search_string in scene_object.name:
+            objects_list.append(scene_object)
+    return objects_list
+
+
+####################################################################################################
+# @get_list_of_mesh_objects_containing_string
+####################################################################################################
+def get_list_of_mesh_objects_containing_string(search_string):
+    """Gets a list of meshes whose names contain the given search string.
+
+    :param search_string:
+        A search string used to query the objects in the scene.
+    :return:
+        A list of meshes whose names contain the given search string.
+    """
+
+    objects_list = list()
+    for scene_object in bpy.context.scene.objects:
+        if search_string in scene_object.name and scene_object.type == 'MESH':
+            objects_list.append(scene_object)
+    return objects_list
+
+
+####################################################################################################
 # @delete_object
 ####################################################################################################
 def delete_object_in_scene(scene_object):
-    """Delete a given object from the scene.
+    """Deletes a given object from the scene.
 
     :param scene_object:
         A given object to be deleted from the scene.
@@ -727,7 +742,7 @@ def delete_object_in_scene(scene_object):
 # @delete_list_objects
 ####################################################################################################
 def delete_list_objects(object_list):
-    """Delete a given list of objects in the scene.
+    """Deletes a given list of objects in the scene.
 
     :param object_list:
         A list of objects to be deleted from the scene.
@@ -739,24 +754,26 @@ def delete_list_objects(object_list):
     # Delete object by object from the list
     for scene_object in object_list:
 
-        # If the object is hidden, show it to be able to delete it
-        unhide_object(scene_object)
+        # The object must exist in the scene to be deleted
+        if is_object_existing(scene_object=scene_object):
 
-        # Select this particular object, to highlight it
-        select_object(scene_object)
+            # If the object is hidden, show it to be able to delete it
+            unhide_object(scene_object)
 
-        # Delete the selected object
-        vmv.utilities.disable_std_output()
-        bpy.ops.object.delete(use_global=False)
-        vmv.utilities.enable_std_output()
+            # Select this particular object, to highlight it
+            select_object(scene_object)
+
+            # Delete the selected object
+            vmv.utilities.disable_std_output()
+            bpy.ops.object.delete(use_global=False)
+            vmv.utilities.enable_std_output()
 
 
 ####################################################################################################
 # @delete_all
 ####################################################################################################
 def delete_all():
-    """Delete all the objects in the scene.
-    """
+    """Deletes all the objects in the scene."""
 
     # Deselect all the objects in the scene
     deselect_all()
@@ -776,12 +793,12 @@ def delete_all():
 # @set_active_object
 ####################################################################################################
 def set_active_object(scene_object):
-    """Set the active object in the scene to the given one.
+    """Set the active object in the scene to the given one. This object will be selected.
 
     :param scene_object:
         A given object in the scene that is desired to be active.
 
-    :return
+    :return:
         A reference to the active object.
     """
 
@@ -834,9 +851,9 @@ def reset_orientation_of_objects(scene_objects):
 
     # Rotate all the objects as if they are a single object
     for scene_object in scene_objects:
-
-        # Rotate the mesh object around the y axis
+        scene_object.rotation_euler[0] = 0
         scene_object.rotation_euler[1] = 0
+        scene_object.rotation_euler[2] = 0
 
 
 ####################################################################################################
@@ -986,7 +1003,7 @@ def scale_mesh_object_to_fit_within_unity_cube(scene_object,
     unified_scale_factor = scale_factor / largest_dimension
 
     # Scale the mesh
-    vmv.scene.ops.scale_object_uniformly(scene_object, unified_scale_factor)
+    scale_object_uniformly(scene_object, unified_scale_factor)
 
 
 ####################################################################################################
@@ -994,6 +1011,7 @@ def scale_mesh_object_to_fit_within_unity_cube(scene_object,
 ####################################################################################################
 def center_mesh_object(scene_object):
     """Center a given mesh object at the origin.
+    TODO: There is an already existing BLender-funtion that does this feature.
 
     :param scene_object:
         A mesh object to be centered at the origin of the scene based on its bounding box.
@@ -1075,7 +1093,7 @@ def convert_object_to_mesh(scene_object):
     set_active_object(scene_object)
 
     # Convert the given object to a mesh
-    bpy.ops.object.convert(target='MESH')
+    vmv.bops.convert_to_mesh()
 
     # Return the mesh object
     return scene_object
@@ -1087,8 +1105,7 @@ def convert_object_to_mesh(scene_object):
 def duplicate_object(original_object,
                      duplicated_object_name=None,
                      link_to_scene=True):
-    """
-    Duplicates an object in the scene and returns a reference to the duplicated object.
+    """Duplicates an object in the scene and returns a reference to the duplicated object.
 
     :param original_object:
         The original object that will be duplicated in the scene.
@@ -1149,7 +1166,7 @@ def clone_mesh_objects_into_joint_mesh(mesh_objects):
     # Clones the mesh objects to join them together to export the mesh
     cloned_mesh_objects = list()
     for mesh_object in mesh_objects:
-        cloned_mesh_objects.append(vmv.scene.duplicate_object(mesh_object))
+        cloned_mesh_objects.append(duplicate_object(mesh_object))
 
     # Join all the mesh objects in a single object
     joint_mesh_object = vmv.mesh.join_mesh_objects(cloned_mesh_objects)
@@ -1226,8 +1243,7 @@ def is_object_in_scene_by_name(object_name):
 # @view_all_scene
 ####################################################################################################
 def view_all_scene():
-    """View all the objects in the scene.
-    """
+    """Views all the objects in the scene."""
 
     # Switch to the top view
     if vmv.utilities.is_blender_280():
@@ -1239,7 +1255,7 @@ def view_all_scene():
     bpy.ops.view3d.view_all()
 
     # Update the end
-    bpy.context.space_data.clip_end = 1e4
+    bpy.context.space_data.clip_end = 1e5
 
 
 ####################################################################################################
@@ -1259,31 +1275,6 @@ def view_region(x=0, y=0, delta=1):
 
     # Update the end
     bpy.context.space_data.clip_end = 1e4
-
-
-####################################################################################################
-# @activate_neuromorphovis_mode
-####################################################################################################
-def activate_neuromorphovis_mode():
-    """Switches the scene to black to make it easy to see the morphologies.
-    """
-
-    if vmv.utilities.is_blender_280():
-        theme = bpy.context.preferences.themes['Default']
-        # theme.view_3d.space.gradients.high_gradient = Vector((0, 0, 0))
-        # theme.view_3d.space.gradients.gradient = Vector((0, 0, 0))
-        # theme.view_3d.grid = Vector((0, 0, 0, 0))
-
-
-####################################################################################################
-# @deactivate_neuromorphovis_mode
-####################################################################################################
-def deactivate_neuromorphovis_mode():
-    """Switches the scene the default theme.
-    """
-
-    if vmv.utilities.is_blender_280():
-        bpy.ops.preferences.reset_default_theme()
 
 
 ####################################################################################################
@@ -1317,7 +1308,7 @@ def switch_scene_shading(shading_type='SOLID'):
     """Switches the scene panel to the given shading type
 
     :param shading_type:
-        One of the following:  'WIREFRAME' '(SOLID)' 'MATERIAL' 'RENDERED'
+        One of the following: 'WIREFRAME', '(SOLID)', 'MATERIAL', 'RENDERED'
     """
 
     if vmv.utilities.is_blender_280():
@@ -1332,8 +1323,7 @@ def switch_scene_shading(shading_type='SOLID'):
 # @switch_interface_to_edit_mode
 ####################################################################################################
 def switch_interface_to_edit_mode():
-    """Switch the user interface to the edit mode style.
-    """
+    """Switches the user interface to the edit mode style."""
 
     if vmv.utilities.is_blender_280():
 
@@ -1341,7 +1331,7 @@ def switch_interface_to_edit_mode():
         set_scene_transparency(True)
 
         # Use the solid mode
-        vmv.scene.switch_scene_shading('SOLID')
+        switch_scene_shading('SOLID')
 
         # Increase the vertex size
         bpy.context.preferences.themes['Default'].view_3d.vertex_size = 8
@@ -1366,8 +1356,7 @@ def switch_interface_to_edit_mode():
 # @switch_interface_to_visualization_mode
 ####################################################################################################
 def switch_interface_to_visualization_mode():
-    """Switches the user interface to the visualization mode style.
-    """
+    """Switches the user interface to the visualization mode style."""
 
     if vmv.utilities.is_blender_280():
 
@@ -1408,21 +1397,6 @@ def extend_clipping_planes(clip_start=0.01,
 
     # Ending clipping plane
     bpy.context.space_data.clip_end = clip_end
-
-
-####################################################################################################
-# @select_object_by_name
-####################################################################################################
-def select_object_by_name(object_name):
-    """Select an object in the scene given its name.
-    :param object_name:
-        The name of object to be selected.
-    """
-
-    # Set the '.select' flag of the object to True
-    for scene_object in bpy.context.scene.objects:
-        if scene_object.name == object_name:
-            select_object(scene_object)
 
 
 ####################################################################################################

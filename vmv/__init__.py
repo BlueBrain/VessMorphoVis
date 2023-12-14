@@ -17,6 +17,7 @@
 
 # Internal imports
 from .analysis import *
+from .bops import *
 from .consts import *
 from .enums import *
 from .options import *

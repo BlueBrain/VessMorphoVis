@@ -20,7 +20,6 @@ import bpy
 from mathutils import Vector, Matrix
 
 # Internal modules
-import vmv
 import vmv.scene
 import vmv.mesh
 

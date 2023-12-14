@@ -15,40 +15,32 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# Blender imports
+import bpy
+
 
 ####################################################################################################
-# Meshing
+# @switch_to_edit_mode
 ####################################################################################################
-class Meshing:
-    """Meshing constants
-    """
+def switch_to_edit_mode():
+    """Switches the selected object into the edit mode (vertices, edges or faces)."""
 
-    ################################################################################################
-    # @__init__
-    ################################################################################################
-    def __init__(self):
-        pass
+    bpy.ops.object.mode_set(mode='EDIT')
 
-    # Minimum tessellation level
-    MIN_TESSELLATION_LEVEL = 0.1
 
-    # Maximum tessellation level
-    MAX_TESSELLATION_LEVEL = 1.0
+####################################################################################################
+# @switch_to_object_mode
+####################################################################################################
+def switch_to_object_mode():
+    """Switches the selected object to the object mode."""
 
-    # Default sides of a bevel object
-    BEVEL_OBJECT_SIDES = 16
+    bpy.ops.object.mode_set(mode='OBJECT')
 
-    # Meta-ball default resolution
-    META_RESOLUTION = 1.0
 
-    # Minimum meta ball resolution
-    MIN_META_BALL_RESOLUTION = 0.01
+####################################################################################################
+# @select_vertex_mode
+####################################################################################################
+def select_vertex_mode():
+    """Switch to the vertex mode."""
 
-    # Minimum meta ball resolution
-    MAX_META_BALL_RESOLUTION = 10.0
-
-    # Minimum decimation ratio
-    MIN_DECIMATION_RATIO = 0.001
-
-    # The maximum distance to remove duplicate vertices
-    DOUBLES_THRESHOLD = 0.001
+    bpy.ops.mesh.select_mode(type="VERT")

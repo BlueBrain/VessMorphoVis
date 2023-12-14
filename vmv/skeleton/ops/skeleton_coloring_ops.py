@@ -18,10 +18,8 @@
 
 # System imports
 import random
-from mathutils import Vector
 
 # Internal imports
-import vmv
 import vmv.consts
 import vmv.shading
 

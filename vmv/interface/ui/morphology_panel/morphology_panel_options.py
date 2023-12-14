@@ -30,6 +30,7 @@ def define_visualization_methods_menus():
     # Morphology builders available when visualizing STATIC structure only
     bpy.types.Scene.VMV_StaticStructureBuilders = bpy.props.EnumProperty(
         items=[vmv.enums.Morphology.Builder.SECTIONS_UI_ITEM,
+               vmv.enums.Morphology.Builder.SMOOTH_SECTIONS_UI_ITEM,
                vmv.enums.Morphology.Builder.SEGMENTS_UI_ITEM,
                vmv.enums.Morphology.Builder.SAMPLES_UI_ITEM],
         name='Method',

@@ -16,14 +16,11 @@
 ####################################################################################################
 
 # System imports
-import sys
 import copy
 
-# Blender imports
-import bpy
-
 # Internal imports
-import vmv
+import vmv.bops
+import vmv.bmeshi
 import vmv.geometry
 import vmv.mesh
 import vmv.scene
@@ -35,8 +32,7 @@ import vmv.utilities
 # @MeshBuilder
 ####################################################################################################
 class MeshBuilder:
-    """Base class, where all the mesh builders will inherit from.
-    """
+    """Base class, where all the mesh builders will inherit from."""
 
     ################################################################################################
     # @__init__
@@ -56,13 +52,20 @@ class MeshBuilder:
         self.morphology = morphology
 
         # All the options of the project
-        self.options = options
+        self.options = copy.deepcopy(options)
+
+        # Builder name
+        self.builder_name = 'MeshBuilder'
 
         # Skeleton materials
         self.materials = None
 
         # The reconstructed mesh object
         self.mesh = None
+
+        self.radius_scale_down_factor = 0.001
+
+        self.radius_scale_up_factor = 1 / self.radius_scale_down_factor
 
     ################################################################################################
     # @create_materials
@@ -100,16 +103,14 @@ class MeshBuilder:
     # @create_skeleton_materials
     ################################################################################################
     def create_skeleton_materials(self):
-        """Create the materials of the skeleton.
-        """
+        """Create the materials of the skeleton."""
 
-        for material in bpy.data.materials:
-            if 'mesh_material' in material.name:
-                material.user_clear()
-                bpy.data.materials.remove(material)
+        for material in vmv.bops.get_materials_in_scene():
+            if 'Mesh Material' in material.name:
+                vmv.bops.delete_material_from_scene(material=material)
 
         # Create the materials
-        self.materials = self.create_materials(name='mesh_material', color=self.options.mesh.color)
+        self.materials = self.create_materials(name='Mesh Material', color=self.options.mesh.color)
 
         # Create an illumination specific for the given material
         vmv.shading.create_material_specific_illumination(
@@ -131,3 +132,28 @@ class MeshBuilder:
 
         # Activate the mesh object
         vmv.scene.set_active_object(self.mesh)
+
+    ################################################################################################
+    # @set_default_mesh_name
+    ################################################################################################
+    def set_default_mesh_name(self):
+        """Sets the default mesh name."""
+
+        # Update its name with the mesh suffix to be able to locate it
+        self.mesh.name = self.morphology.name + vmv.consts.Suffix.MESH_SUFFIX
+
+    ################################################################################################
+    # @tessellate_mesh
+    ################################################################################################
+    def tessellate_mesh(self):
+        """Tessellates the reconstructed vascular mesh."""
+
+        # Ensure that the tessellation level is within range
+        if 0.001 < self.options.mesh.tessellation_ratio < 1.0:
+            # Decimate each mesh object
+            vmv.mesh.ops.decimate_mesh_object(
+                mesh_object=self.mesh,
+                decimation_ratio=self.options.mesh.tessellation_ratio)
+
+            # Adjust the texture mapping
+            vmv.shading.adjust_material_uv(mesh_object=self.mesh)

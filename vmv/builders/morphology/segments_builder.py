@@ -15,9 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import sys
-
 # Internal imports
 import vmv.geometry
 import vmv.mesh
@@ -256,8 +253,8 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_poly_line_data_based_on_segment_alignment
     ################################################################################################
     def get_poly_line_data_based_on_segment_alignment(self):
-        """Gets a list of all the polylines based on the alignment of the segments in the morphology.
-        """
+        """Gets a list of all the polylines based on the alignment of the segments in the
+        morphology."""
 
         # The poly-lines data list
         poly_lines_data = list()
@@ -275,8 +272,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @get_segments_poly_lines_data
     ################################################################################################
     def get_segments_poly_lines_data(self):
-        """Gets a list of all the polylines that account for the sections in the morphology.
-        """
+        """Gets a list of all the polylines that account for the sections in the morphology."""
 
         # Get the data based on the color-coding scheme  
         if self.options.morphology.color_coding == vmv.enums.ColorCoding.DEFAULT:
@@ -305,8 +301,7 @@ class SegmentsBuilder(MorphologyBuilder):
     def build_skeleton(self,
                        context=None,
                        dynamic_colormap=False):
-        """Draws the morphology skeleton using a fast reconstruction and drawing method.
-        """
+        """Draws the morphology skeleton using a fast reconstruction and drawing method."""
 
         # Header
         vmv.logger.header('Building skeleton: SegmentsBuilder')
@@ -341,8 +336,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @update_ui_minimum_and_maximum_values
     ################################################################################################
     def update_ui_minimum_and_maximum_values(self):
-        """Updates the minimum and maximum values for the UI.
-        """
+        """Updates the minimum and maximum values for the UI."""
 
         # Get the minimum and maximum values
         self.context.scene.VMV_MinimumValue = str(self.minimum_simulation_value)
@@ -352,8 +346,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @identify_radius_simulation_dynamic_range
     ################################################################################################
     def identify_radius_simulation_dynamic_range(self):
-        """Identifies the dynamic range of the radius simulation, or variation, data.
-        """
+        """Identifies the dynamic range of the radius simulation, or variation, data."""
 
         # Scan the entire simulation data to obtain the dynamic range
         for sample_simulation_list in self.morphology.radius_simulation_data:
@@ -370,6 +363,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @identify_flow_simulation_dynamic_range
     ################################################################################################
     def identify_flow_simulation_dynamic_range(self):
+        """Identifies the dynamic range for the flow simulation data."""
 
         # Scan the entire simulation data to obtain the dynamic range
         for sample_simulation_list in self.morphology.flow_simulation_data:
@@ -386,6 +380,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @identify_pressure_simulation_dynamic_range
     ################################################################################################
     def identify_pressure_simulation_dynamic_range(self):
+        """Identifies the dynamic range of the pressure simulation data."""
 
         # Scan the entire simulation data to obtain the dynamic range
         for sample_simulation_list in self.morphology.pressure_simulation_data:
@@ -404,10 +399,12 @@ class SegmentsBuilder(MorphologyBuilder):
     def load_radius_simulation_data_at_step(self,
                                             time_step,
                                             context=None):
-        """
+        """Loads radius simulation data at a specific time step.
 
         :param time_step:
-        :return:
+            The time which the simulation data will be loaded into.
+        :param context:
+            Blender context.
         """
 
         self.context = context
@@ -453,10 +450,7 @@ class SegmentsBuilder(MorphologyBuilder):
     # @load_radius_simulation_data
     ################################################################################################
     def load_radius_simulation_data(self):
-        """
-
-        :return:
-        """
+        """Loads the radius simulation data."""
 
         self.identify_radius_simulation_dynamic_range()
 

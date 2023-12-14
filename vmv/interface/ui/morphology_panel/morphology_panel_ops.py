@@ -347,7 +347,8 @@ def add_color_options(layout,
     color_coding_row = layout.row()
 
     # Sections
-    if options.morphology.builder == vmv.enums.Morphology.Builder.SECTIONS:
+    if options.morphology.builder == vmv.enums.Morphology.Builder.SECTIONS or \
+            options.morphology.builder == vmv.enums.Morphology.Builder.SMOOTH_SECTIONS:
         color_coding_row.label(text='Color Coding')
         color_coding_row.prop(scene, 'VMV_PerSectionColorCodingBasis')
         add_per_section_color_coding_options(layout, scene, options)

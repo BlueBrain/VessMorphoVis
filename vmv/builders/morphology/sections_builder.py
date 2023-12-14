@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2018 - 2019, EPFL / Blue Brain Project
+# Copyright (c) 2018 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -27,7 +27,7 @@ from .base import MorphologyBuilder
 # @SectionsBuilder
 ####################################################################################################
 class SectionsBuilder(MorphologyBuilder):
-    """The builder reconstructs a an object composed of a series of disconnected sections, where 
+    """The builder reconstructs an object composed of a series of disconnected sections, where
     each section is drawn as an independent object.
     """
 
@@ -36,7 +36,8 @@ class SectionsBuilder(MorphologyBuilder):
     ################################################################################################
     def __init__(self,
                  morphology,
-                 options):
+                 options,
+                 use_smooth_curves=False):
         """Constructor
 
         :param morphology:
@@ -48,6 +49,9 @@ class SectionsBuilder(MorphologyBuilder):
 
         # Base
         MorphologyBuilder.__init__(self, morphology=morphology, options=options)
+
+        # Use smooth curves to plot the sections instead of the polylines
+        self.use_smooth_curves = use_smooth_curves
 
     ################################################################################################
     # @get_poly_lines_data_colored_with_single_color
@@ -62,7 +66,8 @@ class SectionsBuilder(MorphologyBuilder):
 
         # Get the poly-line data of each section
         poly_lines_data = [
-            vmv.skeleton.ops.get_color_coded_section_poly_line_with_single_color(section=section) 
+            vmv.skeleton.ops.get_color_coded_section_poly_line_with_single_color(
+                section=section, duplicate_terminal_samples=self.use_smooth_curves)
             for section in self.morphology.sections_list]
         
         # Return the list 
@@ -82,7 +87,7 @@ class SectionsBuilder(MorphologyBuilder):
         # Get the poly-line data of each section
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_with_alternating_colors(
-                section=section)
+                section=section, duplicate_terminal_samples=self.use_smooth_curves)
             for section in self.morphology.sections_list]
         
         # Return the list 
@@ -102,7 +107,7 @@ class SectionsBuilder(MorphologyBuilder):
         # Get the poly-line data of each section
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_for_short_sections(
-                section=section)
+                section=section, duplicate_terminal_samples=self.use_smooth_curves)
             for section in self.morphology.sections_list]
 
         # Return the list
@@ -133,9 +138,10 @@ class SectionsBuilder(MorphologyBuilder):
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_radius(
                 section=section, minimum=minimum, maximum=maximum,
-                color_map_resolution=self.options.morphology.color_map_resolution)
+                color_map_resolution=self.options.morphology.color_map_resolution,
+                duplicate_terminal_samples=self.use_smooth_curves)
             for section in self.morphology.sections_list]
-        
+
         # Return the list 
         return poly_lines_data
 
@@ -160,10 +166,11 @@ class SectionsBuilder(MorphologyBuilder):
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_length(
-            section=section, minimum=minimum, maximum=maximum, 
-            color_map_resolution=self.options.morphology.color_map_resolution) 
-                for section in self.morphology.sections_list] 
-        
+            section=section, minimum=minimum, maximum=maximum,
+            color_map_resolution=self.options.morphology.color_map_resolution,
+            duplicate_terminal_samples=self.use_smooth_curves)
+            for section in self.morphology.sections_list]
+
         # Return the list 
         return poly_lines_data
 
@@ -188,10 +195,11 @@ class SectionsBuilder(MorphologyBuilder):
 
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_surface_area(
-            section=section, minimum=minimum, maximum=maximum, 
-            color_map_resolution=self.options.morphology.color_map_resolution) 
-                for section in self.morphology.sections_list] 
-        
+            section=section, minimum=minimum, maximum=maximum,
+            color_map_resolution=self.options.morphology.color_map_resolution,
+            duplicate_terminal_samples=self.use_smooth_curves)
+            for section in self.morphology.sections_list]
+
         # Return the list 
         return poly_lines_data
 
@@ -216,9 +224,10 @@ class SectionsBuilder(MorphologyBuilder):
         # Get the poly-line data of each section
         poly_lines_data = [vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_volume(
             section=section, minimum=minimum, maximum=maximum,
-            color_map_resolution=self.options.morphology.color_map_resolution) 
-                for section in self.morphology.sections_list] 
-        
+            color_map_resolution=self.options.morphology.color_map_resolution,
+            duplicate_terminal_samples=self.use_smooth_curves)
+            for section in self.morphology.sections_list]
+
         # Return the list 
         return poly_lines_data
 
@@ -246,7 +255,8 @@ class SectionsBuilder(MorphologyBuilder):
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_section_poly_line_based_on_number_samples(
                 section=section, minimum=minimum, maximum=maximum,
-                color_map_resolution=self.options.morphology.color_map_resolution)
+                color_map_resolution=self.options.morphology.color_map_resolution,
+                duplicate_terminal_samples=self.use_smooth_curves)
             for section in self.morphology.sections_list]
         
         # Return the list 
@@ -276,7 +286,8 @@ class SectionsBuilder(MorphologyBuilder):
         poly_lines_data = [
             vmv.skeleton.ops.get_color_coded_sections_poly_lines_based_on_section_index(
                 section=section, minimum=minimum, maximum=maximum,
-                color_map_resolution=self.options.morphology.color_map_resolution)
+                color_map_resolution=self.options.morphology.color_map_resolution,
+                duplicate_terminal_samples=self.use_smooth_curves)
             for section in self.morphology.sections_list]
 
         # Return the list
@@ -327,7 +338,10 @@ class SectionsBuilder(MorphologyBuilder):
             A reference to the reconstructed morphology skeleton.
         """
 
-        vmv.logger.header('Building Skeleton: SectionsBuilder')
+        if self.use_smooth_curves:
+            vmv.logger.header('Building Skeleton: SectionsBuilder (Smooth)')
+        else:
+            vmv.logger.header('Building Skeleton: SectionsBuilder')
 
         # Call the base function
         super(SectionsBuilder, self).build_skeleton(
@@ -355,9 +369,11 @@ class SectionsBuilder(MorphologyBuilder):
 
         # Construct the final object and add it to the morphology
         vmv.logger.info('Drawing Object')
+
+        polyline_type = 'NURBS' if self.use_smooth_curves else 'POLY'
         self.morphology_skeleton = vmv.geometry.create_poly_lines_object_from_poly_lines_data(
             poly_lines_data, material=self.options.morphology.material, color_map=self.color_map,
-            name=self.morphology_name, bevel_object=bevel_object)
+            name=self.morphology_name, bevel_object=bevel_object, poly_line_type=polyline_type)
         return self.morphology_skeleton
 
     ################################################################################################
@@ -440,8 +456,7 @@ class SectionsBuilder(MorphologyBuilder):
     # @load_radius_simulation_data
     ################################################################################################
     def load_radius_simulation_data(self):
-        """Loads the radius simulation data for all the time steps.
-        """
+        """Loads the radius simulation data for all the time steps."""
 
         # Add simulation data
         [self.load_radius_simulation_data_at_step(time_step=time_step)

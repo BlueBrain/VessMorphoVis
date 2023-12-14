@@ -15,17 +15,10 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-
 # System imports
 import copy
 
-# Blender imports
-import bpy
-from mathutils import Vector
-
 # Internal modules
-import vmv
-import vmv.builders
 import vmv.enums
 import vmv.mesh
 import vmv.skeleton
@@ -58,17 +51,20 @@ class PolylineBuilder(MeshBuilder):
         # Base
         MeshBuilder.__init__(self, morphology=morphology, options=options)
 
-        # Final mesh center
-        self.center = Vector((0.0, 0.0, 0.0))
+        # The mesh builder name
+        self.builder_name = 'PolylineBuilder'
 
-        # Create the skeleton materials during the initialization
-        self.create_skeleton_materials()
+        # Final mesh center
+        self.center = (0.0, 0.0, 0.0)
 
     ################################################################################################
     # @build
     ################################################################################################
     def build_mesh(self):
-        """Reconstructs the neuronal mesh using meta objects.
+        """Reconstructs the vascular mesh.
+
+        :return:
+            A reference to the reconstructed vascular mesh.
         """
 
         # Verify and repair the morphology
@@ -83,14 +79,24 @@ class PolylineBuilder(MeshBuilder):
         # Build the skeleton and return a reference to it
         morphology_skeleton = morphology_builder.build_skeleton()
 
+        # Clear all the lights and materials
+        vmv.scene.clear_lights()
+        vmv.scene.clear_scene_materials()
+
         # Convert it to a mesh
         self.mesh = vmv.scene.convert_object_to_mesh(morphology_skeleton)
 
         # Update its name with the mesh suffix to be able to locate it
-        self.mesh.name = self.mesh.name + vmv.consts.Suffix.MESH_SUFFIX
+        self.set_default_mesh_name()
+
+        # Create the skeleton materials
+        self.create_skeleton_materials()
 
         # Assign the material to the mesh
-        #self.assign_material_to_mesh()
+        self.assign_material_to_mesh()
+
+        # Tessellate the mesh, if requested
+        self.tessellate_mesh()
 
         # Mission done
         vmv.logger.header('Done!')

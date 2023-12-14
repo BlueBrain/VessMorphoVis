@@ -15,6 +15,10 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+import math
+
+import vmv.skeleton
+
 
 ####################################################################################################
 # Section
@@ -213,6 +217,188 @@ class Section:
         # Last sample
         self.samples[-1].radius = self.last_sample_average_radius
 
+    ################################################################################################
+    # @compute_average_section_radius
+    ################################################################################################
+    def compute_average_section_radius(self):
+        """Computes the average radius of the section."""
+
+        # Ensure that the section has more than one sample, otherwise return 0.0
+        if len(self.samples) == 0:
+            return 0.0
+
+        # Compute the average section radius
+        radius = 0.0
+        for i_sample in self.samples:
+            radius += i_sample.radius
+        radius /= len(self.samples)
+
+        # Return the result
+        return radius
+
+    ################################################################################################
+    # @is_loop
+    ################################################################################################
+    def is_loop(self,
+                threshold=0.0001):
+        """Detects if the sections forms a loop or not, i.e. its first and last samples have the
+        same Cartesian coordinates.
+
+        Parameters
+        ----------
+        threshold :
+            Distance threshold.
+
+        Returns
+        -------
+            True if the section forms a loop by itself, otherwise False.
+
+        """
+
+        if (self.samples[0].point - self.samples[-1].point).length < threshold:
+            return True
+        return False
+
+    ################################################################################################
+    # @construct_edge_section
+    ################################################################################################
+    def construct_edge_section(self,
+                               index):
+        """Constructs an @EdgeSection from this detailed section."""
+
+        # Construct and return the EdgeSection
+        return vmv.skeleton.EdgeSection(index=index,
+                                        sample_1=self.samples[0].point,
+                                        sample_2=self.samples[-1].point)
+
+    ################################################################################################
+    # @construct_two_edge_sections
+    ################################################################################################
+    def construct_n_edge_sections(self,
+                                  index):
+
+        if self.is_loop():
+
+            if len(self.samples) < 5:
+                # Interpolate
+                pass
+
+            elif len(self.samples) == 5:
+                sample_1 = self.samples[0].point
+                sample_2 = self.samples[1].point
+                sample_3 = self.samples[3].point
+                sample_4 = self.samples[4].point
+                sample_5 = self.samples[5].point
+
+            else:
+                sample_1 = self.samples[0].point
+                sample_2 = self.samples[1].point
+                sample_3 = self.samples[3].point
+                sample_4 = self.samples[-2].point
+                sample_5 = self.samples[-1].point
+
+            edge_section_1 = vmv.skeleton.EdgeSection(
+                index=index, sample_1=sample_1, sample_2=sample_2)
+            edge_section_2 = vmv.skeleton.EdgeSection(
+                index=index + 1, sample_1=sample_2, sample_2=sample_3)
+            edge_section_3 = vmv.skeleton.EdgeSection(
+                index=index + 2, sample_1=sample_3, sample_2=sample_4)
+            edge_section_4 = vmv.skeleton.EdgeSection(
+                index=index + 3, sample_1=sample_4, sample_2=sample_5)
+
+            return [edge_section_1, edge_section_2]
+
+        else:
+            if len(self.samples) == 2:
+                sample_1 = self.samples[0].point
+                sample_2 = self.samples[1].point
+
+                # Intermediate point
+                mid_sample = 0.5 * (self.samples[0].point + self.samples[1].point)
+
+                edge_section_1 = vmv.skeleton.EdgeSection(
+                    index=index, sample_1=sample_1, sample_2=mid_sample)
+                edge_section_2 = vmv.skeleton.EdgeSection(
+                    index=index + 1, sample_1=mid_sample, sample_2=sample_2)
+
+                return [edge_section_1, edge_section_2]
+
+            elif len(self.samples) == 3:
+                sample_1 = self.samples[0].point
+                sample_2 = self.samples[1].point
+                sample_3 = self.samples[2].point
+
+                edge_section_1 = vmv.skeleton.EdgeSection(
+                    index=index, sample_1=sample_1, sample_2=sample_2)
+                edge_section_2 = vmv.skeleton.EdgeSection(
+                    index=index + 1, sample_1=sample_2, sample_2=sample_3)
+
+                return [edge_section_1, edge_section_2]
+
+            else:
+                sample_1 = self.samples[0].point
+                sample_2 = self.samples[-1].point
+                midi_sample = self.samples[-2].point
+
+                edge_section_1 = vmv.skeleton.EdgeSection(
+                    index=index, sample_1=sample_1, sample_2=midi_sample)
+                edge_section_2 = vmv.skeleton.EdgeSection(
+                    index=index + 1, sample_1=midi_sample, sample_2=sample_2)
+
+                return [edge_section_1, edge_section_2]
+
+    def construct_two_edges_sections(self,
+                                     index):
+
+        sample_1 = self.samples[0].point
+        sample_2 = self.samples[-1].point
+        midi_sample = self.samples[-2].point
+
+        edge_section_1 = vmv.skeleton.EdgeSection(
+            index=index, sample_1=sample_1, sample_2=midi_sample)
+        edge_section_2 = vmv.skeleton.EdgeSection(
+            index=index + 1, sample_1=midi_sample, sample_2=sample_2)
+
+        return [edge_section_1, edge_section_2]
+
+    def construct_four_edges_sections(self,
+                                      index):
+
+        if len(self.samples) == 2:
+            sample_1 = self.samples[0].point
+            sample_5 = self.samples[1].point
+            sample_3 = 0.50 * (sample_1 + sample_5)
+            sample_2 = 0.50 * (sample_1 + sample_3)
+            sample_4 = 0.50 * (sample_3 + sample_5)
+        elif len(self.samples) == 3:
+            sample_1 = self.samples[0].point
+            sample_2 = self.samples[1].point
+            sample_3 = self.samples[2].point
+            sample_4 = 0.50 * (self.samples[0].point + self.samples[1].point)
+            sample_5 = 0.50 * (self.samples[1].point + self.samples[2].point)
+        elif len(self.samples) == 4:
+            sample_1 = self.samples[0].point
+            sample_2 = self.samples[1].point
+            sample_3 = self.samples[2].point
+            sample_4 = self.samples[3].point
+            sample_5 = 0.50 * (self.samples[1].point + self.samples[2].point)
+        else:
+            sample_1 = self.samples[0].point
+            sample_2 = self.samples[1].point
+            sample_3 = self.samples[2].point
+            sample_4 = self.samples[-2].point
+            sample_5 = self.samples[-1].point
+
+        edge_section_1 = vmv.skeleton.EdgeSection(
+            index=index, sample_1=sample_1, sample_2=sample_2)
+        edge_section_2 = vmv.skeleton.EdgeSection(
+            index=index + 1, sample_1=sample_2, sample_2=sample_3)
+        edge_section_3 = vmv.skeleton.EdgeSection(
+            index=index + 2, sample_1=sample_3, sample_2=sample_4)
+        edge_section_4 = vmv.skeleton.EdgeSection(
+            index=index + 3, sample_1=sample_4, sample_2=sample_5)
+
+        return [edge_section_1, edge_section_2, edge_section_3, edge_section_4]
 
 
 

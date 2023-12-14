@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019 - 2022, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -16,9 +16,7 @@
 ####################################################################################################
 
 # System imports
-import pandas
 import math
-
 
 # Internal improts
 import vmv.utilities
@@ -175,6 +173,7 @@ def compute_segment_length_distribution_along_axes(morphology_object):
             data.append([length, position[0], position[1], position[2]])
 
     # Construct the data frame and return it
+    import pandas
     return pandas.DataFrame(data, columns=['Length', 'X', 'Y', 'Z'])
 
 
@@ -200,6 +199,7 @@ def compute_segment_surface_area_distribution_along_axes(morphology_object):
                          position[0], position[1], position[2]])
 
     # Construct the data frame and return it
+    import pandas
     return pandas.DataFrame(data, columns=['Area', 'X', 'Y', 'Z'])
 
 
@@ -225,6 +225,7 @@ def compute_segment_volume_distribution_along_axes(morphology_object):
                          position[0], position[1], position[2]])
 
     # Construct the data frame and return it
+    import pandas
     return pandas.DataFrame(data, columns=['Volume', 'X', 'Y', 'Z'])
 
 

@@ -29,7 +29,7 @@ def create_line_object_from_data(data,
     """Create a line object and returns a reference to it.
 
     :param data:
-        Properties of the line such as caps, depth, dimensions, ect... .
+        Properties of the line such as caps, depth, dimensions, ect....
     :param point1:
         Starting point of the line.
     :param point2:
@@ -46,7 +46,7 @@ def create_line_object_from_data(data,
 
     # Add the two points to the line object
     # NOTE: Once the strip is created, it contains by default a single point, so we need to add
-    # another point to make an array fr two points
+    # another point to make an array for two points
     line_strip = data.splines.new('POLY')
     line_strip.points.add(1)
 

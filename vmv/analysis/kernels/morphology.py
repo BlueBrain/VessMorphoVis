@@ -17,6 +17,7 @@
 
 # Internal imports
 import vmv.analysis
+import vmv.skeleton
 
 
 ####################################################################################################
@@ -75,23 +76,13 @@ def compute_number_of_loops(sections_list):
 ####################################################################################################
 # @compute_number_of_components
 ####################################################################################################
-def compute_number_of_components(sections_list):
+def compute_number_of_components(morphology):
     """Computes the number of components of the morphology.
 
-    :param sections_list:
-        A give list of all the sections in the morphology.
+    :param morphology:
+        The vascular morphology.
     :return:
         The number of components in the morphology.
     """
 
-    # Number of components
-    number_components_in_morphology = 0
-
-    # Iterate over all the sections and if you find any section with zero parents, increment
-    for section in sections_list:
-
-        if len(section.parents) == 0:
-            number_components_in_morphology += 1
-
-    # Return the result
-    return number_components_in_morphology
+    return vmv.skeleton.get_number_components_in_graph(morphology=morphology)
