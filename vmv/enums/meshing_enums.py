@@ -45,6 +45,9 @@ class Meshing:
         # Skin-modifier based meshing
         SKIN_MODIFIER = 'MESHING_TECHNIQUE_SKIN_MODIFIER'
 
+        # Voxelization
+        VOXELIZATION = 'MESHING_TECHNIQUE_VOXELIZATION'
+
         ############################################################################################
         # @__init__
         ############################################################################################
@@ -69,6 +72,10 @@ class Meshing:
             elif argument == 'skin-modifier':
                 return Meshing.Technique.SKIN_MODIFIER
 
+            # Voxelization-based remeshing
+            elif argument == 'voxelization':
+                return Meshing.Technique.VOXELIZATION
+
             # By default use piecewise-watertight
             else:
                 return Meshing.Technique.PIECEWISE_WATERTIGHT
@@ -85,6 +92,9 @@ class Meshing:
              'Skin Modifier',
              'Use skin modifier to create a high quality mesh with smooth branching geometries '
              'and nice topology'),
+            (VOXELIZATION,
+             'Voxelization',
+             'Use voxelization-based remeshing to construct a watertight mesh'),
             (META_BALLS,
              'Meta Balls',
              'Creates watertight mesh models using the meta balls algorithm. '

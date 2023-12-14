@@ -15,15 +15,8 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-from .bevel_consts import *
-from .color_consts import *
-from .image_consts import *
-from .geometry_conts import *
-from .math_consts import *
-from .meshing_consts import *
-from .messages_consts import *
-from .rendering_planes import *
-from .path_consts import *
-from .skeleton_consts import *
-from .suffix_consts import *
-from .string_consts import *
+from .data_ops import *
+from .modifier_ops import *
+from .mode_ops import *
+from .mesh_ops import *
+from .scene_ops import *

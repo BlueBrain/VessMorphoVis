@@ -15,11 +15,15 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
+# System imports
+import copy
+
 # Blender imports
 import bpy, bmesh
 
 # Internal imports
-import vmv
+import vmv.bops
+import vmv.consts
 import vmv.scene
 import vmv.mesh
 import vmv.utilities
@@ -29,10 +33,10 @@ import vmv.utilities
 # @merge_at_center
 ####################################################################################################
 def merge_at_center(mesh_object):
-    """
+    """Merges all the vertices of the given mesh object to the center.
 
     :param mesh_object:
-    :return:
+        A given mesh object.
     """
 
     # Deselect all the objects in the scene
@@ -42,17 +46,23 @@ def merge_at_center(mesh_object):
     vmv.scene.ops.set_active_object(mesh_object)
 
     # Switch to edit mode to be able to select the vertices
-    bpy.ops.object.mode_set(mode='EDIT')
+    vmv.bops.switch_to_edit_mode()
 
-    # Apply a vertex deselection action to the selected object
-    bpy.ops.mesh.select_mode(type="VERT")
-    bpy.ops.mesh.select_all(action='SELECT')
+    # Apply a vertex selection action to the selected object
+    vmv.bops.select_vertex_mode()
+
+    # Select all the vertices of the mesh
+    vmv.bops.select_all_vertices()
 
     # Merge at the center
-    bpy.ops.mesh.merge(type='CENTER')
+    vmv.bops.merge_at_center()
+
+    # Deselect all the vertices
+    vmv.bops.deselect_all_vertices()
 
     # Switch back to the object mode
-    bpy.ops.object.mode_set(mode='OBJECT')
+    vmv.bops.switch_to_object_mode()
+
 
 ####################################################################################################
 # @convert_to_bmesh_object
@@ -77,10 +87,10 @@ def convert_to_bmesh_object(mesh_object):
 
 
 ####################################################################################################
-# @smooth_object
+# @apply_surface_subdivision
 ####################################################################################################
-def smooth_object(mesh_object,
-                  level=1):
+def apply_surface_subdivision(mesh_object,
+                              level=1):
     """Smooth a mesh object.
 
     :param mesh_object:
@@ -95,14 +105,8 @@ def smooth_object(mesh_object,
     # Activate the selected object
     vmv.scene.ops.set_active_object(mesh_object)
 
-    # Add a smoothing modifier
-    bpy.ops.object.modifier_add(type='SUBSURF')
-
-    # Set the smoothing level
-    bpy.context.object.modifiers["Subdivision"].levels = level
-
-    # Apply the smoothing modifier
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Subdivision")
+    # Apply the subdivision modifier
+    vmv.bops.surface_subdivision(levels=level)
 
 
 ####################################################################################################
@@ -125,7 +129,7 @@ def triangulate_mesh(mesh_object):
     bpy.ops.object.editmode_toggle()
 
     # Convert the face to triangles
-    bpy.ops.mesh.quads_convert_to_tris(quad_method='BEAUTY', ngon_method='BEAUTY')
+    vmv.bops.convert_quads_to_tris()
 
     # Switch back to the object mode from the edit mode
     bpy.ops.object.editmode_toggle()
@@ -150,7 +154,7 @@ def shade_smooth_object(mesh_object):
     bpy.ops.object.editmode_toggle()
 
     # Select all the vertices of the mesh object
-    bpy.ops.mesh.select_all(action='SELECT')
+    vmv.bops.select_all_vertices()
 
     # Apply a smoothing operator
     bpy.ops.mesh.faces_shade_smooth()
@@ -199,38 +203,35 @@ def smooth_object_vertices(mesh_object,
 # @decimate_mesh_object
 ####################################################################################################
 def decimate_mesh_object(mesh_object,
-                         decimation_ratio=1.0):
+                         decimation_ratio):
     """Decimate a mesh object.
 
     :param mesh_object:
-        A given mesh object.
+        A given mesh object to be decimated.
     :param decimation_ratio:
-        Decimation ratio between 0.01 and 1.0
+        Decimation ratio. This ratio must be between 0.001 and 1.0
     """
 
-    # If the decimation ration is not within range, skip this operation
-    if 1.0 < decimation_ratio < 0.01:
+    # The modifier cannot be applied
+    if decimation_ratio > 1.0:
+        return
 
-        # Return
+    # If the decimation ration is not within range, skip this operation
+    if decimation_ratio < vmv.consts.Meshing.MIN_DECIMATION_RATIO:
         return
 
     # select mesh_object1 and set it to be the active object
     vmv.scene.ops.set_active_object(mesh_object)
 
-    # add a decimation modifier
-    bpy.ops.object.modifier_add(type='DECIMATE')
-
-    # set the decimation ratio
-    bpy.context.object.modifiers["Decimate"].ratio = decimation_ratio
-
-    # apply the modifier
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Decimate")
+    # Decimate the mesh
+    vmv.bops.decimate_mesh(decimation_ratio=decimation_ratio)
 
 
 ####################################################################################################
 # @remove_double_points
 ####################################################################################################
-def remove_double_points(mesh_object, threshold=0.001):
+def remove_double_points(mesh_object,
+                         threshold=0.0001):
     """Removes the duplicate points for a given mesh object.
 
     :param mesh_object:
@@ -250,53 +251,28 @@ def remove_double_points(mesh_object, threshold=0.001):
 
 
 ####################################################################################################
-# @smooth_object
+# @separate_mesh_to_partitions
 ####################################################################################################
-def joint_meshes(soma_mesh=None,
-                 branches_meshes=[],
-                 spines_meshes=[]):
+def separate_mesh_to_partitions(mesh_object):
 
-    """Join all the meshes of a neuron into a single mesh.
+    # Deselect all objects
+    vmv.scene.deselect_all()
 
-    NOTE: This function takes a distinct mesh for the soma, and a list of meshes for the arbors
-    or the branches and another list for the spines.
-    TODO: Rename the function to specify it to neurons.
+    # Activate given mesh object
+    vmv.scene.set_active_object(mesh_object)
 
-    :param soma_mesh:
-        The mesh of the soma.
-    :param branches_meshes:
-        A list of the meshes of all the bracnes.
-    :param spines_meshes:
-        A list of the meshes of the spines.
-    :return:
-        A single mesh object.
-    """
+    # Snap the name of the input mesh object
+    input_mesh_object_name = copy.deepcopy(mesh_object.name)
 
-    # Create a very small sphere to be used as the base object
-    base_object = vmv.mesh.objects.create_uv_sphere(radius=0.01, subdivisions=4, name='mesh')
+    # Separate the mesh into partitions
+    bpy.ops.mesh.separate(type='LOOSE')
 
-    # Set this base sphere as the active object
-    vmv.scene.ops.set_active_object(base_object)
+    # Get all the separate objects in the scene
+    partitions = vmv.scene.get_list_of_mesh_objects_containing_string(
+        search_string=input_mesh_object_name)
 
-    # Select the soma mesh if not None
-    if soma_mesh is not None:
-        soma_mesh.select = True
-
-    # Select all the branches meshes
-    if len(branches_meshes) > 0:
-        for branch_mesh in branches_meshes:
-            branch_mesh.select = True
-
-    # Select all the spines meshes
-    if len(spines_meshes) > 0:
-        for spine_mesh in spines_meshes:
-            spine_mesh.select = True
-
-    # Join the meshes together
-    bpy.ops.object.join()
-
-    # Return a reference to the final object.
-    return base_object
+    # Return the list of partitions
+    return partitions
 
 
 ####################################################################################################
@@ -562,7 +538,7 @@ def intersect_mesh_objects(mesh_object1,
     """Apply a boolean union operator on the two meshes to make them only one mesh object.
 
     NOTE: This functions assumes that mesh_object1 to be the base and the other object will be
-    delete after the application of the union operator.
+    deleted after the application of the union operator.
 
     :param mesh_object1:
         The first mesh object.
@@ -595,15 +571,15 @@ def intersect_mesh_objects(mesh_object1,
 # @join_mesh_objects
 ####################################################################################################
 def join_mesh_objects(mesh_list,
-                      name='joint'):
+                      name='Joint Mesh'):
     """Join all the meshes into one only and rename it.
 
     :param mesh_list:
         An input list of meshes to be joint.
     :param name:
-        The name of the outcome.
+        The name of the resulting mesh object.
     :return:
-        A joint mesh.
+        Reference to the joint mesh object.
     """
 
     # If the input list does not contain any meshes, return None
@@ -612,24 +588,21 @@ def join_mesh_objects(mesh_list,
 
     # If the input list contains only one mesh, return a reference to it
     if len(mesh_list) == 1:
-        return mesh_list[1]
+        return mesh_list[0]
 
     # Deselect everything in the scene
-    vmv.scene.ops.deselect_all()
-
-    # Select all the sections in the sections list
-    for mesh_object in mesh_list:
-
-        if mesh_object.type == 'MESH':
-            
-            # Select the mesh object
-            mesh_object.select_set(True)
+    vmv.scene.deselect_all()
 
     # Set the 0th mesh to be active
-    bpy.context.view_layer.objects.active = mesh_list[0]
+    vmv.scene.set_active_object(mesh_list[0])
 
     # Set tha parenting order, the parent mesh is becoming an actual parent
     bpy.ops.object.parent_set()
+
+    # Select all the sections in the sections list
+    for i in range(1, len(mesh_list)):
+        if mesh_list[i].type == 'MESH':
+            mesh_list[i].select_set(True)
 
     # Join the two meshes in one mesh
     bpy.ops.object.join()
@@ -642,3 +615,82 @@ def join_mesh_objects(mesh_list,
 
     # Return a reference to the resulting mesh
     return result_mesh
+
+
+####################################################################################################
+# @remesh_using_voxelization
+####################################################################################################
+def remesh_using_voxelization(mesh_object,
+                              voxel_size):
+    """Re-meshes a given mesh object using the voxelization re-meshing modifier.
+
+    :param mesh_object:
+        A given mesh object to be re-meshed.
+    :param voxel_size:
+        The voxelization resolution.
+    """
+
+    # De-select all other mesh objects
+    vmv.scene.deselect_all()
+
+    # Select and activate the mesh object
+    vmv.scene.set_active_object(scene_object=mesh_object)
+
+    # Apply the re-meshing modifier
+    vmv.bops.apply_voxelization_remeshing_modifier(voxel_size=voxel_size)
+
+
+####################################################################################################
+# @triangulate_mesh_object
+####################################################################################################
+def triangulate_mesh_object(mesh_object):
+    """Triangulates a given mesh object.
+
+    :param mesh_object:
+        A given mesh object to be triangulated.
+    """
+
+    # De-select all other mesh objects
+    vmv.scene.deselect_all()
+
+    # Select and activate the mesh object
+    vmv.scene.set_active_object(scene_object=mesh_object)
+
+    # Triangulate the resulting mesh
+    vmv.bops.triangulate_mesh_in_object_mode()
+
+
+####################################################################################################
+# @remove_doubles
+####################################################################################################
+def remove_doubles(mesh_object,
+                   distance=vmv.consts.Meshing.DOUBLES_THRESHOLD):
+    """Removes duplicate vertices from the surface of a given mesh object. The removed vertices
+    will lie within the radius of the given distance.
+
+    :param mesh_object:
+        A given mesh object to remove the duplicate vertices from.
+    :param distance:
+        The maximum distance that is used to remove the duplicate vertices.
+    """
+
+    # Deselect all the other meshes
+    vmv.scene.deselect_all()
+
+    # Select and activate the given mesh object
+    vmv.scene.set_active_object(scene_object=mesh_object)
+
+    # Switch the mesh to the edit mode
+    vmv.bops.switch_to_edit_mode()
+
+    # Select all the vertices of the mesh
+    vmv.bops.select_all_vertices()
+
+    # Remove the duplicated vertices from the selected mesh
+    vmv.bops.remove_doubles(distance=distance)
+
+    # Deselect all the vertices
+    vmv.bops.deselect_all_vertices()
+
+    # Switch back to the object mode
+    vmv.bops.switch_to_object_mode()

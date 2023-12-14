@@ -20,7 +20,10 @@ from mathutils import Vector
 
 # Internal imports
 import vmv.bbox
+import vmv.bmeshi
 import vmv.consts
+import vmv.mesh
+import vmv.utilities
 
 
 ####################################################################################################
@@ -40,6 +43,7 @@ class Morphology:
                  number_sections=0,
                  sections_list=None,
                  roots=None,
+                 section_connectivity_available=False,
                  bounding_box=None,
                  radius_simulation_data=None,
                  flow_simulation_data=None,
@@ -56,6 +60,8 @@ class Morphology:
             The original number of sections as loaded from the morphology file.
         :param sections_list:
             A list of all the sections in the morphology.
+        :param section_connectivity_available:
+            A flag to indicate whether sections connectivity is available or not.
         :param roots:
             A list of all the root sections in the morphology.
         :param bounding_box:
@@ -101,6 +107,9 @@ class Morphology:
             self.has_radius_simulation = True
 
         # self.has_radius_simulation = True
+
+        # Is the connectivity between the sections available?
+        self.section_connectivity_available = section_connectivity_available
 
         # A list of the flow simulation data
         self.flow_simulation_data = flow_simulation_data
@@ -240,3 +249,177 @@ class Morphology:
         # Update the radii values
         for section in self.sections_list:
             section.update_terminals_radii()
+
+    ################################################################################################
+    # @construct_graph_mesh
+    ################################################################################################
+    def construct_graph_mesh(self):
+
+        # Create the bmesh object
+        graph_bmesh = vmv.bmeshi.create_bmesh_object()
+
+        # A linear list containing all the radii of the samples in the graph
+        radii_list = list()
+
+        # Iterate over the sections, and then the samples, and then build the bmesh
+        for i_section in self.sections_list:
+
+            # Create the first sample (or corresponding vertex)
+            vmv.bmeshi.add_vertex_to_bmesh_without_lookup(
+                graph_bmesh, i_section.samples[0].point)
+            radii_list.append(i_section.samples[0].radius)
+
+            for j in range(1, len(i_section.samples)):
+                vmv.bmeshi.add_vertex_to_bmesh_without_lookup(graph_bmesh,
+                                                              i_section.samples[j].point)
+                radii_list.append(i_section.samples[j].radius)
+
+        graph_bmesh.verts.ensure_lookup_table()
+
+        # Construct from the edges
+        vertex_index = 0
+        for i_section in self.sections_list:
+            for j in range(0, len(i_section.samples) - 1):
+                v1 = graph_bmesh.verts[j + vertex_index]
+                v2 = graph_bmesh.verts[j + vertex_index + 1]
+                graph_bmesh.edges.new((v1, v2))
+            vertex_index += len(i_section.samples)
+
+        graph_bmesh.edges.ensure_lookup_table()
+
+        # Convert the bmesh to a mesh
+        graph_mesh = vmv.bmeshi.convert_bmesh_to_mesh(bmesh_object=graph_bmesh,
+                                                      name='%s Graph' % self.name)
+
+        for i in range(len(graph_mesh.data.vertices)):
+            graph_mesh.data.vertices[i].bevel_weight = (
+                    radii_list[i] * vmv.consts.Skeleton.RADIUS_SCALE_DOWN_FACTOR)
+
+        # Remove doubles
+        vmv.utilities.disable_std_output()
+        vmv.mesh.remove_double_points(mesh_object=graph_mesh)
+        vmv.utilities.enable_std_output()
+
+        # Return a reference to the graph mesh
+        return graph_mesh
+
+    ################################################################################################
+    # @get_graph_mesh_partitions
+    ################################################################################################
+    def get_graph_mesh_partitions(self):
+
+        # Return a list of the mesh partitions
+        return vmv.mesh.separate_mesh_to_partitions(self.construct_graph_mesh())
+
+    ################################################################################################
+    # @get_branching_samples
+    ################################################################################################
+    def get_branching_samples_data(self):
+
+        # A list to collect the branching samples data
+        branching_samples_data = list()
+
+        # Construct the graph mesh
+        graph_mesh = self.construct_graph_mesh()
+
+        # Find the vertices that have more than 3 linked edges
+
+        # Construct a bmesh object
+        graph_bmesh = vmv.bmeshi.create_bmesh_object_from_mesh_object(mesh_object=graph_mesh)
+
+        # Compile a list of the branching sample indices
+        branching_samples_indices = list()
+        for v in graph_bmesh.verts:
+            if len(v.link_edges) > 2:
+                branching_samples_indices.append(v.index)
+
+        # Release the bmesh object of the graph as it is not needed
+        graph_bmesh.free()
+        del graph_bmesh
+
+        # Query the radii and coordinates from the graph mesh
+        factor = vmv.consts.Skeleton.RADIUS_SCALE_UP_FACTOR
+        for i in branching_samples_indices:
+            branching_samples_data.append([graph_mesh.data.vertices[i].co,
+                                           graph_mesh.data.vertices[i].bevel_weight * factor])
+
+        # Delete the graph mesh from the scene
+        vmv.scene.delete_object_in_scene(graph_mesh)
+
+        # Return the samples list
+        return branching_samples_data
+
+    ################################################################################################
+    # @construct_branching_connectivity
+    ################################################################################################
+    def construct_branching_connectivity(self,
+                                         threshold=0.0001):
+        """Constructs the connectivity between the branches (sections) if this connectivity is not
+        already loaded (or existing) from the input morphology file.
+
+        Parameters
+        ----------
+        threshold :
+            The threshold distance between the terminal samples of the sections to consider
+            them connecting branches. Default value is 0.0001.
+        """
+
+        # If the connectivity between the sections is available, then return!
+        if self.section_connectivity_available:
+            return
+
+        # Verify the installation of the tqdm module in the system
+        tqdm = vmv.utilities.import_module('tqdm')
+        if tqdm:
+            _loop = tqdm.tqdm(self.sections_list, desc='\t* Establishing Connectivity')
+        else:
+            _loop = self.sections_list
+
+        # Do it on a per-section-basis
+        for i_section in _loop:
+            i_first_sample = i_section.samples[0]
+            i_last_sample = i_section.samples[-1]
+
+            for j_section in self.sections_list:
+                if i_section.index == j_section.index:
+
+                    # This is the same section, continue
+                    continue
+
+                j_first_sample = j_section.samples[0]
+                j_last_sample = j_section.samples[-1]
+
+                if (i_first_sample.point - j_first_sample.point).length < threshold:
+                    i_section.parents.append(j_section)
+                    j_section.children.append(i_section)
+
+                if (i_first_sample.point - j_last_sample.point).length < threshold:
+                    i_section.parents.append(j_section)
+                    j_section.children.append(i_section)
+
+                if (i_last_sample.point - j_first_sample.point).length < threshold:
+                    i_section.children.append(j_section)
+                    j_section.parents.append(i_section)
+
+                if (i_last_sample.point - j_last_sample.point).length < threshold:
+                    i_section.children.append(j_section)
+                    j_section.parents.append(i_section)
+
+    ################################################################################################
+    # @construct_edge_sections
+    ################################################################################################
+    def construct_edge_sections(self):
+        """Constructs and returns an EdgeSection list that reflect a simplified version of the
+        morphology.
+
+        Returns
+        -------
+            A list of EdgeSection's that reflect a simplified version of the morphology, where
+            each section is only represented by two samples only.
+        """
+
+        edge_sections_list = list()
+        for i_section in self.sections_list:
+            edge_sections_list.append(i_section.construct_edge_section())
+        return edge_sections_list
+

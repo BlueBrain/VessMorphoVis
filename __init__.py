@@ -18,7 +18,7 @@
 __author__      = "Marwan Abdellah"
 __copyright__   = "Copyright (c) 2019, Blue Brain Project / EPFL"
 __credits__     = ["Juan Hernando"]
-__version__     = "0.2.1"
+__version__     = "0.3.0"
 __maintainer__  = "Marwan Abdellah"
 __email__       = "marwan.abdellah@epfl.ch"
 __status__      = "Production"
@@ -34,11 +34,11 @@ bl_info = {
     # The main author(s) of this add-on
     "author": "Marwan Abdellah, Blue Brain Project at EPFL",
     # A tuple, containing the add-on version
-    "version": (0, 2, 1),
+    "version": (0, 3, 0),
     # The earliest Blender version this add-on will work with. If you're not sure what versions of
     # Blender this add-on is compatible with, use the version of Blender you're developing
     # the add-on with.
-    "blender": (2, 80, 3),
+    "blender": (3, 5, 0),
     # Description
     "description": "Vasculature morphology reconstruction, analysis, meshing and visualization.",
     # Optional: specifies the wiki URL for an add-on.
@@ -79,8 +79,8 @@ def install_dependencies():
                   ['seaborn', 'seaborn'],
                   ['pandas', 'pandas'],
                   ['h5', 'h5py'],
-                  ['PIL', 'Pillow'],
-                  ['morphio', 'morphio']]
+                  ['PIL', 'Pillow']]
+                  #['morphio', 'morphio']]
 
     # Ensuring Pipe
     shell_command = '%s -m ensurepip' % sys.executable

@@ -219,8 +219,12 @@ class VMV_ReconstructMesh(bpy.types.Operator):
                                                options=vmv.interface.Options)
 
         elif context.scene.VMV_MeshingTechnique == vmv.enums.Meshing.Technique.SKIN_MODIFIER:
-            print('Skin')
+
             builder = vmv.builders.SkinningBuilder(
+                morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
+
+        elif context.scene.VMV_MeshingTechnique == vmv.enums.Meshing.Technique.VOXELIZATION:
+            builder = vmv.builders.VoxelizationBuilder(
                 morphology=vmv.interface.MorphologyObject, options=vmv.interface.Options)
 
         # Using the piece-wise

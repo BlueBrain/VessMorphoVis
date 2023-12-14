@@ -18,13 +18,8 @@
 # System imports
 import time
 
-# Blender imports
-import bpy
-from mathutils import Vector
-
 # Internal modules
-import vmv
-import vmv.builders
+import vmv.bops
 import vmv.enums
 import vmv.mesh
 import vmv.skeleton
@@ -56,6 +51,9 @@ class MetaBuilder(MeshBuilder):
 
         # Base
         MeshBuilder.__init__(self, morphology=morphology, options=options)
+
+        # Builder name
+        self.builder_name = 'MetaBuilder'
 
         # Meta object skeleton, used to build the skeleton of the morphology
         self.meta_skeleton = None
@@ -262,16 +260,21 @@ class MetaBuilder(MeshBuilder):
         """
 
         # Create a new meta skeleton that will be used to reconstruct the skeleton frame
-        self.meta_skeleton = bpy.data.metaballs.new(self.morphology.name)
+        # self.meta_skeleton = bpy.data.metaballs.new(self.morphology.name)
+        self.meta_skeleton = vmv.bops.create_new_metaballs(name=self.morphology.name)
 
         # Create a new meta object that reflects the reconstructed mesh at the end of the operation
-        self.mesh = bpy.data.objects.new(self.morphology.name, self.meta_skeleton)
+        self.mesh = vmv.bops.create_new_metaballs_object_from_data(
+            name=self.morphology.name, metaballs_data=self.meta_skeleton)
+        # self.mesh = bpy.data.objects.new(self.morphology.name, self.meta_skeleton)
+
+        vmv.scene.link_object_to_scene(input_object=self.mesh)
 
         # Get a reference to the scene
-        scene = bpy.context.scene
+        # scene = bpy.context.scene
 
         # Link the meta object to the scene
-        scene.collection.objects.link(self.mesh)
+        # scene.collection.objects.link(self.mesh)
 
         # Update the resolution of the meta skeleton
         self.meta_skeleton.resolution = 1.0
@@ -299,50 +302,27 @@ class MetaBuilder(MeshBuilder):
         vmv.scene.ops.deselect_all()
 
         # Select the mesh
-        self.mesh = bpy.context.scene.objects[self.morphology.name]
-        self.mesh.select_set(True)
-        bpy.context.view_layer.objects.active = self.mesh
+        self.mesh = vmv.scene.get_object_by_name(object_name=self.morphology.name)
+        vmv.scene.select_object(scene_object=self.mesh)
+        vmv.set_active_object(scene_object=self.mesh)
 
         # Convert it to a mesh from meta-balls
-        bpy.ops.object.convert(target='MESH')
+        vmv.bops.convert_to_mesh()
 
         # Update its name with the mesh suffix to be able to locate it
-        self.mesh = bpy.context.scene.objects[self.morphology.name + '.001']
-        self.mesh.name = self.morphology.name + vmv.consts.Suffix.MESH_SUFFIX
-
-        # Re-select it again to be able to perform post-processing operations in it
-        self.mesh.select_set(True)
-
-        # Tessellate Mesh
-        self.tessellate_mesh()
-
-        # Set the mesh to be the active object
-        bpy.context.view_layer.objects.active = self.mesh
-
-    ################################################################################################
-    # @tessellate_mesh
-    ################################################################################################
-    def tessellate_mesh(self):
-
-        # Ensure that the tessellation level is within range
-        if 0.01 < self.options.mesh.tessellation_ratio < 1.0:
-
-            # Decimate each mesh object
-            vmv.mesh.ops.decimate_mesh_object(
-                mesh_object=self.mesh,
-                decimation_ratio=self.options.mesh.tessellation_ratio)
-
-            # Adjust the texture mapping
-            vmv.shading.adjust_material_uv(mesh_object=self.mesh)
+        self.mesh = vmv.scene.get_object_by_name(self.morphology.name + '.001')
 
     ################################################################################################
     # @build
     ################################################################################################
     def build_mesh(self):
-        """Reconstructs the vascular mesh using meta objects.
+        """Reconstructs the vascular mesh.
+
+        :return:
+            A reference to the reconstructed vascular mesh.
         """
 
-        vmv.logger.header('Building Mesh: MetaBalls')
+        vmv.logger.header('Building Mesh: %s' % self.builder_name)
 
         # Clear the scene
         vmv.scene.clear_scene()
@@ -371,6 +351,12 @@ class MetaBuilder(MeshBuilder):
 
         # Assign the material to the mesh
         self.assign_material_to_mesh()
+
+        # Update its name with the mesh suffix to be able to locate it
+        self.set_default_mesh_name()
+
+        # Tessellate the mesh, if requested
+        self.tessellate_mesh()
 
         # Mission done
         vmv.logger.header('Done!')

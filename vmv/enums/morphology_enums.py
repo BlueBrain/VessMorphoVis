@@ -157,7 +157,7 @@ class Morphology:
             elif argument == 'simplified':
                 return Morphology.Style.SIMPLIFIED
 
-            # By default use the original skeleton
+            # By default, use the original skeleton
             else:
                 return Morphology.Style.ORIGINAL
 
@@ -176,8 +176,15 @@ class Morphology:
             'Build the morphology as a set of sections, where each section is an independent '
             'object')
 
+        SMOOTH_SECTIONS = 'SMOOTH_SECTIONS_BUILDER'
+        SMOOTH_SECTIONS_UI_ITEM = (
+            SMOOTH_SECTIONS,
+            'Sections (Smooth)',
+            'Build the morphology as a set of sections, where each section is an independent '
+            'object, and use NURBS interpolation to smooth the vessels')
+
         # Use the Segments builder
-        SEGMENTS = 'RECONSTRUCTION_METHOD_SEGMENTS_BUILDER'
+        SEGMENTS = 'SEGMENTS_BUILDER'
         SEGMENTS_UI_ITEM = (
             SEGMENTS,
             'Segments',
@@ -210,6 +217,9 @@ class Morphology:
             # Sections
             elif argument == 'sections':
                 return Morphology.Builder.SECTIONS
+
+            elif argument == 'smooth-sections':
+                return Morphology.Builder.SMOOTH_SECTIONS
 
             # Samples
             elif argument == 'samples':

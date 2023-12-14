@@ -23,6 +23,18 @@ from mathutils import Vector
 
 
 ####################################################################################################
+# @find_median
+####################################################################################################
+def find_median(list_numbers: list):
+
+    ordered_list = sorted(list_numbers)
+    middle1 = (len(ordered_list) - 1) // 2
+    middle2 = len(ordered_list) // 2
+
+    return (ordered_list[middle1] + ordered_list[middle2]) / 2.0
+
+
+####################################################################################################
 # @interpolate_list
 ####################################################################################################
 def interpolate_list(input_list, fi):

@@ -17,73 +17,50 @@
 
 # Blender imports
 import bmesh
+from mathutils import Vector
 
 # Internal imports
-import vmv
+import vmv.mesh
 import vmv.utilities
 
 
-
+####################################################################################################
+# @create_vertex
+####################################################################################################
 def create_bmesh_object():
+    """Creates a new bmesh object and returns a reference to it.
+
+    :return:
+        A reference to the created bmesh object.
+    """
 
     # Create a new bmesh object
-    bmesh_object = bmesh.new()
-
-    # Return a reference to the bmesh
-    return bmesh_object
+    return bmesh.new()
 
 
 ####################################################################################################
 # @create_vertex
 ####################################################################################################
 def create_vertex(location=(0, 0, 0)):
+    """Creates a bmesh vertex object.
+
+    :param location:
+        The vertex location, by default at the origin.
+    :return:
+        A reference to the created bmesh vertex object.
+    """
 
     # Create a new bmesh object
     bmesh_vertex = bmesh.new()
 
-    # Create a new vertex
+    # Create a new vertex within the given object
     bmesh.ops.create_vert(bmesh_vertex)
 
+    # Translate the vertex to the given location
     bmesh.ops.translate(bmesh_vertex, verts=bmesh_vertex.verts[:], vec=location)
 
-    # Return a reference to the bmesh
+    # Return a reference to the created bmesh vertex object
     return bmesh_vertex
-
-
-####################################################################################################
-# @add_new_vertex_to_bmesh
-####################################################################################################
-def add_new_vertex_to_bmesh(bmesh_object,
-                            vertex_index,
-                            location=(0.0, 0.0, 0.0)):
-
-
-    # Create a new vertex
-    bmesh.ops.create_vert(bmesh_object)
-
-    ## Update the bmesh vertices
-    bmesh_object.verts.ensure_lookup_table()
-    #bmesh.ops.translate(bmesh_object, verts=[bmesh_object.verts[vertex_index]], vec=location)
-    vertex = bmesh_object.verts[vertex_index]
-    vertex.co = location
-
-
-def add_line_segment_to_bmesh(bmesh_object,
-                              point_1,
-                              point_2):
-
-    # Create a new vertex at point 1
-    #v = bmesh.ops.create_vert(bmesh_object, co=point_1)
-
-    # Update the bmesh vertices
-    #bmesh_object.verts.ensure_lookup_table()
-
-    # Extrude to the auxiliary sample
-    #vmv.bmeshi.ops.extrude_vertex_towards_point(bmesh_object, v['vert'][0].index, point_2)
-
-    vert1 = bmesh_object.verts.new(point_1)
-    vert2 = bmesh_object.verts.new(point_2)
-    edge = bmesh_object.edges.new([vert1, vert2])
 
 
 ####################################################################################################
@@ -91,8 +68,8 @@ def add_line_segment_to_bmesh(bmesh_object,
 ####################################################################################################
 def create_uv_sphere(radius=1,
                      location=(0, 0, 0),
-                     subdivisions=10):
-    """Create a uv sphere bmesh object and returns a reference to that object.
+                     subdivisions=16):
+    """Creates a uv sphere bmesh object and returns a reference to that object.
 
     :param radius:
         The radius of the sphere.
@@ -108,9 +85,8 @@ def create_uv_sphere(radius=1,
     bmesh_uv_sphere = bmesh.new()
 
     # Create a uv-sphere
-    bmesh.ops.create_uvsphere(bmesh_uv_sphere, u_segments=subdivisions, v_segments=subdivisions,
-                              radius=radius)
-    # bmesh.ops.create_icosphere(bmesh_uv_sphere, subdivisions=subdivisions, diameter=radius)
+    bmesh.ops.create_uvsphere(bmesh_uv_sphere,
+                              u_segments=subdivisions, v_segments=subdivisions, radius=radius)
 
     # Translate it to the specified position
     bmesh.ops.translate(bmesh_uv_sphere, verts=bmesh_uv_sphere.verts[:], vec=location)
@@ -221,3 +197,186 @@ def create_cube(radius=1,
 
     # Return a reference to the bmesh
     return bmesh_cube
+
+
+####################################################################################################
+# @create_icosphere_template
+####################################################################################################
+def create_icosphere_template(subdivisions=1,
+                              center=Vector((0, 0, 0)),
+                              radius=1):
+    """Creates an icosphere template using the bmesh API.
+
+    :param subdivisions:
+        Number of sphere subdivisions.
+    :param center:
+        The center of the sphere, by default at the origin.
+    :param radius:
+        The radius of the sphere, by default 1.
+    :return:
+        Data list, the first element is a list of vertices and the second one is the faces.
+    """
+
+    # Create the icosphere bmesh
+    icosphere_bmesh = create_ico_sphere(radius=radius, location=center, subdivisions=subdivisions)
+
+    # Update the look-up tables before making the queries
+    icosphere_bmesh.verts.ensure_lookup_table()
+    icosphere_bmesh.faces.ensure_lookup_table()
+
+    # Fill-up the vertices list
+    vertices = list()
+    for v in icosphere_bmesh.verts:
+        vertices.append(v.co)
+
+    # Fill-up the faces list
+    faces = list()
+    for f in icosphere_bmesh.faces:
+        faces.append([f.verts[0].index, f.verts[1].index, f.verts[2].index])
+
+    # Return the vertices and faces list
+    return [vertices, faces]
+
+
+####################################################################################################
+# @append_icosphere_vertices_to_bmesh
+####################################################################################################
+def append_icosphere_vertices_to_bmesh(bmesh_object,
+                                       center,
+                                       radius,
+                                       icosphere_template):
+
+    # Add the vertices of the template to the input bmesh object
+    for v in icosphere_template[0]:
+        bmesh_object.verts.new((v * radius) + center)
+
+
+####################################################################################################
+# @append_icosphere_faces_to_bmesh
+####################################################################################################
+def append_icosphere_faces_to_bmesh(bmesh_object,
+                                    i,
+                                    icosphere_template):
+
+    # Compute the face offset limit
+    offset = len(icosphere_template[0])
+
+    # Add the faces of the template to the input bmesh object
+    for f in icosphere_template[1]:
+
+        # Compute the corresponding indices
+        v1_index = f[0] + (i * offset)
+        v2_index = f[1] + (i * offset)
+        v3_index = f[2] + (i * offset)
+
+        # Get references to the vertices from the input bmesh object
+        v1 = bmesh_object.verts[v1_index]
+        v2 = bmesh_object.verts[v2_index]
+        v3 = bmesh_object.verts[v3_index]
+
+        # Add the new face in the bmesh object
+        bmesh_object.faces.new((v1, v2, v3))
+
+
+####################################################################################################
+# @create_bmesh_object_from_spheres_list_using_icospheres
+####################################################################################################
+def create_bmesh_object_from_spheres_list_using_icospheres(spheres_list,
+                                                           subdivisions=1):
+
+    # Create the icosphere template object
+    # icosphere_template = create_icosphere_template(subdivisions=subdivisions,
+    #                                                center=Vector((0, 0, 0)), radius=1)
+
+    icosphere_template = vmv.mesh.get_remeshed_icosphere_data(subdivisions=subdivisions)
+
+    # Create the new bmesh object
+    bmesh_object = bmesh.new()
+
+    # Adding the vertices
+    for sphere in spheres_list:
+        append_icosphere_vertices_to_bmesh(bmesh_object=bmesh_object,
+                                           center=sphere[0], radius=sphere[1],
+                                           icosphere_template=icosphere_template)
+
+    # Update the look-up table before making the queries
+    bmesh_object.verts.ensure_lookup_table()
+
+    # Adding the faces
+    for i, sphere in enumerate(spheres_list):
+        append_icosphere_faces_to_bmesh(bmesh_object=bmesh_object, i=i,
+                                        icosphere_template=icosphere_template)
+
+    # Return a reference to the bmesh object
+    return bmesh_object
+
+
+####################################################################################################
+# @create_uv_sphere_template
+####################################################################################################
+def create_uv_sphere_template(subdivisions=8,
+                              center=Vector((0, 0, 0)),
+                              radius=1):
+    # Create the icosphere bmesh
+    uv_sphere_bmesh = create_uv_sphere(radius=radius, location=center, subdivisions=subdivisions)
+
+    # Triangulate it
+    vmv.bmeshi.triangulate_faces(bmesh_object=uv_sphere_bmesh)
+
+    # Update the look-up tables before making the queries
+    uv_sphere_bmesh.verts.ensure_lookup_table()
+    uv_sphere_bmesh.faces.ensure_lookup_table()
+
+    # Fill-up the vertices list
+    vertices = list()
+    for v in uv_sphere_bmesh.verts:
+        vertices.append(v.co)
+
+    # Fill-up the faces list
+    faces = list()
+    for f in uv_sphere_bmesh.faces:
+        faces.append([f.verts[0].index, f.verts[1].index, f.verts[2].index])
+
+    # Return the vertices and faces list
+    return [vertices, faces]
+
+
+####################################################################################################
+# @create_bmesh_object_from_spheres_list_using_uv_spheres
+####################################################################################################
+def create_bmesh_object_from_spheres_list_using_uv_spheres(spheres_list,
+                                                           subdivisions=16):
+    """Creates a bmesh object composed of a list of given spheres using UV spheres.
+
+    :param spheres_list:
+        A list of spheres, where each item in the list is a list of center and radius.
+        The first element is the center and the second item is the radius.
+    :param subdivisions:
+        The number of sphere subdivisions.
+    :return:
+        A reference to the created bmesh object.
+    """
+
+    # Create the icosphere template object
+    uv_sphere_template = create_uv_sphere_template(subdivisions=subdivisions,
+                                                   center=Vector((0, 0, 0)), radius=1)
+
+    # Create the new bmesh object
+    bmesh_object = bmesh.new()
+
+    # Adding the vertices to the vertex object
+    for sphere in spheres_list:
+        append_icosphere_vertices_to_bmesh(bmesh_object=bmesh_object,
+                                           center=sphere[0], radius=sphere[1],
+                                           icosphere_template=uv_sphere_template)
+
+    # Update the look-up table before making the queries
+    bmesh_object.verts.ensure_lookup_table()
+
+    # Adding the faces
+    for i, sphere in enumerate(spheres_list):
+        append_icosphere_faces_to_bmesh(bmesh_object=bmesh_object, i=i,
+                                        icosphere_template=uv_sphere_template)
+
+    # Return a reference to the bmesh object
+    return bmesh_object

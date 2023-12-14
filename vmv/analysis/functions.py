@@ -15,10 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################################
 
-# System imports
-import numpy
-import matplotlib.pyplot as pyplot
-
 # Internal imports
 import vmv.utilities
 
@@ -95,6 +91,7 @@ def compute_average_profile_from_arranged_data(x,
             y_range.append([min(bin_samples), max(bin_samples)])
             y_samples.append(bin_samples)
 
+    import numpy
     return x_range, numpy.array(y_average), numpy.array(y_range), y_samples
 
 
@@ -255,6 +252,8 @@ def export_analysis_results(morphology,
          'section-volume'],
     ]
 
+    import numpy
+    import matplotlib.pyplot as pyplot
     palette = pyplot.get_cmap('tab20')
     palette = palette(numpy.linspace(0, 1.0, len(analysis_items) + 1))
 

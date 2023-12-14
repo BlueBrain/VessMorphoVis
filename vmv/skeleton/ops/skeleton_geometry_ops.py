@@ -17,12 +17,9 @@
 ####################################################################################################
 
 # System imports
-import random
 import math
-from mathutils import Vector
 
 # Internal imports
-import vmv
 import vmv.consts
 import vmv.shading
 
@@ -350,6 +347,7 @@ def compute_segment_volume(sample_1, sample_2):
     segment_volume = (1.0 / 3.0) * math.pi * (p0 - p1).length * (r0 * r0 + r0 * r1 + r1 * r1)
 
     return segment_volume
+
 
 ####################################################################################################
 # @compute_section_volume_from_segments

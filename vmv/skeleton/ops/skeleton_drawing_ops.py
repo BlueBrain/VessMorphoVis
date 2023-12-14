@@ -1,5 +1,5 @@
 ####################################################################################################
-# Copyright (c) 2019, EPFL / Blue Brain Project
+# Copyright (c) 2019 - 2023, EPFL / Blue Brain Project
 # Author(s): Marwan Abdellah <marwan.abdellah@epfl.ch>
 #
 # This file is part of VessMorphoVis <https://github.com/BlueBrain/VessMorphoVis>
@@ -17,27 +17,12 @@
 
 # System imports
 import copy
-import math 
 
 # Blender imports
 from mathutils import Vector
 
-import vmv
+# Internal imports
 import vmv.geometry
-import numpy as np
-
-
-def get_section_poly_line_(section):
-    #points_4d = np.hstack((section.points, np.ones((len(section.points), 1))))
-
-    #print(points_4d)
-    #print('-')
-    #print(points_4d.tolist())
-
-    poly_list = list(map(list, zip(map(tuple, np.hstack((section.points, np.ones((len(section.points), 1))))), 0.5 * section.diameters)))
-
-    #print(poly_list)
-    return  poly_list
 
 
 ####################################################################################################
@@ -63,17 +48,6 @@ def get_section_poly_line(section):
 
         # Get the radius of the sample
         radius = sample.radius
-
-        # TODO: Add an option to set the radii at the terminal or branching points to zero
-        """
-        if not section.is_root():
-            if i == 0:
-                radius = 0
-
-        if not section.is_leaf():
-            if i == len(section.samples) - 1:
-                radius = 0
-        """
 
         # Use the actual radius of the samples reported in the morphology file
         poly_line.append([(point[0], point[1], point[2], 1), radius])
@@ -186,17 +160,11 @@ def get_connected_sections_from_root_to_leaf(section,
         get_connected_sections_from_root_to_leaf(child, poly_line, poly_lines)
 
 
-
-
-
-
-
-
 ####################################################################################################
 # @get_section_poly_line_and_append_disconnections
 ####################################################################################################
 def get_section_poly_line_and_append_disconnections(section,
-                          center=Vector((0.0, 0.0, 0.0))):
+                                                    center=(0.0, 0.0, 0.0)):
     """Get the poly-line list or a series of points that reflect the skeleton of a single section.
 
     :param section:
@@ -250,7 +218,7 @@ def get_section_poly_line_and_append_disconnections(section,
 def get_connectivity_poly_line_from_parent_to_child(section,
                                                     parent,
                                                     child,
-                                                    center=Vector((0.0, 0.0, 0.0))):
+                                                    center=(0.0, 0.0, 0.0)):
     """Get the poly-line list or a series of points that reflect the skeleton of a single section.
 
     :param section:
@@ -361,7 +329,7 @@ def get_connectivity_poly_line_from_section_to_child(section,
 def get_connectivity_poly_lines_from_this_section_to_leaf(section,
                                                           poly_line_data=[],
                                                           poly_lines_data=[],
-                                                          center=Vector((0.0, 0.0, 0.0))):
+                                                          center=(0.0, 0.0, 0.0)):
 
     # If the section is a root node, append its samples
     if section.is_root():
@@ -478,7 +446,7 @@ def get_connectivity_poly_lines_from_this_section_to_leaf(section,
 ####################################################################################################
 def get_connectivity_poly_line_from_parent_to_section(section,
                                                       parent,
-                                                      center=Vector((0.0, 0.0, 0.0))):
+                                                      center=(0.0, 0.0, 0.0)):
     """Get the poly-line list or a series of points that reflect the skeleton of a single section.
 
     :param section:
@@ -549,247 +517,15 @@ def draw_section_from_poly_line_data(data,
         A reference to the drawn section.
     """
 
-    # If the data list has less than two samples, then report the error
-    #if len(data) < 2:
-
-    #    vmv.logger.log('\t\t* ERROR: Drawn section [%s] has less than two samples' % name)
-
     # Append a '_section' keyword after the section name to be able to recognize it later
     section_name = '%s_section' % name
 
     # Draw the section from the given data in poly-line format
-    section_object = vmv.geometry.draw_poly_line(poly_line_data=data, name=section_name,
-        material=material, color=color, bevel_object=bevel_object, caps=caps)
+    section_object = vmv.geometry.draw_poly_line(
+        poly_line_data=data, name=section_name, material=material, color=color,
+        bevel_object=bevel_object, caps=caps)
 
     # Return a reference to the drawn section object
     return section_object
-
-
-####################################################################################################
-# @draw_connected_sections
-####################################################################################################
-def draw_connected_sections(section, name='sample',
-                            poly_line_data=[],
-                            sections_objects=[],
-                            secondary_sections=[],
-                            branching_level=0,
-                            bevel_object=None,
-                            caps=False):
-    """Draw a list of sections connected together as a poly-line.
-
-    :param section:
-        Section root.
-    :param poly_line_data:
-        A list of lists containing the data of the poly-line format.
-    :param sections_objects:
-        A list that should contain all the drawn section objects.
-    :param secondary_sections:
-        A list of the secondary sections along the arbor.
-    :param branching_level:
-        Current branching level.
-    :param max_branching_level:
-        Maximum branching level the section can grow up to, infinity.
-    :param name:
-        Section name.
-    :param material_list:
-        A list of materials for random coloring of the section.
-    :param bevel_object:
-        A given bevel object to scale the section.
-    :param fixed_radius:
-        A fixed radius for each sample in the section, or None.
-    :param transform:
-        Transform from local and circuit coordinates.
-    :param repair_morphology:
-        Apply some filters to repair the morphology during the poly-line construction.
-    :param caps:
-        A flag to close the section caps or not.
-    :param render_frame:
-        A flag to render a progressive frame.
-    :param frame_destination:
-        The directory where the frame will be dumped.
-    :param camera:
-        A given camera to render the frame.
-    :param ignore_branching_samples:
-        Ignore fetching the branching samples from the morphology skeleton.
-    :param roots_connection:
-        How the root sections are connected to the soma.
-    """
-
-    # Ignore the drawing if the section is None
-    if section is None:
-        return
-
-    # Increment the branching level
-    branching_level += 1
-
-    # Verify if this is the last section along the arbor or not
-    is_last_section = False
-    if not section.has_children():
-        is_last_section = True
-
-    # Verify if this a continuous section or not
-    is_continuous = True
-    if len(poly_line_data) == 0:
-        is_continuous = False
-        secondary_sections.append(section)
-
-    # Get a list of all the poly-line that corresponds to the given section
-    section_data = get_section_poly_line(section=section)
-
-    # Extend the polyline samples for final mesh building
-    poly_line_data.extend(section_data)
-
-    # If the section does not have any children, then draw the section and clean the
-    # poly_line_data list
-    if not section.has_children():
-
-        # Section name
-        section_name = '%s_%d' % (name, section.index)
-
-        # Draw the section
-        section_object = draw_section_from_poly_line_data(
-            data=poly_line_data, name=section_name,
-            bevel_object=bevel_object, caps=caps)
-
-        # Add the section object to the sections_objects list
-        sections_objects.append(section_object)
-
-        # Clean the polyline samples list
-        poly_line_data[:] = []
-
-        # If no more branching is required, then exit the loop
-        return
-
-    # Iterate over the children sections and draw them, if any
-    for child in section.children:
-
-        # Draw the children sections
-        draw_connected_sections(
-            section=child, name=name, poly_line_data=poly_line_data,
-            sections_objects=sections_objects, secondary_sections=secondary_sections,
-            branching_level=branching_level, bevel_object=bevel_object, caps=caps)
-
-
-####################################################################################################
-# @resample_samples_list_adaptively
-####################################################################################################
-def resample_samples_list_adaptively(samples):
-
-    """Re-samples a list of samples adaptively.
-
-    :param samples:
-        A list of samples to be re-sampled.
-    """
-
-    # If the section has no samples, ignore this filter and return
-    if len(samples) < 4:
-        return
-
-    # The section has more than three samples, then it can be re-sampled, but never remove
-    # the first or the last samples
-
-    i = 0
-    while True:
-
-        # Just keep the last sample of the branch just in case
-        if i < len(samples) - 2:
-
-            sample_1 = samples[i]
-            sample_2 = samples[i + 1]
-
-            # Segment length
-            segment_length = (sample_2.point - sample_1.point).length
-
-            # If the distance between the two samples if less than the radius of the first
-            # sample remove the second sample
-            if segment_length < sample_1.radius + sample_2.radius:
-                samples.remove(samples[i + 1])
-                i = 0
-            else:
-                i += 1
-
-        # No more samples to process, break please
-        else:
-            break
-
-
-####################################################################################################
-# @resample_section_adaptively
-####################################################################################################
-def resample_section_adaptively(section):
-    """Re-samples the sections adaptively based on the radii of each sample and the distance between
-    each two consecutive samples.
-
-    :param section:
-        A given section to resample.
-    """
-
-    return resample_samples_list_adaptively(section.samples)
-
-
-def update_samples(section, index=0):
-
-    # If this section is root
-    if section.is_root():
-        for sample in section.samples:
-            sample.index = index
-            index += 1
-
-    # If this section is not root
-    else:
-
-        # If the section has a single parent, then the first sample of the section has the same
-        # index of the last sample of that parent
-        if section.has_single_parent():
-            section.samples[0].index = section.parents[0].samples[-1].index
-
-        # Otherwise, the section has more than a single parent (loop)
-        else:
-            pass
-
-
-
-
-def update_samples_indices_globally(section,
-                                    index=0):
-
-    # reset the visiting state
-
-    # if root
-    if section.is_root():
-        for sample in section.samples:
-            sample.global_index = index
-            index = index + 1
-
-    # if not root
-    else:
-
-        # if the section is not root, then it might have one parent or more
-
-        # the section has a single parent
-        if section.has_single_parent():
-            section.samples[0].global_index = section.parents[0].samples[-1].global_index
-
-        else:
-            pass
-
-
-
-
-        section.samples[0].global_index = section.parents[0].samples[-1].global_index
-
-        index = index + 1
-        for i in range(1, len(section.samples)):
-            pass
-
-
-
-    # indexing
-    for sample in section.samples:
-        sample.global_index = index
-        index = index + 1
-
-
-
 
 

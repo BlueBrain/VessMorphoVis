@@ -17,43 +17,47 @@
 
 # Blender imports
 import bpy
-from mathutils import Vector
 
-# Internal modules
-import vmv
-import vmv.mesh
+# Internal imports
+import vmv.utilities
 
 
 ####################################################################################################
-# @create_line_object_from_data
+# @get_active_object
 ####################################################################################################
-def create_vertex_mesh(location=Vector((0.0, 0.0, 0.0)),
-                       name='vertex'):
-    """Creates a vertex at the specified location. This vertex is represented as a single
-    point mesh that can be extruded.
+def get_active_object():
+    """Returns a reference to the active object in the scene.
 
-    :param location:
-        Vertex location in the scene.
-    :param name:
-        Vertex name.
     :return:
-        A reference to the created vertex mesh.
+        A reference to the active object in the scene.
     """
 
-    # Initially, create a plane mesh
-    vertex_mesh = vmv.mesh.create_plane(name=name)
+    if vmv.utilities.is_blender_280():
+        return bpy.context.active_object
+    else:
+        return bpy.context.scene.objects.active
 
-    # Switch to the edit mode
-    bpy.ops.object.editmode_toggle()
 
-    # Merge the plan into a point at the center
-    bpy.ops.mesh.merge(type='CENTER')
+####################################################################################################
+# @view_axis
+####################################################################################################
+def view_axis(axis='TOP'):
+    """Views the given axis (or projection) in the 3D viewport.
 
-    # Switch back to the object mode
-    bpy.ops.object.editmode_toggle()
+    :param axis:
+        An enum in ['LEFT', 'RIGHT', 'BOTTOM', 'TOP', 'FRONT', 'BACK'].
+    """
 
-    # Update the location
-    vertex_mesh.location = location
+    if vmv.utilities.is_blender_280():
+        bpy.ops.view3d.view_axis(type=axis)
+    else:
+        bpy.ops.view3d.viewnumpad(type=axis)
 
-    # Return a reference to the vertex mesh
-    return vertex_mesh
+
+####################################################################################################
+# @shade_smooth
+####################################################################################################
+def shade_smooth():
+    """Shades a given object to be smooth."""
+
+    bpy.ops.object.shade_smooth()

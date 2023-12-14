@@ -18,10 +18,6 @@
 # System imports
 import os
 import math
-import numpy
-import seaborn
-import matplotlib.pyplot as pyplot
-import matplotlib.font_manager as font_manager
 
 # Internal imports
 import vmv.consts
@@ -34,6 +30,8 @@ import vmv.utilities
 def verify_plotting_packages():
     """Verifies the paths of the fonts that are used for plotting the figures.
     """
+
+    import matplotlib.font_manager as font_manager
 
     # Import the fonts
     font_dirs = [os.path.dirname(vmv.consts.Paths.FONTS_DIRECTORY)]
@@ -121,6 +119,10 @@ def plot_normalized_histogram(data,
     :param dpi:
         The dots per inch.
     """
+
+    import matplotlib.pyplot as pyplot
+    import numpy
+    import seaborn
 
     verify_plotting_packages()
 
@@ -245,6 +247,8 @@ def plot_range(avg_value,
     """Plot a range.
     """
 
+    import matplotlib.pyplot as pyplot
+
     # Tight layout
     pyplot.tight_layout()
 
@@ -325,6 +329,8 @@ def plot_average_profile(df,
         Number of bins.
     """
 
+    import matplotlib.pyplot as pyplot
+
     for axis in ['X', 'Y', 'Z']:
 
         # Sort the data frame
@@ -374,6 +380,7 @@ def plot_average_profile(df,
             color = 'green'
         else:
             color = 'blue'
+
         # Remove any labels
         pyplot.xlabel(title)
         pyplot.ylabel('Distance along %s axis (μm)' % axis, labelpad=20)

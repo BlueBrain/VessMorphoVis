@@ -79,3 +79,9 @@ class Skeleton:
 
     # The index of a custom sample in an SWC file
     SWC_CUSTOM_SAMPLE_TYPE = 7
+
+    # Radius down-scaling factor
+    RADIUS_SCALE_DOWN_FACTOR = 0.001
+
+    # Radius scale-up factor
+    RADIUS_SCALE_UP_FACTOR = 1000.0

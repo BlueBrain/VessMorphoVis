@@ -21,8 +21,8 @@ import bpy
 from mathutils import Vector, Matrix
 
 # Internal modules
-import vmv
 import vmv.scene
+import vmv.mesh
 import vmv.geometry
 import vmv.skeleton
 
@@ -68,19 +68,26 @@ def draw_line(point1=Vector((0, 0, 0)),
               material=None,
               color=None,
               name='line'):
-    """
-    Draws a line between two connected points in the space and returns a reference to it.
+    """Draws a line between two connected points in the space and returns a reference to it.
     NOTE: If you want to have a thin line, use 0.1 for the thickness and if you want to set it
     to scale, use 1.0.
 
-    :param point1: Starting point of the line.
-    :param point2: End point of the line.
-    :param format: The format of the line, can be SIMPLE or SOLID.
-    :param thickness: The thickness of the line (between 0.1 and 1.0).
-    :param material: The material of the line.
-    :param color: The color of the line, in case no material is given.
-    :param name: The name of the line.
-    :return: A reference to the create line.
+    :param point1:
+        Starting point of the line.
+    :param point2:
+        End point of the line.
+    :param format:
+        The format of the line, can be SIMPLE or SOLID.
+    :param thickness:
+        The thickness of the line (between 0.1 and 1.0).
+    :param material:
+        The material of the line.
+    :param color:
+        The color of the line, in case no material is given.
+    :param name:
+        The name of the line.
+    :return:
+        A reference to the created line.
     """
 
     # Setup line data
@@ -155,8 +162,14 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
         The name of the line.
     :param smoothness_factor:
         Smoothing the created line (1 - 5), by default set to 1.
+    :param fill_caps:
+        If this flag is set to True, caps will be closed.
+    :param sides:
+        The number of the sides of the line.
+    :param bevel_object:
+        A given bevel object used to taper the line.
     :return:
-        A reference to the create line.
+        A reference to the created line.
     """
 
     # Setup line data
@@ -177,7 +190,8 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
     line_data.use_fill_caps = fill_caps
 
     if bevel_object is None:
-        line_data.bevel_object = nmv.mesh.create_bezier_circle(radius=1.0, vertices=sides, name=name)
+        line_data.bevel_object = vmv.mesh.create_bezier_circle(
+            radius=1.0, vertices=sides, name=name)
     else:
         line_data.bevel_object = bevel_object
 
@@ -206,7 +220,7 @@ def draw_cone_line(point1=Vector((0, 0, 0)),
 ####################################################################################################
 # @create_poly_lines_object_base
 ####################################################################################################
-def create_poly_lines_object_base(name='poly_lines',
+def create_poly_lines_object_base(name='PolyLines',
                                   bevel_object=None,
                                   caps=True,
                                   texture_size=5):
@@ -251,6 +265,7 @@ def create_poly_lines_object_base(name='poly_lines',
 
     # If a bevel object is given, use it for scaling the diameter of the poly-line
     if bevel_object is not None:
+        poly_lines_object.bevel_mode = 'OBJECT'
         poly_lines_object.bevel_object = bevel_object
 
     # Return a reference to the created object
@@ -370,14 +385,15 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     materials_list = list()
 
     # Create the material and append it to the list
-    for i, color in enumerate(color_map):
-        materials = vmv.shading.create_material(
-            name='%s_%d' % (name, i), color=color, material_type=material)
-        materials_list.append(materials)
+    if color_map is not None and len(color_map) > 0:
+        for i, color in enumerate(color_map):
+            materials = vmv.shading.create_material(
+                name='%s_%d' % (name, i), color=color, material_type=material)
+            materials_list.append(materials)
 
-    # Add the materials to the object
-    for material in materials_list:
-        poly_lines_object.materials.append(material)
+        # Add the materials to the object
+        for material in materials_list:
+            poly_lines_object.materials.append(material)
 
     # For each poly-line in the poly-lines list, create an object and append it to the aggregate one
     for poly_line_data in poly_lines_data:
@@ -402,6 +418,9 @@ def create_poly_lines_object_from_poly_lines_data(poly_lines_data,
     return aggregate_poly_lines_object
 
 
+####################################################################################################
+# @draw_poly_line
+####################################################################################################
 def draw_poly_line(poly_line_data,
                    format='SOLID',
                    name='poly_line',
@@ -478,7 +497,7 @@ def draw_poly_line(poly_line_data,
             line_data.materials.append(line_material)
 
     # Add the points along the poly-line
-    # NOTE: add n-1 points to the array, becuase once the poly-line is created it has already one
+    # NOTE: add n-1 points to the array, because once the poly-line is created it has already one
     # point added.
     # Options: ['POLY', 'BEZIER', 'BSPLINE', 'CARDINAL', 'NURBS']
     poly_line_strip = line_data.splines.new('POLY')

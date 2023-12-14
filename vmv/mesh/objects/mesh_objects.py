@@ -30,7 +30,7 @@ import vmv.scene
 ####################################################################################################
 def create_plane(radius=1,
                  location=(0, 0, 0),
-                 name='plane'):
+                 name='Plane'):
     """Create a plane mesh object that is linked to the scene and returns a reference to it.
 
     :param radius:
@@ -63,12 +63,16 @@ def create_plane(radius=1,
 # @create_vertex
 ####################################################################################################
 def create_vertex(location=(0, 0, 0),
-                  name='vertex'):
-    """
+                  name='Vertex'):
+    """Creates a vertex at the specified location. This vertex is represented as a single
+    point mesh that can be extruded.
 
     :param location:
+        Vertex location in the scene.
     :param name:
+        Vertex name.
     :return:
+        A reference to the created vertex mesh.
     """
 
     # Initially create a plane
@@ -90,7 +94,7 @@ def create_vertex(location=(0, 0, 0),
 def create_ico_sphere(radius=1,
                       location=(0, 0, 0),
                       subdivisions=1,
-                      name='ico_sphere'):
+                      name='Icosphere'):
     """Create an ico-sphere mesh object that is linked to the scene and returns a reference to it.
 
     :param radius:
@@ -109,7 +113,8 @@ def create_ico_sphere(radius=1,
     vmv.scene.ops.deselect_all()
 
     # Add new ico-sphere mesh object
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, size=radius, location=location)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, radius=radius,
+                                          location=location)
 
     # Get a reference to it, from the current active objects
     ico_sphere_mesh = bpy.context.active_object
@@ -127,7 +132,7 @@ def create_ico_sphere(radius=1,
 def create_uv_sphere(radius=1,
                      location=(0, 0, 0),
                      subdivisions=32,
-                     name='uv_sphere'):
+                     name='UV Sphere'):
     """Create a default UV sphere linked to the scene and return a reference to it.
 
     :param radius:
@@ -166,7 +171,7 @@ def create_circle(radius=1,
                   location=(0, 0, 0),
                   vertices=4,
                   caps=True,
-                  name='circle'):
+                  name='Circle'):
     """Create a circle mesh object that is linked to the scene and return a reference to it.
 
     :param radius:
@@ -209,7 +214,7 @@ def create_circle(radius=1,
 def create_bezier_circle(radius=1,
                          vertices=4,
                          location=(0, 0, 0),
-                         name='bezier_circle'):
+                         name='Bezier Circle'):
     """Create a BEZIER circle mesh object that is linked to the scene and return a reference to it.
 
     :param radius:
@@ -231,10 +236,8 @@ def create_bezier_circle(radius=1,
     bpy.ops.curve.primitive_bezier_circle_add(location=location)
 
     # Get a reference to it
-    if vertices == 4:
-        bpy.context.object.data.resolution_u = 0
-    else:
-        bpy.context.object.data.resolution_u = math.ceil(vertices / 4)
+    bpy.context.object.data.resolution_u = int(vertices / 4)
+
     circle_mesh = bpy.context.active_object
 
     # Set the radius
@@ -254,11 +257,10 @@ def create_bezier_circle(radius=1,
 ####################################################################################################
 def create_cube(radius=1,
                 location=(0, 0, 0),
-                name='cube'):
+                name='Cube'):
     """Create a cube mesh object that is linked to the scene and returns a reference to it.
 
-    :param radius: T
-        he radius 'diagonal length' of the cube, by default 1.
+    :param radius: The radius 'diagonal length' of the cube, by default 1.
     :param location:
         The XYZ-coordinate of the center of the cube, by default origin.
     :param name:
@@ -281,3 +283,65 @@ def create_cube(radius=1,
 
     # Return a reference to it
     return cube_mesh
+
+
+####################################################################################################
+# @create_remeshed_icosphere
+####################################################################################################
+def create_remeshed_icosphere(radius=1,
+                              location=(0, 0, 0),
+                              name='Re-meshed Sphere',
+                              subdivisions=2,
+                              voxel_size=0.2):
+
+    # Deselect all objects in the scene
+    vmv.scene.ops.deselect_all()
+
+    # Initially, create an ico sphere
+    mesh_object = create_ico_sphere(radius=radius, location=location,
+                                    name=name, subdivisions=subdivisions)
+
+    # Activate the mesh object
+    vmv.scene.set_active_object(scene_object=mesh_object)
+
+    # TODO: MOVE TO THE CORRESPONDING SECTION
+    # Re-mesh the sphere using the voxelization based re-mesher
+    bpy.ops.object.modifier_add(type='REMESH')
+    bpy.context.object.modifiers["Remesh"].mode = 'VOXEL'
+    bpy.context.object.modifiers["Remesh"].voxel_size = voxel_size
+    bpy.ops.object.modifier_apply(modifier="Remesh")
+
+    # Triangulate the mesh (for consistency)
+    bpy.ops.object.modifier_add(type='TRIANGULATE')
+    bpy.ops.object.modifier_apply(modifier="Triangulate")
+
+    # Return a reference to the mesh object
+    return mesh_object
+
+
+####################################################################################################
+# @get_remeshed_icosphere_data
+####################################################################################################
+def get_remeshed_icosphere_data(radius=1,
+                                location=(0, 0, 0),
+                                subdivisions=2,
+                                voxel_size=0.2):
+
+    # Create the remeshed sphere
+    mesh_object = create_remeshed_icosphere(radius=radius, location=location,
+                                            subdivisions=subdivisions, voxel_size=voxel_size)
+
+    # Construct the data (vertices and faces) arrays
+    vertices = list()
+    for v in mesh_object.data.vertices:
+        vertices.append(v.co)
+
+    faces = list()
+    for f in mesh_object.data.polygons:
+        faces.append([f.vertices[0], f.vertices[1], f.vertices[2]])
+
+    # Delete the temporary mesh object from the scene (not needed after we obtained the data)
+    vmv.scene.delete_object_in_scene(scene_object=mesh_object)
+
+    # Return the data (vertices and faces)
+    return [vertices, faces]

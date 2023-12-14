@@ -1,16 +1,8 @@
-"""bmesh_object_ops.py:
-    A set of utilities and operators for handling bmesh objects.
-"""
-
-__author__      = "Marwan Abdellah"
-__copyright__   = "Copyright (c) 2016 - 2017, Blue Brain Project / EPFL"
-__version__     = "0.1.0"
-__maintainer__  = "Marwan Abdellah"
-__email__       = "marwan.abdellah@epfl.ch"
-__status__      = "Production"
 
 # Blender modules
 import bpy, bmesh
+
+import vmv.mesh
 
 
 ####################################################################################################
@@ -123,6 +115,21 @@ def convert_from_mesh_object(mesh_object):
 
 
 ####################################################################################################
+# @create_bmesh_object_from_mesh_object
+####################################################################################################
+def create_bmesh_object_from_mesh_object(mesh_object):
+
+    # Create a new bmesh object
+    bmesh_object = bmesh.new()
+
+    # Fill the data into the bmesh object from the mesh object
+    bmesh_object.from_mesh(mesh_object.data)
+
+    # Return a reference to the resulting bmesh object
+    return bmesh_object
+
+
+####################################################################################################
 # @convert_to_mesh_object
 ####################################################################################################
 def link_to_new_object_in_scene(bmesh_object,
@@ -207,3 +214,32 @@ def delete_bmesh_list(bmesh_list):
 
     for bmesh_object in bmesh_list:
         delete_bmesh(bmesh_object)
+
+
+####################################################################################################
+# @add_line_segment_to_bmesh
+####################################################################################################
+def add_line_segment_to_bmesh(bmesh_object,
+                              point_1,
+                              point_2):
+    """Adds a line segment or an edge (that is defined by two points) to a given bmesh object.
+
+    :param bmesh_object:
+        The given bmesh object which will have the new line added to.
+    :param point_1:
+        The first point of the line segment.
+    :param point_2:
+        The second point of the line segment.
+    :return
+        Return a reference to the created line segment or edge in the bmesh object.
+    """
+
+    # Adds the points as new vertices
+    vert1 = bmesh_object.verts.new(point_1)
+    vert2 = bmesh_object.verts.new(point_2)
+
+    # Create the new edge from the two created vertices in the bmesh object
+    edge = bmesh_object.edges.new([vert1, vert2])
+
+    # Return a reference to teh created edge BEdge
+    return edge
